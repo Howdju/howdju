@@ -1,4 +1,4 @@
-import React from "react";
+import React, { HTMLAttributes } from "react";
 
 import ListEntitiesWidget from "./ListEntitiesWidget";
 import { largeCellClasses } from "./CellList";
@@ -6,10 +6,10 @@ import JustificationCard from "./JustificationCard";
 import t from "./texts";
 import { api } from "./actions";
 import { justificationsSchema } from "./normalizationSchemas";
-import { Justification } from "howdju-common";
+import { JustificationOut } from "howdju-common";
 import { ComponentId } from "./types";
 
-interface Props {
+interface Props extends HTMLAttributes<HTMLDivElement> {
   id: ComponentId;
   widgetId: string;
 }
@@ -19,14 +19,13 @@ export default function RecentJustificationsWidget({
   widgetId,
   ...rest
 }: Props) {
-  const justificationToCard = (justification: Justification) => {
+  const justificationToCard = (justification: JustificationOut) => {
     const cardId = `${id}-justification-${justification.id}`;
     return (
       <JustificationCard
         id={cardId}
         key={cardId}
         justification={justification}
-        doShowBasisJustifications={false}
         doShowControls={false}
         className={largeCellClasses}
       />

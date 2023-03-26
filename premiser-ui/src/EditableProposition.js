@@ -64,6 +64,8 @@ EditableProposition.propTypes = {
   /** If omitted, no autocomplete */
   suggestionsKey: PropTypes.string,
   proposition: PropTypes.object,
+  showStatusText: PropTypes.bool,
+  contextTrailItems: PropTypes.arrayOf(PropTypes.object),
 };
 EditableProposition.defaultProps = {
   showJustificationCount: true,

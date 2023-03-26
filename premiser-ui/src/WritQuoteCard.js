@@ -3,7 +3,6 @@ import PropTypes from "prop-types";
 import { Card, CardText, FontIcon, ListItem, MenuButton } from "react-md";
 import cn from "classnames";
 
-import ExpandableChildContainer from "./ExpandableChildContainer";
 import WritQuoteEntityViewer from "./WritQuoteEntityViewer";
 
 import "./WritQuoteCard.scss";
@@ -48,10 +47,9 @@ export default class WritQuoteCard extends Component {
     return (
       <Card className={cn(className, "entity-card")}>
         <CardText>
-          <ExpandableChildContainer
+          <WritQuoteEntityViewer
             {...rest}
             id={id}
-            expandableChildComponent={WritQuoteEntityViewer}
             writQuote={writQuote}
             showUrls={showUrls}
             menu={menuButton}

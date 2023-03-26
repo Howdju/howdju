@@ -1,4 +1,4 @@
-import React from "react";
+import React, { HTMLAttributes } from "react";
 
 import { WritQuote } from "howdju-common";
 
@@ -10,7 +10,7 @@ import { api } from "./actions";
 import { writQuotesSchema } from "./normalizationSchemas";
 import { ComponentId } from "./types";
 
-interface Props {
+interface Props extends HTMLAttributes<HTMLDivElement> {
   id: ComponentId;
   widgetId: string;
 }

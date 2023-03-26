@@ -26,7 +26,6 @@ import {
   PrivacyConsentCookie,
   PropertyChanges,
   SuggestionsKey,
-  WidgetId,
   EditorId,
 } from "./types";
 import { createAction, actionTypeDelim } from "./actionHelpers";
@@ -100,11 +99,6 @@ export const ui = {
     cause,
   })),
   windowResize: createAction("UI/WINDOW_RESIZE"),
-
-  expand: createAction("UI/EXPAND", (widgetId: WidgetId) => ({ widgetId })),
-  collapse: createAction("UI/COLLAPSE", (widgetId: WidgetId) => ({
-    widgetId,
-  })),
 
   clearTaggedPropositions: createAction("UI/CLEAR_TAGGED_PROPOSITIONS"),
 };

@@ -1,9 +1,10 @@
 import { ActionCreator } from "redux";
 import { createAction } from "redux-actions";
+
 import {
-  CounteredJustification,
   decircularizeJustification,
   Justification,
+  JustificationOut,
   Url,
   WritQuote,
 } from "howdju-common";
@@ -25,11 +26,7 @@ export const str = (ac: ActionCreator<unknown>) => ac.toString();
 export const extension = {
   highlightTarget: createAction(
     "EXTENSION/HIGHLIGHT_TARGET",
-    (
-      justification: CounteredJustification,
-      writQuote: WritQuote,
-      url: Url
-    ) => ({
+    (justification: JustificationOut, writQuote: WritQuote, url: Url) => ({
       justification: decircularizeJustification(justification),
       writQuote,
       url,

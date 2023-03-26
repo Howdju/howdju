@@ -1,16 +1,18 @@
-import { CounteredJustification, Url, WritQuote } from "howdju-common";
+import { MouseEvent } from "react";
+
+import { JustificationOut, Url, WritQuote } from "howdju-common";
 import { actions, inIframe } from "howdju-client-common";
 
 import { AppDispatch } from "./setupStore";
-import { MouseEvent } from "react";
+import { OnClickJustificationWritQuoteUrl } from "./types";
 
 export function makeExtensionHighlightOnClickWritQuoteUrlCallback(
   dispatch: AppDispatch
-) {
+): OnClickJustificationWritQuoteUrl {
   // A method for top-level components that want to highlight justifications using the extension
   return function extensionHighlightingOnClickWritQuoteUrl(
-    event: MouseEvent<HTMLElement>,
-    justification: CounteredJustification,
+    event: MouseEvent,
+    justification: JustificationOut,
     writQuote: WritQuote,
     url: Url
   ) {

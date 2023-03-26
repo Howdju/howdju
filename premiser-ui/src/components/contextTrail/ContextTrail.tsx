@@ -98,7 +98,6 @@ export default function ContextTrail({
       <JustificationCard
         id={cardId}
         justification={justification}
-        doShowBasisJustifications={false}
         doShowControls={false}
         doShowTargets={false}
         contextTrailItems={trailItems}
