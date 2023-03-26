@@ -12,13 +12,11 @@ import map from "lodash/map";
 import split from "lodash/split";
 import truncate from "lodash/truncate";
 import { clone, concat, reverse, TruncateOptions } from "lodash";
-import { schema } from "normalizr";
 
 import config from "./config";
 import {
   SourceExcerpt,
   isFalsey,
-  JustificationRootTarget,
   JustificationRootTargetType,
   newExhaustedEnumError,
   Proposition,
@@ -32,6 +30,10 @@ import {
   ConnectingEntity,
   ConnectingEntityType,
   ContextTrailItem,
+  JustificationRootTargetOut,
+  PropositionOut,
+  SentenceOut,
+  StatementOut,
 } from "howdju-common";
 
 import * as characters from "./characters";
@@ -210,28 +212,25 @@ export interface ChipInfo {
   className: string;
 }
 
-export const rootTargetNormalizationSchemasByType: Record<
-  JustificationRootTargetType,
-  schema.Entity
-> = {
-  ["PROPOSITION"]: propositionSchema,
-  ["STATEMENT"]: statementSchema,
+export const rootTargetNormalizationSchemasByType = {
+  PROPOSITION: propositionSchema,
+  STATEMENT: statementSchema,
 };
 
 export function describeRootTarget(
   rootTargetType: JustificationRootTargetType,
-  rootTarget: JustificationRootTarget
+  rootTarget: JustificationRootTargetOut
 ) {
   // TODO(107) make JustificationRootTarget a discriminated union type and remove typecasts
   switch (rootTargetType) {
     case "PROPOSITION":
-      return (rootTarget as Proposition).text;
+      return (rootTarget as PropositionOut).text;
     case "STATEMENT": {
       const descriptionParts = [];
-      let currSentence = rootTarget;
-      while ("sentenceType" in currSentence) {
+      let currSentence: SentenceOut = rootTarget as StatementOut;
+      while ("speaker" in currSentence) {
         descriptionParts.push(`${currSentence.speaker.name} said that`);
-        currSentence = currSentence.sentence;
+        currSentence = currSentence.sentence as SentenceOut;
       }
       descriptionParts.push(
         `${characters.leftDoubleQuote}${currSentence.text}${characters.rightDoubleQuote}`

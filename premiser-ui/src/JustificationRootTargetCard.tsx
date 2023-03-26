@@ -11,18 +11,26 @@ import {
   ListItem,
   MenuButton,
 } from "react-md";
+import { Link } from "react-router-dom";
+import { connect, ConnectedProps } from "react-redux";
 
 import {
   EntityId,
   isNegative,
   isPositive,
   JustificationBasisSourceTypes,
+  JustificationRootTargetOut,
   JustificationRootTargetType,
   JustificationRootTargetTypes,
   logger,
   Proposition,
   toJson,
 } from "howdju-common";
+import {
+  isPropositionRootTarget,
+  isVerified,
+  makeCreateContentReportInput,
+} from "howdju-client-common";
 
 import hoverAware from "./hoverAware";
 import JustificationRootTargetViewer from "./JustificationRootTargetViewer";
@@ -31,8 +39,6 @@ import { EditorTypes } from "./reducers/editors";
 import paths from "./paths";
 import Tagger from "./Tagger";
 import { combineIds, combineSuggestionsKeys } from "./viewModels";
-import { Link } from "react-router-dom";
-import { connect, ConnectedProps } from "react-redux";
 import {
   api,
   apiLike,
@@ -40,17 +46,11 @@ import {
   mapActionCreatorGroupToDispatchToProps,
   ui,
 } from "./actions";
-
-import "./JustificationRootTargetCard.scss";
 import { divideMenuItems } from "./util";
 import { contentReportEditorId } from "./content-report/ReportContentDialog";
-import {
-  isPropositionRootTarget,
-  isVerified,
-  JustificationRootTargetViewModel,
-  makeCreateContentReportInput,
-} from "howdju-client-common";
 import { ComponentId, EditorId, MenuItems, SuggestionsKey } from "./types";
+
+import "./JustificationRootTargetCard.scss";
 
 const editorTypesByRootTargetType = {
   [JustificationRootTargetTypes.PROPOSITION]: EditorTypes.PROPOSITION,
@@ -61,7 +61,7 @@ interface OwnProps {
   editorId: EditorId;
   suggestionsKey: SuggestionsKey;
   rootTargetType: JustificationRootTargetType;
-  rootTarget: JustificationRootTargetViewModel;
+  rootTarget: JustificationRootTargetOut;
   extraMenuItems: MenuItems;
   canHover: boolean;
 }
@@ -212,7 +212,7 @@ class JustificationRootTargetCard extends React.Component<Props> {
 
   menuItemsForType(
     rootTargetType: JustificationRootTargetType,
-    rootTarget: JustificationRootTargetViewModel
+    rootTarget: JustificationRootTargetOut
   ): { entity: JSX.Element[]; edit: JSX.Element[] } {
     switch (rootTargetType) {
       case JustificationRootTargetTypes.PROPOSITION: {

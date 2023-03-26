@@ -67,6 +67,7 @@ export type SourceExcerptOut = Persisted<SourceExcerpt> &
   );
 
 export type StatementOut = Persisted<Statement>;
+export type SentenceOut = PropositionOut | StatementOut;
 
 export type CreatorBlurb = EntityRef<User> & Pick<Persisted<User>, "longName">;
 
@@ -79,6 +80,14 @@ export type JustificationOut = PersistedJustificationWithRootRef & {
   /** The current user's vote on this justification. */
   vote?: JustificationVote;
 };
+
+export type JustificationRootTargetOut = (PropositionOut | StatementOut) &
+  TaggedEntityOut & {
+    justifications: JustificationOut[];
+    // TODO make tags a view model and put the votes on them.
+    // TODO (At the very least deduplicate between TaggedEntityViewModel.tagVotes)
+    propositionTagVotes: PropositionTagVoteOut[];
+  };
 
 export type PropositionCompoundOut = Persisted<PropositionCompound>;
 

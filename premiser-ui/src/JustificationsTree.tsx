@@ -15,11 +15,12 @@ import {
 import config from "./config";
 import JustificationBranch from "./JustificationBranch";
 import t, { ADD_JUSTIFICATION_CALL_TO_ACTION } from "./texts";
-import windowAware from "./windowAware";
+import { combineIds, extendContextTrailItems } from "./viewModels";
+import { ComponentId, OnClickJustificationWritQuoteUrl } from "./types";
+import { useAppSelector } from "./hooks";
+import { selectIsWindowNarrow } from "./selectors";
 
 import "./JustificationsTree.scss";
-import { extendContextTrailItems } from "./viewModels";
-import { ComponentId, OnClickJustificationWritQuoteUrl } from "./types";
 
 interface Props {
   id: ComponentId;
@@ -27,20 +28,19 @@ interface Props {
   justifications: JustificationOut[];
   doShowControls: boolean;
   doShowJustifications: boolean;
-  isCondensed: boolean;
-  isUnCondensed: boolean;
+  /** Whether to combine justifications into a single column */
+  isCondensed?: boolean;
+  /** Whether to have two columns for justifications even when one will be empty. */
+  isUnCondensed?: boolean;
   showBasisUrls: boolean;
   contextTrailItems: ContextTrailItem[];
   onClickWritQuoteUrl: OnClickJustificationWritQuoteUrl;
   wrapperComponent?: ComponentType<{ className: string }> | string;
-  isWindowNarrow: boolean;
   showNewPositiveJustificationDialog: ReactEventHandler;
   showNewNegativeJustificationDialog: ReactEventHandler;
 }
 
-export default windowAware(JustificationsTree);
-
-function JustificationsTree({
+export default function JustificationsTree({
   id,
   doShowControls = false,
   doShowJustifications = false,
@@ -52,12 +52,11 @@ function JustificationsTree({
   isUnCondensed = false,
   wrapperComponent: WrapperComponent = "div",
   className,
-  isWindowNarrow,
   showNewPositiveJustificationDialog,
   showNewNegativeJustificationDialog,
 }: Props) {
   function toBranch(j: JustificationOut) {
-    const treeId = `${id}-justification-tree-${j.id}`;
+    const treeId = combineIds(id, "justification-tree", j.id);
     const nextContextTrailItems = extendContextTrailItems(
       contextTrailItems,
       "JUSTIFICATION",
@@ -94,6 +93,8 @@ function JustificationsTree({
   const hasBothSides = hasPositiveJustifications && hasNegativeJustifications;
   const hasJustifications =
     positiveJustifications.length > 0 || negativeJustifications.length > 0;
+
+  const isWindowNarrow = useAppSelector(selectIsWindowNarrow);
 
   /*
      When there are both positive and negative justifications, don't add any margin, but split them into two columns

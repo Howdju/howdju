@@ -6,31 +6,19 @@ import { cloneDeep } from "lodash";
 
 import {
   JustificationPolarity,
-  JustificationRootTarget,
   newProgrammingError,
   CreateContentReportInput,
-  PropositionTagVoteOut,
   JustificationOut,
   Proposition,
-  TaggedEntityOut,
   Persisted,
   JustificationRootPolarity,
   Statement,
+  JustificationRootTargetOut,
 } from "howdju-common";
 
-// TODO either rename to JustificationRootTargetRef, replace justifications with hasAgreement and
-// hasDisagreement. Or replace with non-persisted version to allow drafting of justification trees.
-export type JustificationRootTargetViewModel = JustificationRootTarget &
-  TaggedEntityOut & {
-    justifications: JustificationOut[];
-    // TODO make tags a view model and put the votes on them.
-    // TODO (At the very least deduplicate between TaggedEntityViewModel.tagVotes)
-    propositionTagVotes: PropositionTagVoteOut[];
-  };
-
 export function isPropositionRootTarget(
-  rootTarget: JustificationRootTargetViewModel
-): rootTarget is Persisted<Proposition> & JustificationRootTargetViewModel {
+  rootTarget: JustificationRootTargetOut
+): rootTarget is Persisted<Proposition> & JustificationRootTargetOut {
   return "text" in rootTarget;
 }
 
