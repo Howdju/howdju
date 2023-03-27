@@ -13,6 +13,7 @@ import { makeExtensionHighlightOnClickWritQuoteUrlCallback } from "../../extensi
 import { useLocation } from "react-router";
 import { useAppDispatch, useAppSelector } from "@/hooks";
 import { extractFilters, extractIncludeUrls } from "./queryStringExtraction";
+import FlipMoveWrapper from "@/FlipMoveWrapper";
 
 const fetchCount = 20;
 
@@ -94,14 +95,15 @@ export default function JustificationsSearchPage() {
         {map(justifications, (j) => {
           const id = `justification-card-${j.id}`;
           return (
-            <JustificationCard
-              className="md-cell md-cell--12"
-              id={id}
-              key={id}
-              justification={j}
-              showBasisUrls={true}
-              onClickWritQuoteUrl={onClickWritQuoteUrl}
-            />
+            <FlipMoveWrapper key={id}>
+              <JustificationCard
+                className="md-cell md-cell--12"
+                id={id}
+                justification={j}
+                showBasisUrls={true}
+                onClickWritQuoteUrl={onClickWritQuoteUrl}
+              />
+            </FlipMoveWrapper>
           );
         })}
       </FlipMove>

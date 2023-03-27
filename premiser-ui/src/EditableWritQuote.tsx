@@ -41,7 +41,7 @@ export default function EditableWritQuote({
   const { editEntity } =
     useAppSelector((state) => state.editors.WRIT_QUOTE?.[editorId]) || {};
   const isEditing = !!editEntity;
-  const isFetching = !!writQuote;
+  const isFetching = !writQuote;
 
   return isFetching ? progress : isEditing ? editor() : viewer;
 }

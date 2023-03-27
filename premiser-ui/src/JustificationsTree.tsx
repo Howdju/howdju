@@ -21,6 +21,7 @@ import { useAppSelector } from "./hooks";
 import { selectIsWindowNarrow } from "./selectors";
 
 import "./JustificationsTree.scss";
+import FlipMoveWrapper from "./FlipMoveWrapper";
 
 interface Props {
   id: ComponentId;
@@ -63,18 +64,19 @@ export default function JustificationsTree({
       j
     );
     return (
-      <JustificationBranch
-        key={treeId}
-        justification={j}
-        doShowControls={doShowControls}
-        doShowBasisJustifications={doShowJustifications}
-        isCondensed={isCondensed}
-        isUnCondensed={isUnCondensed}
-        showBasisUrls={showBasisUrls}
-        showStatusText={true}
-        contextTrailItems={nextContextTrailItems}
-        onClickWritQuoteUrl={onClickWritQuoteUrl}
-      />
+      <FlipMoveWrapper key={treeId}>
+        <JustificationBranch
+          justification={j}
+          doShowControls={doShowControls}
+          doShowBasisJustifications={doShowJustifications}
+          isCondensed={isCondensed}
+          isUnCondensed={isUnCondensed}
+          showBasisUrls={showBasisUrls}
+          showStatusText={true}
+          contextTrailItems={nextContextTrailItems}
+          onClickWritQuoteUrl={onClickWritQuoteUrl}
+        />
+      </FlipMoveWrapper>
     );
   }
 

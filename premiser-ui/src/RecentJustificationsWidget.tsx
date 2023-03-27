@@ -8,6 +8,7 @@ import { api } from "./actions";
 import { justificationsSchema } from "./normalizationSchemas";
 import { JustificationOut } from "howdju-common";
 import { ComponentId } from "./types";
+import FlipMoveWrapper from "./FlipMoveWrapper";
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
   id: ComponentId;
@@ -22,13 +23,14 @@ export default function RecentJustificationsWidget({
   const justificationToCard = (justification: JustificationOut) => {
     const cardId = `${id}-justification-${justification.id}`;
     return (
-      <JustificationCard
-        id={cardId}
-        key={cardId}
-        justification={justification}
-        doShowControls={false}
-        className={largeCellClasses}
-      />
+      <FlipMoveWrapper key={cardId}>
+        <JustificationCard
+          id={cardId}
+          justification={justification}
+          doShowControls={false}
+          className={largeCellClasses}
+        />
+      </FlipMoveWrapper>
     );
   };
 
