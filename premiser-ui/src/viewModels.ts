@@ -34,6 +34,7 @@ import {
   PropositionOut,
   SentenceOut,
   StatementOut,
+  RelationPolarity,
 } from "howdju-common";
 
 import * as characters from "./characters";
@@ -252,12 +253,58 @@ export function extendContextTrailItems(
   connectingEntityType: ConnectingEntityType,
   connectingEntity: ConnectingEntity
 ): ContextTrailItem[] {
-  return concat(contextTrailItems, [
-    {
-      connectingEntityType,
-      connectingEntityId: connectingEntity.id,
-      connectingEntity,
-      polarity: connectingEntity.polarity,
-    },
-  ]);
+  const trailItem = nextContextTrailItem(
+    connectingEntityType,
+    connectingEntity,
+    contextTrailItems[contextTrailItems.length - 1]?.polarity
+  );
+  return concat(contextTrailItems, [trailItem]);
+}
+
+export function nextContextTrailItem(
+  connectingEntityType: ConnectingEntityType,
+  connectingEntity: ConnectingEntity,
+  prevItemPolarity: RelationPolarity
+): ContextTrailItem {
+  const polarity = contextTrailItemPolarity(
+    connectingEntityType,
+    connectingEntity,
+    prevItemPolarity
+  );
+  return {
+    connectingEntityType,
+    connectingEntityId: connectingEntity.id,
+    connectingEntity,
+    polarity,
+  };
+}
+
+function contextTrailItemPolarity(
+  connectingEntityType: ConnectingEntityType,
+  connectingEntity: ConnectingEntity,
+  prevItemPolarity: RelationPolarity
+) {
+  switch (connectingEntityType) {
+    case "JUSTIFICATION": {
+      switch (connectingEntity.target.type) {
+        case "PROPOSITION":
+        case "STATEMENT":
+          return connectingEntity.polarity;
+        case "JUSTIFICATION":
+          // Counter justifications should have the opposite polarity as their target
+          return negateRelationPolarity(prevItemPolarity);
+      }
+    }
+  }
+}
+
+function negateRelationPolarity(polarity: RelationPolarity) {
+  switch (polarity) {
+    case "POSITIVE":
+      return "NEGATIVE";
+    case "NEGATIVE":
+      return "POSITIVE";
+    case "NEUTRAL":
+      return "NEUTRAL";
+  }
 }

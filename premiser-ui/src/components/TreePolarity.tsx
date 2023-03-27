@@ -9,7 +9,7 @@ interface Props {
   children: ReactNode;
 }
 // Offsets and colors justifications in a tree according to their polarity.
-export default function TreePolarityOffsetter({ polarity, children }: Props) {
+export default function TreePolarity({ polarity, children }: Props) {
   const isPositive = polarity === JustificationPolarities.POSITIVE;
   const isNegative = polarity === JustificationPolarities.NEGATIVE;
   return (

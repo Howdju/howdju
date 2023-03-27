@@ -71,6 +71,7 @@ export default function JustificationsTree({
         isCondensed={isCondensed}
         isUnCondensed={isUnCondensed}
         showBasisUrls={showBasisUrls}
+        showStatusText={true}
         contextTrailItems={nextContextTrailItems}
         onClickWritQuoteUrl={onClickWritQuoteUrl}
       />

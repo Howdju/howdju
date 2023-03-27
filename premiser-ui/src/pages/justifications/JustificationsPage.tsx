@@ -190,7 +190,9 @@ class JustificationsPage extends Component<Props> {
               editorId={JustificationsPage.rootTargetEditorId}
               suggestionsKey={this.suggestionsKey("root-target")}
               extraMenuItems={rootTargetExtraMenuItems}
-              // contextPolarity={contextTrailItems?.[contextTrailItems.length]}
+              contextPolarity={
+                contextTrailItems?.[contextTrailItems.length - 1]?.polarity
+              }
             />
           </div>
 

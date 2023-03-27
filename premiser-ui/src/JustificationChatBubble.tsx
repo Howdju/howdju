@@ -1,4 +1,4 @@
-import React, { ReactNode } from "react";
+import React, { HTMLAttributes, ReactNode } from "react";
 
 import {
   ContextTrailItem,
@@ -13,7 +13,7 @@ import "./JustificationChatBubble.scss";
 import { ComponentId, OnClickJustificationWritQuoteUrl } from "./types";
 import { OnClickWritQuoteUrl } from "./WritQuoteViewer";
 
-interface Props {
+interface Props extends HTMLAttributes<HTMLDivElement> {
   id?: ComponentId;
   className?: string;
   justification: JustificationOut;
@@ -39,6 +39,7 @@ export default function JustificationChatBubble({
   children,
   contextTrailItems,
   onClickWritQuoteUrl,
+  ...rest
 }: Props) {
   const _onClickWritQuoteUrl: OnClickWritQuoteUrl = (event, writQuote, url) => {
     if (onClickWritQuoteUrl) {
@@ -54,6 +55,7 @@ export default function JustificationChatBubble({
 
   return (
     <ChatBubble
+      {...rest}
       className={className}
       isPositive={_isRootPositive}
       isNegative={_isRootNegative}

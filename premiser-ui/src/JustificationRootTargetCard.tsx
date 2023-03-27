@@ -24,6 +24,7 @@ import {
   JustificationRootTargetTypes,
   logger,
   Proposition,
+  RelationPolarity,
   toJson,
 } from "howdju-common";
 import {
@@ -48,6 +49,7 @@ import {
 import { divideMenuItems } from "./util";
 import { contentReportEditorId } from "./content-report/ReportContentDialog";
 import { ComponentId, EditorId, MenuItems, SuggestionsKey } from "./types";
+import TreePolarity from "@/components/TreePolarity";
 
 import "./JustificationRootTargetCard.scss";
 
@@ -62,6 +64,7 @@ interface OwnProps {
   rootTargetType: JustificationRootTargetType;
   rootTarget: JustificationRootTargetOut;
   extraMenuItems: MenuItems;
+  contextPolarity?: RelationPolarity;
 }
 
 interface Props extends OwnProps, PropsFromRedux {}
@@ -80,6 +83,7 @@ class JustificationRootTargetCard extends React.Component<Props> {
       rootTargetType,
       rootTarget,
       extraMenuItems,
+      contextPolarity,
     } = this.props;
     const { isOver } = this.state;
 
@@ -137,57 +141,59 @@ class JustificationRootTargetCard extends React.Component<Props> {
     );
 
     return (
-      <div className="root-target-background">
-        <Card
-          className={cn("root-target-card", {
-            agreement: hasAgreement,
-            disagreement: hasDisagreement,
-          })}
-          onMouseOver={this.onMouseOver}
-          onMouseLeave={this.onMouseLeave}
-        >
-          <CardText className="root-target-card-contents">
-            <JustificationRootTargetViewer
-              id={combineIds(id, "proposition-entity-viewer")}
-              rootTargetType={rootTargetType}
-              rootTarget={rootTarget}
-              editorId={editorId}
-              suggestionsKey={combineSuggestionsKeys(
-                suggestionsKey,
-                "proposition"
-              )}
-              menu={menu}
-              showJustificationCount={false}
-            />
-            {rootTarget &&
-              rootTargetType !== JustificationRootTargetTypes.PROPOSITION && (
-                <Tagger
-                  targetType={rootTargetType}
-                  target={rootTarget}
-                  id={combineIds(id, "tagger")}
-                  suggestionsKey={combineSuggestionsKeys(
-                    suggestionsKey,
-                    "tagger"
-                  )}
-                />
-              )}
-            {rootTarget &&
-              rootTargetType === JustificationRootTargetTypes.PROPOSITION && (
-                <PropositionTagger
-                  propositionId={rootTarget.id}
-                  tags={rootTarget.tags}
-                  votes={rootTarget.propositionTagVotes}
-                  recommendedTags={rootTarget.recommendedTags}
-                  id={combineIds(id, "proposition-tagger")}
-                  suggestionsKey={combineSuggestionsKeys(
-                    suggestionsKey,
-                    "proposition-tagger"
-                  )}
-                />
-              )}
-          </CardText>
-        </Card>
-      </div>
+      <TreePolarity polarity={contextPolarity}>
+        <div className="root-target-background">
+          <Card
+            className={cn("root-target-card", {
+              agreement: hasAgreement,
+              disagreement: hasDisagreement,
+            })}
+            onMouseOver={this.onMouseOver}
+            onMouseLeave={this.onMouseLeave}
+          >
+            <CardText className="root-target-card-contents">
+              <JustificationRootTargetViewer
+                id={combineIds(id, "proposition-entity-viewer")}
+                rootTargetType={rootTargetType}
+                rootTarget={rootTarget}
+                editorId={editorId}
+                suggestionsKey={combineSuggestionsKeys(
+                  suggestionsKey,
+                  "proposition"
+                )}
+                menu={menu}
+                showJustificationCount={false}
+              />
+              {rootTarget &&
+                rootTargetType !== JustificationRootTargetTypes.PROPOSITION && (
+                  <Tagger
+                    targetType={rootTargetType}
+                    target={rootTarget}
+                    id={combineIds(id, "tagger")}
+                    suggestionsKey={combineSuggestionsKeys(
+                      suggestionsKey,
+                      "tagger"
+                    )}
+                  />
+                )}
+              {rootTarget &&
+                rootTargetType === JustificationRootTargetTypes.PROPOSITION && (
+                  <PropositionTagger
+                    propositionId={rootTarget.id}
+                    tags={rootTarget.tags}
+                    votes={rootTarget.propositionTagVotes}
+                    recommendedTags={rootTarget.recommendedTags}
+                    id={combineIds(id, "proposition-tagger")}
+                    suggestionsKey={combineSuggestionsKeys(
+                      suggestionsKey,
+                      "proposition-tagger"
+                    )}
+                  />
+                )}
+            </CardText>
+          </Card>
+        </div>
+      </TreePolarity>
     );
   }
 

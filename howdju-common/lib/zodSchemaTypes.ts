@@ -273,3 +273,18 @@ export type ToInput<T> = T extends CreateJustification
   : T extends CreateJustifiedSentence
   ? CreateJustifiedSentenceInput
   : never;
+
+/**
+ * Allows branding an object containing fields missign from the branded schema.
+ *
+ * ZodBranded does not provide a `passthrough` approach. This helper works around that.
+ */
+export function brandedParse<
+  S extends z.ZodTypeAny,
+  B extends string | number | symbol
+>(brandSchema: z.ZodBranded<S, B>, val: any) {
+  return {
+    ...val,
+    ...brandSchema.parse(val),
+  };
+}
