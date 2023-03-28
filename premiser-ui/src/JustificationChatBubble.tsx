@@ -15,7 +15,6 @@ import { OnClickWritQuoteUrl } from "./WritQuoteViewer";
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
   id?: ComponentId;
-  className?: string;
   justification: JustificationOut;
   doShowControls: boolean;
   showStatusText: boolean;
@@ -29,7 +28,6 @@ interface Props extends HTMLAttributes<HTMLDivElement> {
 
 export default function JustificationChatBubble({
   id,
-  className,
   justification,
   doShowControls,
   showStatusText,
@@ -56,7 +54,6 @@ export default function JustificationChatBubble({
   return (
     <ChatBubble
       {...rest}
-      className={className}
       isPositive={_isRootPositive}
       isNegative={_isRootNegative}
     >

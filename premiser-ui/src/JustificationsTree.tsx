@@ -19,9 +19,9 @@ import { combineIds, extendContextTrailItems } from "./viewModels";
 import { ComponentId, OnClickJustificationWritQuoteUrl } from "./types";
 import { useAppSelector } from "./hooks";
 import { selectIsWindowNarrow } from "./selectors";
+import FlipMoveWrapper from "./FlipMoveWrapper";
 
 import "./JustificationsTree.scss";
-import FlipMoveWrapper from "./FlipMoveWrapper";
 
 interface Props {
   id: ComponentId;

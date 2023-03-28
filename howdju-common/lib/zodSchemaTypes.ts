@@ -278,6 +278,10 @@ export type ToInput<T> = T extends CreateJustification
  * Allows branding an object containing fields missign from the branded schema.
  *
  * ZodBranded does not provide a `passthrough` approach. This helper works around that.
+ *
+ * TODO(339): use this in the places where we are doing `{...BlahRef.parse({id}), ...reset}`. E.g. orm.ts
+ * TODO(339): can we type `val` to be a Partial of the actual schema? Maybe pass the schema instead of
+ * the brand and use EntityName to lookup the brand: `brandedParse(Justification, {id, target, ...})`
  */
 export function brandedParse<
   S extends z.ZodTypeAny,
