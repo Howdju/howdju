@@ -84,8 +84,8 @@ export type JustificationOut = PersistedJustificationWithRootRef & {
 export type JustificationRootTargetOut = (PropositionOut | StatementOut) &
   TaggedEntityOut & {
     justifications: JustificationOut[];
-    // TODO make tags a view model and put the votes on them.
-    // TODO (At the very least deduplicate between TaggedEntityViewModel.tagVotes)
+    // TODO(112) make tags a view model and put the votes on them.
+    // (At the very least deduplicate between TaggedEntityViewModel.tagVotes)
     propositionTagVotes: PropositionTagVoteOut[];
   };
 

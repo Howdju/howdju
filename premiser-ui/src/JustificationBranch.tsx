@@ -350,10 +350,10 @@ function JustificationBranch({
           </Card>
         )}
         {map(justification.counterJustifications, (j) => {
-          // TODO figure out a better way to distinguish between a Ref and a Persisted entity.
+          // TODO(337) figure out a better way to distinguish between a Ref and a Persisted entity.
           if (!("polarity" in j)) {
             // The justification is just a Ref, not persisted
-            // TODO create a better placeholder
+            // TODO(338) create a better placeholder
             return <div>Placeholder justification {j.id}</div>;
           }
           const id = `counter-justification-${j.id}-branch`;
