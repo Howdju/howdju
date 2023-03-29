@@ -17,6 +17,7 @@ import {
   JustificationOut,
   makeCreateJustificationInputTargetingRoot,
   JustificationRef,
+  JustificationRootTargetOut,
 } from "howdju-common";
 import { actions, isVerified, isDisverified } from "howdju-client-common";
 
@@ -188,9 +189,10 @@ class JustificationsPage extends Component<Props> {
               rootTarget={rootTarget}
               editorId={JustificationsPage.rootTargetEditorId}
               suggestionsKey={this.suggestionsKey("root-target")}
-              showJustificationCount={false}
-              onShowNewJustificationDialog={this.showNewJustificationDialog}
               extraMenuItems={rootTargetExtraMenuItems}
+              contextPolarity={
+                contextTrailItems?.[contextTrailItems.length - 1]?.polarity
+              }
             />
           </div>
 
@@ -227,10 +229,12 @@ class JustificationsPage extends Component<Props> {
         </div>
 
         <JustificationsTree
+          id="justificationsPage"
           justifications={sortedJustifications}
           doShowControls={true}
           doShowJustifications={false}
           isUnCondensed={true}
+          showBasisUrls={true}
           showNewPositiveJustificationDialog={
             this.showNewPositiveJustificationDialog
           }
@@ -261,9 +265,15 @@ function describeRootTargetType(rootTargetType: JustificationRootTargetType) {
   return toLower(rootTargetType);
 }
 
-const sortJustifications = (
+function sortJustifications(
+  justifications?: JustificationOut[]
+): JustificationOut[];
+function sortJustifications(
   justifications?: (JustificationRef | JustificationOut)[]
-) => {
+): (JustificationRef | JustificationOut)[];
+function sortJustifications(
+  justifications?: (JustificationRef | JustificationOut)[]
+) {
   // Sort JustificationRefs to the bottom
   justifications = sortBy(justifications, (j) =>
     "score" in j ? j.score : Number.MAX_VALUE
@@ -275,12 +285,12 @@ const sortJustifications = (
     return 2;
   });
   forEach(justifications, (j) => {
-    if ("score" in j) {
+    if ("counterJustifications" in j) {
       j.counterJustifications = sortJustifications(j.counterJustifications);
     }
   });
   return justifications;
-};
+}
 
 const mapState = (state: RootState, ownProps: OwnProps) => {
   const { rootTargetType, rootTargetId } = rootTargetInfoFromProps(ownProps);
@@ -290,7 +300,11 @@ const mapState = (state: RootState, ownProps: OwnProps) => {
   }
 
   const schema = rootTargetNormalizationSchemasByType[rootTargetType];
-  const rootTarget = denormalize(rootTargetId, schema, state.entities);
+  const rootTarget: JustificationRootTargetOut = denormalize(
+    rootTargetId,
+    schema,
+    state.entities
+  );
 
   const sortedJustifications = rootTarget
     ? sortJustifications(rootTarget.justifications)

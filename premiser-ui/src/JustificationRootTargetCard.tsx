@@ -11,28 +11,34 @@ import {
   ListItem,
   MenuButton,
 } from "react-md";
+import { Link } from "react-router-dom";
+import { connect, ConnectedProps } from "react-redux";
 
 import {
   EntityId,
   isNegative,
   isPositive,
   JustificationBasisSourceTypes,
+  JustificationRootTargetOut,
   JustificationRootTargetType,
   JustificationRootTargetTypes,
   logger,
   Proposition,
+  RelationPolarity,
   toJson,
 } from "howdju-common";
+import {
+  isPropositionRootTarget,
+  isVerified,
+  makeCreateContentReportInput,
+} from "howdju-client-common";
 
-import hoverAware from "./hoverAware";
 import JustificationRootTargetViewer from "./JustificationRootTargetViewer";
 import PropositionTagger from "./PropositionTagger";
 import { EditorTypes } from "./reducers/editors";
 import paths from "./paths";
 import Tagger from "./Tagger";
 import { combineIds, combineSuggestionsKeys } from "./viewModels";
-import { Link } from "react-router-dom";
-import { connect, ConnectedProps } from "react-redux";
 import {
   api,
   apiLike,
@@ -40,17 +46,12 @@ import {
   mapActionCreatorGroupToDispatchToProps,
   ui,
 } from "./actions";
-
-import "./JustificationRootTargetCard.scss";
 import { divideMenuItems } from "./util";
 import { contentReportEditorId } from "./content-report/ReportContentDialog";
-import {
-  isPropositionRootTarget,
-  isVerified,
-  JustificationRootTargetViewModel,
-  makeCreateContentReportInput,
-} from "howdju-client-common";
 import { ComponentId, EditorId, MenuItems, SuggestionsKey } from "./types";
+import TreePolarity from "@/components/TreePolarity";
+
+import "./JustificationRootTargetCard.scss";
 
 const editorTypesByRootTargetType = {
   [JustificationRootTargetTypes.PROPOSITION]: EditorTypes.PROPOSITION,
@@ -61,9 +62,9 @@ interface OwnProps {
   editorId: EditorId;
   suggestionsKey: SuggestionsKey;
   rootTargetType: JustificationRootTargetType;
-  rootTarget: JustificationRootTargetViewModel;
+  rootTarget: JustificationRootTargetOut;
   extraMenuItems: MenuItems;
-  canHover: boolean;
+  contextPolarity?: RelationPolarity;
 }
 
 interface Props extends OwnProps, PropsFromRedux {}
@@ -82,7 +83,7 @@ class JustificationRootTargetCard extends React.Component<Props> {
       rootTargetType,
       rootTarget,
       extraMenuItems,
-      canHover,
+      contextPolarity,
     } = this.props;
     const { isOver } = this.state;
 
@@ -93,7 +94,7 @@ class JustificationRootTargetCard extends React.Component<Props> {
       rootTarget &&
       some(rootTarget.justifications, (j) => isVerified(j) && isNegative(j));
 
-    const doHideControls = !isOver && canHover;
+    const doHideControls = !isOver;
 
     const baseEditMenuItems = [
       <ListItem
@@ -140,57 +141,59 @@ class JustificationRootTargetCard extends React.Component<Props> {
     );
 
     return (
-      <div className="root-target-background">
-        <Card
-          className={cn("root-target-card", {
-            agreement: hasAgreement,
-            disagreement: hasDisagreement,
-          })}
-          onMouseOver={this.onMouseOver}
-          onMouseLeave={this.onMouseLeave}
-        >
-          <CardText className="root-target-card-contents">
-            <JustificationRootTargetViewer
-              id={combineIds(id, "proposition-entity-viewer")}
-              rootTargetType={rootTargetType}
-              rootTarget={rootTarget}
-              editorId={editorId}
-              suggestionsKey={combineSuggestionsKeys(
-                suggestionsKey,
-                "proposition"
-              )}
-              menu={menu}
-              showJustificationCount={false}
-            />
-            {rootTarget &&
-              rootTargetType !== JustificationRootTargetTypes.PROPOSITION && (
-                <Tagger
-                  targetType={rootTargetType}
-                  target={rootTarget}
-                  id={combineIds(id, "tagger")}
-                  suggestionsKey={combineSuggestionsKeys(
-                    suggestionsKey,
-                    "tagger"
-                  )}
-                />
-              )}
-            {rootTarget &&
-              rootTargetType === JustificationRootTargetTypes.PROPOSITION && (
-                <PropositionTagger
-                  propositionId={rootTarget.id}
-                  tags={rootTarget.tags}
-                  votes={rootTarget.propositionTagVotes}
-                  recommendedTags={rootTarget.recommendedTags}
-                  id={combineIds(id, "proposition-tagger")}
-                  suggestionsKey={combineSuggestionsKeys(
-                    suggestionsKey,
-                    "proposition-tagger"
-                  )}
-                />
-              )}
-          </CardText>
-        </Card>
-      </div>
+      <TreePolarity polarity={contextPolarity}>
+        <div className="root-target-background">
+          <Card
+            className={cn("root-target-card", {
+              agreement: hasAgreement,
+              disagreement: hasDisagreement,
+            })}
+            onMouseOver={this.onMouseOver}
+            onMouseLeave={this.onMouseLeave}
+          >
+            <CardText className="root-target-card-contents">
+              <JustificationRootTargetViewer
+                id={combineIds(id, "proposition-entity-viewer")}
+                rootTargetType={rootTargetType}
+                rootTarget={rootTarget}
+                editorId={editorId}
+                suggestionsKey={combineSuggestionsKeys(
+                  suggestionsKey,
+                  "proposition"
+                )}
+                menu={menu}
+                showJustificationCount={false}
+              />
+              {rootTarget &&
+                rootTargetType !== JustificationRootTargetTypes.PROPOSITION && (
+                  <Tagger
+                    targetType={rootTargetType}
+                    target={rootTarget}
+                    id={combineIds(id, "tagger")}
+                    suggestionsKey={combineSuggestionsKeys(
+                      suggestionsKey,
+                      "tagger"
+                    )}
+                  />
+                )}
+              {rootTarget &&
+                rootTargetType === JustificationRootTargetTypes.PROPOSITION && (
+                  <PropositionTagger
+                    propositionId={rootTarget.id}
+                    tags={rootTarget.tags}
+                    votes={rootTarget.propositionTagVotes}
+                    recommendedTags={rootTarget.recommendedTags}
+                    id={combineIds(id, "proposition-tagger")}
+                    suggestionsKey={combineSuggestionsKeys(
+                      suggestionsKey,
+                      "proposition-tagger"
+                    )}
+                  />
+                )}
+            </CardText>
+          </Card>
+        </div>
+      </TreePolarity>
     );
   }
 
@@ -212,7 +215,7 @@ class JustificationRootTargetCard extends React.Component<Props> {
 
   menuItemsForType(
     rootTargetType: JustificationRootTargetType,
-    rootTarget: JustificationRootTargetViewModel
+    rootTarget: JustificationRootTargetOut
   ): { entity: JSX.Element[]; edit: JSX.Element[] } {
     switch (rootTargetType) {
       case JustificationRootTargetTypes.PROPOSITION: {
@@ -319,4 +322,4 @@ const connector = connect(
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
-export default connector(hoverAware(JustificationRootTargetCard));
+export default connector(JustificationRootTargetCard);

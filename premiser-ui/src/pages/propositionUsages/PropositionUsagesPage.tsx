@@ -19,6 +19,7 @@ import { useLocation } from "react-router";
 import { useAppDispatch, useAppSelector } from "@/hooks";
 import { getQueryParam } from "@/util";
 import ErrorPage from "@/ErrorPage";
+import FlipMoveWrapper from "@/FlipMoveWrapper";
 
 const pageId = "proposition-usages-page";
 const fetchCount = 20;
@@ -160,12 +161,13 @@ function ValidPropositionUsagesPage({ propositionId }: ValidProps) {
         {map(justifications, (j) => {
           const id = `justification-card-${j.id}`;
           return (
-            <JustificationCard
-              className="md-cell md-cell--12"
-              id={id}
-              key={id}
-              justification={j}
-            />
+            <FlipMoveWrapper key={id}>
+              <JustificationCard
+                className="md-cell md-cell--12"
+                id={id}
+                justification={j}
+              />
+            </FlipMoveWrapper>
           );
         })}
       </FlipMove>

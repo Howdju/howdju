@@ -113,24 +113,6 @@ export function isTwitterUrl(url: string) {
   return domain.endsWith("twitter.com");
 }
 
-export function getComponentDisplayName(
-  component: React.FunctionComponent | React.Component
-) {
-  if ("displayName" in component) {
-    return component.displayName;
-  }
-  if ("name" in component) {
-    return component.name;
-  }
-  if ("displayName" in component.constructor) {
-    return (component.constructor as any).displayName;
-  }
-  if ("name" in component.constructor) {
-    return (component.constructor as any).name;
-  }
-  return "Component";
-}
-
 /** Inserts a <Divider> between the groups of components. */
 export function divideMenuItems(...componentGroups: JSX.Element[][]) {
   const dividedComponents = [];

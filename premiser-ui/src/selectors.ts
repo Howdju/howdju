@@ -17,7 +17,6 @@ export const selectLoggedErrors = (state: RootState) =>
   state.errors.loggedErrors;
 export const selectIsWindowNarrow = (state: RootState) =>
   state.app.isWindowNarrow;
-export const selectCanHover = (state: RootState) => state.app.canHover;
 export const selectAuthToken = (state: RootState) => state.auth.authToken;
 export const selectAuthTokenExpiration = (state: RootState) =>
   state.auth.authTokenExpiration;

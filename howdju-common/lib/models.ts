@@ -65,7 +65,7 @@ import {
   Url,
   VidSegment,
 } from "./zodSchemas";
-import { EntityOrRef, isRef, Persisted, ToInput } from "./zodSchemaTypes";
+import { EntityOrRef, isRef, ToInput } from "./zodSchemaTypes";
 
 export const isPositive = (j: Justification | JustificationOut) =>
   j.polarity === "POSITIVE";
@@ -601,9 +601,7 @@ function muxSourceExcerptEntity(
  * persisted, then it counters a ref to it.
  */
 export const makeCreateCounterJustificationInput = (
-  targetJustification:
-    | CreateJustificationInput
-    | (Persisted<Justification> & Pick<Justification, "rootPolarity">)
+  targetJustification: CreateJustificationInput | JustificationOut
 ): CreateCounterJustificationInput => ({
   rootPolarity: negateRootPolarity(targetJustification.rootPolarity),
   target: {
