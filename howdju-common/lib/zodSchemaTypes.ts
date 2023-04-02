@@ -56,30 +56,39 @@ import {
  */
 export type PersistedJustificationWithRootRef = Omit<
   Persisted<Justification>,
-  "rootTarget" | "target" | "basis"
-> & {
-  rootTarget: EntityRef<JustificationRootTarget>;
-  target:
+  "rootTarget" | "rootTargetType" | "target" | "basis"
+> &
+  (
     | {
-        type: "PROPOSITION";
-        entity: Persisted<Proposition>;
+        rootTargetType: "PROPOSITION";
+        rootTarget: EntityRef<Proposition>;
       }
     | {
-        type: "STATEMENT";
-        entity: Persisted<Statement>;
+        rootTargetType: "STATEMENT";
+        rootTarget: EntityRef<Statement>;
       }
-    | {
-        type: "JUSTIFICATION";
-        entity: PersistedJustificationWithRootRef;
-      };
-  basis:
-    | {
-        type: "PROPOSITION_COMPOUND";
-        entity: Persisted<PropositionCompound>;
-      }
-    | { type: "SOURCE_EXCERPT"; entity: Persisted<SourceExcerpt> }
-    | { type: "WRIT_QUOTE"; entity: Persisted<WritQuote> };
-};
+  ) & {
+    target:
+      | {
+          type: "PROPOSITION";
+          entity: Persisted<Proposition>;
+        }
+      | {
+          type: "STATEMENT";
+          entity: Persisted<Statement>;
+        }
+      | {
+          type: "JUSTIFICATION";
+          entity: PersistedJustificationWithRootRef;
+        };
+    basis:
+      | {
+          type: "PROPOSITION_COMPOUND";
+          entity: Persisted<PropositionCompound>;
+        }
+      | { type: "SOURCE_EXCERPT"; entity: Persisted<SourceExcerpt> }
+      | { type: "WRIT_QUOTE"; entity: Persisted<WritQuote> };
+  };
 
 /**
  * A persisted justification with materialized basis and ref targets.

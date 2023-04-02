@@ -1,12 +1,13 @@
 import React, { HTMLAttributes } from "react";
 
+import { JustificationView } from "howdju-common";
+
 import ListEntitiesWidget from "./ListEntitiesWidget";
 import { largeCellClasses } from "./CellList";
 import JustificationCard from "./JustificationCard";
 import t from "./texts";
 import { api } from "./actions";
 import { justificationsSchema } from "./normalizationSchemas";
-import { JustificationOut } from "howdju-common";
 import { ComponentId } from "./types";
 import FlipMoveWrapper from "./FlipMoveWrapper";
 
@@ -20,7 +21,7 @@ export default function RecentJustificationsWidget({
   widgetId,
   ...rest
 }: Props) {
-  const justificationToCard = (justification: JustificationOut) => {
+  const justificationToCard = (justification: JustificationView) => {
     const cardId = `${id}-justification-${justification.id}`;
     return (
       <FlipMoveWrapper key={cardId}>

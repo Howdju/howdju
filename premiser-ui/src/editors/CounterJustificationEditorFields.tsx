@@ -7,14 +7,17 @@ import {
   combineNames,
   combineSuggestionsKeys,
 } from "../viewModels";
-import { EntityEditorFieldsProps } from "./withEditor";
+import { EditorFieldsDispatch, EntityEditorFieldsProps } from "./withEditor";
 
 const propositionCompoundName = "basis.propositionCompound";
 
 interface Props
-  extends EntityEditorFieldsProps<CreateCounterJustificationInput> {
-  // Justifications are not editable, they can only be created.
-  justification?: CreateCounterJustificationInput;
+  extends EntityEditorFieldsProps<
+    "justification",
+    // Justifications are not editable, they can only be created.
+    CreateCounterJustificationInput
+  > {
+  editorDispatch: EditorFieldsDispatch;
 }
 
 export default function CounterJustificationEditorFields(props: Props) {

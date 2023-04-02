@@ -8,9 +8,8 @@ import { combineIds } from "@/viewModels";
 import { EntityEditorFieldsProps } from "@/editors/withEditor";
 import { makeErrorPropCreator } from "@/modelErrorMessages";
 
-interface Props extends EntityEditorFieldsProps<AccountSettings> {
-  accountSettings?: AccountSettings;
-}
+interface Props
+  extends EntityEditorFieldsProps<"accountSettings", AccountSettings> {}
 
 const paidContributionsDisclosureName = "paidContributionsDisclosure";
 

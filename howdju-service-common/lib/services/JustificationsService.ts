@@ -48,6 +48,7 @@ import {
   PropositionCompoundOut,
   WritQuoteOut,
   makeModelErrors,
+  JustificationView,
 } from "howdju-common";
 
 import { ApiConfig } from "../config";
@@ -78,6 +79,7 @@ import {
 } from "..";
 import {
   CreateJustificationDataIn,
+  JustifiationRootTargetData,
   ReadJustificationDataOut,
 } from "../daos/dataTypes";
 import { toIdString } from "../daos/daosUtil";
@@ -284,7 +286,7 @@ export class JustificationsService extends EntityService<
   async readJustificationForId(
     justificationId: EntityId,
     userId: EntityId
-  ): Promise<JustificationOut> {
+  ): Promise<JustificationView> {
     const justificationData =
       await this.justificationsDao.readJustificationForId(justificationId);
     if (!justificationData) {
@@ -715,12 +717,6 @@ export class JustificationsService extends EntityService<
   }
 }
 
-// TODO(107): replace with Justification.rootTarget?
-type RootTargetStuff = Pick<
-  CreateJustificationDataIn,
-  "rootTargetType" | "rootTarget"
->;
-
 function extractRootTargetStuff(
   target:
     | {
@@ -735,19 +731,21 @@ function extractRootTargetStuff(
         type: "JUSTIFICATION";
         entity: JustificationOut;
       }
-): RootTargetStuff {
+): JustifiationRootTargetData {
   switch (target.type) {
     case "PROPOSITION":
     case "STATEMENT":
+      // TODO(151) remove typecast after updating rootTarget to be a discriminated union field
       return {
         rootTargetType: target.type,
         rootTarget: target.entity,
-      };
+      } as JustifiationRootTargetData;
     case "JUSTIFICATION":
+      // TODO(151) remove typecast after updating rootTarget to be a discriminated union field
       return {
         rootTarget: target.entity.rootTarget,
         rootTargetType: target.entity.rootTargetType,
-      };
+      } as JustifiationRootTargetData;
     default:
       throw newExhaustedEnumError(target);
   }

@@ -5,7 +5,7 @@ import { Card, DialogContainer } from "react-md";
 import { isTruthy, schemaIds } from "howdju-common";
 
 import { editors } from "../actions";
-import { EditorTypes } from "../reducers/editors";
+import { defaultEditorState, EditorTypes } from "../reducers/editors";
 import ContentReportEditorFields from "./ContentReportEditorFields";
 import { combineIds } from "../viewModels";
 import { RootState } from "@/setupStore";
@@ -22,7 +22,8 @@ export default function ReportContentDialog() {
   const dispatch = useDispatch();
 
   const { editEntity } = useAppSelector(
-    (state: RootState) => state.editors[editorType]?.[editorId] ?? {}
+    (state: RootState) =>
+      state.editors[editorType]?.[editorId] ?? defaultEditorState()
   );
   const isEditing = isTruthy(editEntity);
 

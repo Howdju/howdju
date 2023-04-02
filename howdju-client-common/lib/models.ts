@@ -8,12 +8,14 @@ import {
   JustificationPolarity,
   newProgrammingError,
   CreateContentReportInput,
-  JustificationOut,
+  JustificationView,
   Proposition,
   Persisted,
   JustificationRootPolarity,
   Statement,
   JustificationRootTargetOut,
+  JustificationRef,
+  JustificationOut,
 } from "howdju-common";
 
 export function isPropositionRootTarget(
@@ -22,38 +24,42 @@ export function isPropositionRootTarget(
   return "text" in rootTarget;
 }
 
-const justificationViewModelDefaults = () => ({
-  counterJustifications: [],
+const justificationViewDefaults = () => ({
+  counterJustifications: [] as (JustificationRef | JustificationView)[],
 });
-type JustificationOutOverrides = SetOptional<
-  JustificationOut,
-  | keyof ReturnType<typeof justificationViewModelDefaults>
-  | keyof RootTargetStuff
+type JustificationViewOverrides = SetOptional<
+  JustificationView,
+  keyof ReturnType<typeof justificationViewDefaults> | keyof RootTargetStuff
 >;
-export function makeJustificationOutModel<O extends JustificationOutOverrides>(
-  props?: O
-): O & JustificationOut {
-  const init = justificationViewModelDefaults();
-  const merged = merge(init, props);
+export function makeJustificationViewModel<
+  O extends JustificationViewOverrides
+>(props?: O): JustificationView {
+  const init = justificationViewDefaults();
+  const clonedProps = cloneDeep(props);
+  const merged = merge(init, clonedProps);
   const rootTargetStuff = calcRootTargetStuff(merged);
-  return { ...cloneDeep(merged), ...rootTargetStuff };
+  return {
+    ...merged,
+    ...rootTargetStuff,
+  };
 }
 
 // TODO(107): replace with Justification.rootTarget?
-type RootTargetStuff =
+type RootTargetStuff = {
+  rootPolarity: JustificationRootPolarity;
+} & (
   | {
       rootTargetType: "PROPOSITION";
       rootTarget: Persisted<Proposition>;
-      rootPolarity: JustificationRootPolarity;
     }
   | {
       rootTargetType: "STATEMENT";
       rootTarget: Persisted<Statement>;
-      rootPolarity: JustificationRootPolarity;
-    };
+    }
+);
 
 function calcRootTargetStuff(
-  justification: JustificationOutOverrides
+  justification: JustificationViewOverrides
 ): RootTargetStuff {
   let targetEntity = justification.target?.entity;
   let targetType = justification.target?.type;
@@ -78,9 +84,9 @@ function calcRootTargetStuff(
   } as RootTargetStuff;
 }
 
-export const isVerified = (j: JustificationOut) =>
+export const isVerified = (j: Pick<JustificationOut, "vote">) =>
   j.vote && j.vote.polarity === "POSITIVE";
-export const isDisverified = (j: JustificationOut) =>
+export const isDisverified = (j: Pick<JustificationOut, "vote">) =>
   j.vote && j.vote.polarity === "NEGATIVE";
 
 export const makeCreateContentReportInput = (

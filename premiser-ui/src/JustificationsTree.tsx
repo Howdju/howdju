@@ -10,6 +10,7 @@ import {
   ContextTrailItem,
   JustificationOut,
   JustificationPolarities,
+  JustificationView,
 } from "howdju-common";
 
 import config from "./config";
@@ -56,7 +57,7 @@ export default function JustificationsTree({
   showNewPositiveJustificationDialog,
   showNewNegativeJustificationDialog,
 }: Props) {
-  function toBranch(j: JustificationOut) {
+  function toBranch(j: JustificationView) {
     const treeId = combineIds(id, "justification-tree", j.id);
     const nextContextTrailItems = extendContextTrailItems(
       contextTrailItems,

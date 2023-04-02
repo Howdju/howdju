@@ -9,9 +9,10 @@ import ErrorMessages from "@/ErrorMessages";
 import { combineNames } from "@/viewModels";
 
 interface Props
-  extends EntityEditorFieldsProps<CreateRegistrationRequestInput> {
-  registrationRequest?: CreateRegistrationRequestInput;
-}
+  extends EntityEditorFieldsProps<
+    "registrationRequest",
+    CreateRegistrationRequestInput
+  > {}
 
 export default function RegistrationRequestFields({
   registrationRequest,

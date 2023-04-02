@@ -62,7 +62,16 @@ export type EditorFieldsActionCreator = (
   editorId: string
 ) => AnyAction | AnyAction[];
 /** Editor fields pass a lambda to this method that returns actions to dispatch to the edit model. */
-type EditorFieldsDispatch = (actionCreator: EditorFieldsActionCreator) => void;
+export type EditorFieldsDispatch = (
+  actionCreator: EditorFieldsActionCreator
+) => void;
+
+/**
+ * An editorDispatch for fields that don't really need it.
+ *
+ * TODO(341) remove this.
+ */
+export function noopEditorDispatch(_actionCreator: EditorFieldsActionCreator) {}
 
 /**
  * The props of this HOC's components.
@@ -87,7 +96,7 @@ export type WithEditorProps = {
  *
  * @typeparam T the validated model type (aka schema output.)
  */
-export type EntityEditorFieldsProps<T> = {
+export type EntityEditorFieldsProps<EntityProp extends string, Schema> = {
   /** This string will be prepended to this editor's controls' ids, with an intervening "." */
   id: ComponentId;
   /** If present, this string will be prepended to this editor's controls' names, with an intervening "." */
@@ -97,11 +106,28 @@ export type EntityEditorFieldsProps<T> = {
   onBlur?: OnBlurCallback;
   onPropertyChange: OnPropertyChangeCallback;
   onSubmit?: OnEventCallback;
+  /**
+   * To dispatch actions to update the edit entity.
+   *
+   * If the editor fields require dispatching actions to the editEntity, they can accept this
+   * callback to do so. Editor type and ID will be passed to the action creator passed to editorDispatch.
+   *
+   * Editor fields that don't need this currently must accept it because I havent' figured how to
+   * type it so that they can elect not to accept it. Maybe we could pass an editor config object
+   * with a field noEditorDispatch that we could both type off of and also look at to optionally
+   * omit editorDispatch from the props we pass to the fields.
+   *
+   * TODO(341) allow EditorFields components to omit editorDispatch.
+   */
   editorDispatch: EditorFieldsDispatch;
-  errors?: ModelErrors<T>;
-  blurredFields?: BlurredFields<T>;
-  dirtyFields?: DirtyFields<T>;
+  errors?: ModelErrors<Schema>;
+  blurredFields?: BlurredFields<Schema>;
+  dirtyFields?: DirtyFields<Schema>;
   wasSubmitAttempted: boolean;
+} & EntityPropProps<EntityProp, Schema>;
+
+type EntityPropProps<EntityProp extends string, EntityType> = {
+  [key in EntityProp]?: EntityType;
 };
 
 /**
@@ -117,28 +143,29 @@ export type EntityEditorFieldsProps<T> = {
  *   When provided, the editor supports pre-request validation (prevents submission if the request
  *   would be invalid.)
  *   TODO(273): make commit config required
+ * @typeparam EntityProp the name of the property containing the edit entity. It must have SchemaInput type.
  * @typeparam Props the type of props that EntityEditorFields requires.
  * @typeparam SchemaInput the type of model the editor edits.
  * @typeparam SchemaOutput the output of the schema validation, in case it has refinements.
  * @typeparam ApiModel the commit config's request model type (Create or Edit)
- * @typeparam RequestPayload the commit config's request action creator payload type
- * @typeparam ResponsePayload the commit config's response action creator payload type
- * @typeparam Prepare the commit config's prepare action type.
  */
 export default function withEditor<
-  Props extends EntityEditorFieldsProps<SchemaOutput>,
+  EntityProp extends string,
+  FieldsProps extends EntityEditorFieldsProps<EntityProp, SchemaInput>,
   Route extends ServiceRoute,
   SchemaInput extends EditorEntity = any,
   SchemaOutput = SchemaInput,
   ApiModel = any
 >(
   editorType: EditorType,
-  EntityEditorFields: React.FC<Props>,
-  entityPropName: string,
+  EntityEditorFields: React.FC<FieldsProps>,
+  entityPropName: EntityProp,
   schemaOrId: z.ZodType<SchemaOutput, z.ZodTypeDef, SchemaInput> | SchemaId,
   commitConfig?: EditorCommitCrudActionConfig<SchemaInput, ApiModel, Route>
 ): React.FC<
-  WithEditorProps & Omit<Props, keyof EntityEditorFieldsProps<SchemaOutput>>
+  WithEditorProps &
+    Omit<FieldsProps, keyof EntityEditorFieldsProps<EntityProp, SchemaOutput>> &
+    EntityPropProps<EntityProp, SchemaInput>
 > {
   return function EntityEditor(props: WithEditorProps) {
     const {
@@ -250,7 +277,7 @@ export default function withEditor<
       wasSubmitAttempted,
       onKeyDown,
       // There appears to be no way around this typecast https://stackoverflow.com/questions/74072249/
-    } as unknown as Props;
+    } as unknown as FieldsProps;
 
     return (
       <form onSubmit={onSubmit} className={className}>

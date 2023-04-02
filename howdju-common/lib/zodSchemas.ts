@@ -40,6 +40,11 @@ export const Proposition = Entity.extend({
 }).strict();
 export type Proposition = z.infer<typeof Proposition>;
 
+export const UpdatePropositionInput = Proposition;
+export type UpdatePropositionInput = z.infer<typeof UpdatePropositionInput>;
+export const UpdateProposition = Proposition;
+export type UpdateProposition = z.infer<typeof UpdateProposition>;
+
 export const Tag = Entity.extend({
   name: z.string(),
 });
@@ -351,6 +356,13 @@ export type CreatePropositionCompoundAtomInput = z.infer<
   typeof CreatePropositionCompoundAtomInput
 >;
 
+export const UpdatePropositionCompoundAtomInput = z.object({
+  entity: UpdatePropositionInput,
+});
+export type UpdatePropositionCompoundAtomInput = z.infer<
+  typeof UpdatePropositionCompoundAtomInput
+>;
+
 export const CreatePropositionCompoundInput = Entity.extend({
   atoms: z.array(CreatePropositionCompoundAtomInput).min(1),
 });
@@ -365,16 +377,32 @@ export type CreatePropositionCompoundAtom = z.infer<
   typeof CreatePropositionCompoundAtom
 >;
 
+export const UpdatePropositionCompoundAtom = z.object({
+  entity: UpdateProposition,
+});
+export type UpdatePropositionCompoundAtom = z.infer<
+  typeof UpdatePropositionCompoundAtom
+>;
+
 export const CreatePropositionCompound = Entity.extend({
   atoms: z.array(CreatePropositionCompoundAtom).min(1),
 });
 export type CreatePropositionCompound = z.infer<
   typeof CreatePropositionCompound
 >;
-export const UpdatePropositionCompoundInput = PropositionCompound;
-export type UpdatePropositionCompoundInput = PropositionCompound;
-export const UpdatePropositionCompound = PropositionCompound;
-export type UpdatePropositionCompound = PropositionCompound;
+
+export const UpdatePropositionCompoundInput = Entity.extend({
+  atoms: z.array(UpdatePropositionCompoundAtomInput).min(1),
+});
+export type UpdatePropositionCompoundInput = z.infer<
+  typeof UpdatePropositionCompoundInput
+>;
+export const UpdatePropositionCompound = Entity.extend({
+  atoms: z.array(UpdatePropositionCompoundAtom).min(1),
+});
+export type UpdatePropositionCompound = z.infer<
+  typeof UpdatePropositionCompound
+>;
 
 export const JustificationPolarity = z.enum(["POSITIVE", "NEGATIVE"]);
 export type JustificationPolarity = z.infer<typeof JustificationPolarity>;
@@ -611,11 +639,6 @@ export type ContentReportRef = z.infer<typeof ContentReportRef>;
 /*
  * Entities lacking alternatives don't require special Create/Update models
  */
-
-export const UpdatePropositionInput = Proposition;
-export type UpdatePropositionInput = z.infer<typeof UpdatePropositionInput>;
-export const UpdateProposition = Proposition;
-export type UpdateProposition = z.infer<typeof UpdateProposition>;
 
 export const CreateWritQuoteInput = Entity.extend({
   quoteText: z.string(),

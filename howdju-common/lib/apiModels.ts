@@ -6,6 +6,7 @@
  */
 
 import { ApiErrorCode } from "./codes";
+import { JustificationView } from "./viewModels";
 import { ModelErrors } from "./zodError";
 import {
   Entity,
@@ -66,7 +67,9 @@ export type SourceExcerptOut = Persisted<SourceExcerpt> &
     | { type: "VID_SEGMENT"; entity: VidSegmentOut }
   );
 
-export type StatementOut = Persisted<Statement>;
+export interface StatementOut extends Persisted<Statement> {
+  justifications?: JustificationOut[];
+}
 export type SentenceOut = PropositionOut | StatementOut;
 
 export type CreatorBlurb = EntityRef<User> & Pick<Persisted<User>, "longName">;
@@ -74,20 +77,14 @@ export type CreatorBlurb = EntityRef<User> & Pick<Persisted<User>, "longName">;
 export type JustificationOut = PersistedJustificationWithRootRef & {
   creator?: EntityRef<User>;
   /** Justifications countering this justification. */
-  counterJustifications?: (JustificationRef | JustificationOut)[];
+  counterJustifications?: (JustificationRef | JustificationView)[];
   /** The sorting score for the current user */
   score?: number;
   /** The current user's vote on this justification. */
   vote?: JustificationVote;
 };
 
-export type JustificationRootTargetOut = (PropositionOut | StatementOut) &
-  TaggedEntityOut & {
-    justifications: JustificationOut[];
-    // TODO(112) make tags a view model and put the votes on them.
-    // (At the very least deduplicate between TaggedEntityViewModel.tagVotes)
-    propositionTagVotes: PropositionTagVoteOut[];
-  };
+export type JustificationRootTargetOut = PropositionOut | StatementOut;
 
 export type PropositionCompoundOut = Persisted<PropositionCompound>;
 

@@ -1,16 +1,18 @@
 import React, { MouseEvent, useEffect } from "react";
+import { useLocation } from "react-router";
 import FlipMove from "react-flip-move";
 import { Button, CircularProgress } from "react-md";
 import isEmpty from "lodash/isEmpty";
 import map from "lodash/map";
 import { denormalize } from "normalizr";
 
+import { JustificationView } from "howdju-common";
+
 import { api } from "../../actions";
 import JustificationCard from "../../JustificationCard";
 import { justificationsSchema } from "../../normalizationSchemas";
 import config from "../../config";
 import { makeExtensionHighlightOnClickWritQuoteUrlCallback } from "../../extensionCallbacks";
-import { useLocation } from "react-router";
 import { useAppDispatch, useAppSelector } from "@/hooks";
 import { extractFilters, extractIncludeUrls } from "./queryStringExtraction";
 import FlipMoveWrapper from "@/FlipMoveWrapper";
@@ -34,7 +36,7 @@ export default function JustificationsSearchPage() {
   const pageState = useAppSelector((state) => state.justificationsSearchPage);
   const entities = useAppSelector((state) => state.entities);
   const { isFetching, continuationToken } = pageState;
-  const justifications = denormalize(
+  const justifications: JustificationView[] = denormalize(
     pageState.justifications,
     justificationsSchema,
     entities

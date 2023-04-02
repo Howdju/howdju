@@ -5,14 +5,13 @@ import { ContextTrailItem, PropositionOut } from "howdju-common";
 import EntityViewer from "./EntityViewer";
 import EditableProposition from "./EditableProposition";
 import paths from "./paths";
-import { ComponentId, EditorId, SuggestionsKey } from "./types";
+import { ComponentId, EditorId } from "./types";
 
 interface Props {
   id: ComponentId;
   className?: string;
   proposition: PropositionOut;
   editorId: EditorId;
-  suggestionsKey: SuggestionsKey;
   menu?: ReactNode;
   showStatusText?: boolean;
   contextTrailItems?: ContextTrailItem[];
@@ -24,7 +23,6 @@ export default function PropositionEntityViewer({
   className,
   proposition,
   editorId,
-  suggestionsKey,
   menu,
   showStatusText = true,
   contextTrailItems,
@@ -41,7 +39,6 @@ export default function PropositionEntityViewer({
           id={id}
           proposition={proposition}
           editorId={editorId}
-          suggestionsKey={suggestionsKey}
           showStatusText={showStatusText}
           contextTrailItems={contextTrailItems}
           showJustificationCount={showJustificationCount}

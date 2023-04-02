@@ -4,10 +4,10 @@ import take from "lodash/take";
 import cn from "classnames";
 
 import {
-  ContextTrailItem,
-  JustificationOut,
   PropositionOut,
   StatementOut,
+  ContextTrailItem,
+  JustificationView,
 } from "howdju-common";
 
 import PropositionCard from "@/PropositionCard";
@@ -90,7 +90,7 @@ export default function ContextTrail({
   }
 
   function justificationToCard(
-    justification: JustificationOut,
+    justification: JustificationView,
     trailItems: ContextTrailItem[]
   ) {
     const cardId = `${id}-justification-${justification.id}`;

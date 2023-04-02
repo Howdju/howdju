@@ -1,28 +1,29 @@
 import React from "react";
+import { AnyAction } from "@reduxjs/toolkit";
 import { Button, FontIcon } from "react-md";
-import map from "lodash/map";
 import get from "lodash/get";
+
+import {
+  CreatePropositionCompoundAtomInput,
+  UpdatePropositionCompoundInput,
+  makeCreatePropositionCompoundAtomInput,
+  CreatePropositionCompoundInput,
+} from "howdju-common";
 
 import { makeErrorPropCreator } from "./modelErrorMessages";
 import ErrorMessages from "./ErrorMessages";
 import SingleLineTextField from "./SingleLineTextField";
 import PropositionTextAutocomplete from "./PropositionTextAutocomplete";
 import { combineNames, combineIds, combineSuggestionsKeys } from "./viewModels";
-import {
-  CreatePropositionCompoundAtomInput,
-  CreatePropositionCompoundInput,
-  UpdatePropositionCompoundInput,
-  makeCreatePropositionCompoundAtomInput,
-} from "howdju-common";
 import { EntityEditorFieldsProps } from "./editors/withEditor";
 import { EditorType } from "./reducers/editors";
 import { editors } from "./actions";
-import { AnyAction } from "@reduxjs/toolkit";
 
 interface Props
-  extends EntityEditorFieldsProps<UpdatePropositionCompoundInput> {
-  propositionCompound?: CreatePropositionCompoundInput;
-}
+  extends EntityEditorFieldsProps<
+    "propositionCompound",
+    CreatePropositionCompoundInput | UpdatePropositionCompoundInput
+  > {}
 
 export default function PropositionCompoundEditorFields(props: Props) {
   const {
@@ -90,7 +91,7 @@ export default function PropositionCompoundEditorFields(props: Props) {
 
   return (
     <div>
-      {map(atoms, (atom, index, atoms) => {
+      {atoms?.map((atom, index, atoms) => {
         const atomPropositionTextName = `atoms[${index}].entity.text`;
         const value = get(propositionCompound, atomPropositionTextName, "");
         const leftIcon = <FontIcon>short_text</FontIcon>;

@@ -8,8 +8,7 @@ import {
   CreateJustification,
   CreateProposition,
   httpStatusCodes,
-  Justification,
-  Persisted,
+  JustificationOut,
 } from "howdju-common";
 
 import {
@@ -160,7 +159,7 @@ describe("CreatePropositionPage", () => {
         basis: { entity: { id: "910" } },
         rootTargetType: "PROPOSITION",
         rootTarget: { id: "9483" },
-      }) as Persisted<Justification>,
+      }) as JustificationOut,
     };
     let requestBody;
     server.use(

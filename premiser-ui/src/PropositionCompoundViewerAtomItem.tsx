@@ -3,7 +3,7 @@ import cn from "classnames";
 
 import { ContextTrailItem, PropositionCompoundAtomOut } from "howdju-common";
 
-import { combineIds, combineSuggestionsKeys } from "./viewModels";
+import { combineIds } from "./viewModels";
 import PropositionEntityViewer from "./PropositionEntityViewer";
 
 import "./PropositionCompoundViewerAtomItem.scss";
@@ -37,7 +37,6 @@ export default function PropositionCompoundViewerAtomItem({
         id={combineIds(id, "proposition")}
         proposition={atom.entity}
         editorId={combineIds(id, "proposition")}
-        suggestionsKey={combineSuggestionsKeys(id, "proposition")}
         showStatusText={showStatusText}
         contextTrailItems={contextTrailItems}
         showJustificationCount={showJustificationCount}

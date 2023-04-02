@@ -4,6 +4,8 @@ import isEmpty from "lodash/isEmpty";
 import map from "lodash/map";
 import { denormalize } from "normalizr";
 
+import { JustificationView } from "howdju-common";
+
 import { api } from "../../actions";
 import CellList from "../../CellList";
 import {
@@ -69,7 +71,7 @@ function ValidPropositionUsagesPage({ propositionId }: ValidProps) {
     statementsSchema,
     entities
   );
-  const justifications = denormalize(
+  const justifications: JustificationView[] = denormalize(
     pageState.justifications,
     justificationsSchema,
     entities

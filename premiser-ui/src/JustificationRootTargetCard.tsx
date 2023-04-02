@@ -24,8 +24,8 @@ import {
   JustificationRootTargetTypes,
   logger,
   Proposition,
-  RelationPolarity,
   toJson,
+  ContextTrailItem,
 } from "howdju-common";
 import {
   isPropositionRootTarget,
@@ -33,7 +33,9 @@ import {
   makeCreateContentReportInput,
 } from "howdju-client-common";
 
-import JustificationRootTargetViewer from "./JustificationRootTargetViewer";
+import JustificationRootTargetViewer, {
+  RootTargetProps,
+} from "./JustificationRootTargetViewer";
 import PropositionTagger from "./PropositionTagger";
 import { EditorTypes } from "./reducers/editors";
 import paths from "./paths";
@@ -57,17 +59,16 @@ const editorTypesByRootTargetType = {
   [JustificationRootTargetTypes.PROPOSITION]: EditorTypes.PROPOSITION,
 };
 
-interface OwnProps {
+type OwnProps = {
   id: ComponentId;
   editorId: EditorId;
   suggestionsKey: SuggestionsKey;
-  rootTargetType: JustificationRootTargetType;
-  rootTarget: JustificationRootTargetOut;
   extraMenuItems: MenuItems;
-  contextPolarity?: RelationPolarity;
-}
+  /** The context trail item relating to this root target. */
+  contextTrailItem?: ContextTrailItem;
+} & RootTargetProps;
 
-interface Props extends OwnProps, PropsFromRedux {}
+type Props = OwnProps & PropsFromRedux;
 
 /** A card displaying anything that can be justified. */
 class JustificationRootTargetCard extends React.Component<Props> {
@@ -83,7 +84,7 @@ class JustificationRootTargetCard extends React.Component<Props> {
       rootTargetType,
       rootTarget,
       extraMenuItems,
-      contextPolarity,
+      contextTrailItem,
     } = this.props;
     const { isOver } = this.state;
 
@@ -140,8 +141,13 @@ class JustificationRootTargetCard extends React.Component<Props> {
       />
     );
 
+    const rootTargetProps = {
+      rootTargetType,
+      rootTarget,
+    } as RootTargetProps;
+
     return (
-      <TreePolarity polarity={contextPolarity}>
+      <TreePolarity polarity={contextTrailItem?.polarity}>
         <div className="root-target-background">
           <Card
             className={cn("root-target-card", {
@@ -154,8 +160,7 @@ class JustificationRootTargetCard extends React.Component<Props> {
             <CardText className="root-target-card-contents">
               <JustificationRootTargetViewer
                 id={combineIds(id, "proposition-entity-viewer")}
-                rootTargetType={rootTargetType}
-                rootTarget={rootTarget}
+                {...rootTargetProps}
                 editorId={editorId}
                 suggestionsKey={combineSuggestionsKeys(
                   suggestionsKey,
@@ -163,6 +168,7 @@ class JustificationRootTargetCard extends React.Component<Props> {
                 )}
                 menu={menu}
                 showJustificationCount={false}
+                contextTrailItem={contextTrailItem}
               />
               {rootTarget &&
                 rootTargetType !== JustificationRootTargetTypes.PROPOSITION && (
@@ -181,7 +187,7 @@ class JustificationRootTargetCard extends React.Component<Props> {
                   <PropositionTagger
                     propositionId={rootTarget.id}
                     tags={rootTarget.tags}
-                    votes={rootTarget.propositionTagVotes}
+                    votes={rootTarget.propositionTagVotes || []}
                     recommendedTags={rootTarget.recommendedTags}
                     id={combineIds(id, "proposition-tagger")}
                     suggestionsKey={combineSuggestionsKeys(

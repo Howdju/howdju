@@ -20,6 +20,7 @@ export * from "./services";
 export * from "./typeUtils";
 export * from "./urls";
 export * from "./validation";
+export * from "./viewModels";
 export * from "./zodError";
 export * from "./zodRefinements";
 export * from "./zodSchemas";

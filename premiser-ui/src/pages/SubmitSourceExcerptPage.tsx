@@ -6,7 +6,7 @@ import { useLocation } from "react-router";
 import { makeUrl, CreateWritQuoteInput } from "howdju-common";
 
 import { editors } from "@/actions";
-import WritQuoteEditor from "@/editors/WritQuoteEditor";
+import CreateWritQuoteEditor from "@/editors/CreateWritQuoteEditor";
 import get from "lodash/get";
 import { EditorTypes } from "@/reducers/editors";
 import { RootState } from "@/setupStore";
@@ -53,7 +53,7 @@ const SubmitSourcExcerptPage = () => {
       </HowdjuHelmet>
       <h1 className="md-cell--12">Create WritQuote</h1>
       <ErrorMessages errors={errors} />
-      <WritQuoteEditor
+      <CreateWritQuoteEditor
         id={id}
         editorId={editorId}
         writQuote={writQuote}

@@ -3,7 +3,7 @@ import { Button, Card, CardActions, CardText, CardTitle } from "react-md";
 
 import Helmet from "../../Helmet";
 import EditableAccountSettings from "./EditableAccountSettings";
-import { EditorTypes } from "../../reducers/editors";
+import { defaultEditorState, EditorTypes } from "../../reducers/editors";
 import { combineIds } from "../../viewModels";
 import { api, editors } from "../../actions";
 import t, { EDIT_ENTITY_BUTTON_LABEL } from "../../texts";
@@ -26,7 +26,9 @@ export default function AccountSettingsPage() {
     (state) => state.accountSettingsPage
   );
   const { editEntity } = useAppSelector(
-    (state) => state.editors.ACCOUNT_SETTINGS?.[accountSettingsEditorId] || {}
+    (state) =>
+      state.editors.ACCOUNT_SETTINGS?.[accountSettingsEditorId] ||
+      defaultEditorState()
   );
   const isEditing = isTruthy(editEntity);
 

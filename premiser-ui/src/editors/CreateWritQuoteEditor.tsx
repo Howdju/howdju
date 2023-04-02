@@ -1,16 +1,16 @@
-import { UpdateWritQuoteInput } from "howdju-common";
+import { CreateWritQuoteInput } from "howdju-common";
 
 import WritQuoteEditorFields from "../WritQuoteEditorFields";
 import withEditor from "@/editors/withEditor";
 import { EditorTypes } from "@/reducers/editors";
 
 /** A WritQuote editor. */
-const WritQuoteEditor = withEditor(
+const CreateWritQuoteEditor = withEditor(
   EditorTypes.WRIT_QUOTE,
   WritQuoteEditorFields,
   "writQuote",
-  UpdateWritQuoteInput
+  CreateWritQuoteInput
   // TODO(273): add commit config
 );
 
-export default WritQuoteEditor;
+export default CreateWritQuoteEditor;

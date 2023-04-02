@@ -1,13 +1,14 @@
 import React from "react";
 import map from "lodash/map";
 
-import PropositionCompoundViewerAtomItem from "./PropositionCompoundViewerAtomItem";
-import { combineIds } from "./viewModels";
 import {
-  ContextTrailItem,
   PropositionCompoundOut,
   PropositionOut,
+  ContextTrailItem,
 } from "howdju-common";
+
+import PropositionCompoundViewerAtomItem from "./PropositionCompoundViewerAtomItem";
+import { combineIds } from "./viewModels";
 import { ComponentId } from "./types";
 
 interface Props {

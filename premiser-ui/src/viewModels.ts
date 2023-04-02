@@ -27,14 +27,13 @@ import {
   CreatePropositionInput,
   SentenceTypes,
   CreateStatementInput,
-  ConnectingEntity,
-  ConnectingEntityType,
-  ContextTrailItem,
-  JustificationRootTargetOut,
   PropositionOut,
   SentenceOut,
   StatementOut,
-  RelationPolarity,
+  ConnectingEntity,
+  ConnectingEntityType,
+  ContextTrailItem,
+  nextContextTrailItem,
 } from "howdju-common";
 
 import * as characters from "./characters";
@@ -216,11 +215,23 @@ export interface ChipInfo {
 export const rootTargetNormalizationSchemasByType = {
   PROPOSITION: propositionSchema,
   STATEMENT: statementSchema,
-};
+} as const;
 
 export function describeRootTarget(
+  rootTargetType: "PROPOSITION",
+  rootTarget: PropositionOut
+): string;
+export function describeRootTarget(
+  rootTargetType: "STATEMENT",
+  rootTarget: StatementOut
+): string;
+export function describeRootTarget(
   rootTargetType: JustificationRootTargetType,
-  rootTarget: JustificationRootTargetOut
+  rootTarget: PropositionOut | StatementOut
+): string;
+export function describeRootTarget(
+  rootTargetType: JustificationRootTargetType,
+  rootTarget: PropositionOut | StatementOut
 ) {
   // TODO(107) make JustificationRootTarget a discriminated union type and remove typecasts
   switch (rootTargetType) {
@@ -259,52 +270,4 @@ export function extendContextTrailItems(
     contextTrailItems[contextTrailItems.length - 1]?.polarity
   );
   return concat(contextTrailItems, [trailItem]);
-}
-
-export function nextContextTrailItem(
-  connectingEntityType: ConnectingEntityType,
-  connectingEntity: ConnectingEntity,
-  prevItemPolarity: RelationPolarity
-): ContextTrailItem {
-  const polarity = contextTrailItemPolarity(
-    connectingEntityType,
-    connectingEntity,
-    prevItemPolarity
-  );
-  return {
-    connectingEntityType,
-    connectingEntityId: connectingEntity.id,
-    connectingEntity,
-    polarity,
-  };
-}
-
-function contextTrailItemPolarity(
-  connectingEntityType: ConnectingEntityType,
-  connectingEntity: ConnectingEntity,
-  prevItemPolarity: RelationPolarity
-) {
-  switch (connectingEntityType) {
-    case "JUSTIFICATION": {
-      switch (connectingEntity.target.type) {
-        case "PROPOSITION":
-        case "STATEMENT":
-          return connectingEntity.polarity;
-        case "JUSTIFICATION":
-          // Counter justifications should have the opposite polarity as their target
-          return negateRelationPolarity(prevItemPolarity);
-      }
-    }
-  }
-}
-
-function negateRelationPolarity(polarity: RelationPolarity) {
-  switch (polarity) {
-    case "POSITIVE":
-      return "NEGATIVE";
-    case "NEGATIVE":
-      return "POSITIVE";
-    case "NEUTRAL":
-      return "NEUTRAL";
-  }
 }

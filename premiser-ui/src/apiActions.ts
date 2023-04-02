@@ -79,6 +79,7 @@ import { str } from "./actionHelpers";
 import { UiErrorType } from "./uiErrors";
 import { SuggestionsKey, WidgetId } from "./types";
 
+// TODO(113) type response.error as an Error when we remove redux-actions conventions
 export type ApiActionCreator<
   Args extends any[],
   Route extends ServiceRoute,
@@ -91,7 +92,7 @@ export type ApiActionCreator<
     any[],
     ResponsePayload,
     string,
-    Error,
+    boolean,
     ApiResponseActionMeta<Payload["normalizationSchema"], Meta>
   >;
 };
@@ -336,7 +337,7 @@ function apiActionCreator<
     unknown[],
     Response,
     string,
-    Error,
+    boolean,
     ApiResponseActionMeta<NormalizationSchema, Meta>
   >;
   return actionCreator;

@@ -23,7 +23,10 @@ import { combineNames, combineIds, combineSuggestionsKeys } from "@/viewModels";
 
 import { OnKeyDownCallback } from "@/types";
 import { toOnChangeCallback } from "@/util";
-import { EntityEditorFieldsProps } from "@/editors/withEditor";
+import {
+  EditorFieldsDispatch,
+  EntityEditorFieldsProps,
+} from "@/editors/withEditor";
 import { makeErrorPropCreator } from "@/modelErrorMessages";
 import { logger } from "@/logger";
 
@@ -70,11 +73,13 @@ const basisTypeControls = [
     ),
   },
 ];
-interface Props extends EntityEditorFieldsProps<CreateJustificationInput> {
+interface Props
+  extends EntityEditorFieldsProps<"justification", CreateJustificationInput> {
   // Justifications are not editable, they can only be created.
   justification?: CreateJustificationInput;
   doShowTypeSelection?: boolean;
   onKeyDown?: OnKeyDownCallback;
+  editorDispatch: EditorFieldsDispatch;
 }
 export default function JustificationEditorFields(props: Props) {
   const {
@@ -125,10 +130,9 @@ export default function JustificationEditorFields(props: Props) {
     !isRef(basisPropositionCompound) && (
       <PropositionCompoundEditorFields
         {...commonFieldsProps}
-        propositionCompound={basisPropositionCompound}
         id={combineIds(id, propositionCompoundName)}
+        propositionCompound={basisPropositionCompound}
         key={propositionCompoundName}
-        name={combineNames(name, propositionCompoundName)}
         suggestionsKey={combineSuggestionsKeys(
           suggestionsKey,
           propositionCompoundName

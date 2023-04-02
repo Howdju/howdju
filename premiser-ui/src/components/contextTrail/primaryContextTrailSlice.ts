@@ -12,8 +12,10 @@ export const primaryContextTrailSlice = createSlice({
   extraReducers(builder) {
     // If we add support for multiple context trails on the page we'll need to update this.
     builder.addCase(api.fetchContextTrail.response, (state, action) => {
-      state.isInvalidContextTrail = isApiResponseError(action.error)
-        ? action.error.httpStatusCode === httpStatusCodes.CONFLICT
+      // TODO(113) remove typecast after removing redux-actions style reducers
+      const error = action.payload as unknown as Error;
+      state.isInvalidContextTrail = isApiResponseError(error)
+        ? error.httpStatusCode === httpStatusCodes.CONFLICT
         : false;
     });
   },

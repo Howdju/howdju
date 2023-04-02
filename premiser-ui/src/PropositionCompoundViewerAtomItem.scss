@@ -12,7 +12,7 @@ li.proposition-atom {
   .entity-viewer {
     width: 100%;
   }
-  .highlighted {
+  &.highlighted, &.highlighted:last-child {
     border: 2px solid $peter-river;
   }
 }

@@ -19,7 +19,8 @@ import { makeErrorPropCreator } from "./modelErrorMessages";
 import { combineNames } from "./viewModels";
 import { logger } from "./logger";
 
-interface Props extends EntityEditorFieldsProps<CreateSourceExcerptInput> {
+interface Props
+  extends EntityEditorFieldsProps<"sourceExcerpt", CreateSourceExcerptInput> {
   sourceExcerpt: CreateSourceExcerptInput;
   onKeyDown: OnKeyDownCallback;
 }
