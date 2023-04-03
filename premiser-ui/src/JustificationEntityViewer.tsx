@@ -7,7 +7,7 @@ import {
   ContextTrailItem,
   isCounter,
   isRootJustification,
-  JustificationOut,
+  JustificationView,
 } from "howdju-common";
 
 import EntityViewer from "./EntityViewer";
@@ -20,10 +20,11 @@ import {
   OnClickJustificationWritQuoteUrl,
   SuggestionsKey,
 } from "./types";
+import { RootTargetProps } from "./JustificationRootTargetViewer";
 
 interface Props {
   id: ComponentId;
-  justification: JustificationOut;
+  justification: JustificationView;
   doShowControls: boolean;
   showBasisUrls: boolean;
   doShowRootTarget: boolean;
@@ -69,6 +70,11 @@ export default function JustificationEntityViewer({
     </div>
   );
 
+  const rootTargetProps = {
+    rootTargetType: justification.rootTargetType,
+    rootTarget: justification.rootTarget,
+  } as RootTargetProps;
+
   return (
     <EntityViewer
       component={component}
@@ -79,8 +85,7 @@ export default function JustificationEntityViewer({
           {doShowRootTarget && (
             <JustificationRootTargetViewer
               id={combineIds(id, "root-target")}
-              rootTargetType={justification.rootTargetType}
-              rootTarget={justification.rootTarget}
+              {...rootTargetProps}
               suggestionsKey={
                 suggestionsKey &&
                 combineSuggestionsKeys(suggestionsKey, "rootTarget")

@@ -13,7 +13,6 @@ import {
   JustificationBasisType,
   JustificationPolarity,
   JustificationRootPolarity,
-  JustificationRootTarget,
   JustificationRootTargetType,
   JustificationTargetType,
   JustificationVote,
@@ -141,18 +140,23 @@ export interface JustificationRow {
   score?: number;
 }
 
-export type CreateJustificationDataIn = PersistRelated<CreateJustification> & {
-  rootTargetType: JustificationRootTargetType;
-  rootTarget: EntityRef<JustificationRootTarget>;
-};
+export type JustificationRootTargetData =
+  | {
+      rootTargetType: "PROPOSITION";
+      rootTarget: EntityRef<Proposition>;
+    }
+  | {
+      rootTargetType: "STATEMENT";
+      rootTarget: EntityRef<Statement>;
+    };
+export type CreateJustificationDataIn = PersistRelated<CreateJustification> &
+  JustificationRootTargetData;
 export type CreateJustificationDataOut = Persisted<CreateJustification> & {
   rootPolarity: JustificationRootPolarity;
-  rootTarget: EntityRef<JustificationRootTarget>;
-  rootTargetType: JustificationRootTargetType;
   created: Moment;
   counterJustifications: [];
   creator: UserRef;
-};
+} & JustificationRootTargetData;
 
 export type BasedJustificationDataOut = BasedJustificationWithRootRef & {
   creator?: CreatorBlurbData | EntityRef<User>;

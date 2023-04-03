@@ -16,7 +16,7 @@ import {
   UrlRef,
   ContextTrailItem,
 } from "howdju-common";
-import { makeJustificationOutModel } from "howdju-client-common";
+import { makeJustificationViewModel } from "howdju-client-common";
 
 import paths from "./paths";
 import PropositionCard from "./PropositionCard";
@@ -42,7 +42,7 @@ export default class LandingPage extends Component {
       text: "The 1899 Height of Buildings Act established that no building could be taller than the Capitol (289 feet)",
       created,
     };
-    const proJustification = makeJustificationOutModel({
+    const proJustification = makeJustificationViewModel({
       ...JustificationRef.parse({ id: "example" }),
       polarity: "POSITIVE",
       target: {
@@ -60,7 +60,7 @@ export default class LandingPage extends Component {
       },
       created,
     });
-    const proJustificationJustification = makeJustificationOutModel({
+    const proJustificationJustification = makeJustificationViewModel({
       ...JustificationRef.parse({ id: "example" }),
       created,
       target: {
@@ -111,7 +111,7 @@ export default class LandingPage extends Component {
       text: "In general, buildings in Washington, D.C. may be no taller than the width of their adjacent street plus 20 feet ",
       created,
     };
-    const conJustification = makeJustificationOutModel({
+    const conJustification = makeJustificationViewModel({
       ...JustificationRef.parse({ id: "example" }),
       created,
       target: {
@@ -132,7 +132,7 @@ export default class LandingPage extends Component {
         },
       },
     });
-    const conJustificationJustification = makeJustificationOutModel({
+    const conJustificationJustification = makeJustificationViewModel({
       ...JustificationRef.parse({ id: "example" }),
       created,
       polarity: JustificationPolarities.POSITIVE,
@@ -178,7 +178,7 @@ export default class LandingPage extends Component {
       },
     ];
 
-    const counterJustification = makeJustificationOutModel({
+    const counterJustification = makeJustificationViewModel({
       ...JustificationRef.parse({ id: "example" }),
       created,
       polarity: "NEGATIVE",

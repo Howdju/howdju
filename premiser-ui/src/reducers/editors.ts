@@ -141,6 +141,7 @@ export interface EditorState<
   U = T,
   E extends ModelErrors<any> = ModelErrors<U>
 > {
+  isFetching: boolean;
   /**
    * The model the editor is editing.
    *
@@ -165,6 +166,7 @@ export interface EditorState<
 
 export const defaultEditorState = <T extends EditorEntity, U = T>() =>
   ({
+    isFetching: false,
     editEntity: undefined,
     errors: undefined,
     isSaving: false,
@@ -741,7 +743,7 @@ function makePropositionTagReducer(
 
 type EditorTypeState = { [key: EditorId]: EditorState<any> };
 // The editor reducer state is a two-level map: editorType -> editorId -> editorState
-type ReducerState = { [key in EditorType]: EditorTypeState };
+type ReducerState = { [key in EditorType]?: EditorTypeState };
 
 interface EditorPayload {
   editorType: EditorType;

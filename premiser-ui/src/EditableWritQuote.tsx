@@ -2,7 +2,7 @@ import React from "react";
 import { CircularProgress } from "react-md";
 
 import WritQuoteViewer, { OnClickWritQuoteUrl } from "./WritQuoteViewer";
-import WritQuoteEditor from "./editors/WritQuoteEditor";
+import WritQuoteEditor from "./editors/UpdateWritQuoteEditor";
 import { ComponentId, EditorId } from "./types";
 import { WritQuoteOut } from "howdju-common";
 import { useAppSelector } from "./hooks";

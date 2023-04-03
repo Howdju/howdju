@@ -80,6 +80,8 @@ export const mapActionCreatorGroupToDispatchToProps =
  * If an action creator is called with an error object, it is set as the payload and the payload
  * creator method (i.e. our `prepare`) will not be called.
  * See https://redux-actions.js.org/api/createaction#createactiontype-payloadcreator
+ *
+ * TODO(113) remove redux-actions conventions.
  */
 function reduxActionsCompatiblePrepare<P>(
   prepare: PrepareAction<P>

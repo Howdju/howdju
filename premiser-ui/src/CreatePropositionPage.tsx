@@ -9,7 +9,6 @@ import {
   CardActions,
   CardText,
   CircularProgress,
-  FocusContainer,
   FontIcon,
   Switch,
 } from "react-md";
@@ -65,6 +64,7 @@ import { CreateJustifiedSentenceConfig } from "./sagas/editors/editorCommitEditS
 import { RootState } from "./setupStore";
 import {
   EditorFieldsActionCreator,
+  noopEditorDispatch,
   validateEditorEntity,
 } from "./editors/withEditor";
 import SubmitButton from "./editors/SubmitButton";
@@ -325,7 +325,6 @@ class CreatePropositionPage extends Component<Props> {
 
     const propositionTags = get(proposition, "tags");
     const propositionTagVotes = get(proposition, "propositionTagVotes");
-    const propositionEditorText = "propositionEditorText";
     const hasSpeakers = speakers && speakers.length > 0;
     const doShowTypeSelection = !isCreateJustificationMode;
 
@@ -386,187 +385,179 @@ class CreatePropositionPage extends Component<Props> {
           </div>
         )}
         <form onSubmit={onSubmit}>
-          <FocusContainer
-            initialFocus={"#" + propositionEditorText}
-            containFocus={false}
-            focusOnMount={true}
-          >
-            <div className="md-grid">
-              <div className="md-cell md-cell--12">
-                <Card>
-                  <CardTitle title={title} />
+          <div className="md-grid">
+            <div className="md-cell md-cell--12">
+              <Card>
+                <CardTitle title={title} />
 
-                  <CardText>
-                    <Button
-                      flat
-                      iconEl={<FontIcon>person_add</FontIcon>}
-                      title={"Add Speaker"}
-                      onClick={this.onAddSpeakerClick}
-                      disabled={isSaving}
-                    >
-                      Add Speaker
-                    </Button>
-                    {hasSpeakers && (
-                      <div className="md-grid">
-                        <div className="md-cell md-cell--6">
-                          {map(speakers, (speaker, index) => (
-                            <div key={index}>
-                              <EntityViewer
-                                iconName="person"
-                                iconTitle="Person/Organization"
-                                menu={
-                                  <Button
-                                    icon
-                                    onClick={() =>
-                                      this.onRemoveSpeakerClick(speaker, index)
-                                    }
-                                    title="Delete speaker"
-                                  >
-                                    delete
-                                  </Button>
-                                }
-                                entity={
-                                  <PersorgEditorFields
-                                    id={combineIds(
-                                      id,
-                                      speakersName,
-                                      toString(index)
-                                    )}
-                                    key={combineIds(
-                                      id,
-                                      speakersName,
-                                      toString(index)
-                                    )}
-                                    persorg={speaker}
-                                    suggestionsKey={combineSuggestionsKeys(
-                                      id,
-                                      speakersName,
-                                      toString(index)
-                                    )}
-                                    name={combineNames(
-                                      speakersName,
-                                      array(index)
-                                    )}
-                                    disabled={isSaving}
-                                    onPersorgNameAutocomplete={(
-                                      persorg: Persorg
-                                    ) =>
-                                      this.onPersorgAutocomplete(persorg, index)
-                                    }
-                                    onPropertyChange={this.onPropertyChange}
-                                    errors={errors.speakers?.[index]}
-                                    wasSubmitAttempted={wasSubmitAttempted}
-                                    blurredFields={
-                                      blurredFields?.speakers?.[index]
-                                    }
-                                    dirtyFields={dirtyFields?.speakers?.[index]}
-                                    onSubmit={onSubmit}
-                                  />
-                                }
-                              />
-                              <div>Said that:</div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                  </CardText>
-
-                  <CardText>
-                    <PropositionEditorFields
-                      id={combineIds(id, propositionName)}
-                      textId={propositionEditorText}
-                      proposition={proposition}
-                      name={propositionName}
-                      suggestionsKey={combineSuggestionsKeys(
-                        id,
-                        propositionName
-                      )}
-                      onPropertyChange={this.onPropertyChange}
-                      errors={errors.proposition}
-                      disabled={isSaving}
-                      onSubmit={onSubmit}
-                      wasSubmitAttempted={wasSubmitAttempted}
-                      dirtyFields={dirtyFields?.proposition}
-                      blurredFields={blurredFields?.proposition}
-                    />
-                    <TagsControl
-                      id={combineIds(id, tagsName)}
-                      tags={propositionTags ?? []}
-                      votes={tagVotes}
-                      suggestionsKey={combineSuggestionsKeys(id, tagsName)}
-                      onTag={this.onTagProposition}
-                      onUnTag={this.onUnTagProposition}
-                      onSubmit={onSubmit}
-                    />
-                  </CardText>
-
-                  {!isCreateJustificationMode && (
-                    <Switch
-                      id={combineIds(id, doCreateJustificationName)}
-                      name={doCreateJustificationName}
-                      label={t(ADD_JUSTIFICATION_TO_CREATE_PROPOSITION)}
-                      checked={doCreateJustification}
-                      onChange={this.onDoCreateJustificationSwitchChange}
-                      disabled={isSaving}
-                    />
-                  )}
-
-                  <CardTitle
-                    title={t(JUSTIFICATION_TITLE)}
-                    className={cn({
-                      hidden:
-                        !isCreateJustificationMode && !doCreateJustification,
-                    })}
-                  />
-
-                  <CardText
-                    className={cn({
-                      hidden:
-                        !isCreateJustificationMode && !doCreateJustification,
-                    })}
+                <CardText>
+                  <Button
+                    flat
+                    iconEl={<FontIcon>person_add</FontIcon>}
+                    title={"Add Speaker"}
+                    onClick={this.onAddSpeakerClick}
+                    disabled={isSaving}
                   >
-                    <JustificationEditorFields
-                      justification={justification}
-                      id={combineIds(id, justificationName)}
-                      name={justificationName}
-                      suggestionsKey={combineSuggestionsKeys(
-                        id,
-                        justificationName
-                      )}
-                      disabled={isSaving}
-                      doShowTypeSelection={doShowTypeSelection}
-                      onPropertyChange={this.onPropertyChange}
-                      errors={errors.justification}
-                      editorDispatch={editorDispatch}
-                      wasSubmitAttempted={wasSubmitAttempted}
-                      onSubmit={onSubmit}
-                    />
-                  </CardText>
+                    Add Speaker
+                  </Button>
+                  {hasSpeakers && (
+                    <div className="md-grid">
+                      <div className="md-cell md-cell--6">
+                        {map(speakers, (speaker, index) => (
+                          <div key={index}>
+                            <EntityViewer
+                              iconName="person"
+                              iconTitle="Person/Organization"
+                              menu={
+                                <Button
+                                  icon
+                                  onClick={() =>
+                                    this.onRemoveSpeakerClick(speaker, index)
+                                  }
+                                  title="Delete speaker"
+                                >
+                                  delete
+                                </Button>
+                              }
+                              entity={
+                                <PersorgEditorFields
+                                  id={combineIds(
+                                    id,
+                                    speakersName,
+                                    toString(index)
+                                  )}
+                                  key={combineIds(
+                                    id,
+                                    speakersName,
+                                    toString(index)
+                                  )}
+                                  persorg={speaker}
+                                  suggestionsKey={combineSuggestionsKeys(
+                                    id,
+                                    speakersName,
+                                    toString(index)
+                                  )}
+                                  name={combineNames(
+                                    speakersName,
+                                    array(index)
+                                  )}
+                                  disabled={isSaving}
+                                  onPersorgNameAutocomplete={(
+                                    persorg: Persorg
+                                  ) =>
+                                    this.onPersorgAutocomplete(persorg, index)
+                                  }
+                                  onPropertyChange={this.onPropertyChange}
+                                  errors={errors.speakers?.[index]}
+                                  wasSubmitAttempted={wasSubmitAttempted}
+                                  blurredFields={
+                                    blurredFields?.speakers?.[index]
+                                  }
+                                  dirtyFields={dirtyFields?.speakers?.[index]}
+                                  onSubmit={onSubmit}
+                                />
+                              }
+                            />
+                            <div>Said that:</div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </CardText>
 
-                  <CardActions>
-                    {isSaving && (
-                      <CircularProgress key="progress" id="progress" />
+                <CardText>
+                  <PropositionEditorFields
+                    id={combineIds(id, propositionName)}
+                    proposition={proposition}
+                    name={propositionName}
+                    autoFocus={true}
+                    suggestionsKey={combineSuggestionsKeys(id, propositionName)}
+                    onPropertyChange={this.onPropertyChange}
+                    errors={errors.proposition}
+                    disabled={isSaving}
+                    onSubmit={onSubmit}
+                    wasSubmitAttempted={wasSubmitAttempted}
+                    dirtyFields={dirtyFields?.proposition}
+                    blurredFields={blurredFields?.proposition}
+                    editorDispatch={noopEditorDispatch}
+                  />
+                  <TagsControl
+                    id={combineIds(id, tagsName)}
+                    tags={propositionTags ?? []}
+                    votes={tagVotes}
+                    suggestionsKey={combineSuggestionsKeys(id, tagsName)}
+                    onTag={this.onTagProposition}
+                    onUnTag={this.onUnTagProposition}
+                    onSubmit={onSubmit}
+                  />
+                </CardText>
+
+                {!isCreateJustificationMode && (
+                  <Switch
+                    id={combineIds(id, doCreateJustificationName)}
+                    name={doCreateJustificationName}
+                    label={t(ADD_JUSTIFICATION_TO_CREATE_PROPOSITION)}
+                    checked={doCreateJustification}
+                    onChange={this.onDoCreateJustificationSwitchChange}
+                    disabled={isSaving}
+                  />
+                )}
+
+                <CardTitle
+                  title={t(JUSTIFICATION_TITLE)}
+                  className={cn({
+                    hidden:
+                      !isCreateJustificationMode && !doCreateJustification,
+                  })}
+                />
+
+                <CardText
+                  className={cn({
+                    hidden:
+                      !isCreateJustificationMode && !doCreateJustification,
+                  })}
+                >
+                  <JustificationEditorFields
+                    justification={justification}
+                    id={combineIds(id, justificationName)}
+                    name={justificationName}
+                    suggestionsKey={combineSuggestionsKeys(
+                      id,
+                      justificationName
                     )}
-                    <Button
-                      flat
-                      children="Cancel"
-                      disabled={isSaving}
-                      onClick={this.onCancel}
-                    />
-                    <SubmitButton
-                      type="submit"
-                      children={submitButtonLabel}
-                      title={submitButtonTitle}
-                      disabled={isSaving}
-                      appearDisabled={!isValidRequest}
-                      onClick={this.onClickSubmit}
-                    />
-                  </CardActions>
-                </Card>
-              </div>
+                    disabled={isSaving}
+                    doShowTypeSelection={doShowTypeSelection}
+                    onPropertyChange={this.onPropertyChange}
+                    errors={errors.justification}
+                    editorDispatch={editorDispatch}
+                    wasSubmitAttempted={wasSubmitAttempted}
+                    onSubmit={onSubmit}
+                  />
+                </CardText>
+
+                <CardActions>
+                  {isSaving && (
+                    <CircularProgress key="progress" id="progress" />
+                  )}
+                  <Button
+                    flat
+                    children="Cancel"
+                    disabled={isSaving}
+                    onClick={this.onCancel}
+                  />
+                  <SubmitButton
+                    type="submit"
+                    children={submitButtonLabel}
+                    title={submitButtonTitle}
+                    disabled={isSaving}
+                    appearDisabled={!isValidRequest}
+                    onClick={this.onClickSubmit}
+                  />
+                </CardActions>
+              </Card>
             </div>
-          </FocusContainer>
+          </div>
         </form>
       </div>
     );

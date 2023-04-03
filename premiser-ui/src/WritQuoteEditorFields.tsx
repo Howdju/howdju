@@ -3,12 +3,12 @@ import { Button, FontIcon, TextField } from "react-md";
 import map from "lodash/map";
 
 import {
-  CreateWritQuoteInput,
   UpdateWritQuoteInput,
   makeUrl,
   schemaSettings,
   Url,
   Writ,
+  CreateWritQuoteInput,
 } from "howdju-common";
 
 import WritTitleAutocomplete from "@/WritTitleAutocomplete";
@@ -16,17 +16,24 @@ import ErrorMessages from "@/ErrorMessages";
 import SingleLineTextField from "@/SingleLineTextField";
 import { combineIds, combineNames, combineSuggestionsKeys } from "@/viewModels";
 import { OnKeyDownCallback, toReactMdOnBlur } from "@/types";
-import { EntityEditorFieldsProps } from "./editors/withEditor";
+import {
+  EditorFieldsDispatch,
+  EntityEditorFieldsProps,
+} from "./editors/withEditor";
 import { makeErrorPropCreator } from "./modelErrorMessages";
-
-import "./WritQuoteEditorFields.scss";
 import { EditorType } from "./reducers/editors";
 import { editors } from "./actions";
 import { logger } from "./logger";
 
-interface Props extends EntityEditorFieldsProps<UpdateWritQuoteInput> {
-  writQuote: CreateWritQuoteInput;
+import "./WritQuoteEditorFields.scss";
+
+interface Props
+  extends EntityEditorFieldsProps<
+    "writQuote",
+    CreateWritQuoteInput | UpdateWritQuoteInput
+  > {
   onKeyDown?: OnKeyDownCallback;
+  editorDispatch: EditorFieldsDispatch;
 }
 
 const writQuoteTextName = "quoteText";
@@ -63,7 +70,7 @@ const WritQuoteEditorFields = (props: Props) => {
     }
   };
 
-  const urls = writQuote.urls ?? [];
+  const urls = writQuote?.urls ?? [];
 
   const errorProps = makeErrorPropCreator(
     wasSubmitAttempted,
@@ -74,8 +81,8 @@ const WritQuoteEditorFields = (props: Props) => {
 
   const writTitleInputErrorProps = errorProps((wq) => wq.writ.title);
 
-  const quoteText = writQuote.quoteText ?? "";
-  const writTitle = writQuote.writ.title ?? "";
+  const quoteText = writQuote?.quoteText ?? "";
+  const writTitle = writQuote?.writ.title ?? "";
 
   const writTitleInputProps = {
     id: combineIds(id, writTitleName),

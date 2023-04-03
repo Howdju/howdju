@@ -1,9 +1,14 @@
 import { invert, join, map, some, split } from "lodash";
-import { JustificationOut } from "./apiModels";
 
-import { EntityId } from "./entities";
-import { logger } from "./logger";
-import { JustificationTargetType, RelationPolarity } from "./zodSchemas";
+import {
+  EntityId,
+  JustificationTargetType,
+  RelationPolarity,
+  JustificationOut,
+  logger,
+} from "howdju-common";
+
+import { JustificationView } from "./viewModels";
 
 /**
  * A representation of an item in a context trail sufficient to request the full information.
@@ -31,6 +36,13 @@ export interface ContextTrailItemInfo {
  * equivalent. This secondary relation will help Howdju to curate the primary Proposition content.
  */
 export type ContextTrailItem = {
+  connectingEntityId: EntityId;
+  polarity: RelationPolarity;
+} & {
+  connectingEntityType: "JUSTIFICATION";
+  connectingEntity: JustificationView;
+};
+export type ContextTrailItemOut = {
   connectingEntityId: EntityId;
   polarity: RelationPolarity;
 } & {
@@ -134,7 +146,7 @@ export function parseContextTrail(
 // TODO(20): When we add Appearances, expand this discriminated union.
 export type TypedConnectingEntity = {
   type: "JUSTIFICATION";
-  entity: JustificationOut;
+  entity: JustificationView;
 };
 
 export type TypedConnectingEntityTargetId = {
@@ -194,5 +206,53 @@ export function getConnectingEntitySourceInfo(
         id: typedConnectingEntity.entity.basis.entity.id,
         type: typedConnectingEntity.entity.basis.type,
       };
+  }
+}
+
+export function nextContextTrailItem(
+  connectingEntityType: ConnectingEntityType,
+  connectingEntity: ConnectingEntity,
+  prevItemPolarity: RelationPolarity
+): ContextTrailItem {
+  const polarity = contextTrailItemPolarity(
+    connectingEntityType,
+    connectingEntity,
+    prevItemPolarity
+  );
+  return {
+    connectingEntityType,
+    connectingEntityId: connectingEntity.id,
+    connectingEntity,
+    polarity,
+  };
+}
+
+export function contextTrailItemPolarity(
+  connectingEntityType: ConnectingEntityType,
+  connectingEntity: ConnectingEntity,
+  prevItemPolarity: RelationPolarity
+) {
+  switch (connectingEntityType) {
+    case "JUSTIFICATION": {
+      switch (connectingEntity.target.type) {
+        case "PROPOSITION":
+        case "STATEMENT":
+          return connectingEntity.polarity;
+        case "JUSTIFICATION":
+          // Counter justifications should have the opposite polarity as their target
+          return negateRelationPolarity(prevItemPolarity);
+      }
+    }
+  }
+}
+
+function negateRelationPolarity(polarity: RelationPolarity) {
+  switch (polarity) {
+    case "POSITIVE":
+      return "NEGATIVE";
+    case "NEGATIVE":
+      return "POSITIVE";
+    case "NEUTRAL":
+      return "NEUTRAL";
   }
 }

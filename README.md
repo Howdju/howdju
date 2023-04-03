@@ -113,7 +113,10 @@ diagram](https://raw.githubusercontent.com/Howdju/howdju/master/docs/diagrams/Ho
 - `premiser-api`: AWS lambda for API requests/responses. Initialization, gateway event handler, and
   logic is deferred to the selected route.
 - `lambdas/howdju-message-handler`: SNS handler for async event handling.
-- `howdju-client-common`: code common to clients.
+- `howdju-client-common`: code common to clients. The decision to put code here can be based upon
+  either runtime considerations (if putting the code in howdju-common would not work outside of a
+  DOM runtime) or based upon design decisions (if it would never make sense to access the code in a
+  server-side context.)
 - `premiser-ui`: React web app for howdju.com
 - `premiser-ext`: Chrome web extension ([Chrome web store
   page](https://chrome.google.com/webstore/detail/howdju-extension/gijlmlebhfiglpgdlgphbmaamhkchoei/))

@@ -26,7 +26,6 @@ export default class SourceExcerptParaphraseEditorFields extends Component {
             {...rest}
             id={id + "--paraphrasing-proposition"}
             name={name + ".paraphrasingProposition"}
-            textLabel="Paraphrase"
             proposition={sourceExcerptParaphrase.paraphrasingProposition}
             errors={get(errors, "fieldErrors.paraphrasingProposition")}
             onPropertyChange={onPropertyChange}

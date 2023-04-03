@@ -17,7 +17,6 @@ import {
   JustificationOut,
   makeCreateJustificationInputTargetingRoot,
   JustificationRef,
-  JustificationRootTargetOut,
 } from "howdju-common";
 import { actions, isVerified, isDisverified } from "howdju-client-common";
 
@@ -52,6 +51,7 @@ import { ComponentId, SuggestionsKey } from "@/types";
 import "./JustificationsPage.scss";
 import { PrimaryContextTrail } from "@/components/contextTrail/PrimaryContextTrailProvider";
 import FocusValidatingContextTrail from "@/components/contextTrail/FocusValidatingContextTrail";
+import { RootTargetProps } from "@/JustificationRootTargetViewer";
 
 const justificationsPageId = "justifications-page";
 
@@ -62,7 +62,7 @@ interface OwnProps extends RouteComponentProps<MatchParams> {
   rootTargetType: JustificationRootTargetType;
 }
 
-interface Props extends OwnProps, PropsFromRedux {}
+type Props = OwnProps & PropsFromRedux;
 
 class JustificationsPage extends Component<Props> {
   static id = justificationsPageId;
@@ -162,6 +162,11 @@ class JustificationsPage extends Component<Props> {
     const onClickWritQuoteUrl =
       makeExtensionHighlightOnClickWritQuoteUrlCallback(dispatch);
 
+    const rootTargetProps = {
+      rootTargetType,
+      rootTarget,
+    } as RootTargetProps;
+
     return (
       <div id="justifications-page">
         <Helmet>
@@ -185,13 +190,12 @@ class JustificationsPage extends Component<Props> {
           <div className="md-cell md-cell--12">
             <JustificationRootTargetCard
               id={this.id("root-target")}
-              rootTargetType={rootTargetType}
-              rootTarget={rootTarget}
+              {...rootTargetProps}
               editorId={JustificationsPage.rootTargetEditorId}
               suggestionsKey={this.suggestionsKey("root-target")}
               extraMenuItems={rootTargetExtraMenuItems}
-              contextPolarity={
-                contextTrailItems?.[contextTrailItems.length - 1]?.polarity
+              contextTrailItem={
+                contextTrailItems?.[contextTrailItems.length - 1]
               }
             />
           </div>
@@ -300,11 +304,7 @@ const mapState = (state: RootState, ownProps: OwnProps) => {
   }
 
   const schema = rootTargetNormalizationSchemasByType[rootTargetType];
-  const rootTarget: JustificationRootTargetOut = denormalize(
-    rootTargetId,
-    schema,
-    state.entities
-  );
+  const rootTarget = denormalize(rootTargetId, schema, state.entities);
 
   const sortedJustifications = rootTarget
     ? sortJustifications(rootTarget.justifications)

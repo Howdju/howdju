@@ -7,7 +7,7 @@ import {
   ContextTrailItem,
   ContextTrailItemInfo,
   httpStatusCodes,
-  JustificationOut,
+  JustificationView,
   serializeContextTrail,
   toJson,
 } from "howdju-common";
@@ -39,7 +39,7 @@ describe("PrimaryContextTrailProvider", () => {
 
     const contextTrailItems: ContextTrailItem[] = [
       {
-        connectingEntity: { id: connectingEntityId } as JustificationOut,
+        connectingEntity: { id: connectingEntityId } as JustificationView,
         connectingEntityType: "JUSTIFICATION",
         connectingEntityId,
         polarity: "POSITIVE",

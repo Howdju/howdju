@@ -90,7 +90,7 @@ const normalizationSchemaByConnectingEntityType = {
 
 function toContextTrailItems(state: RootState, infos: ContextTrailItemInfo[]) {
   const items = map(infos, (info) => toContextTrailItem(state, info));
-  // If any entities havn't loaded yet, return empty infos
+  // If any entities haven't loaded yet, return empty infos
   return some(items, (item) => !item.connectingEntity) ? [] : items;
 }
 

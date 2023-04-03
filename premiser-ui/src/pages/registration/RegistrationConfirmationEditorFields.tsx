@@ -16,8 +16,10 @@ import { toOnCheckboxChangeCallback } from "@/util";
 import { toReactMdOnBlur } from "@/types";
 
 interface Props
-  extends EntityEditorFieldsProps<CreateRegistrationConfirmationInput> {
-  registrationConfirmation?: CreateRegistrationConfirmationInput;
+  extends EntityEditorFieldsProps<
+    "registrationConfirmation",
+    CreateRegistrationConfirmationInput
+  > {
   email: string | null;
 }
 

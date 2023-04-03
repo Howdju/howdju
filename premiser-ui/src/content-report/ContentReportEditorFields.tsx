@@ -32,9 +32,7 @@ const reportTypeDescriptions = {
 };
 
 interface ContentReportEditorFieldsProps
-  extends EntityEditorFieldsProps<CreateContentReportInput> {
-  contentReport?: CreateContentReportInput;
-}
+  extends EntityEditorFieldsProps<"contentReport", CreateContentReportInput> {}
 
 export default function ContentReportEditorFields(
   props: ContentReportEditorFieldsProps

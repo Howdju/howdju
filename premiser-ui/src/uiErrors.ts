@@ -45,7 +45,7 @@ export const newNetworkFailureError = (
 
 export type ApiResponseError = ReturnType<typeof newApiResponseError>;
 
-export function isApiResponseError(val: any): val is ApiResponseError {
+export function isApiResponseError(val: Error): val is ApiResponseError {
   return isCustomError(val) && val.errorType === "API_RESPONSE_ERROR";
 }
 
