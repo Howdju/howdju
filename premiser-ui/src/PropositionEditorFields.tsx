@@ -10,7 +10,7 @@ import { OnKeyDownCallback } from "./types";
 import { EntityEditorFieldsProps } from "./editors/withEditor";
 
 const textName = "text";
-//
+
 interface Props
   extends EntityEditorFieldsProps<
     "proposition",
@@ -49,6 +49,7 @@ export default function PropositionEditorFields(props: Props) {
   const textProps = {
     id: combineIds(id, "text"),
     name: combineNames(name, textName),
+    label: "Text",
     value: proposition?.text ?? "",
     required: true,
     autoFocus,

@@ -60,32 +60,8 @@ export class ContextTrailsService {
       })
     );
 
-    let itemPolarity: RelationPolarity,
-      prevItemPolarity: RelationPolarity | undefined = undefined;
-    zip(contextTrailInfos, typedConnectingEntities).forEach(
-      ([info, typedEntity]) => {
-        if (!info || !typedEntity) {
-          throw newImpossibleError(
-            "typedConnectingEntities length must match contextTrailInfos"
-          );
-        }
-        const { entity, type } = typedEntity;
-        itemPolarity = prevItemPolarity
-          ? contextTrailItemPolarity(type, entity, prevItemPolarity)
-          : entity.polarity;
-        if (info.polarity !== itemPolarity) {
-          this.logger.error(
-            `Context trail polarity mismatch: ${toJson(info)} vs ${toJson(
-              entity
-            )}`
-          );
-          throw new ConflictError(`Context trail polarity mismatch`);
-        }
-        prevItemPolarity = itemPolarity;
-      }
-    );
-
     this.checkConnections(typedConnectingEntities);
+    this.checkPolarities(contextTrailInfos, typedConnectingEntities);
 
     return typedConnectingEntities.map(({ type, entity }) => ({
       connectingEntity: entity,
@@ -110,5 +86,35 @@ export class ContextTrailsService {
         throw new ConflictError("Invalid context trail");
       }
     }
+  }
+
+  private checkPolarities(
+    contextTrailInfos: ContextTrailItemInfo[],
+    typedConnectingEntities: TypedConnectingEntity[]
+  ) {
+    let itemPolarity: RelationPolarity,
+      prevItemPolarity: RelationPolarity | undefined = undefined;
+    zip(contextTrailInfos, typedConnectingEntities).forEach(
+      ([info, typedEntity]) => {
+        if (!info || !typedEntity) {
+          throw newImpossibleError(
+            "typedConnectingEntities length must match contextTrailInfos"
+          );
+        }
+        const { entity, type } = typedEntity;
+        itemPolarity = prevItemPolarity
+          ? contextTrailItemPolarity(type, entity, prevItemPolarity)
+          : entity.polarity;
+        if (info.polarity !== itemPolarity) {
+          this.logger.error(
+            `Context trail polarity mismatch: ${toJson(info)} vs ${toJson(
+              entity
+            )}`
+          );
+          throw new ConflictError(`Context trail polarity mismatch`);
+        }
+        prevItemPolarity = itemPolarity;
+      }
+    );
   }
 }

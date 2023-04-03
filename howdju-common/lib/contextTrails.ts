@@ -146,7 +146,7 @@ export function parseContextTrail(
 // TODO(20): When we add Appearances, expand this discriminated union.
 export type TypedConnectingEntity = {
   type: "JUSTIFICATION";
-  entity: JustificationOut;
+  entity: JustificationView;
 };
 
 export type TypedConnectingEntityTargetId = {

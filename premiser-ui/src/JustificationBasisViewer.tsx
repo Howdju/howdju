@@ -10,8 +10,6 @@ import {
 
 import PropositionCompoundViewer from "./PropositionCompoundViewer";
 import WritQuoteEntityViewer from "./WritQuoteEntityViewer";
-
-import "./JustificationBasisViewer.scss";
 import { ComponentId } from "./types";
 import SourceExcerptEntityViewer from "./SourceExcerptEntityViewer";
 import { OnClickWritQuoteUrl } from "./WritQuoteViewer";

@@ -184,7 +184,7 @@ describe("ContextTrailsService", () => {
       ).rejects.toThrow(EntityNotFoundError);
     });
 
-    test("Throws conflict for an invalid context trail", async () => {
+    test("Throws conflict for a context trail with wrong justification", async () => {
       const { authToken, user } = await makeUser();
 
       const { proposition } = await propositionsService.readOrCreateProposition(
@@ -264,6 +264,56 @@ describe("ContextTrailsService", () => {
           connectingEntityType: "JUSTIFICATION",
           connectingEntityId: justification2.id,
           polarity: justification2.polarity,
+        },
+      ];
+      await expect(
+        async () => await service.readContextTrail(authToken, contextTrailInfos)
+      ).rejects.toThrow(ConflictError);
+    });
+
+    test("Throws conflict for a context trail with incorrect polarity", async () => {
+      const { authToken, user } = await makeUser();
+
+      const { proposition } = await propositionsService.readOrCreateProposition(
+        authToken,
+        {
+          text: "A fine wee proposition.",
+        }
+      );
+      const { proposition: basisProposition1 } =
+        await propositionsService.readOrCreateProposition(authToken, {
+          text: "A fine wee proposition 1.",
+        });
+      const now = moment();
+      const { propositionCompound: propositionCompound1 } =
+        await propositionCompoundsService.createPropositionCompoundAsUser(
+          {
+            atoms: [{ entity: basisProposition1 }],
+          },
+          user.id,
+          now
+        );
+      const { justification } = await justificationsService.readOrCreate(
+        {
+          target: {
+            type: "PROPOSITION",
+            entity: proposition,
+          },
+          polarity: "POSITIVE",
+          basis: {
+            type: "PROPOSITION_COMPOUND",
+            entity: propositionCompound1,
+          },
+        },
+        authToken
+      );
+
+      const contextTrailInfos: ContextTrailItemInfo[] = [
+        {
+          connectingEntityType: "JUSTIFICATION",
+          connectingEntityId: justification.id,
+          // The wrong polarity
+          polarity: "NEGATIVE",
         },
       ];
       await expect(

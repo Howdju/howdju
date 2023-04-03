@@ -79,7 +79,7 @@ import {
 } from "..";
 import {
   CreateJustificationDataIn,
-  JustifiationRootTargetData,
+  JustificationRootTargetData,
   ReadJustificationDataOut,
 } from "../daos/dataTypes";
 import { toIdString } from "../daos/daosUtil";
@@ -731,7 +731,7 @@ function extractRootTargetStuff(
         type: "JUSTIFICATION";
         entity: JustificationOut;
       }
-): JustifiationRootTargetData {
+): JustificationRootTargetData {
   switch (target.type) {
     case "PROPOSITION":
     case "STATEMENT":
@@ -739,13 +739,13 @@ function extractRootTargetStuff(
       return {
         rootTargetType: target.type,
         rootTarget: target.entity,
-      } as JustifiationRootTargetData;
+      } as JustificationRootTargetData;
     case "JUSTIFICATION":
       // TODO(151) remove typecast after updating rootTarget to be a discriminated union field
       return {
         rootTarget: target.entity.rootTarget,
         rootTargetType: target.entity.rootTargetType,
-      } as JustifiationRootTargetData;
+      } as JustificationRootTargetData;
     default:
       throw newExhaustedEnumError(target);
   }

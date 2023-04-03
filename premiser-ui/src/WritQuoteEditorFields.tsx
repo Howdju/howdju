@@ -21,11 +21,11 @@ import {
   EntityEditorFieldsProps,
 } from "./editors/withEditor";
 import { makeErrorPropCreator } from "./modelErrorMessages";
-
-import "./WritQuoteEditorFields.scss";
 import { EditorType } from "./reducers/editors";
 import { editors } from "./actions";
 import { logger } from "./logger";
+
+import "./WritQuoteEditorFields.scss";
 
 interface Props
   extends EntityEditorFieldsProps<
