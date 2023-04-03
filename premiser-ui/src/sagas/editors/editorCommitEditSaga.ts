@@ -28,7 +28,7 @@ import {
 } from "howdju-common";
 
 import { selectEditorState } from "../../selectors";
-import { EditorEntity, EditorState, EditorType } from "../../reducers/editors";
+import { EditorEntity, EditorType } from "../../reducers/editors";
 import { api, editors, str } from "../../actions";
 import { newEditorCommitResultError } from "../../uiErrors";
 import { callApiForResource } from "../resourceApiSagas";
