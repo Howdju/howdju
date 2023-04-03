@@ -184,7 +184,6 @@ describe("JustificationsPage", () => {
     await user.click(screen.getByRole("button", { name: /Create/i }));
 
     // Assert
-    jest.runAllTimers();
     expect(await screen.findByText(basisText1)).toBeInTheDocument();
     expect(await screen.findByText(basisText2)).toBeInTheDocument();
 
