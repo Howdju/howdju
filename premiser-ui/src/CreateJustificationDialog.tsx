@@ -18,9 +18,9 @@ import { combineIds } from "./viewModels";
 import { ComponentId } from "./types";
 import { editors, flows } from "./actions";
 import justificationsPage from "./pages/justifications/justificationsPageSlice";
+import SubmitButton from "./editors/SubmitButton";
 
 import "./CreateJustificationDialog.scss";
-import SubmitButton from "./editors/SubmitButton";
 
 type Props = {
   id: ComponentId;

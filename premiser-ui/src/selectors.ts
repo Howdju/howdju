@@ -1,12 +1,10 @@
-import get from "lodash/get";
-import { EditorState, EditorType } from "./reducers/editors";
+import { EditorType } from "./reducers/editors";
 import { RootState } from "./setupStore";
 import { EditorId } from "./types";
 
 export const selectEditorState =
-  (editorType: EditorType, editorId: EditorId) =>
-  (state: RootState): EditorState<any> =>
-    get(state.editors, [editorType, editorId]);
+  (editorType: EditorType, editorId: EditorId) => (state: RootState) =>
+    state.editors?.[editorType]?.[editorId];
 export const selectJustificationSearchFilters = (state: RootState) =>
   state.justificationsSearchPage.filters;
 export const selectLoginRedirectLocation = (state: RootState) =>

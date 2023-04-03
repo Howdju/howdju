@@ -99,7 +99,11 @@ export default function PropositionCompoundEditorFields(props: Props) {
           <div />
         ) : (
           <div>
-            <Button icon onClick={() => onAddPropositionCompoundAtom(index)}>
+            <Button
+              icon
+              title="Add atom"
+              onClick={() => onAddPropositionCompoundAtom(index)}
+            >
               add
             </Button>
             <Button

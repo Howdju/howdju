@@ -131,6 +131,7 @@ export default function JustificationEditorFields(props: Props) {
       <PropositionCompoundEditorFields
         {...commonFieldsProps}
         id={combineIds(id, propositionCompoundName)}
+        name={combineNames(name, propositionCompoundName)}
         propositionCompound={basisPropositionCompound}
         key={propositionCompoundName}
         suggestionsKey={combineSuggestionsKeys(
