@@ -28,7 +28,7 @@ import {
 } from "howdju-common";
 
 import { selectEditorState } from "../../selectors";
-import { EditorEntity, EditorState, EditorType } from "../../reducers/editors";
+import { EditorEntity, EditorType } from "../../reducers/editors";
 import { api, editors, str } from "../../actions";
 import { newEditorCommitResultError } from "../../uiErrors";
 import { callApiForResource } from "../resourceApiSagas";
@@ -41,6 +41,7 @@ import {
   ApiResponseAction,
 } from "@/apiActions";
 import { ServiceRoute } from "howdju-service-routes";
+import { logger } from "@/logger";
 
 /**
  * A redux saga handling editor commits.
@@ -53,10 +54,23 @@ export function* editorCommitEdit() {
     function* editorCommitEditWorker(action: EditorAction) {
       const { editorType, editorId } = action.payload;
 
-      const editorState: EditorState<any> = yield* select(
+      const editorState = yield* select(
         selectEditorState(editorType, editorId)
       );
+      if (!editorState) {
+        logger.error(
+          `editorState was missing while commiting editor: ${editorType} ${editorId}`
+        );
+        return;
+      }
       const { editEntity } = editorState;
+      if (!editEntity) {
+        logger.error(
+          `editEntity was missing while commiting editor: ${editorType} ${editorId}`
+        );
+        return;
+      }
+
       const editorCommitApiResourceAction = createEditorCommitApiResourceAction(
         editorType,
         editEntity

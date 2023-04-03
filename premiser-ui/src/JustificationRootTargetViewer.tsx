@@ -48,9 +48,12 @@ export default function JustificationRootTargetViewer({
     case "PROPOSITION":
       if (contextTrailItem) {
         const { connectingEntityType, connectingEntity } = contextTrailItem;
+        // If the root target is a proposition that was part of a compound in context, display
+        // it as part of the compound.
         if (
           connectingEntityType === "JUSTIFICATION" &&
-          connectingEntity.basis.type === "PROPOSITION_COMPOUND"
+          connectingEntity.basis.type === "PROPOSITION_COMPOUND" &&
+          connectingEntity.basis.entity.atoms.length > 1
         ) {
           return (
             <PropositionCompoundViewer

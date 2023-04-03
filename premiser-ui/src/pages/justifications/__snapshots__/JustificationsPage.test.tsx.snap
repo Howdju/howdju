@@ -1,5 +1,408 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`JustificationsPage Can add a compound-based justification 1`] = `
+<div>
+  <div
+    id="justifications-page"
+  >
+    <div
+      class="md-grid md-grid--top"
+    >
+      <div />
+      <div
+        class="md-cell md-cell--12"
+      >
+        <div
+          class=""
+        >
+          <div
+            class="root-target-background"
+          >
+            <div
+              class="md-paper md-paper--1 md-card md-background--card root-target-card"
+            >
+              <section
+                class="md-card-text root-target-card-contents"
+              >
+                <div
+                  class="entity-viewer"
+                >
+                  <div
+                    class="entity-viewer--header"
+                  >
+                    <a
+                      href="/p/1"
+                    >
+                      <i
+                        class="md-icon material-icons"
+                        role="presentation"
+                        title="Proposition"
+                      >
+                        short_text
+                      </i>
+                    </a>
+                  </div>
+                  <div
+                    class="entity-viewer--entity"
+                  >
+                    <div
+                      class="proposition-viewer"
+                      id="justifications-page--root-target--proposition-entity-viewer"
+                    >
+                      <div
+                        class="proposition-viewer"
+                      >
+                        <div
+                          class="proposition-text"
+                        >
+                          <a
+                            href="/p/1"
+                          >
+                            the-proposition-text
+                             
+                          </a>
+                        </div>
+                        <div>
+                          <span
+                            class="entity-status-text"
+                          >
+                            created
+                            
+                             
+                            <span
+                              title="12 Jan 2023 8:23:00 AM"
+                            >
+                              12 hours ago
+                            </span>
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    aria-expanded="false"
+                    aria-haspopup="true"
+                    class="md-layover md-layover--simplified md-inline-block md-menu-container context-menu context-menu--proposition"
+                    id="justifications-page--root-target--menu"
+                  >
+                    <button
+                      class="md-btn md-btn--icon md-pointer--hover md-inline-block hidden"
+                      id="justifications-page--root-target--menu-toggle"
+                      type="button"
+                    >
+                      <div
+                        class="md-ink-container"
+                      />
+                      <i
+                        class="md-icon material-icons md-text--inherit"
+                      >
+                        more_vert
+                      </i>
+                    </button>
+                  </div>
+                </div>
+                <div
+                  class="chips-list"
+                >
+                  <button
+                    class="md-btn md-btn--icon md-pointer--hover md-inline-block"
+                    title="Add tag"
+                    type="button"
+                  >
+                    <div
+                      class="md-ink-container"
+                    />
+                    <i
+                      class="md-icon material-icons md-text--inherit"
+                    >
+                      add
+                    </i>
+                  </button>
+                </div>
+              </section>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="md-grid--bottom md-grid"
+    >
+      <div
+        class="md-cell md-cell--6 md-cell--8-tablet md-cell--4-phone proposition-justifications-justification-trees--positive"
+        style="position: relative;"
+      >
+        <h2
+          class="md-cell md-cell--12"
+          style="transition: transform 600ms ease 0ms, opacity 600ms ease 0ms;"
+        >
+          Supporting Justifications
+        </h2>
+        <div
+          style="transition: transform 615ms ease 50ms, opacity 615ms ease 50ms;"
+        >
+          <div
+            class="justification-tree"
+            id="justification-1582-tree"
+          >
+            <div
+              class="md-grid chat-bubble"
+            >
+              <div
+                class="justification-basis-viewer-row"
+              >
+                <ol
+                  class="compound-viewer proposition-compound-viewer"
+                >
+                  <li
+                    class="compound-atom proposition-atom"
+                    id="justification-1582-chat-bubble-basis-viewer--proposition-atom-911--list-item"
+                  >
+                    <div
+                      class="entity-viewer"
+                    >
+                      <div
+                        class="entity-viewer--header"
+                      >
+                        <a
+                          href="/p/911"
+                        >
+                          <i
+                            class="md-icon material-icons"
+                            role="presentation"
+                            title="Proposition"
+                          >
+                            short_text
+                          </i>
+                        </a>
+                      </div>
+                      <div
+                        class="entity-viewer--entity"
+                      >
+                        <div
+                          class="proposition-viewer"
+                          id="justification-1582-chat-bubble-basis-viewer--proposition-atom-911--list-item--proposition"
+                        >
+                          <div
+                            class="proposition-viewer"
+                          >
+                            <div
+                              class="proposition-text"
+                            >
+                              <a
+                                href="/p/911?context-trail=j,1582,p"
+                              >
+                                The proposition text 1
+                                 
+                              </a>
+                            </div>
+                            <div>
+                              <span
+                                class="entity-status-text"
+                              >
+                                created
+                                
+                                 
+                                <span
+                                  title=""
+                                />
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </li>
+                  <li
+                    class="compound-atom proposition-atom"
+                    id="justification-1582-chat-bubble-basis-viewer--proposition-atom-912--list-item"
+                  >
+                    <div
+                      class="entity-viewer"
+                    >
+                      <div
+                        class="entity-viewer--header"
+                      >
+                        <a
+                          href="/p/912"
+                        >
+                          <i
+                            class="md-icon material-icons"
+                            role="presentation"
+                            title="Proposition"
+                          >
+                            short_text
+                          </i>
+                        </a>
+                      </div>
+                      <div
+                        class="entity-viewer--entity"
+                      >
+                        <div
+                          class="proposition-viewer"
+                          id="justification-1582-chat-bubble-basis-viewer--proposition-atom-912--list-item--proposition"
+                        >
+                          <div
+                            class="proposition-viewer"
+                          >
+                            <div
+                              class="proposition-text"
+                            >
+                              <a
+                                href="/p/912?context-trail=j,1582,p"
+                              >
+                                The proposition text 2
+                                 
+                              </a>
+                            </div>
+                            <div>
+                              <span
+                                class="entity-status-text"
+                              >
+                                created
+                                
+                                 
+                                <span
+                                  title=""
+                                />
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </li>
+                </ol>
+                <div
+                  aria-expanded="false"
+                  aria-haspopup="true"
+                  class="md-layover md-layover--simplified md-inline-block md-menu-container context-menu justification-context-menu"
+                  id="justification-1582-context-menu"
+                >
+                  <button
+                    class="md-btn md-btn--icon md-pointer--hover md-inline-block hidden"
+                    id="justification-1582-context-menu-toggle"
+                    title="Justification actions"
+                    type="button"
+                  >
+                    <div
+                      class="md-ink-container"
+                    />
+                    <i
+                      class="md-icon material-icons md-text--inherit"
+                    >
+                      more_vert
+                    </i>
+                  </button>
+                </div>
+              </div>
+              <div
+                class="md-cell md-cell--12 actions"
+              >
+                <button
+                  class="md-btn md-btn--icon md-pointer--hover md-inline-block inactive hiding"
+                  title="Verify this justification"
+                  type="button"
+                >
+                  <div
+                    class="md-ink-container"
+                  />
+                  <i
+                    class="md-icon material-icons md-text--inherit"
+                  >
+                    thumb_up
+                  </i>
+                </button>
+                <button
+                  class="md-btn md-btn--icon md-pointer--hover md-inline-block inactive hiding"
+                  title="Dis-verify this justification"
+                  type="button"
+                >
+                  <div
+                    class="md-ink-container"
+                  />
+                  <i
+                    class="md-icon material-icons md-text--inherit"
+                  >
+                    thumb_down
+                  </i>
+                </button>
+                <button
+                  class="md-btn md-btn--icon md-pointer--hover md-inline-block hiding"
+                  title="Counter this justification"
+                  type="button"
+                >
+                  <div
+                    class="md-ink-container"
+                  />
+                  <i
+                    class="md-icon material-icons md-text--inherit"
+                  >
+                    reply
+                  </i>
+                </button>
+                <div
+                  class="justification-status-text"
+                >
+                  <span
+                    class="entity-status-text"
+                  >
+                    created
+                    
+                     
+                    <span
+                      title=""
+                    />
+                  </span>
+                </div>
+              </div>
+              <div
+                class="counter-justifications"
+              >
+                <div
+                  style="position: relative;"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="md-cell md-cell--6 md-cell--8-tablet md-cell--4-phone proposition-justifications-justification-trees--negative"
+        style="position: relative;"
+      >
+        <h2
+          class="md-cell md-cell--12"
+          style="transition: transform 600ms ease 0ms, opacity 600ms ease 0ms;"
+        >
+          Opposing Justifications
+        </h2>
+        <div
+          class="md-cell md-cell--12 cell--centered-contents"
+          style="transition: transform 615ms ease 50ms, opacity 615ms ease 50ms;"
+        >
+          None
+        </div>
+        <div
+          class="md-cell md-cell--12 cell--centered-contents"
+          style="transition: transform 630ms ease 100ms, opacity 630ms ease 100ms;"
+        >
+          <button
+            class="md-btn md-btn--flat md-btn--text md-pointer--hover md-text md-inline-block"
+            type="button"
+          >
+            <div
+              class="md-ink-container"
+            />
+            Add one now
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
 exports[`JustificationsPage Shows a justified proposition 1`] = `
 <div>
   <div
