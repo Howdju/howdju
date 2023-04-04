@@ -139,6 +139,7 @@ class JustificationRootTargetCard extends React.Component<Props> {
         children={"more_vert"}
         position={DropdownMenu.Positions.TOP_RIGHT}
         menuItems={menuItems}
+        title="Actions"
       />
     );
 
