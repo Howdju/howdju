@@ -1,10 +1,27 @@
-const map = require("lodash/map");
-const Promise = require("bluebird");
+import map from "lodash/map";
+import Promise from "bluebird";
+import { Database } from "..";
+import { QueryResultRow } from "pg";
 
 const emptyResults = Promise.resolve([]);
 
-exports.TextSearcher = class TextSearcher {
-  constructor(database, tableName, textColumnName, rowMapper, dedupColumnName) {
+export class TextSearcher<Row, Data> {
+  database: Database;
+  tableName: string;
+  textColumnName: string;
+  rowMapper: (row: Row | undefined) => Data | undefined;
+  dedupColumnName: string;
+  searchFullTextPhraseQuery: string;
+  searchFullTextPlainQuery: string;
+  searchContainingTextQuery: string;
+
+  constructor(
+    database: Database,
+    tableName: string,
+    textColumnName: string,
+    rowMapper: (row: Row | undefined) => Data | undefined,
+    dedupColumnName: string
+  ) {
     this.database = database;
     this.tableName = tableName;
     this.textColumnName = textColumnName;
@@ -25,7 +42,7 @@ exports.TextSearcher = class TextSearcher {
     );
   }
 
-  search(searchText) {
+  async search(searchText: string) {
     if (!searchText) {
       return emptyResults;
     }
@@ -43,71 +60,67 @@ exports.TextSearcher = class TextSearcher {
     const searchTextWords = normalSearchText.split(/\s+/);
     const tsqueryParts = map(
       searchTextWords,
-      (w, i) => `to_tsquery('english', $${i + 1})`
+      (_w, i) => `to_tsquery('english', $${i + 1})`
     );
     const tsquery = tsqueryParts.join(" || ");
-    return this.database
-      .queries([
-        {
-          queryName: "searchFullTextPhraseQuery",
-          sql: this.searchFullTextPhraseQuery,
-          args: [normalSearchText],
-        },
-        {
-          queryName: "searchFullTextPlainQuery",
-          sql: this.searchFullTextPlainQuery,
-          args: [normalSearchText],
-        },
-        {
-          queryName: "searchFullTextRawQuery",
-          sql: makeSearchFullTextRawQuery(
-            this.tableName,
-            this.textColumnName,
-            tsquery
-          ),
-          args: searchTextWords,
-        },
-        {
-          queryName: "searchContainingTextQuery",
-          sql: this.searchContainingTextQuery,
-          args: [normalSearchText],
-        },
-      ])
-      .then(
-        ([
-          { rows: phraseRows },
-          { rows: plainRows },
-          { rows: rawRows },
-          { rows: containingRows },
-        ]) => {
-          const uniqueRows = removeDups(
-            this.dedupColumnName,
-            phraseRows,
-            plainRows,
-            rawRows,
-            containingRows
-          );
-          return map(uniqueRows, this.rowMapper);
-        }
-      );
+    const [
+      { rows: phraseRows },
+      { rows: plainRows },
+      { rows: rawRows },
+      { rows: containingRows },
+    ] = await this.database.queries([
+      {
+        queryName: "searchFullTextPhraseQuery",
+        sql: this.searchFullTextPhraseQuery,
+        args: [normalSearchText],
+      },
+      {
+        queryName: "searchFullTextPlainQuery",
+        sql: this.searchFullTextPlainQuery,
+        args: [normalSearchText],
+      },
+      {
+        queryName: "searchFullTextRawQuery",
+        sql: makeSearchFullTextRawQuery(
+          this.tableName,
+          this.textColumnName,
+          tsquery
+        ),
+        args: searchTextWords,
+      },
+      {
+        queryName: "searchContainingTextQuery",
+        sql: this.searchContainingTextQuery,
+        args: [normalSearchText],
+      },
+    ]);
+    const uniqueRows = removeDups(
+      this.dedupColumnName,
+      phraseRows,
+      plainRows,
+      rawRows,
+      containingRows
+    );
+    return map(uniqueRows, this.rowMapper);
   }
-};
+}
 
-function removeDups(idName, ...rowsArr) {
-  const seenIds = {};
+function removeDups(idName: string, ...rowsArr: QueryResultRow[][]) {
+  const seenIds = new Set();
   const deduped = [];
   for (const rows of rowsArr) {
     for (const row of rows) {
-      if (!seenIds[row[idName]]) {
+      const id: string = row[idName];
+      if (!seenIds.has(id)) {
         deduped.push(row);
-        seenIds[row[idName]] = true;
+        seenIds.add(id);
       }
     }
   }
   return deduped;
 }
 
-function normalizeSearchText(searchText) {
+function normalizeSearchText(searchText: string) {
   let normalSearchText = searchText;
   // remove non-word/non-space characters
   normalSearchText = normalSearchText.replace(/[^\w\s]/g, "");
@@ -116,18 +129,21 @@ function normalizeSearchText(searchText) {
   return normalSearchText;
 }
 
-function makeSearchFullTextPhraseQuery(tableName, textColumnName) {
+function makeSearchFullTextPhraseQuery(
+  tableName: string,
+  textColumnName: string
+) {
   return `
     with
       results as (
-        select 
+        select
             t.*
           , ts_rank_cd(vector, query) as rank
-        from 
-          ${tableName} t, 
+        from
+          ${tableName} t,
           phraseto_tsquery('english', $1) as query,
           to_tsvector('english', ${textColumnName}) as vector
-        where 
+        where
               query @@ vector
           and deleted is null
       )
@@ -135,18 +151,21 @@ function makeSearchFullTextPhraseQuery(tableName, textColumnName) {
     `;
 }
 
-function makeSearchFullTextPlainQuery(tableName, textColumnName) {
+function makeSearchFullTextPlainQuery(
+  tableName: string,
+  textColumnName: string
+) {
   return `
     with
       results as (
-        select 
+        select
             t.*
           , ts_rank_cd(vector, query) as rank
-        from 
-          ${tableName} t, 
+        from
+          ${tableName} t,
           plainto_tsquery('english', $1) as query,
           to_tsvector('english', ${textColumnName}) as vector
-        where 
+        where
               query @@ vector
           and deleted is null
       )
@@ -154,17 +173,21 @@ function makeSearchFullTextPlainQuery(tableName, textColumnName) {
     `;
 }
 
-function makeSearchFullTextRawQuery(tableName, textColumnName, tsquery) {
+function makeSearchFullTextRawQuery(
+  tableName: string,
+  textColumnName: string,
+  tsquery: string
+) {
   return `
     with
       results as (
-        select 
+        select
             t.*
           , ts_rank_cd(vector, ${tsquery}) as rank
-        from 
-          ${tableName} t, 
+        from
+          ${tableName} t,
           to_tsvector('english', ${textColumnName}) as vector
-        where 
+        where
               (${tsquery}) @@ vector
           and deleted is null
       )
@@ -172,11 +195,14 @@ function makeSearchFullTextRawQuery(tableName, textColumnName, tsquery) {
     `;
 }
 
-function makeSearchContainingTextQuery(tableName, textColumnName) {
+function makeSearchContainingTextQuery(
+  tableName: string,
+  textColumnName: string
+) {
   return `
-    select * 
-    from ${tableName} 
-    where 
+    select *
+    from ${tableName}
+    where
           ${textColumnName} ilike '%' || $1 || '%'
       and deleted is null
   `;
