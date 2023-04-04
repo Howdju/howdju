@@ -1,4 +1,4 @@
-import React, { FormEvent, useState } from "react";
+import React, { useState } from "react";
 
 import ApiAutocomplete from "../../ApiAutocomplete";
 import { propositionSchema } from "../../normalizationSchemas";
@@ -40,7 +40,7 @@ export default function MainSearch() {
     dispatch(mainSearch.textChange(properties[name]));
   };
 
-  const onSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const onSubmit = (event: React.SyntheticEvent) => {
     event.preventDefault();
     setIsAutocompleteForcedClosed(true);
     dispatch(cancelMainSearchSuggestions(mainSearchSuggestionsKey));
@@ -79,6 +79,7 @@ export default function MainSearch() {
         escapeClears={true}
         forcedClosed={isAutocompleteForcedClosed}
         singleLine={true}
+        onSubmit={onSubmit}
       />
     </form>
   );
