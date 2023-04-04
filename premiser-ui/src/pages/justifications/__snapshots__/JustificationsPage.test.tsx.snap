@@ -88,6 +88,7 @@ exports[`JustificationsPage Can add a compound-based justification 1`] = `
                     <button
                       class="md-btn md-btn--icon md-pointer--hover md-inline-block hidden"
                       id="justifications-page--root-target--menu-toggle"
+                      title="Actions"
                       type="button"
                     >
                       <div
@@ -491,6 +492,7 @@ exports[`JustificationsPage Shows a justified proposition 1`] = `
                     <button
                       class="md-btn md-btn--icon md-pointer--hover md-inline-block hidden"
                       id="justifications-page--root-target--menu-toggle"
+                      title="Actions"
                       type="button"
                     >
                       <div
