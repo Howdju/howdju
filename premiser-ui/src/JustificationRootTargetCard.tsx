@@ -23,9 +23,10 @@ import {
   JustificationRootTargetType,
   JustificationRootTargetTypes,
   logger,
-  Proposition,
   toJson,
   ContextTrailItem,
+  UpdatePropositionInput,
+  PropositionOut,
 } from "howdju-common";
 import {
   isPropositionRootTarget,
@@ -295,9 +296,12 @@ class JustificationRootTargetCard extends React.Component<Props> {
         )}`
       );
     }
-    const proposition = rootTarget as Proposition;
     const editorType = editorTypesByRootTargetType[rootTargetType];
-    this.props.editors.beginEdit(editorType, editorId, proposition);
+    this.props.editors.beginEdit(
+      editorType,
+      editorId,
+      toUpdatePropositionInput(rootTarget)
+    );
   };
 
   deleteRootTarget = () => {
@@ -313,6 +317,16 @@ class JustificationRootTargetCard extends React.Component<Props> {
 
   onMouseLeave = () => {
     this.setState({ isOver: false });
+  };
+}
+
+/** Remove the fields that are circular, unserializable, or not part of the API update model. */
+function toUpdatePropositionInput(
+  proposition: PropositionOut
+): UpdatePropositionInput {
+  return {
+    id: proposition.id,
+    text: proposition.text,
   };
 }
 
