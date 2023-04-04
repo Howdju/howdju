@@ -1,5 +1,4 @@
 import map from "lodash/map";
-import Promise from "bluebird";
 import { Database } from "..";
 import { QueryResultRow } from "pg";
 

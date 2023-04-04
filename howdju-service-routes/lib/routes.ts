@@ -66,6 +66,9 @@ export const serviceRoutes = {
         appProvider: ServicesProvider,
         { queryStringParams: { searchText } }
       ) => {
+        if (!searchText) {
+          throw new InvalidRequestError("searchText is required.");
+        }
         const propositions = await appProvider.propositionsTextSearcher.search(
           searchText
         );
@@ -98,6 +101,9 @@ export const serviceRoutes = {
         appProvider: ServicesProvider,
         { queryStringParams: { searchText } }
       ) => {
+        if (!searchText) {
+          throw new InvalidRequestError("searchText is required.");
+        }
         const writs = await appProvider.writsTitleSearcher.search(searchText);
         return { body: { writs } };
       }
@@ -112,6 +118,9 @@ export const serviceRoutes = {
         appProvider: ServicesProvider,
         { queryStringParams: { searchText } }
       ) => {
+        if (!searchText) {
+          throw new InvalidRequestError("searchText is required.");
+        }
         const persorgs = await appProvider.persorgsNameSearcher.search(
           searchText
         );
@@ -128,6 +137,9 @@ export const serviceRoutes = {
         appProvider: ServicesProvider,
         { queryStringParams: { searchText } }
       ) => {
+        if (!searchText) {
+          throw new InvalidRequestError("searchText is required.");
+        }
         const results = await appProvider.mainSearchService.search(searchText);
         return { body: results };
       }
