@@ -25,8 +25,6 @@ import {
   logger,
   toJson,
   ContextTrailItem,
-  UpdatePropositionInput,
-  PropositionOut,
 } from "howdju-common";
 import {
   isPropositionRootTarget,
@@ -55,6 +53,7 @@ import { ComponentId, EditorId, MenuItems, SuggestionsKey } from "./types";
 import TreePolarity from "@/components/TreePolarity";
 
 import "./JustificationRootTargetCard.scss";
+import { toUpdatePropositionInput } from "./PropositionEditor";
 
 const editorTypesByRootTargetType = {
   [JustificationRootTargetTypes.PROPOSITION]: EditorTypes.PROPOSITION,
@@ -318,16 +317,6 @@ class JustificationRootTargetCard extends React.Component<Props> {
 
   onMouseLeave = () => {
     this.setState({ isOver: false });
-  };
-}
-
-/** Remove the fields that are circular, unserializable, or not part of the API update model. */
-function toUpdatePropositionInput(
-  proposition: PropositionOut
-): UpdatePropositionInput {
-  return {
-    id: proposition.id,
-    text: proposition.text,
   };
 }
 

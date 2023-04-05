@@ -1,10 +1,10 @@
-import { UpdatePropositionInput } from "howdju-common";
+import { PropositionOut, UpdatePropositionInput } from "howdju-common";
 
 import PropositionEditorFields from "./PropositionEditorFields";
 import withEditor from "@/editors/withEditor";
 import { EditorTypes } from "@/reducers/editors";
 
-/** A WritQuote editor. */
+/** A Proposition editor. */
 const PropositionEditor = withEditor(
   EditorTypes.PROPOSITION,
   PropositionEditorFields,
@@ -12,5 +12,15 @@ const PropositionEditor = withEditor(
   UpdatePropositionInput
   // TODO(273): add commit config
 );
+
+/** Remove the fields that are circular, unserializable, or not part of the API update model. */
+export function toUpdatePropositionInput(
+  proposition: PropositionOut
+): UpdatePropositionInput {
+  return {
+    id: proposition.id,
+    text: proposition.text,
+  };
+}
 
 export default PropositionEditor;
