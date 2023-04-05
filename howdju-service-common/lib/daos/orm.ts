@@ -532,7 +532,7 @@ function parseJustificationTargetRef(row: JustificationRow) {
   }
 }
 
-type ToWritQuoteMapperRow = WritQuoteRow &
+export type ToWritQuoteMapperRow = WritQuoteRow &
   PrefixProperties<"writ_", ToWritMapperRow>;
 function toWritQuoteMapper(row: ToWritQuoteMapperRow): WritQuoteData {
   const writ = toWrit({
@@ -556,7 +556,8 @@ function toWritQuoteMapper(row: ToWritQuoteMapperRow): WritQuoteData {
 }
 export const toWritQuote = wrapMapper(toWritQuoteMapper);
 
-type ToWritMapperRow = WritRow & PrefixProperties<"creator_", CreatorBlurbRow>;
+export type ToWritMapperRow = WritRow &
+  PrefixProperties<"creator_", CreatorBlurbRow>;
 function toWritMapper(row: ToWritMapperRow): WritData {
   const creatorBlurb = unprefix(row, "creator_");
   if (!creatorBlurb) {
@@ -871,8 +872,10 @@ export const toTag = wrapMapper(function toTagMapper(row) {
   };
 });
 
+export type ToPersorgMapperRow = PersorgRow &
+  PrefixProperties<"creator_", CreatorBlurbRow>;
 export const toPersorg = wrapMapper(function toPersorgMapper(
-  row: PersorgRow & PrefixProperties<"creator_", CreatorBlurbRow>
+  row: ToPersorgMapperRow
 ): PersorgData {
   const persorg = {
     ...PersorgRef.parse({ id: toIdString(row.persorg_id) }),

@@ -19,7 +19,9 @@ export default function MainSearch() {
 
   const [isAutocompleteForcedClosed, setIsAutocompleteForcedClosed] =
     useState(true);
+
   const dispatch = useDispatch();
+
   const fetchSuggestions = (
     searchText: string,
     suggestionsKey: SuggestionsKey
@@ -69,11 +71,11 @@ export default function MainSearch() {
         value={searchText}
         onAutocomplete={onAutocomplete}
         suggestionTransform={suggestionTransform}
+        suggestionsKey={mainSearchSuggestionsKey}
         onPropertyChange={onPropertChange}
         onKeyDown={onKeyDown}
         fetchSuggestions={fetchSuggestions}
         cancelSuggestions={cancelSuggestions}
-        suggestionsKey={mainSearchSuggestionsKey}
         className="mainSearchAutocomplete"
         inputClassName="md-text-field--toolbar"
         escapeClears={true}

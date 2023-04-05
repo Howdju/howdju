@@ -44,7 +44,7 @@ export default handleActions<
           ...state,
           suggestions: {
             ...state.suggestions,
-            [action.meta.requestMeta.suggestionsKey]: result.propositionTexts,
+            [action.meta.requestMeta.suggestionsKey]: result.propositions,
           },
         };
       },

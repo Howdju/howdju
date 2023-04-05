@@ -1,14 +1,17 @@
 import map from "lodash/map";
-import { Database } from "..";
 import { QueryResultRow } from "pg";
+
+import { filterDefined } from "howdju-common";
+
+import { Database } from "../database";
 
 const emptyResults = Promise.resolve([]);
 
-export class TextSearcher<Row, Data> {
+export class TextSearcher<Row extends QueryResultRow, Data> {
   database: Database;
   tableName: string;
   textColumnName: string;
-  rowMapper: (row: Row | undefined) => Data | undefined;
+  rowMapper: (row: Row) => Data | undefined;
   dedupColumnName: string;
   searchFullTextPhraseQuery: string;
   searchFullTextPlainQuery: string;
@@ -18,7 +21,7 @@ export class TextSearcher<Row, Data> {
     database: Database,
     tableName: string,
     textColumnName: string,
-    rowMapper: (row: Row | undefined) => Data | undefined,
+    rowMapper: (row: Row) => Data | undefined,
     dedupColumnName: string
   ) {
     this.database = database;
@@ -41,7 +44,7 @@ export class TextSearcher<Row, Data> {
     );
   }
 
-  async search(searchText: string) {
+  async search(searchText: string): Promise<Data[]> {
     if (!searchText) {
       return emptyResults;
     }
@@ -99,8 +102,8 @@ export class TextSearcher<Row, Data> {
       plainRows,
       rawRows,
       containingRows
-    );
-    return map(uniqueRows, this.rowMapper);
+    ) as Row[];
+    return filterDefined(uniqueRows.map(this.rowMapper));
   }
 }
 
