@@ -210,7 +210,7 @@ export default function withEditor<
             apiValidationErrors,
             editEntity
           )
-        : { errors: undefined, isValidRequest: false };
+        : { errors: undefined, isValidRequest: true };
     useEffect(() => {
       onValidityChange && onValidityChange(isValidRequest);
     }, [isValidRequest, onValidityChange]);

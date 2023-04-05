@@ -40,9 +40,11 @@ export const Proposition = Entity.extend({
 }).strict();
 export type Proposition = z.infer<typeof Proposition>;
 
-export const UpdatePropositionInput = Proposition;
+export const UpdatePropositionInput = Proposition.merge(PersistedEntity).omit({
+  created: true,
+});
 export type UpdatePropositionInput = z.infer<typeof UpdatePropositionInput>;
-export const UpdateProposition = Proposition;
+export const UpdateProposition = UpdatePropositionInput;
 export type UpdateProposition = z.infer<typeof UpdateProposition>;
 
 export const Tag = Entity.extend({

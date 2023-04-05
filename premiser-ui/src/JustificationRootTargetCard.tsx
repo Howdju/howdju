@@ -23,7 +23,6 @@ import {
   JustificationRootTargetType,
   JustificationRootTargetTypes,
   logger,
-  Proposition,
   toJson,
   ContextTrailItem,
 } from "howdju-common";
@@ -54,6 +53,7 @@ import { ComponentId, EditorId, MenuItems, SuggestionsKey } from "./types";
 import TreePolarity from "@/components/TreePolarity";
 
 import "./JustificationRootTargetCard.scss";
+import { toUpdatePropositionInput } from "./PropositionEditor";
 
 const editorTypesByRootTargetType = {
   [JustificationRootTargetTypes.PROPOSITION]: EditorTypes.PROPOSITION,
@@ -138,6 +138,7 @@ class JustificationRootTargetCard extends React.Component<Props> {
         children={"more_vert"}
         position={DropdownMenu.Positions.TOP_RIGHT}
         menuItems={menuItems}
+        title="Actions"
       />
     );
 
@@ -295,9 +296,12 @@ class JustificationRootTargetCard extends React.Component<Props> {
         )}`
       );
     }
-    const proposition = rootTarget as Proposition;
     const editorType = editorTypesByRootTargetType[rootTargetType];
-    this.props.editors.beginEdit(editorType, editorId, proposition);
+    this.props.editors.beginEdit(
+      editorType,
+      editorId,
+      toUpdatePropositionInput(rootTarget)
+    );
   };
 
   deleteRootTarget = () => {

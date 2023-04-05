@@ -44,41 +44,52 @@ export default function JustificationRootTargetViewer({
   contextTrailItem,
   showJustificationCount = true,
 }: Props) {
+  function propositionViewer(proposition: PropositionOut) {
+    return (
+      <PropositionEntityViewer
+        id={id}
+        editorId={editorId || id}
+        proposition={proposition}
+        showStatusText={showStatusText}
+        menu={menu}
+        showJustificationCount={showJustificationCount}
+      />
+    );
+  }
   switch (rootTargetType) {
-    case "PROPOSITION":
-      if (contextTrailItem) {
-        const { connectingEntityType, connectingEntity } = contextTrailItem;
-        // If the root target is a proposition that was part of a compound in context, display
-        // it as part of the compound.
-        if (
-          connectingEntityType === "JUSTIFICATION" &&
-          connectingEntity.basis.type === "PROPOSITION_COMPOUND" &&
-          connectingEntity.basis.entity.atoms.length > 1
-        ) {
-          return (
-            <PropositionCompoundViewer
-              id={id}
-              propositionCompound={connectingEntity.basis.entity}
-              showStatusText={showStatusText}
-              highlightedProposition={rootTarget}
-            />
-          );
-        }
+    case "PROPOSITION": {
+      // If the context of the root target is a proposition in a multi-atom compound, show it as
+      // part of the compound. Otherwise show it as a proposition.
+
+      if (!contextTrailItem) {
+        return propositionViewer(rootTarget);
+      }
+
+      const { connectingEntityType, connectingEntity } = contextTrailItem;
+      if (
+        connectingEntityType !== "JUSTIFICATION" ||
+        connectingEntity.basis.type !== "PROPOSITION_COMPOUND"
+      ) {
         logger.error(
           `A root target proposition's context trail item must be based on a proposition compound, but it was ${connectingEntity.basis.type}`
         );
-        // fallthrough to default return
+        return propositionViewer(rootTarget);
       }
+
+      if (connectingEntity.basis.entity.atoms.length === 1) {
+        return propositionViewer(rootTarget);
+      }
+
       return (
-        <PropositionEntityViewer
+        <PropositionCompoundViewer
           id={id}
-          editorId={editorId || id}
-          proposition={rootTarget}
+          propositionCompound={connectingEntity.basis.entity}
           showStatusText={showStatusText}
-          menu={menu}
-          showJustificationCount={showJustificationCount}
+          highlightedProposition={rootTarget}
         />
       );
+    }
+
     case JustificationRootTargetTypes.STATEMENT:
       return (
         <StatementEntityViewer

@@ -3,6 +3,7 @@ import { rest } from "msw";
 import { screen } from "@testing-library/react";
 import { createMemoryHistory } from "history";
 import moment from "moment";
+import { merge } from "lodash";
 
 import {
   CreateJustification,
@@ -11,6 +12,11 @@ import {
   PropositionRef,
   toSlug,
 } from "howdju-common";
+import {
+  InferRequestBody,
+  InferResponseBody,
+  serviceRoutes,
+} from "howdju-service-routes";
 
 import {
   makeRouteComponentProps,
@@ -21,8 +27,6 @@ import {
   withStaticFromNowMoment,
 } from "@/testUtils";
 import JustificationsPage from "./JustificationsPage";
-import { InferResponseBody, serviceRoutes } from "howdju-service-routes";
-import { merge } from "lodash";
 
 withFakeTimers();
 const server = withMockServer();
@@ -83,10 +87,88 @@ describe("JustificationsPage", () => {
     expect(container).toMatchSnapshot();
   });
 
-  test("Can add a compound-based justification", async () => {
+  test("Can edit a proposition", async () => {
+    // Arrange
     const user = setupUserEvent();
 
+    const justifications: JustificationOut[] = [];
+    const proposition = {
+      ...PropositionRef.parse({ id: "1" }),
+      created,
+      text: "the-proposition-text",
+      justifications,
+    };
+    const response: InferResponseBody<typeof serviceRoutes.readProposition> = {
+      proposition,
+    };
+
+    server.use(
+      rest.get(
+        `http://localhost/propositions/${proposition.id}`,
+        (_req, res, ctx) => {
+          return res(ctx.status(httpStatusCodes.OK), ctx.json(response));
+        }
+      ),
+      rest.get(`http://localhost/search-propositions`, (_req, res, ctx) => {
+        const response: InferResponseBody<
+          typeof serviceRoutes.searchPropositions
+        > = { propositions: [] };
+        return res(ctx.status(httpStatusCodes.OK), ctx.json(response));
+      }),
+      rest.put(
+        `http://localhost/propositions/${proposition.id}`,
+        async (req, res, ctx) => {
+          const { proposition } = await req.json<
+            InferRequestBody<typeof serviceRoutes.updateProposition>
+          >();
+          const response: InferResponseBody<
+            typeof serviceRoutes.updateProposition
+          > = { proposition };
+          return res(ctx.status(httpStatusCodes.OK), ctx.json(response));
+        }
+      )
+    );
+
+    const history = createMemoryHistory();
+    const { location, match } = makeRouteComponentProps(
+      // TODO(196) convert routesById to routePropsById so that we can get path like `routesById["proposition"].path`
+      "p/:rootTargetId/:slug",
+      {
+        pathParams: {
+          rootTargetId: proposition.id,
+          slug: toSlug(proposition.text),
+        },
+      }
+    );
+
+    renderWithProviders(
+      <JustificationsPage
+        rootTargetType={"PROPOSITION"}
+        history={history}
+        location={location}
+        match={match}
+      />,
+      { history }
+    );
+    const updatedText = "The updated text";
+
+    // Act
+    await user.click(screen.getByRole("button", { description: "Actions" }));
+    await user.click(screen.getByRole("button", { name: /Edit/i }));
+    const propositionTextInput = screen.getByLabelText(/Text/i);
+    await user.clear(propositionTextInput);
+    await user.type(propositionTextInput, updatedText);
+    await user.click(screen.getByRole("button", { name: "Save" }));
+
+    // Assert
+    jest.runAllTimers();
+    expect(await screen.findByText(updatedText)).toBeInTheDocument();
+  });
+
+  test("Can add a compound-based justification", async () => {
     // Arrange
+
+    const user = setupUserEvent();
     const justifications: JustificationOut[] = [];
     const rootTargetId = "1";
     const proposition = {
