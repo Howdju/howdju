@@ -23,7 +23,7 @@ if [[ $1 == "inspect" ]]; then
   jest_status=$?
 else
   echo "Running: jest ${@:1}"
-  jest ${@:1}
+  jest "${@:1}"
   jest_status=$?
 fi
 

@@ -119,7 +119,7 @@ exports.createNextContinuationToken = (sorts, entities, filters) => {
 
 exports.createContinuationToken = (sorts, entities, filters) => {
   const lastEntity = last(entities);
-  let continuationToken = null;
+  let continuationToken = undefined;
 
   if (lastEntity) {
     const continuationInfos = exports.createContinuationInfo(

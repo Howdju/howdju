@@ -46,6 +46,7 @@ const {
   AuthorizationError,
   EntityTooOldToModifyError,
 } = require("../serviceErrors");
+const { toString } = require("lodash");
 
 const emptyPropositionsByVotePolarity = {
   [PropositionTagVotePolarities.POSITIVE]: [],
@@ -347,8 +348,8 @@ exports.PropositionsService = class PropositionsService {
       )
       .then(([userId, now, deletedPropositionId, deletedJustificationIds]) =>
         Promise.all([
-          deletedPropositionId,
-          deletedJustificationIds,
+          toString(deletedPropositionId),
+          deletedJustificationIds.map(toString),
           this.actionsService.asyncRecordAction(
             userId,
             now,

@@ -1,52 +1,35 @@
+import moment from "moment";
+import { Pool } from "pg";
+
+import { AccountSettings } from "howdju-common";
 import { mockLogger } from "howdju-test-common";
 
 import { AccountSettingsService } from "./AccountSettingsService";
-import {
-  AccountSettingsDao,
-  AuthDao,
-  CredentialValidator,
-  Database,
-  makePool,
-  UsersDao,
-} from "..";
+import { Database, makePool, UsersDao } from "..";
+import { makeTestProvider } from "@/initializers/TestProvider";
 import { AuthService } from "./AuthService";
-import { AccountSettings } from "howdju-common";
-import moment from "moment";
-import { Pool } from "pg";
 import { endPoolAndDropDb, initDb, makeTestDbConfig } from "@/util/testUtil";
 import { CreateUserDataIn } from "@/daos/dataTypes";
 
 describe("AccountSettingsService", () => {
   const dbConfig = makeTestDbConfig();
+  let dbName: string;
   let pool: Pool;
+
+  let service: AccountSettingsService;
   let usersDao: UsersDao;
   let authService: AuthService;
-  let service: AccountSettingsService;
-  let dbName: string;
   beforeEach(async () => {
     dbName = await initDb(dbConfig);
 
     pool = makePool(mockLogger, { ...dbConfig, database: dbName });
     const database = new Database(mockLogger, pool);
-    const authDao = new AuthDao(mockLogger, database);
-    usersDao = new UsersDao(mockLogger, database);
-    const credentialValidator = new CredentialValidator();
-    const apiConfig = {
-      authTokenDuration: { days: 1 },
-    };
-    authService = new AuthService(
-      apiConfig,
-      mockLogger,
-      credentialValidator,
-      authDao,
-      usersDao
-    );
-    const accountSettingsDao = new AccountSettingsDao(mockLogger, database);
-    service = new AccountSettingsService(
-      mockLogger,
-      authService,
-      accountSettingsDao
-    );
+
+    const provider = makeTestProvider(database);
+
+    service = provider.accountSettingsService;
+    usersDao = provider.usersDao;
+    authService = provider.authService;
   });
   afterEach(async () => {
     await endPoolAndDropDb(pool, dbConfig, dbName);
