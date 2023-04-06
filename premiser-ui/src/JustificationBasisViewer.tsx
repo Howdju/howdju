@@ -15,6 +15,8 @@ import SourceExcerptEntityViewer from "./SourceExcerptEntityViewer";
 import { OnClickWritQuoteUrl } from "./WritQuoteViewer";
 import { combineEditorIds } from "./viewModels";
 
+import "./JustificationBasisViewer.scss";
+
 interface Props {
   id: ComponentId;
   justification: JustificationOut;
@@ -24,7 +26,12 @@ interface Props {
   onClickWritQuoteUrl: OnClickWritQuoteUrl;
 }
 
-export default function JustificationBasisViewer({
+export default function JustificationBasisViewer(props: Props) {
+  const basisViewer = makeBasisViewer(props);
+  return <div className="justification-basis-viewer">{basisViewer}</div>;
+}
+
+function makeBasisViewer({
   id,
   justification,
   showStatusText,
@@ -34,7 +41,6 @@ export default function JustificationBasisViewer({
 }: Props) {
   const basis = justification.basis;
   const writQuoteEditorId = combineEditorIds(id, "writ-quote");
-
   switch (basis.type) {
     case JustificationBasisTypes.PROPOSITION_COMPOUND:
       return (

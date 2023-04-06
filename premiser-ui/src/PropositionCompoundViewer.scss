@@ -1,9 +1,6 @@
 @import "colors";
 
 .compound-atom {
-  padding: 5px;
-  min-height: 60px;
-
   // Put a divider between the atoms.
   border-bottom: 1px solid $entity-border-color;
   &:last-child {
