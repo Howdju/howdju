@@ -1071,17 +1071,17 @@ export const api = {
 
   fetchMainSearchSuggestions: apiActionCreator(
     "FETCH_MAIN_SEARCH_SUGGESTIONS",
-    serviceRoutes.mainSearch,
+    serviceRoutes.searchPropositions,
     (searchText: string, suggestionsKey: SuggestionsKey) => ({
       config: {
         queryStringParams: {
-          searchText: searchText,
+          searchText,
         },
         cancelKey:
           makeApiActionTypes("FETCH_MAIN_SEARCH_SUGGESTIONS")[0] +
           "." +
           suggestionsKey,
-        normalizationSchema: mainSearchResultsSchema,
+        normalizationSchema: { propositions: propositionsSchema },
       },
       meta: { suggestionsKey },
     })
@@ -1093,7 +1093,7 @@ export const api = {
     (searchText, suggestionsKey) => ({
       config: {
         queryStringParams: {
-          searchText: searchText,
+          searchText,
         },
         cancelKey: `${
           makeApiActionTypes("FETCH_PERSORG_NAME_SUGGESTIONS")[0]

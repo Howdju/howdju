@@ -1,4 +1,4 @@
-import React, { FormEvent, useState } from "react";
+import React, { useState } from "react";
 
 import ApiAutocomplete from "../../ApiAutocomplete";
 import { propositionSchema } from "../../normalizationSchemas";
@@ -19,7 +19,9 @@ export default function MainSearch() {
 
   const [isAutocompleteForcedClosed, setIsAutocompleteForcedClosed] =
     useState(true);
+
   const dispatch = useDispatch();
+
   const fetchSuggestions = (
     searchText: string,
     suggestionsKey: SuggestionsKey
@@ -40,7 +42,7 @@ export default function MainSearch() {
     dispatch(mainSearch.textChange(properties[name]));
   };
 
-  const onSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const onSubmit = (event: React.SyntheticEvent) => {
     event.preventDefault();
     setIsAutocompleteForcedClosed(true);
     dispatch(cancelMainSearchSuggestions(mainSearchSuggestionsKey));
@@ -69,16 +71,17 @@ export default function MainSearch() {
         value={searchText}
         onAutocomplete={onAutocomplete}
         suggestionTransform={suggestionTransform}
+        suggestionsKey={mainSearchSuggestionsKey}
         onPropertyChange={onPropertChange}
         onKeyDown={onKeyDown}
         fetchSuggestions={fetchSuggestions}
         cancelSuggestions={cancelSuggestions}
-        suggestionsKey={mainSearchSuggestionsKey}
         className="mainSearchAutocomplete"
         inputClassName="md-text-field--toolbar"
         escapeClears={true}
         forcedClosed={isAutocompleteForcedClosed}
         singleLine={true}
+        onSubmit={onSubmit}
       />
     </form>
   );

@@ -1,16 +1,33 @@
-const Promise = require("bluebird");
+import Promise from "bluebird";
 
-const { requireArgs } = require("howdju-common");
+import { Logger, requireArgs } from "howdju-common";
 
-exports.MainSearchService = class MainSearchService {
+import { WritQuotesService } from "./WritQuotesService";
+import { TagsService } from "./TagsService";
+import {
+  PersorgsNameSearcher,
+  PropositionTextSearcher,
+  WritQuoteQuoteTextSearcher,
+  WritTitleSearcher,
+} from "../searchers";
+
+export class MainSearchService {
+  logger: Logger;
+  tagsService: TagsService;
+  propositionsTextSearcher: PropositionTextSearcher;
+  writsTitleSearcher: WritTitleSearcher;
+  writQuotesQuoteTextSearcher: WritQuoteQuoteTextSearcher;
+  writQuotesService: WritQuotesService;
+  persorgsNameSearcher: PersorgsNameSearcher;
+
   constructor(
-    logger,
-    tagsService,
-    propositionsTextSearcher,
-    writsTitleSearcher,
-    writQuotesQuoteTextSearcher,
-    writQuotesService,
-    persorgsNameSearcher
+    logger: Logger,
+    tagsService: TagsService,
+    propositionsTextSearcher: PropositionTextSearcher,
+    writsTitleSearcher: WritTitleSearcher,
+    writQuotesQuoteTextSearcher: WritQuoteQuoteTextSearcher,
+    writQuotesService: WritQuotesService,
+    persorgsNameSearcher: PersorgsNameSearcher
   ) {
     requireArgs({
       logger,
@@ -30,7 +47,7 @@ exports.MainSearchService = class MainSearchService {
     this.persorgsNameSearcher = persorgsNameSearcher;
   }
 
-  search(searchText) {
+  search(searchText: string) {
     return Promise.props({
       tags: this.tagsService.readTagsLikeTagName(searchText),
       propositionTexts: this.propositionsTextSearcher.search(searchText),
@@ -43,4 +60,4 @@ exports.MainSearchService = class MainSearchService {
       persorgsFromName: this.persorgsNameSearcher.search(searchText),
     });
   }
-};
+}
