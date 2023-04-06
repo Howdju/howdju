@@ -1,6 +1,5 @@
 const Promise = require("bluebird");
 const moment = require("moment");
-
 const concat = require("lodash/concat");
 const filter = require("lodash/filter");
 const get = require("lodash/get");
@@ -15,6 +14,7 @@ const some = require("lodash/some");
 const toNumber = require("lodash/toNumber");
 const unionBy = require("lodash/unionBy");
 const unzip = require("lodash/unzip");
+const { toString } = require("lodash");
 
 const {
   EntityTypes,
@@ -46,7 +46,6 @@ const {
   AuthorizationError,
   EntityTooOldToModifyError,
 } = require("../serviceErrors");
-const { toString } = require("lodash");
 
 const emptyPropositionsByVotePolarity = {
   [PropositionTagVotePolarities.POSITIVE]: [],
