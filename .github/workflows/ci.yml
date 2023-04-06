@@ -30,7 +30,7 @@ jobs:
       - name: Setup Node.JS
         uses: actions/setup-node@v3
         with:
-          node-version: 14
+          node-version: 14.20.1
           cache: "yarn"
       - name: Install Yarn
         run: |
@@ -45,7 +45,9 @@ jobs:
       - name: Check format
         run: yarn run check-format:all
       - name: Typecheck
-        run: yarn run typecheck:all
+        run: |
+          echo tsc version: $(yarn run tsc -v)
+          yarn run typecheck:all
       - name: Test & coverage
         env:
           DB_USER: postgres

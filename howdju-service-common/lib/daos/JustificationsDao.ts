@@ -6,6 +6,8 @@ import head from "lodash/head";
 import map from "lodash/map";
 import mapValues from "lodash/mapValues";
 import snakeCase from "lodash/snakeCase";
+import { Moment } from "moment";
+import { fromPairs, isArray, sortBy, toString } from "lodash";
 
 import {
   assert,
@@ -26,7 +28,6 @@ import {
   EntityId,
   JustificationRootTargetType,
   JustificationPolarity,
-  toEntries,
   JustificationRootPolarity,
   filterDefined,
   JustificationRef,
@@ -75,8 +76,8 @@ import {
   BasedJustificationDataOut,
 } from "./dataTypes";
 import { SqlClause } from "./daoTypes";
-import { Moment } from "moment";
-import { fromPairs, sortBy } from "lodash";
+
+export const MAX_COUNT = 1024;
 
 export class JustificationsDao {
   logger: Logger;
@@ -116,10 +117,10 @@ export class JustificationsDao {
 
   async readJustifications(
     filters: JustificationFilters | undefined,
-    sorts: SortDescription[],
-    count: number,
-    isContinuation: boolean,
-    includeUrls: boolean
+    sorts: SortDescription[] = [],
+    count: number = MAX_COUNT,
+    isContinuation: boolean = false,
+    includeUrls: boolean = true
   ): Promise<ReadJustificationDataOut[]> {
     const { sql: limitedJustificationsSql, args: limitedJustificationsArgs } =
       this.makeLimitedJustificationsClause(
@@ -605,11 +606,11 @@ export class JustificationsDao {
 
   async readJustificationsDependentUponPropositionId(propositionId: EntityId) {
     const sql = `
-      select * from justifications where
+      select justification_id from justifications where
             root_target_type = $1
         and root_target_id = $2
       union
-        select j.*
+        select j.justification_id
         from justifications j
           join proposition_compounds sc on
                 j.basis_type = $3
@@ -619,7 +620,7 @@ export class JustificationsDao {
                 pca.proposition_id = pcap.proposition_id
             and pcap.proposition_id = $2
     `;
-    const { rows } = await this.database.query<ToJustificationMapperRow>(
+    const { rows } = await this.database.query<{ justification_id: string }>(
       "readJustificationsDependentUponPropositionId",
       sql,
       [
@@ -628,9 +629,11 @@ export class JustificationsDao {
         JustificationBasisTypes.PROPOSITION_COMPOUND,
       ]
     );
-    const justifications = filterDefined(map(rows, (j) => toJustification(j)));
-    await this.addStatements(justifications);
-    return justifications;
+    if (!rows.length) {
+      return [];
+    }
+    const justificationIds = rows.map((row) => toString(row.justification_id));
+    return await this.readJustifications({ justificationId: justificationIds });
   }
 
   async readJustificationForId(
@@ -639,9 +642,7 @@ export class JustificationsDao {
     const [justification] = await this.readJustifications(
       { justificationId },
       [],
-      1,
-      false,
-      true
+      1
     );
     return justification;
   }
@@ -926,7 +927,7 @@ export class JustificationsDao {
    * @param isContinuation boolean - whether the query is a continuation of a pagination query
    */
   private makeLimitedJustificationsClause(
-    filters: Record<string, string> | undefined,
+    filters: JustificationFilters | undefined,
     sorts: SortDescription[],
     count: number,
     isContinuation: boolean
@@ -979,6 +980,9 @@ export class JustificationsDao {
     sorts: SortDescription[]
   ) {
     const clauses: SqlClause[] = [];
+    if (!filters) {
+      return clauses;
+    }
 
     const columnNames = ["justification_id"];
     forEach(sorts, (sort) => {
@@ -990,37 +994,47 @@ export class JustificationsDao {
       }
     });
 
-    for (const [filterName, filterValue] of toEntries(filters)) {
-      if (!filterValue) {
+    let filterName: keyof typeof filters;
+    for (filterName in filters) {
+      if (!filters[filterName]) {
         this.logger.warn(
           `skipping filter ${filterName} because it has no value`
         );
-        return;
+        continue;
       }
       switch (filterName) {
         case "justificationId": {
           clauses.push(
-            makeJustificationIdJustificationClause(filterValue, columnNames)
+            makeJustificationIdJustificationClause(
+              filters[filterName]!,
+              columnNames
+            )
           );
           break;
         }
         case "propositionId": {
           pushAll(
             clauses,
-            makePropositionJustificationClause(filterValue, columnNames)
+            makePropositionJustificationClause(
+              filters[filterName]!,
+              columnNames
+            )
           );
           break;
         }
         case "propositionCompoundId": {
           clauses.push(
-            makePropositionCompoundJustificationClause(filterValue, columnNames)
+            makePropositionCompoundJustificationClause(
+              filters[filterName]!,
+              columnNames
+            )
           );
           break;
         }
         case "sourceExcerptParaphraseId": {
           clauses.push(
             makeSourceExcerptParaphraseJustificationClause(
-              filterValue,
+              filters[filterName]!,
               columnNames
             )
           );
@@ -1029,20 +1043,23 @@ export class JustificationsDao {
         case "writQuoteId": {
           pushAll(
             clauses,
-            makeWritQuoteJustificationClause(filterValue, columnNames)
+            makeWritQuoteJustificationClause(filters[filterName]!, columnNames)
           );
           break;
         }
         case "writId": {
           pushAll(
             clauses,
-            makeWritJustificationClause(filterValue, columnNames)
+            makeWritJustificationClause(filters[filterName]!, columnNames)
           );
           break;
         }
         case "url": {
           clauses.push(
-            makeWritQuoteUrlJustificationClause(filterValue, columnNames)
+            makeWritQuoteUrlJustificationClause(
+              filters[filterName]!,
+              columnNames
+            )
           );
           break;
         }
@@ -1592,7 +1609,7 @@ function makePropositionCompoundJustificationClause(
 }
 
 function makeJustificationIdJustificationClause(
-  justificationId: EntityId,
+  justificationId: EntityId | EntityId[],
   justificationColumns: string[]
 ) {
   const select = toSelect(justificationColumns, "j");
@@ -1603,9 +1620,12 @@ function makeJustificationIdJustificationClause(
       justifications j
       where
             j.deleted is null
-        and j.justification_id = $1
+        and j.justification_id in ($1)
   `;
-  const args = [justificationId];
+  const justificationIdsString = isArray(justificationId)
+    ? justificationId.join(",")
+    : justificationId;
+  const args = [justificationIdsString];
   return {
     sql,
     args,

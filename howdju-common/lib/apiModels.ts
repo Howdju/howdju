@@ -103,12 +103,9 @@ export type TaggedEntityOut<T extends Entity = Entity> = Persisted<T> & {
   recommendedTags?: Tag[];
 };
 
-export type JustificationFilterName =
-  | typeof ExternalJustificationSearchFilters[number]
-  | "justificationId";
 export type JustificationFilters = Partial<
-  Record<JustificationFilterName, string>
->;
+  Record<typeof ExternalJustificationSearchFilters[number], string>
+> & { justificationId?: string | string[] };
 
 /** The justification search filters that clients can send. */
 export const ExternalJustificationSearchFilters = [

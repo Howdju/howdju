@@ -1,6 +1,5 @@
 const Promise = require("bluebird");
 const moment = require("moment");
-
 const concat = require("lodash/concat");
 const filter = require("lodash/filter");
 const get = require("lodash/get");
@@ -15,6 +14,7 @@ const some = require("lodash/some");
 const toNumber = require("lodash/toNumber");
 const unionBy = require("lodash/unionBy");
 const unzip = require("lodash/unzip");
+const { toString } = require("lodash");
 
 const {
   EntityTypes,
@@ -347,8 +347,8 @@ exports.PropositionsService = class PropositionsService {
       )
       .then(([userId, now, deletedPropositionId, deletedJustificationIds]) =>
         Promise.all([
-          deletedPropositionId,
-          deletedJustificationIds,
+          toString(deletedPropositionId),
+          deletedJustificationIds.map(toString),
           this.actionsService.asyncRecordAction(
             userId,
             now,

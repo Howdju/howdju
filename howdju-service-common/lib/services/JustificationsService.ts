@@ -158,7 +158,7 @@ export class JustificationsService extends EntityService<
     includeUrls: boolean;
   }): Promise<{
     justifications: JustificationOut[];
-    continuationToken: ContinuationToken;
+    continuationToken: ContinuationToken | undefined;
   }> {
     const countNumber = toNumber(count);
     if (!isFinite(countNumber)) {
@@ -194,7 +194,7 @@ export class JustificationsService extends EntityService<
     includeUrls: boolean
   ): Promise<{
     justifications: JustificationOut[];
-    continuationToken: ContinuationToken;
+    continuationToken: ContinuationToken | undefined;
   }> {
     const disambiguationSorts: SortDescription[] = [
       { property: "id", direction: "ascending" },
