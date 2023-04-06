@@ -125,9 +125,9 @@ export type JustificationSearchFilters = {
   [key in typeof ExternalJustificationSearchFilters[number]]?: string;
 };
 
-export interface SortDescription {
-  property: string;
+export interface SortDescription<E, P extends keyof E> {
+  property: P;
   direction: "ascending" | "descending";
   /** For continuations, the sort should filter out this value and any before it according to `direction`. */
-  value?: string;
+  value?: E[P];
 }

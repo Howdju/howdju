@@ -27,7 +27,7 @@ export class Database {
   query<R extends QueryResultRow>(
     queryName: string,
     sql: string,
-    args: any[],
+    args?: any[],
     doArrayMode = false
   ) {
     requireArgs({ queryName, sql });

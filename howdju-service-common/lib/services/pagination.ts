@@ -1,13 +1,19 @@
-const URLSafeBase64 = require("urlsafe-base64");
+import URLSafeBase64 from "urlsafe-base64";
 
-const cloneDeep = require("lodash/cloneDeep");
-const get = require("lodash/get");
-const invert = require("lodash/invert");
-const last = require("lodash/last");
-const map = require("lodash/map");
-const mapKeys = require("lodash/mapKeys");
+import cloneDeep from "lodash/cloneDeep";
+import get from "lodash/get";
+import invert from "lodash/invert";
+import last from "lodash/last";
+import map from "lodash/map";
+import mapKeys from "lodash/mapKeys";
 
-const { SortDirections } = require("howdju-common");
+import {
+  ContinuationToken,
+  Entity,
+  JustificationSearchFilters,
+  SortDescription,
+  SortDirections,
+} from "howdju-common";
 
 /** Store the sort continuation properties with single-letter representations to cut down on the size of the payload */
 const ContinuationTokenShortPropertyNames = {
@@ -38,7 +44,7 @@ const shortenContinuationInfoSort = (sort) => {
   }
   const shortSort = mapKeys(
     sort,
-    (value, key) => SortContinuationShortPropertyNames[key]
+    (_value, key) => SortContinuationShortPropertyNames[key]
   );
   return shortSort;
 };
@@ -46,7 +52,7 @@ const shortenContinuationInfoSort = (sort) => {
 const lengthenContinuationInfoSort = (sort) => {
   const longSort = mapKeys(
     sort,
-    (value, key) => SortContinuationFullPropertyNames[key]
+    (_value, key) => SortContinuationFullPropertyNames[key]
   );
 
   if (longSort.direction) {
@@ -56,7 +62,11 @@ const lengthenContinuationInfoSort = (sort) => {
   return longSort;
 };
 
-exports.createContinuationInfo = (sorts, lastEntity, filters) => {
+export const createContinuationInfo = <E extends Entity>(
+  sorts: SortDescription<E>[],
+  lastEntity: E,
+  filters: { [key in keyof E]: E[key] }
+) => {
   const continuationSorts = map(sorts, ({ property, direction }) => {
     const value = lastEntity[property];
     const continuationInfo = {
@@ -88,12 +98,12 @@ exports.createContinuationInfo = (sorts, lastEntity, filters) => {
   return shortNameContinuationInfo;
 };
 
-exports.createNextContinuationToken = (sorts, entities, filters) => {
+export const createNextContinuationToken = (sorts, entities, filters) => {
   const lastEntity = last(entities);
   let nextContinuationToken;
   if (lastEntity) {
     // Everything from the previous token should be fine except we need to update the values
-    const nextContinuationInfo = exports.updateContinuationInfo(
+    const nextContinuationInfo = updateContinuationInfo(
       sorts,
       lastEntity,
       filters
@@ -110,35 +120,39 @@ exports.createNextContinuationToken = (sorts, entities, filters) => {
       (value, key) => ContinuationTokenShortPropertyNames[key]
     );
 
-    nextContinuationToken = exports.encodeContinuationToken(
-      shortNextContinuationInfo
-    );
+    nextContinuationToken = encodeContinuationToken(shortNextContinuationInfo);
   }
   return nextContinuationToken;
 };
 
-exports.createContinuationToken = (sorts, entities, filters) => {
+export const createContinuationToken = <E extends Entity>(
+  sorts: SortDescription<E>[],
+  entities: E[],
+  filters: { [key in keyof E]: E[key] }
+) => {
   const lastEntity = last(entities);
   let continuationToken = null;
 
   if (lastEntity) {
-    const continuationInfos = exports.createContinuationInfo(
+    const continuationInfos = createContinuationInfo(
       sorts,
       lastEntity,
       filters
     );
-    continuationToken = exports.encodeContinuationToken(continuationInfos);
+    continuationToken = encodeContinuationToken(continuationInfos);
   }
   return continuationToken;
 };
 
-exports.decodeContinuationToken = (continuationToken) => {
-  const decoded = URLSafeBase64.decode(new Buffer(continuationToken));
+export const decodeContinuationToken = (
+  continuationToken: ContinuationToken
+) => {
+  const decoded = URLSafeBase64.decode(continuationToken).toString();
   const continuationInfo = JSON.parse(decoded);
 
   const fullNameContinuationInfo = mapKeys(
     continuationInfo,
-    (value, key) => ContinuationTokenFullPropertyNames[key]
+    (_value, key) => ContinuationTokenFullPropertyNames[key]
   );
   if (fullNameContinuationInfo.sorts) {
     fullNameContinuationInfo.sorts = map(
@@ -150,10 +164,10 @@ exports.decodeContinuationToken = (continuationToken) => {
   return fullNameContinuationInfo;
 };
 
-exports.encodeContinuationToken = (continuationInfo) =>
-  URLSafeBase64.encode(new Buffer(JSON.stringify(continuationInfo)));
+export const encodeContinuationToken = (continuationInfo) =>
+  URLSafeBase64.encode(Buffer.from(JSON.stringify(continuationInfo)));
 
-exports.updateContinuationInfo = (sorts, lastEntity, filters) => {
+export const updateContinuationInfo = (sorts, lastEntity, filters) => {
   const newSorts = map(sorts, (sort) => {
     const nextSortContinuation = cloneDeep(sort);
     nextSortContinuation.value = get(lastEntity, sort.property);

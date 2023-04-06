@@ -38,6 +38,7 @@
     "@types/moment-duration-format": "^2.2.3",
     "@types/pg": "^8.6.5",
     "@types/pg-pool": "^2.0.3",
+    "@types/urlsafe-base64": "^1.0.28",
     "eslint": "^8.27.0",
     "eslint-config-howdju": "workspace:eslint-config-howdju",
     "howdju-test-common": "workspace:howdju-test-common",
