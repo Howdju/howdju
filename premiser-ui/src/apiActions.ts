@@ -663,7 +663,7 @@ export const api = {
       includeUrls?: boolean;
       sorts?: Record<string, string>;
       count: number;
-      continuationToken?: string;
+      continuationToken?: ContinuationToken;
     }) => {
       const queryStringParams: JustificationSearchQueryStringParams = {};
 
