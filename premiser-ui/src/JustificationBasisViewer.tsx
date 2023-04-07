@@ -53,16 +53,14 @@ function makeBasisViewer({
       );
     case JustificationBasisTypes.WRIT_QUOTE:
       return (
-        <Paper>
-          <WritQuoteEntityViewer
-            id={id}
-            writQuote={basis.entity}
-            editorId={writQuoteEditorId}
-            showStatusText={showStatusText}
-            showUrls={showUrls}
-            onClickUrl={onClickWritQuoteUrl}
-          />
-        </Paper>
+        <WritQuoteEntityViewer
+          id={id}
+          writQuote={basis.entity}
+          editorId={writQuoteEditorId}
+          showStatusText={showStatusText}
+          showUrls={showUrls}
+          onClickUrl={onClickWritQuoteUrl}
+        />
       );
     case "SOURCE_EXCERPT":
       return <SourceExcerptEntityViewer />;
