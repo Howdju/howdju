@@ -16,6 +16,7 @@ import {
   JustificationRootTargetOut,
   JustificationRef,
   JustificationOut,
+  negateRootPolarity,
 } from "howdju-common";
 
 export function isPropositionRootTarget(
@@ -66,7 +67,7 @@ function calcRootTargetStuff(
   let rootPolarity: JustificationPolarity = justification.polarity;
   while ("target" in targetEntity) {
     const targetJustification = targetEntity;
-    rootPolarity = targetJustification.polarity;
+    rootPolarity = negateRootPolarity(targetJustification.polarity);
     targetType = targetJustification.target.type;
     targetEntity = targetJustification.target.entity;
   }

@@ -16,6 +16,9 @@ $banner-padding: 3em;
   .justification-tree > .chat-bubble.chat-bubble--positive {
     margin-right: $tree-branch-offset;
   }
+  .justification-tree > .chat-bubble.chat-bubble--negative {
+    margin-left: $tree-branch-offset;
+  }
 
   .primary-slogan {
     font-size: 28px;

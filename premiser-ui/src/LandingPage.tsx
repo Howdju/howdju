@@ -237,8 +237,9 @@ export default class LandingPage extends Component {
               proposition={rootProposition}
               showStatusText={false}
             />
-            <JustificationChatBubble
+            <JustificationBranch
               justification={proJustification}
+              doShowBasisJustifications={false}
               doShowControls={false}
               showStatusText={false}
               showBasisUrls={false}
@@ -262,8 +263,9 @@ export default class LandingPage extends Component {
               proposition={rootProposition}
               showStatusText={false}
             />
-            <JustificationChatBubble
+            <JustificationBranch
               justification={conJustification}
+              doShowBasisJustifications={false}
               doShowControls={false}
               showStatusText={false}
               showBasisUrls={false}
