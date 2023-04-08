@@ -83,7 +83,8 @@ export function isCounter(
 }
 
 export const isRootJustification = (j: Justification) =>
-  j.target.type === j.rootTargetType && j.target.entity.id === j.rootTarget.id;
+  j.target?.type === j.rootTargetType &&
+  j.target?.entity.id === j.rootTarget.id;
 export const hasQuote = (j: Justification) =>
   j.basis.type === "WRIT_QUOTE" && j.basis.entity.quoteText;
 export const isPropositionCompoundBased = (

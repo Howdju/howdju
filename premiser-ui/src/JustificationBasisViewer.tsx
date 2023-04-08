@@ -1,5 +1,4 @@
 import React from "react";
-import { Paper } from "react-md";
 
 import {
   ContextTrailItem,

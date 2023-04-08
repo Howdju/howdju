@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { Link } from "react-router-dom";
 import { FontIcon } from "react-md";
 import cloneDeep from "lodash/cloneDeep";
+import moment from "moment";
 
 import {
   JustificationBasisTypes,
@@ -20,13 +21,11 @@ import { makeJustificationViewModel } from "howdju-client-common";
 
 import paths from "./paths";
 import PropositionCard from "./PropositionCard";
-import JustificationChatBubble from "./JustificationChatBubble";
 import JustificationBranch from "./JustificationBranch";
 import { combineIds } from "./viewModels";
+import ContextTrail from "@/components/contextTrail/ContextTrail";
 
 import "./LandingPage.scss";
-import ContextTrail from "@/components/contextTrail/ContextTrail";
-import moment from "moment";
 
 export default class LandingPage extends Component {
   render() {
