@@ -9,6 +9,7 @@ import "./WritQuoteCard.scss";
 import { combineIds } from "./viewModels";
 import { newUnimplementedError } from "howdju-common";
 
+// TODO(221) convert to functional component
 export default class WritQuoteCard extends Component {
   render() {
     const { id, writQuote, className, showUrls, doHideControls, ...rest } =

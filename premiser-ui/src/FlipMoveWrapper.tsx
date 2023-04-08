@@ -10,7 +10,7 @@ interface Props {
 /**
  * A class-based component to wrap functional component children of FlipMove.
  *
- * TODO(221): revisit whether we need this if we replace/upgrade react-flip-move.
+ * TODO(221) revisit whether we need this if we replace/upgrade react-flip-move.
  *
  * Prevents this error:
  *

@@ -1,5 +1,4 @@
 import React from "react";
-import { Paper } from "react-md";
 
 import {
   ContextTrailItem,
@@ -15,6 +14,8 @@ import SourceExcerptEntityViewer from "./SourceExcerptEntityViewer";
 import { OnClickWritQuoteUrl } from "./WritQuoteViewer";
 import { combineEditorIds } from "./viewModels";
 
+import "./JustificationBasisViewer.scss";
+
 interface Props {
   id: ComponentId;
   justification: JustificationOut;
@@ -24,7 +25,12 @@ interface Props {
   onClickWritQuoteUrl: OnClickWritQuoteUrl;
 }
 
-export default function JustificationBasisViewer({
+export default function JustificationBasisViewer(props: Props) {
+  const basisViewer = makeBasisViewer(props);
+  return <div className="justification-basis-viewer">{basisViewer}</div>;
+}
+
+function makeBasisViewer({
   id,
   justification,
   showStatusText,
@@ -34,7 +40,6 @@ export default function JustificationBasisViewer({
 }: Props) {
   const basis = justification.basis;
   const writQuoteEditorId = combineEditorIds(id, "writ-quote");
-
   switch (basis.type) {
     case JustificationBasisTypes.PROPOSITION_COMPOUND:
       return (
@@ -47,16 +52,14 @@ export default function JustificationBasisViewer({
       );
     case JustificationBasisTypes.WRIT_QUOTE:
       return (
-        <Paper>
-          <WritQuoteEntityViewer
-            id={id}
-            writQuote={basis.entity}
-            editorId={writQuoteEditorId}
-            showStatusText={showStatusText}
-            showUrls={showUrls}
-            onClickUrl={onClickWritQuoteUrl}
-          />
-        </Paper>
+        <WritQuoteEntityViewer
+          id={id}
+          writQuote={basis.entity}
+          editorId={writQuoteEditorId}
+          showStatusText={showStatusText}
+          showUrls={showUrls}
+          onClickUrl={onClickWritQuoteUrl}
+        />
       );
     case "SOURCE_EXCERPT":
       return <SourceExcerptEntityViewer />;

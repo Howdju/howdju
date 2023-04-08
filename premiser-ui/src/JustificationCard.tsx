@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Component } from "react";
 import { Card, CardText } from "react-md";
 import { Props as ReactMdProps } from "react-md/lib";
 import cn from "classnames";
@@ -23,35 +23,39 @@ interface Props {
   onClickWritQuoteUrl?: OnClickJustificationWritQuoteUrl;
 }
 
-export default function JustificationCard({
-  id,
-  justification,
-  doShowControls = true,
-  showStatusText = true,
-  onExpandCounterAncestors,
-  contextTrailItems,
-  className,
-  showBasisUrls = false,
-  doShowTargets = true,
-  onClickWritQuoteUrl,
-  ...rest
-}: Props) {
-  return (
-    <Card {...rest} className={cn(className, "entity-card")}>
-      <CardText>
-        <JustificationEntityViewer
-          id={id}
-          justification={justification}
-          doShowControls={doShowControls}
-          onExpandCounterAncestors={onExpandCounterAncestors}
-          showBasisUrls={showBasisUrls}
-          doShowRootTarget={doShowTargets}
-          doShowCounterTarget={doShowTargets}
-          onClickWritQuoteUrl={onClickWritQuoteUrl}
-          showStatusText={showStatusText}
-          contextTrailItems={contextTrailItems}
-        />
-      </CardText>
-    </Card>
-  );
+// TODO(221) convert to functional component
+export default class JustificationCard extends Component<Props> {
+  render() {
+    const {
+      id,
+      justification,
+      doShowControls = true,
+      showStatusText = true,
+      onExpandCounterAncestors,
+      contextTrailItems,
+      className,
+      showBasisUrls = false,
+      doShowTargets = true,
+      onClickWritQuoteUrl,
+      ...rest
+    } = this.props;
+    return (
+      <Card {...rest} className={cn(className, "entity-card")}>
+        <CardText>
+          <JustificationEntityViewer
+            id={id}
+            justification={justification}
+            doShowControls={doShowControls}
+            onExpandCounterAncestors={onExpandCounterAncestors}
+            showBasisUrls={showBasisUrls}
+            doShowRootTarget={doShowTargets}
+            doShowCounterTarget={doShowTargets}
+            onClickWritQuoteUrl={onClickWritQuoteUrl}
+            showStatusText={showStatusText}
+            contextTrailItems={contextTrailItems}
+          />
+        </CardText>
+      </Card>
+    );
+  }
 }

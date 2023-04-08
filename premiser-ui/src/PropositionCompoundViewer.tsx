@@ -11,6 +11,8 @@ import PropositionCompoundViewerAtomItem from "./PropositionCompoundViewerAtomIt
 import { combineIds } from "./viewModels";
 import { ComponentId } from "./types";
 
+import "./PropositionCompoundViewer.scss";
+
 interface Props {
   /** Required for the CircularProgress */
   id: ComponentId;

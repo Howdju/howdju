@@ -5,6 +5,7 @@ import cn from "classnames";
 
 import WritEntityViewer from "./WritEntityViewer";
 
+// TODO(221) convert to functional component
 export default class WritCard extends Component {
   render() {
     const { id, writ, className, ...rest } = this.props;
