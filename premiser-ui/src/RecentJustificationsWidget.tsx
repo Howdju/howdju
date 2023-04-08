@@ -9,7 +9,6 @@ import t from "./texts";
 import { api } from "./actions";
 import { justificationsSchema } from "./normalizationSchemas";
 import { ComponentId } from "./types";
-import FlipMoveWrapper from "./FlipMoveWrapper";
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
   id: ComponentId;
@@ -24,14 +23,13 @@ export default function RecentJustificationsWidget({
   const justificationToCard = (justification: JustificationView) => {
     const cardId = `${id}-justification-${justification.id}`;
     return (
-      <FlipMoveWrapper key={cardId}>
-        <JustificationCard
-          id={cardId}
-          justification={justification}
-          doShowControls={false}
-          className={largeCellClasses}
-        />
-      </FlipMoveWrapper>
+      <JustificationCard
+        id={cardId}
+        key={cardId}
+        justification={justification}
+        doShowControls={false}
+        className={largeCellClasses}
+      />
     );
   };
 

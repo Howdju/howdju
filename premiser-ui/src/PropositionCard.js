@@ -5,6 +5,7 @@ import cn from "classnames";
 
 import PropositionEntityViewer from "./PropositionEntityViewer";
 
+// TODO(221) convert to functional component
 export default class PropositionCard extends Component {
   render() {
     const {
