@@ -145,29 +145,13 @@ strong {
   }
 }
 
-$small-chat-iframe-z-index: 999999999;
-@media (max-width: $md-grid-desktop-breakpoint - 1) {
-  // Two different ways to try and make sure the context menu is not obscured by the small chat launcher
-  //#Smallchat iframe {
-  //  right: auto !important;
-  //  left: 0;
-  //}
-  //.context-menu {
-  //  z-index: $small-chat-iframe-z-index + 1;
-  //}
-
+$single-column-cell-breakpoint: $md-grid-desktop-breakpoint - 1;
+@media (max-width: $single-column-cell-breakpoint) {
   // For cells that switch to single-column, we want no spacing
   .md-grid--card-list--tablet {
     .md-cell {
       margin: 0;
     }
-  }
-}
-
-// Hide the small chat launcher when a no-scroll dialog is present on mobile
-.md-no-scroll {
-  #Smallchat {
-    display: none;
   }
 }
 

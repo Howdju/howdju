@@ -218,8 +218,6 @@ Improvements to propositions trail:
 
 - Command-clicking on tab navigates in current tab
 
-- when scroll area is smaller than header smallchat doesnt reappear
-
 - When updating lambda alias, return previous version
   - Configure S3 versions for UI?
 - Don't use prod values as fall-backs in lambda env. vars. Throw an error if a fall-back is missing.

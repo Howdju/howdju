@@ -12,7 +12,6 @@ import "@grrr/cookie-consent/styles/cookie-consent.scss";
 
 export const REQUIRED_FUNCTIONALITY = "required-functionality";
 export const BASIC_FUNCTIONALITY = "basic-functionality";
-export const LIVE_CHAT = "live-chat";
 export const ERROR_REPORTING = "error-reporting";
 export const FULL_ERROR_REPORTING = "full-error-reporting";
 export const ANALYTICS = "analytics";
@@ -42,12 +41,6 @@ const settings = {
       id: BASIC_FUNCTIONALITY,
       label: "Basic functionality",
       description: `Stores your authentication token so that you don't have to login every time you open the app.`,
-    },
-    {
-      id: LIVE_CHAT,
-      label: "Live chat",
-      description:
-        "Enables Smallchat so that you can chat with us for support. May require a reload to re-enable.",
     },
     {
       id: ERROR_REPORTING,

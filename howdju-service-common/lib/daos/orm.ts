@@ -239,7 +239,6 @@ export const toUserExternalIds = wrapMapper(function (
     heapAnalyticsId: row.heap_analytics_id,
     mixpanelId: row.mixpanel_id,
     sentryId: row.sentry_id,
-    smallchatId: row.smallchat_id,
   };
 });
 

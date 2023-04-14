@@ -43,7 +43,6 @@ import {
   fixConsentCookieIds,
   FULL_ERROR_REPORTING,
   isMissingPrivacyConsent,
-  LIVE_CHAT,
   REQUIRED_FUNCTIONALITY,
   showPrivacyConsentDialog,
 } from "./cookieConsent";
@@ -61,7 +60,6 @@ import {
   selectPrivacyConsent,
 } from "./selectors";
 import sentryInit from "./sentryInit";
-import * as smallchat from "./smallchat";
 import t, {
   MAIN_TABS_RECENT_ACTIVITY_TAB_NAME,
   MAIN_TABS_WHATS_NEXT_TAB_NAME,
@@ -155,9 +153,6 @@ class App extends Component<Props> {
         case FULL_ERROR_REPORTING:
           // sentryInit checks this
           break;
-        case LIVE_CHAT:
-          // Nothing to do, cookie-consent will automatically load the div having [data-cookie-consent="live-chat"]
-          break;
         case ANALYTICS:
           window.postMessage(
             { howdjuTrackingConsent: { enabled: cookie.accepted } },
@@ -202,19 +197,6 @@ class App extends Component<Props> {
         case FULL_ERROR_REPORTING:
           // sentryInit must handle this; it is not possible to update after initialization.
           requestReload = true;
-          break;
-        case LIVE_CHAT:
-          if (cookie.accepted) {
-            // Nothing to do, cookie-consent will automatically load the div having [data-cookie-consent="live-chat"]
-          } else {
-            const smallchatDiv = document.querySelector("div#Smallchat");
-            if (smallchatDiv) {
-              smallchatDiv.parentNode?.removeChild(smallchatDiv);
-            } else {
-              // If we can't find the div for som reason, just reload
-              requestReload = true;
-            }
-          }
           break;
         case ANALYTICS:
           window.postMessage(
@@ -278,19 +260,6 @@ class App extends Component<Props> {
     }
   };
 
-  updateSmallchatLauncherVisibility = () => {
-    // The smallchat tab obscures UI (context menus and dialog buttons) on narrow screens.  Show allow the user to hide
-    // it by scrolling down.
-    const didScrollDown = window.pageYOffset > this.state.windowPageYOffset;
-    const didScrollUp = window.pageYOffset < this.state.windowPageYOffset;
-    const { isOverscrolledTop, isOverscrolledBottom } = this.state;
-    if (didScrollDown && !isOverscrolledTop && smallchat.isVisible()) {
-      smallchat.hide();
-    } else if (didScrollUp && !isOverscrolledBottom && !smallchat.isVisible()) {
-      smallchat.show();
-    }
-  };
-
   resetOverscrollState = () => {
     const newState: Partial<typeof this.state> = {
       windowPageYOffset: window.pageYOffset,
@@ -311,8 +280,6 @@ class App extends Component<Props> {
     // The code below won't necessarily see the state updates from above and that should be okay.
     // I think we expect the scroll events that need to respond to overscrolls to occur many throttled-events after
     // the overscroll is detected.
-
-    this.updateSmallchatLauncherVisibility();
 
     this.resetOverscrollState();
   };

@@ -67,37 +67,6 @@
           mixpanel.init("<%= htmlWebpackPlugin.options.mixpanel.trackingId %>");
     </script>
     <!-- end Mixpanel -->
-    <% } %> <% if (htmlWebpackPlugin.options.smallChat) { %>
-    <script type="text/plain" data-cookie-consent="live-chat" id="small-chat">
-      // Don't load smallchat in iframes; it's too cluttered.  E.g. when loaded in browser extension.
-      if (window === window.top) {
-        (function() {
-          function lazyLoadSmallchat() {
-            // Smallchat's embed script listens to window load, so if the window has already loaded,
-            // we must load it ourselves.
-            if (document.readyState === "complete") {
-              (function() {
-                var styles = document.createElement('link');
-                styles.rel = 'stylesheet';
-                styles.href = 'https://static.small.chat/messenger.css';
-                document.head.appendChild(styles);
-                var script = document.createElement('script');
-                script.async = true;
-                script.src = 'https://static.small.chat/messenger.js';
-                document.body.appendChild(script);
-              })();
-            }
-          }
-
-          var script = document.createElement('script');
-          script.async = true;
-          script.src = "https://embed.small.chat/T6KEMK74MG6LJFL74M.js";
-          script.onload = lazyLoadSmallchat;
-
-          document.body.appendChild(script);
-        })();
-      }
-    </script>
     <% } %>
   </body>
 </html>

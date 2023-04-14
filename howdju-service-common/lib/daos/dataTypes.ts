@@ -262,7 +262,6 @@ export interface UserExternalIdsRow {
   heap_analytics_id: string;
   mixpanel_id: string;
   sentry_id: string;
-  smallchat_id: string;
 }
 export type UserExternalIdsData = UserExternalIds;
 

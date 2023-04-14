@@ -12,7 +12,6 @@ import projectConfig from "./project.config";
 import type HtmlWebpackPlugin from "html-webpack-plugin";
 
 export const htmlWebpackPluginConfig: HtmlWebpackPlugin.Options = {
-  smallChat: true,
   googleAnalytics: {
     trackingId: "UA-104314283-1",
   },

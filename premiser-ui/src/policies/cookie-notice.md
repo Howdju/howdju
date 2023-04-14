@@ -29,11 +29,17 @@ Our first-party cookies include cookies that are strictly necessary, functional 
 
 ## Third-party's services
 
-Howdju uses third parties to provide services that may set cookies on your machine to improve your experience with the services. Howdju does not control how third party services collect data when they serve their content. Howdju does not directly provide any personally identifiable information to these services. We generate special-purpose distinct unique identifiers to connect any activity on Howdju.com with information recorded by these services. If you explicitly enter your personal information, such as name or email address, when using these services (e.g., while using the Smallchat widget) then this information may be transmitted directly to these services. If you enable Full error reporting, you might also transmit personal identifiers that are used shortly before an error is reported.
+Howdju uses third parties to provide services that may set cookies on your machine to improve your
+experience with the services. Howdju does not control how third party services collect data when
+they serve their content. Howdju does not directly provide any personally identifiable information
+to these services. We generate special-purpose distinct unique identifiers to connect any activity
+on Howdju.com with information recorded by these services. If you explicitly enter your personal
+information, such as name or email address, when using these services then this information may be
+transmitted directly to these services. If you enable Full error reporting, you might also transmit
+personal identifiers that are used shortly before an error is reported.
 
 Examples of third party service providers we use include:
 
-- Smallchat website messaging: allows you to chat with us directly from our website
 - Google Analytics: allows us to analyze anonymized usage data
 - Sentry.io error monitoring: allows us to monitor any errors that occur on the site and to fix them
 
