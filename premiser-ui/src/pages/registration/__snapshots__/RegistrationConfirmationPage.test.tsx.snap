@@ -466,7 +466,17 @@ exports[`RegistrationConfirmationPage shows error message for duplicate username
                       <div
                         class=""
                       >
-                        I am not located in the European Union (EU), the European Economic Area (EEA), or in any other jurisdiction that is subject to the General Data Protection Regulation (GDPR).
+                        I am not located in the European Union (EU), the European Economic Area (EEA), or in any other jurisdiction that is subject to the General Data Protection Regulation (GDPR). (See
+                         
+                        <a
+                          class="text-link"
+                          href="https://github.com/Howdju/howdju/issues/24"
+                          rel="noreferrer"
+                          target="_blank"
+                        >
+                          Github issue #24
+                        </a>
+                        .)
                       </div>
                     </span>
                   </label>
@@ -991,7 +1001,17 @@ exports[`RegistrationConfirmationPage shows form 1`] = `
                       <div
                         class=""
                       >
-                        I am not located in the European Union (EU), the European Economic Area (EEA), or in any other jurisdiction that is subject to the General Data Protection Regulation (GDPR).
+                        I am not located in the European Union (EU), the European Economic Area (EEA), or in any other jurisdiction that is subject to the General Data Protection Regulation (GDPR). (See
+                         
+                        <a
+                          class="text-link"
+                          href="https://github.com/Howdju/howdju/issues/24"
+                          rel="noreferrer"
+                          target="_blank"
+                        >
+                          Github issue #24
+                        </a>
+                        .)
                       </div>
                     </span>
                   </label>
