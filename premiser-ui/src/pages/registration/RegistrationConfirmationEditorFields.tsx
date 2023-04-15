@@ -192,7 +192,16 @@ export default function RegistrationConfirmationEditotFields({
           >
             I am not located in the European Union (EU), the European Economic
             Area (EEA), or in any other jurisdiction that is subject to the
-            General Data Protection Regulation (GDPR).
+            General Data Protection Regulation (GDPR). (See{" "}
+            <a
+              target="_blank"
+              rel="noreferrer"
+              className="text-link"
+              href="https://github.com/Howdju/howdju/issues/24"
+            >
+              Github issue #24
+            </a>
+            .)
           </div>
         }
         {...errorProps((rc) => rc.isNotGdpr)}
