@@ -7,7 +7,6 @@ export const htmlWebpackPluginConfig = {
   minify: {
     preserveLineBreaks: true,
   },
-  smallChat: true,
   // We don't want these active in dev (Google Analytics will HTTP error if we try too use it from localhost)
   // But we might want to use these later in preprod or another env.
   // googleAnalytics: {

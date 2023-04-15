@@ -1008,7 +1008,6 @@ export const UserExternalIds = z.object({
   heapAnalyticsId: z.string(),
   mixpanelId: z.string(),
   sentryId: z.string(),
-  smallchatId: z.string(),
 });
 export type UserExternalIds = z.infer<typeof UserExternalIds>;
 

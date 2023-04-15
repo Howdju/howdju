@@ -2,7 +2,6 @@ import { takeEvery, select } from "redux-saga/effects";
 import { REHYDRATE } from "redux-persist/lib/constants";
 
 import * as sentry from "../sentry";
-import * as smallchat from "../smallchat";
 import analytics from "../analytics";
 import { selectUserExternalIds } from "../selectors";
 import { api, str } from "../actions";
@@ -16,14 +15,11 @@ export function* configureAfterLogin() {
       }
 
       const externalIds = yield select(selectUserExternalIds);
-      const { sentryId, smallchatId } = externalIds;
+      const { sentryId } = externalIds;
       if (sentryId) {
         sentry.setUserContext(sentryId);
       }
 
-      if (smallchatId) {
-        smallchat.identify(smallchatId);
-      }
       analytics.identify(externalIds);
     }
   );
@@ -37,7 +33,6 @@ export function* configureAfterLogout() {
         return;
       }
       sentry.clearUserContext();
-      smallchat.unidentify();
       analytics.unidentify();
     }
   );

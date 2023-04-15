@@ -9,13 +9,7 @@ exports.UserExternalIdsDao = class UserExternalIdsDao {
   }
 
   createExternalIdsForUserId(userId) {
-    const ids = [
-      "googleAnalytics",
-      "mixpanel",
-      "heapAnalytics",
-      "sentry",
-      "smallchat",
-    ];
+    const ids = ["googleAnalytics", "mixpanel", "heapAnalytics", "sentry"];
 
     const args = [userId];
     const params = ["$1"];
@@ -27,7 +21,7 @@ exports.UserExternalIdsDao = class UserExternalIdsDao {
       .query(
         "createExternalIdsForUserId",
         `
-        insert into user_external_ids (user_id, google_analytics_id, mixpanel_id, heap_analytics_id, sentry_id, smallchat_id) 
+        insert into user_external_ids (user_id, google_analytics_id, mixpanel_id, heap_analytics_id, sentry_id)
           values (${params.join(",")})
           returning *
       `,
