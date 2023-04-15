@@ -63,7 +63,7 @@ const App = (): JSX.Element => {
             theme={isDark ? darkNavigationTheme : lightNavigationTheme}
           >
             <Tab.Navigator>
-              {/* TODO(#62): ensure using a render callback does not introduce
+              {/* TODO(62): ensure using a render callback does not introduce
             performance issues
             https://reactnavigation.org/docs/hello-react-navigation/#passing-additional-props
         */}

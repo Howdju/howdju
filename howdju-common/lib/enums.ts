@@ -45,10 +45,8 @@ export type ActionSubjectType =
 /**
  * Anything you can start with to create a justification based upon.
  *
- * (Which would include JustificationBasisTypes, too, but right now we are only adding those here that aren't also JustificationBasisTypes)
- *
- * TODO: this should go into a client package since only clients are concerned with translating
- * a source into a Justification.
+ * (Which would include JustificationBasisTypes, too, but right now we are only adding those here
+ * that aren't also JustificationBasisTypes)
  */
 export const JustificationBasisSourceTypes = {
   /* One or more propositions */

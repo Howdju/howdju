@@ -25,6 +25,7 @@ exports.PropositionCompoundsService = class PropositionCompoundsService {
     return this.propositionCompoundsDao.read(propositionCompoundId);
   }
 
+  // TODO(361) rename to readOrCreate
   async createPropositionCompoundAsUser(propositionCompound, userId, now) {
     if (propositionCompound.id) {
       return {

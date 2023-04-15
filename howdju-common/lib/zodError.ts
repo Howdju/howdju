@@ -23,7 +23,7 @@ export function errorFormatToString(errorFormat: IssueFormat): string {
     case "invalid_type": {
       const { received, message } = errorFormat;
       if (received === "undefined" && message === "Required") {
-        // TODO: if name is a number, then keep going backwards through path until we get to a
+        // TODO(360) if name is a number, then keep going backwards through path until we get to a
         // string. Keep track of the numbers, and then add them after the string. So `["prop", 1, 2]`
         // would become `prop[1][2]`.
         const rawName = errorFormat.path[errorFormat.path.length - 1];
