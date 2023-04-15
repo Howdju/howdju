@@ -279,7 +279,7 @@ export const UrlTarget = Entity.extend({
 
 export const Url = Entity.extend({
   url: z.string().url(),
-  // TODO I don't think target should be part of URL. Targets should be related to URLs.
+  // TODO(38) I don't think target should be part of URL. Targets should be related to URLs.
   target: UrlTarget.optional(),
 });
 export type Url = z.infer<typeof Url>;
@@ -932,7 +932,7 @@ export type DeleteJustificationVote = z.infer<typeof DeleteJustificationVote>;
 const TaggableEntityType = z.enum(["PROPOSITION", "STATEMENT"]);
 export type TaggableEntityType = z.infer<typeof TaggableEntityType>;
 
-// TODO make this a discriminated union over all target entity types?
+// TODO(359) make this a discriminated union over all target entity types?
 export const TagVote = Entity.extend({
   target: Entity,
   targetType: TaggableEntityType,

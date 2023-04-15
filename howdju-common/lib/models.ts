@@ -377,7 +377,7 @@ const demuxCreateJustificationInputTarget = (
         entity: target.proposition,
       };
     case "STATEMENT":
-      // TODO WritQuote bases are temporarily supported until we support SourceExcerpt bases.
+      // TODO(201) WritQuote bases are temporarily supported until we support SourceExcerpt bases.
       return {
         type: "STATEMENT",
         entity: target.statement,
@@ -533,7 +533,7 @@ const demuxCreateJustificationInputBasis = (
         entity: basis.propositionCompound,
       };
     case "WRIT_QUOTE":
-      // TODO WritQuote bases are temporarily supported until we support SourceExcerpt bases.
+      // TODO(201) WritQuote bases are temporarily supported until we support SourceExcerpt bases.
       return {
         type: "WRIT_QUOTE",
         entity: basis.writQuote,

@@ -665,7 +665,6 @@ export class JustificationsService extends EntityService<
       }
 
       case JustificationBasisTypes.PROPOSITION_COMPOUND: {
-        // TODO update to readOrCreatePropositionCompoundAsUser
         const { isExtant, propositionCompound } = await prefixErrorPath(
           this.propositionCompoundsService.createPropositionCompoundAsUser(
             justificationBasis.entity,

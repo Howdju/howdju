@@ -275,11 +275,8 @@ export const arrayToObject = (items: any, itemKey?: string) =>
     {} as Record<string, string>
   );
 
-/** TODO isn't this the same as target.concat(source)? */
 export const pushAll = (target: any[], source: any[]) => {
-  forEach(source, (item) => {
-    target.push(item);
-  });
+  target.splice(target.length, 0, ...source);
   return target;
 };
 

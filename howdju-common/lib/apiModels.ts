@@ -98,7 +98,7 @@ export type PropositionTagVoteOut = Persisted<PropositionTagVote>;
 
 export type TaggedEntityOut<T extends Entity = Entity> = Persisted<T> & {
   tags?: Tag[];
-  // TODO put votes on tags and type it as a viewmodel
+  // TODO(112) put votes on tags and type it as a viewmodel
   tagVotes?: TagVoteViewModel[];
   recommendedTags?: Tag[];
 };

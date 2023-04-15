@@ -9,6 +9,7 @@ import {
   mapValuesDeep,
   mapKeysDeep,
   filterDefined,
+  pushAll,
 } from "./general";
 
 describe("cleanWhitespace", () => {
@@ -146,5 +147,22 @@ describe("filterDefined", () => {
       d: false,
       e: null,
     });
+  });
+});
+
+describe("pushAll", () => {
+  test("modifies the array", () => {
+    const arr = [1, 2, 3];
+
+    pushAll(arr, [4, 5, 6]);
+
+    expect(arr).toEqual([1, 2, 3, 4, 5, 6]);
+  });
+  test("returns the array", () => {
+    const arr = [1, 2, 3];
+
+    const ret = pushAll(arr, [4, 5, 6]);
+
+    expect(ret).toEqual([1, 2, 3, 4, 5, 6]);
   });
 });
