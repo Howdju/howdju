@@ -190,6 +190,7 @@ export function* redirectUnauthenticatedUserToLoginOnPagesNeedingAuthentication(
       const isExpired = (dateTimeString) => utcNowIsAfter(dateTimeString);
       const isAuthenticated =
         authTokenExpiration && !isExpired(authTokenExpiration);
+      // TODO(247) infer auth requirement from routes
       const doesPathRequireAuthentication = some(
         [
           "submitSourceExcerpt",
