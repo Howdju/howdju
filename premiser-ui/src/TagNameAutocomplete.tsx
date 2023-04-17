@@ -38,13 +38,6 @@ export default function TagNameAutocomplete({
   onAutoComplete,
   ...rest
 }: Props) {
-  const _onAutoComplete = (tag: Tag) => {
-    onPropertyChange({ [name]: tag.name });
-    if (onAutoComplete) {
-      onAutoComplete(tag);
-    }
-  };
-
   return (
     <ApiAutocompleteV2
       maxLength={schemaSettings.tagNameMaxLength}
@@ -58,7 +51,7 @@ export default function TagNameAutocomplete({
       suggestionSchema={tagSchema}
       name={name}
       labelKey="name"
-      onAutoComplete={_onAutoComplete}
+      onAutoComplete={onAutoComplete}
       onKeyDown={onKeyDown}
       onPropertyChange={onPropertyChange}
     />

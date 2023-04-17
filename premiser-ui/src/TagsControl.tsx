@@ -64,6 +64,8 @@ export interface Props {
   onSubmit?: OnEventCallback;
 }
 
+const upDownArrowKeys = [Keys.ARROW_UP, Keys.ARROW_DOWN];
+
 export default function TagsControl(props: Props) {
   const {
     tags,
@@ -88,10 +90,25 @@ export default function TagsControl(props: Props) {
 
   const [tagName, setTagName] = useState("");
   const [isInputCollapsed, setIsInputCollapsed] = useState(true);
+  // Whether the user has highlighted the autocomplete dropdown.
+  //
+  // react-md's AutoComplete leaves the focus in the text box, so that pressing enter
+  // both triggers an autocomplete and triggers an Enter keydown in the text input
+  // (which we would also like to use to create a tag.) To avoid both an autocomplete
+  // and submitting a partial tag name, we try to keep track of whether the dropdown is
+  // highlighted and skip the text input Enter behavior if so.
+  const [isDropdownHighlighted, setIsDropdownHighlighted] = useState(false);
 
   const onTagNameKeyDown: OnKeyDownCallback = (event) => {
-    // Prevent submit if the tag name was not empty
-    if (includes(commitChipKeys, event.key) && tagName) {
+    if (includes(upDownArrowKeys, event.key)) {
+      setIsDropdownHighlighted(true);
+    }
+
+    if (
+      !isDropdownHighlighted &&
+      includes(commitChipKeys, event.key) &&
+      tagName
+    ) {
       // Stops ApiAutocomplete from proceeding to call onSubmit callbacks
       event.preventDefault();
       if (event.key === Keys.ENTER) {
@@ -100,10 +117,12 @@ export default function TagsControl(props: Props) {
       }
       addTag(tagName);
       setTagName("");
+      setIsDropdownHighlighted(false);
     }
 
     if (inputCollapsable && event.key === Keys.ENTER) {
       setIsInputCollapsed(true);
+      setIsDropdownHighlighted(false);
     }
   };
 
@@ -114,6 +133,7 @@ export default function TagsControl(props: Props) {
   const onTagNameAutocomplete = (tag: Tag) => {
     onTag(tag);
     setTagName("");
+    setIsDropdownHighlighted(false);
   };
 
   const onClickTag = (tagName: string) => {
@@ -163,6 +183,9 @@ export default function TagsControl(props: Props) {
 
   const addTag = (tagName: string) => {
     const cleanTagName = cleanWhitespace(tagName);
+    if (!cleanTagName) {
+      return;
+    }
     const tag = makeTag({ name: cleanTagName });
     onTag(tag);
   };
@@ -172,6 +195,7 @@ export default function TagsControl(props: Props) {
       addTag(tagName);
     }
     setTagName("");
+    setIsDropdownHighlighted(false);
     setIsInputCollapsed(true);
   };
 

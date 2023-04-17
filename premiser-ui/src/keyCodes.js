@@ -7,4 +7,6 @@ export const Keys = {
   BACKSPACE: "Backspace",
   DELETE: "Delete",
   ESCAPE: "Escape",
+  ARROW_UP: "ArrowUp",
+  ARROW_DOWN: "ArrowDown",
 };
