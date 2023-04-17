@@ -30,6 +30,7 @@ import {
   isPropositionRootTarget,
   isVerified,
   makeCreateContentReportInput,
+  toUpdatePropositionInput,
 } from "howdju-client-common";
 
 import JustificationRootTargetViewer, {
@@ -53,7 +54,6 @@ import { ComponentId, EditorId, MenuItems, SuggestionsKey } from "./types";
 import TreePolarity from "@/components/TreePolarity";
 
 import "./JustificationRootTargetCard.scss";
-import { toUpdatePropositionInput } from "./PropositionEditor";
 
 const editorTypesByRootTargetType = {
   [JustificationRootTargetTypes.PROPOSITION]: EditorTypes.PROPOSITION,

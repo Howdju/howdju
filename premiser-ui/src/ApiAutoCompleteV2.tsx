@@ -58,7 +58,7 @@ export interface Props<T>
   onAutoComplete?: (suggestion: T) => void;
 }
 
-export default function ApiAutocompleteV2({
+export default function ApiAutoCompleteV2({
   id,
   name,
   autocompleteThrottleMs = 250,

@@ -35,6 +35,8 @@ export default function PropositionEditorFields(props: Props) {
     dirtyFields,
     blurredFields,
     autoFocus,
+    // ignore
+    editorDispatch,
     ...rest
   } = props;
 

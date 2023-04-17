@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { FormEventHandler, useState } from "react";
 import { Button, Switch } from "react-md";
 
 import {
@@ -23,7 +23,6 @@ import {
   ComponentId,
   ComponentName,
   OnPropertyChangeCallback,
-  OnSubmitCallback,
   SuggestionsKey,
 } from "./types";
 import { BlurredFields, DirtyFields } from "./reducers/editors";
@@ -45,7 +44,7 @@ export interface Props {
   disabled?: boolean;
   /** If present, overrides the default label for the proposition text input */
   nameLabel?: string;
-  onSubmit?: OnSubmitCallback;
+  onSubmit?: FormEventHandler;
   wasSubmitAttempted: boolean;
   dirtyFields: DirtyFields<CreatePersorgInput> | undefined;
   blurredFields: BlurredFields<CreatePersorgInput> | undefined;
@@ -109,7 +108,7 @@ export default function PersorgEditorFields(props: Props) {
       <PersorgNameAutocomplete
         {...rest}
         {...nameInputProps}
-        onAutocomplete={onNameAutocomplete}
+        onAutoComplete={onNameAutocomplete}
         suggestionsKey={combineSuggestionsKeys(suggestionsKey, nameName)}
       />
     ) : (

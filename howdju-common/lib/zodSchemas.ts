@@ -229,13 +229,13 @@ export const CreateStatement: z.ZodType<CreateStatement> = z.lazy(() =>
   z.discriminatedUnion("sentenceType", [
     Entity.extend({
       sentenceType: z.literal(sentenceTypes.Enum.PROPOSITION),
-      sentence: Proposition,
-      speaker: Persorg,
+      sentence: CreateProposition,
+      speaker: CreatePersorg,
     }).strict(),
     Entity.extend({
       sentenceType: z.literal(sentenceTypes.Enum.STATEMENT),
-      sentence: Statement,
-      speaker: Persorg,
+      sentence: CreateStatement,
+      speaker: CreatePersorg,
     }).strict(),
   ])
 );
