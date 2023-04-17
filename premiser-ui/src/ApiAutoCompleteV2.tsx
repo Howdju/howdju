@@ -144,6 +144,7 @@ export default function ApiAutocompleteV2({
           disableShowOnFocus
           style={{ flexGrow: 1 }}
           theme="underline"
+          filter="none"
         />
         {rightControls}
       </div>

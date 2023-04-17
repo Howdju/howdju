@@ -1,0 +1,49 @@
+@import "../../colors";
+
+@mixin placeholder {
+  color: $asbestos;
+}
+
+#mainSearch {
+  color: $light-text-color;
+
+  /* Chrome doesn't render these styles if the rule includes non-chrome selectors.
+     Just for safety, separate them all
+   */
+
+  /* WebKit, Blink, Edge */
+  &::-webkit-input-placeholder {
+    @include placeholder;
+  }
+  /* Internet Explorer 10-11 */
+  &:-ms-input-placeholder {
+    @include placeholder;
+  }
+  /* Mozilla Firefox 4 to 18 */
+  &:-moz-placeholder {
+    @include placeholder;
+  }
+  /* Mozilla Firefox 19+ */
+  &::-moz-placeholder {
+    @include placeholder;
+  }
+  &::placeholder {
+    @include placeholder;
+  }
+  // Is this rule necessary?
+  &:-moz-placeholder,
+  &::-moz-placeholder {
+    opacity: 0.5;
+  }
+}
+
+#mainSearch-combobox {
+  &.rmd-text-field-container--underline::after {
+    background-color: darken($light-text-color, 20%);
+    height: 1px;
+  }
+}
+
+#mainSearch-listbox * {
+  color: $primary-text-color;
+}
