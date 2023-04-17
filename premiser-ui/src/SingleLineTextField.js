@@ -41,6 +41,7 @@ export default class SingleLineTextField extends Component {
       onKeyDown,
       onSubmit,
       onPropertyChange,
+      rightControls,
       ...rest
     } = this.props;
     // password inputs must be <input>, which don't support rows.  If you try it becomes a <textfield> and shows the password!
@@ -48,17 +49,20 @@ export default class SingleLineTextField extends Component {
     // ``value` prop on `textarea` should not be null. Consider using an empty string to clear the component or `undefined` for uncontrolled components.`
     const textareaValue = isNull(value) ? "" : value;
     return (
-      <TextField
-        {...rest}
-        name={name}
-        type={type}
-        value={textareaValue}
-        {...rowProps}
-        disabled={disabled}
-        onBlur={onBlur}
-        onKeyDown={this.onKeyDown}
-        onChange={this.onChange}
-      />
+      <>
+        <TextField
+          {...rest}
+          name={name}
+          type={type}
+          value={textareaValue}
+          {...rowProps}
+          disabled={disabled}
+          onBlur={onBlur}
+          onKeyDown={this.onKeyDown}
+          onChange={this.onChange}
+        />
+        {rightControls}
+      </>
     );
   }
 

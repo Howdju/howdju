@@ -9,6 +9,7 @@ import React from "react";
 import { render } from "react-dom";
 import { Provider } from "react-redux";
 import { Configuration } from "@react-md/layout";
+import { FormThemeProvider } from "@react-md/form";
 import moment from "moment";
 import momentDurationFormatSetup from "moment-duration-format";
 
@@ -33,9 +34,12 @@ const overrides = {
 
 render(
   <Provider store={store}>
-    <Configuration {...overrides}>
-      <App />
-    </Configuration>
+    {/* TODO(17) form inputs don't appear to pick this up. */}
+    <FormThemeProvider theme="underline">
+      <Configuration {...overrides}>
+        <App />
+      </Configuration>
+    </FormThemeProvider>
   </Provider>,
   root
 );
