@@ -12,9 +12,9 @@ import {
   OnPropertyChangeCallback,
   SuggestionsKey,
 } from "./types";
-import ApiAutocompleteV2, {
+import ApiAutoComplete, {
   Props as ApiAutocompleteProps,
-} from "./ApiAutoCompleteV2";
+} from "./ApiAutoComplete";
 
 interface Props
   extends Omit<
@@ -39,7 +39,7 @@ export default function TagNameAutocomplete({
   ...rest
 }: Props) {
   return (
-    <ApiAutocompleteV2
+    <ApiAutoComplete
       maxLength={schemaSettings.tagNameMaxLength}
       singleLine={true}
       label="Tag"

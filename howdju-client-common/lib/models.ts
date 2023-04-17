@@ -2,7 +2,7 @@
 
 import merge from "lodash/merge";
 import { SetOptional } from "type-fest";
-import { cloneDeep } from "lodash";
+import { cloneDeep, pick } from "lodash";
 
 import {
   JustificationPolarity,
@@ -17,6 +17,10 @@ import {
   JustificationRef,
   JustificationOut,
   negateRootPolarity,
+  CreatePersorgInput,
+  PropositionOut,
+  UpdatePropositionInput,
+  PersorgOut,
 } from "howdju-common";
 
 export function isPropositionRootTarget(
@@ -106,3 +110,24 @@ export const makeCreateContentReportInput = (
     },
     fields
   );
+
+/** Remove the fields that are circular, unserializable, or not part of the API update model. */
+export function toUpdatePropositionInput(
+  proposition: PropositionOut
+): UpdatePropositionInput {
+  return {
+    id: proposition.id,
+    text: proposition.text,
+  };
+}
+
+export function toCreatePersorgInput(persorg: PersorgOut): CreatePersorgInput {
+  return pick(persorg, [
+    "name",
+    "isOrganization",
+    "knownFor",
+    "websiteUrl",
+    "wikipediaUrl",
+    "twitterUrl",
+  ]);
+}

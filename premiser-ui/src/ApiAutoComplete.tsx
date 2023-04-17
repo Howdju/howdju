@@ -6,6 +6,7 @@ import React, {
 } from "react";
 import { PayloadAction } from "@reduxjs/toolkit";
 import { AutoComplete, AutoCompleteResult } from "@react-md/autocomplete";
+import { FormMessage } from "@react-md/form";
 import { useDebouncedCallback } from "use-debounce";
 import { denormalize, Schema } from "normalizr";
 
@@ -20,7 +21,8 @@ import {
 } from "./types";
 import { useAppDispatch, useAppSelector } from "./hooks";
 import { autocompletes } from "./actions";
-import { FormMessage } from "@react-md/form";
+
+import "./ApiAutoComplete.scss";
 
 export type FetchSuggestionsActionCreator = (
   value: string,
@@ -56,7 +58,7 @@ export interface Props<T>
   onAutoComplete?: (suggestion: T) => void;
 }
 
-export default function ApiAutocompleteV2({
+export default function ApiAutoComplete({
   id,
   name,
   autocompleteThrottleMs = 250,
@@ -144,6 +146,7 @@ export default function ApiAutocompleteV2({
           disableShowOnFocus
           style={{ flexGrow: 1 }}
           theme="underline"
+          filter="none"
         />
         {rightControls}
       </div>

@@ -1,4 +1,4 @@
-import React, { Component, SyntheticEvent } from "react";
+import React, { Component, FormEvent } from "react";
 import { connect, ConnectedProps } from "react-redux";
 import { Link, RouteComponentProps } from "react-router-dom";
 import { goBack } from "connected-react-router";
@@ -31,6 +31,7 @@ import {
   ModelErrors,
   CreateProposition,
   CreateJustification,
+  PersorgOut,
 } from "howdju-common";
 
 import Helmet from "./Helmet";
@@ -69,6 +70,7 @@ import {
 } from "./editors/withEditor";
 import SubmitButton from "./editors/SubmitButton";
 import { toCompatibleTagVotes } from "./util";
+import { toCreatePersorgInput } from "howdju-client-common";
 
 const titleTextKeyByMode = {
   [CreatePropositionPageMode.CREATE_PROPOSITION]: CREATE_PROPOSITION_TITLE,
@@ -228,12 +230,12 @@ class CreatePropositionPage extends Component<Props> {
       )
     );
   };
-  onPersorgAutocomplete = (persorg: Persorg, index: number) => {
+  onPersorgAutocomplete = (persorg: PersorgOut, index: number) => {
     this.props.dispatch(
       editors.replaceSpeaker(
         CreatePropositionPage.editorType,
         CreatePropositionPage.editorId,
-        persorg,
+        toCreatePersorgInput(persorg),
         index
       )
     );
@@ -342,7 +344,7 @@ class CreatePropositionPage extends Component<Props> {
       }
     };
 
-    const onSubmit = (event: SyntheticEvent) => {
+    const onSubmit = (event: FormEvent) => {
       event.preventDefault();
 
       this.props.dispatch(

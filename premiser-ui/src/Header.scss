@@ -1,10 +1,6 @@
 @import "./flatui-colors";
 @import "./colors";
 
-@mixin placeholder {
-  color: $asbestos;
-}
-
 #header {
   * {
     color: $light-text-color;
@@ -30,39 +26,6 @@
         background-color: $light-text-color;
       }
     }
-  }
-}
-
-#mainSearch {
-  color: $light-text-color;
-
-  /* Chrome doesn't render these styles if the rule includes non-chrome selectors.
-     Just for safety, separate them all
-   */
-
-  /* WebKit, Blink, Edge */
-  &::-webkit-input-placeholder {
-    @include placeholder;
-  }
-  /* Internet Explorer 10-11 */
-  &:-ms-input-placeholder {
-    @include placeholder;
-  }
-  /* Mozilla Firefox 4 to 18 */
-  &:-moz-placeholder {
-    @include placeholder;
-  }
-  /* Mozilla Firefox 19+ */
-  &::-moz-placeholder {
-    @include placeholder;
-  }
-  &::placeholder {
-    @include placeholder;
-  }
-  // Is this rule necessary?
-  &:-moz-placeholder,
-  &::-moz-placeholder {
-    opacity: 0.5;
   }
 }
 

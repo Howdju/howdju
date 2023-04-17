@@ -12,6 +12,7 @@ import {
   Entity,
   JustificationRef,
   JustificationVote,
+  Persorg,
   PicRegion,
   Proposition,
   PropositionCompound,
@@ -128,3 +129,5 @@ export interface SortDescription {
   /** For continuations, the sort should filter out this value and any before it according to `direction`. */
   value?: string;
 }
+
+export type PersorgOut = Persorg;
