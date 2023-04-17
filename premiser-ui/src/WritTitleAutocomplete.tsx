@@ -10,7 +10,7 @@ import {
 } from "./types";
 import { api } from "./actions";
 import { cancelWritTitleSuggestions } from "./apiActions";
-import ApiAutocompleteV2 from "./ApiAutoCompleteV2";
+import ApiAutoComplete from "./ApiAutoComplete";
 
 interface Props {
   id: ComponentId;
@@ -31,10 +31,9 @@ const WritTitleAutocomplete = ({
   ...rest
 }: Props) => {
   return (
-    <ApiAutocompleteV2
+    <ApiAutoComplete
       id={id}
       name={name}
-      singleLine={true}
       {...rest}
       value={value}
       fetchSuggestions={api.fetchWritTitleSuggestions}

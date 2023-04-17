@@ -10,7 +10,7 @@ import { api, cancelMainSearchSuggestions } from "../../apiActions";
 import { goto } from "../../actions";
 import mainSearch from "./mainSearchBoxSlice";
 import { PropertyChanges } from "@/types";
-import ApiAutocompleteV2 from "@/ApiAutoCompleteV2";
+import ApiAutoComplete from "@/ApiAutoComplete";
 
 import "./MainSearchBox.scss";
 
@@ -43,7 +43,7 @@ export default function MainSearchBox() {
 
   return (
     <form className="md-cell--12 md-cell--top" onSubmit={onSubmit}>
-      <ApiAutocompleteV2
+      <ApiAutoComplete
         id="mainSearch"
         name={name}
         placeholder={"know that" + ellipsis}

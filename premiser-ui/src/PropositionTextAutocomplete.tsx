@@ -13,7 +13,7 @@ import {
   OnPropertyChangeCallback,
   SuggestionsKey,
 } from "./types";
-import ApiAutocompleteV2 from "./ApiAutoCompleteV2";
+import ApiAutoComplete from "./ApiAutoComplete";
 
 interface Props {
   id: ComponentId;
@@ -37,7 +37,7 @@ export default function PropositionTextAutocomplete({
   ...rest
 }: Props) {
   return (
-    <ApiAutocompleteV2
+    <ApiAutoComplete
       {...rest}
       id={id}
       name={name}

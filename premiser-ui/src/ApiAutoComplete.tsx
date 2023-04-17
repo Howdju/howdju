@@ -22,7 +22,7 @@ import {
 import { useAppDispatch, useAppSelector } from "./hooks";
 import { autocompletes } from "./actions";
 
-import "./ApiAutoCompleteV2.scss";
+import "./ApiAutoComplete.scss";
 
 export type FetchSuggestionsActionCreator = (
   value: string,
@@ -58,7 +58,7 @@ export interface Props<T>
   onAutoComplete?: (suggestion: T) => void;
 }
 
-export default function ApiAutoCompleteV2({
+export default function ApiAutoComplete({
   id,
   name,
   autocompleteThrottleMs = 250,
