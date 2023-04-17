@@ -4,6 +4,7 @@ import map from "lodash/map";
 import { denormalize } from "normalizr";
 import { Autocomplete, AutocompleteProps } from "react-md";
 import { connect, ConnectedProps } from "react-redux";
+import { DebouncedFunc } from "lodash";
 
 import { logger, toSingleLine } from "howdju-common";
 
@@ -13,7 +14,6 @@ import {
   autocompletes,
   mapActionCreatorGroupToDispatchToProps,
 } from "./actions";
-import { DebouncedFunc } from "lodash";
 import {
   ComponentId,
   OnBlurCallback,
@@ -121,6 +121,8 @@ interface Props
 
 /**
  * Autocomplete that knows how to request suggestions from an API.
+ *
+ * TODO(17) replace with ApiAutoCompleteV2.
  *
  * Calls onAutocomplete with the result.
  *

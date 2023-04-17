@@ -28,10 +28,14 @@ interface Props {
   onSubmit?: OnEventCallback;
 }
 
-export default function PropositionTextAutocomplete(props: Props) {
-  const { id, name, suggestionsKey, onPropertyChange, onSubmit, ...rest } =
-    props;
-
+export default function PropositionTextAutocomplete({
+  id,
+  name,
+  suggestionsKey,
+  onPropertyChange,
+  onSubmit,
+  ...rest
+}: Props) {
   return (
     <ApiAutocompleteV2
       {...rest}
