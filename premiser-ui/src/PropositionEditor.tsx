@@ -1,8 +1,4 @@
-import {
-  CreatePropositionInput,
-  PropositionOut,
-  UpdatePropositionInput,
-} from "howdju-common";
+import { PropositionOut, UpdatePropositionInput } from "howdju-common";
 
 import PropositionEditorFields from "./PropositionEditorFields";
 import withEditor from "@/editors/withEditor";
@@ -23,15 +19,6 @@ export function toUpdatePropositionInput(
 ): UpdatePropositionInput {
   return {
     id: proposition.id,
-    text: proposition.text,
-  };
-}
-
-/** Remove the fields that are circular, unserializable, or not part of the API update model. */
-export function toCreatePropositionInput(
-  proposition: PropositionOut
-): CreatePropositionInput {
-  return {
     text: proposition.text,
   };
 }
