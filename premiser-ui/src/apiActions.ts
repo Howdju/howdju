@@ -39,6 +39,7 @@ import {
   CreateStatement,
   UpdatePersorg,
   serializeContextTrail,
+  JustificationOut,
 } from "howdju-common";
 import {
   InferPathParams,
@@ -1130,11 +1131,15 @@ export const api = {
   deleteJustification: apiActionCreator(
     "DELETE_JUSTIFICATION",
     serviceRoutes.deleteJustification,
-    (justification) => ({
+    (justification: JustificationOut) => ({
       config: {
         pathParams: { justificationId: justification.id },
       },
-      meta: { justification, justificationId: justification.id },
+      meta: {
+        justificationId: justification.id,
+        justificationTargetType: justification.target.type,
+        justificationTargetId: justification.target.entity.id,
+      },
     })
   ),
 

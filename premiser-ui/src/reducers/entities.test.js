@@ -106,7 +106,12 @@ describe("reducers", () => {
           rootProposition.justifications = [justification.id];
 
           expect(
-            makeUpdateRemovingJustificationFromTarget(justification, state)
+            makeUpdateRemovingJustificationFromTarget(
+              justification.id,
+              justification.target.type,
+              justification.target.entity.id,
+              state
+            )
           ).toEqual({
             propositions: {
               [rootProposition.id]: {
@@ -552,7 +557,11 @@ describe("reducers", () => {
               },
             },
             action = api.deleteJustification.response(null, {
-              requestMeta: { justification: counterJustification },
+              requestMeta: {
+                justificationId: counterJustification.id,
+                justificationTargetType: counterJustification.target.type,
+                justificationTargetId: counterJustification.target.entity.id,
+              },
             });
           targetJustification.counterJustifications = [counterJustification.id];
 
