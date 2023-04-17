@@ -94,11 +94,11 @@ export default function PropositionCompoundEditorFields(props: Props) {
       {atoms?.map((atom, index, atoms) => {
         const atomPropositionTextName = `atoms[${index}].entity.text`;
         const value = get(propositionCompound, atomPropositionTextName, "");
-        const leftIcon = <FontIcon>short_text</FontIcon>;
-        const rightIcon = disabled ? (
+        const leftChildren = <FontIcon>short_text</FontIcon>;
+        const rightControls = disabled ? (
           <div />
         ) : (
-          <div>
+          <>
             <Button
               icon
               title="Add atom"
@@ -114,7 +114,7 @@ export default function PropositionCompoundEditorFields(props: Props) {
             >
               delete
             </Button>
-          </div>
+          </>
         );
         const inputProps = {
           id: combineIds(id, atomPropositionTextName),
@@ -122,10 +122,8 @@ export default function PropositionCompoundEditorFields(props: Props) {
           name: combineNames(name, atomPropositionTextName),
           value,
           label: "Text",
-          leftIcon,
-          leftIconStateful: true,
-          rightIcon,
-          rightIconStateful: false,
+          leftChildren,
+          rightControls,
           disabled,
           onBlur,
           onPropertyChange,

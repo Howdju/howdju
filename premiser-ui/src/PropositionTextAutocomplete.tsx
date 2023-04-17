@@ -1,21 +1,22 @@
 import React from "react";
 
-import { Proposition, schemaSettings } from "howdju-common";
+import { schemaSettings } from "howdju-common";
 
 import { api } from "./actions";
-import ApiAutocomplete from "./ApiAutocomplete";
 import { propositionSchema } from "./normalizationSchemas";
 import { cancelPropositionTextSuggestions } from "./apiActions";
 import {
+  ComponentId,
   ComponentName,
   OnEventCallback,
   OnKeyDownCallback,
   OnPropertyChangeCallback,
   SuggestionsKey,
 } from "./types";
-import { useAppDispatch } from "./hooks";
+import ApiAutocompleteV2 from "./ApiAutoCompleteV2";
 
 interface Props {
+  id: ComponentId;
   name: ComponentName;
   /** The value to display in the text input */
   value: string;
@@ -28,34 +29,22 @@ interface Props {
 }
 
 export default function PropositionTextAutocomplete(props: Props) {
-  const { suggestionsKey, onPropertyChange, name, onSubmit, ...rest } = props;
-
-  const onAutocomplete = (proposition: Proposition) => {
-    onPropertyChange({ [name]: proposition.text });
-  };
-
-  const dispatch = useAppDispatch();
+  const { id, name, suggestionsKey, onPropertyChange, onSubmit, ...rest } =
+    props;
 
   return (
-    <ApiAutocomplete
+    <ApiAutocompleteV2
       {...rest}
+      id={id}
       name={name}
       maxLength={schemaSettings.propositionTextMaxLength}
-      rows={1}
-      maxRows={4}
       singleLine={true}
-      onAutocomplete={onAutocomplete}
-      fetchSuggestions={(propositionText, suggestionsKey) =>
-        dispatch(
-          api.fetchPropositionTextSuggestions(propositionText, suggestionsKey)
-        )
-      }
+      onPropertyChange={onPropertyChange}
+      fetchSuggestions={api.fetchPropositionTextSuggestions}
       cancelSuggestions={cancelPropositionTextSuggestions}
       suggestionsKey={suggestionsKey}
-      dataLabel="text"
-      dataValue="id"
+      labelKey="text"
       suggestionSchema={propositionSchema}
-      onPropertyChange={onPropertyChange}
       onSubmit={onSubmit}
     />
   );

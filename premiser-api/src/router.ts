@@ -50,20 +50,14 @@ export async function routeRequest(
 
   const { route, routedRequest } = selectRoute(appProvider, request);
 
-  let userId = undefined;
-  if ("authToken" in route.request.schema.shape) {
-    if (!request.authToken) {
-      throw new AuthenticationError("Must send auth token");
-    }
-    userId = await appProvider.authService.readUserIdForAuthToken(
-      request.authToken
-    );
-    if (!userId) {
-      throw new AuthenticationError("Auth token is invalid");
-    }
-  }
-
   try {
+    if ("authToken" in route.request.schema.shape) {
+      if (!request.authToken) {
+        throw new AuthenticationError("Must send auth token");
+      }
+      await appProvider.authService.readUserIdForAuthToken(request.authToken);
+    }
+
     const parseResult = route.request.schema
       // Allow props like authToken to go through even if not explicitly in the schema.
       .passthrough()

@@ -1,29 +1,20 @@
 /*
-  Customize React-MD and apply fixes
- */
-
-/*
-  I _think_ to switch to react-md@2, replace the contents of this file with:
-
-    @import './rmd-variable-overrides';
-    @import '~react-md/dist/react-md';
-    @include react-md-utils;
-
-  Also incorporate or get rid of _grid.scss
+  Entrypoint for styling react-md
  */
 
 // Disable per https://react-md.dev/guides/working-with-v1#the-pain-points
 $md-typography-extended: false;
+@import "./rmd-variable-overrides";
 @import "~react-md/src/scss/react-md";
 @import "./react-md-variable-overrides";
 @import "./react-md-everything";
 
-@import "./rmd-variable-overrides";
 @import "~@react-md/icon/dist/mixins";
 @import "~@react-md/states/dist/mixins";
 @import "~@react-md/theme/dist/mixins";
 @import "~@react-md/typography/dist/mixins";
 @import "~@react-md/utils/dist/mixins";
+@import "~@react-md/form/dist/mixins";
 @include react-md-utils;
 
 @import "./react-md-fixes";

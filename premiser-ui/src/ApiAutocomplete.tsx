@@ -1,7 +1,7 @@
+import React, { ChangeEvent, Component } from "react";
 import throttle from "lodash/throttle";
 import map from "lodash/map";
 import { denormalize } from "normalizr";
-import React, { ChangeEvent, Component } from "react";
 import { Autocomplete, AutocompleteProps } from "react-md";
 import { connect, ConnectedProps } from "react-redux";
 

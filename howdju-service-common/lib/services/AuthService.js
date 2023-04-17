@@ -35,7 +35,7 @@ exports.AuthService = class AuthService {
     }
     return this.readOptionalUserIdForAuthToken(authToken).then((userId) => {
       if (!userId) {
-        throw new AuthenticationError();
+        throw new AuthenticationError("Auth token is invalid");
       }
       return userId;
     });

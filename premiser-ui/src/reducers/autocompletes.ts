@@ -1,10 +1,13 @@
+import produce from "immer";
 import { normalize } from "normalizr";
 import { handleActions } from "redux-actions";
+
+import { SuggestionsKey } from "@/types";
 import { autocompletes, combineActions, str } from "../actions";
 import { api, ApiResponseActionMeta } from "../apiActions";
 
 const initialState = {
-  suggestions: {},
+  suggestions: {} as Record<SuggestionsKey, any[]>,
 };
 
 export default handleActions<
@@ -49,12 +52,8 @@ export default handleActions<
         };
       },
     },
-    [str(autocompletes.clearSuggestions)]: (state, action) => ({
-      ...state,
-      suggestions: {
-        ...state.suggestions,
-        [action.payload.suggestionsKey]: [],
-      },
+    [str(autocompletes.clearSuggestions)]: produce((state, action) => {
+      state.suggestions[action.payload.suggestionsKey] = [];
     }),
   },
   initialState

@@ -87,7 +87,7 @@ describe("JustificationsPage", () => {
     expect(container).toMatchSnapshot();
   });
 
-  test("Can edit a proposition", async () => {
+  test("Can edit a proposition root target", async () => {
     // Arrange
     const user = setupUserEvent();
 

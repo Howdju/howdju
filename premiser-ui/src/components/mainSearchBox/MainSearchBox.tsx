@@ -26,8 +26,9 @@ export default function MainSearch() {
     searchText: string,
     suggestionsKey: SuggestionsKey
   ) => dispatch(api.fetchMainSearchSuggestions(searchText, suggestionsKey));
-  const cancelSuggestions = (suggestionsKey: SuggestionsKey) =>
+  function cancelSuggestions(suggestionsKey: SuggestionsKey) {
     dispatch(cancelMainSearchSuggestions(suggestionsKey));
+  }
 
   const dataValue = "id";
   const dataLabel = "text";

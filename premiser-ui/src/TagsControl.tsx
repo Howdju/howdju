@@ -186,7 +186,6 @@ export default function TagsControl(props: Props) {
         value={tagName}
         className="tag-name-autocomplete"
         suggestionsKey={suggestionsKey}
-        focusInputOnAutocomplete={true}
         onAutocomplete={onTagNameAutocomplete}
         onPropertyChange={onTagNamePropertyChange}
         onKeyDown={onTagNameKeyDown}

@@ -78,58 +78,36 @@ exports[`CreatePropositionPage can add URL while editing a WritQuote-based justi
                   class="error-message"
                 />
                 <div
-                  aria-expanded="false"
-                  aria-haspopup="true"
-                  class="md-layover md-layover--simplified md-full-width md-menu-container md-menu-container--menu-below md-autocomplete-container"
-                  id="create-proposition-page--proposition--text-menu"
+                  style="display: flex; align-items: center;"
                 >
                   <div
-                    class="md-text-field-container md-full-width md-text-field-container--multiline md-autocomplete"
+                    aria-expanded="false"
+                    aria-haspopup="listbox"
+                    aria-owns="create-proposition-page--proposition--text-listbox"
+                    class="rmd-text-field-container rmd-text-field-container--hoverable rmd-text-field-container--label rmd-text-field-container--underline rmd-text-field-container--underline-labelled rmd-text-field-container--underline-left rmd-autocomplate"
+                    id="create-proposition-page--proposition--text-combobox"
+                    role="combobox"
+                    style="flex-grow: 1;"
                   >
                     <label
-                      class="md-floating-label md-floating-label--inactive md-floating-label--inactive-sized md-text--error"
+                      class="rmd-label rmd-floating-label"
                       for="create-proposition-page--proposition--text"
                     >
-                      Text *
+                      Text
                     </label>
-                    <div
-                      class="md-text-field-multiline-container md-text-field--floating-margin"
-                      style="height: 0px;"
-                    >
-                      <span
-                        aria-hidden="true"
-                      />
-                      <textarea
-                        aria-hidden="true"
-                        class="md-text-field md-text-field--multiline md-full-width md-text md-text-field--multiline-mask"
-                        readonly=""
-                        rows="1"
-                        tabindex="-1"
-                      />
-                      <textarea
-                        aria-autocomplete="list"
-                        autocomplete="off"
-                        class="md-text-field md-text-field--multiline md-full-width md-text"
-                        id="create-proposition-page--proposition--text"
-                        name="proposition.text"
-                        required=""
-                        rows="1"
-                        style="height: 0px;"
-                      />
-                    </div>
-                    <hr
-                      class="md-divider md-divider--text-field md-divider--expand-from-left md-divider--text-field-error"
+                    <input
+                      aria-activedescendant=""
+                      aria-autocomplete="list"
+                      aria-controls="create-proposition-page--proposition--text-combobox"
+                      autocomplete="off"
+                      class="rmd-text-field rmd-text-field--floating"
+                      id="create-proposition-page--proposition--text"
+                      maxlength="512"
+                      name="proposition.text"
+                      required=""
+                      type="text"
+                      value=""
                     />
-                    <div
-                      class="md-text-field-message-container md-text-field-message-container--count-only md-full-width md-text--error"
-                    >
-                      <div
-                        aria-hidden="true"
-                        class="md-text-field-message md-text-field-message--inactive md-text-field-message--counter"
-                      >
-                        0 / 512
-                      </div>
-                    </div>
                   </div>
                 </div>
               </div>
@@ -793,58 +771,36 @@ exports[`CreatePropositionPage renders correctly with query params 1`] = `
                   class="error-message"
                 />
                 <div
-                  aria-expanded="false"
-                  aria-haspopup="true"
-                  class="md-layover md-layover--simplified md-full-width md-menu-container md-menu-container--menu-below md-autocomplete-container"
-                  id="create-proposition-page--proposition--text-menu"
+                  style="display: flex; align-items: center;"
                 >
                   <div
-                    class="md-text-field-container md-full-width md-text-field-container--multiline md-autocomplete"
+                    aria-expanded="false"
+                    aria-haspopup="listbox"
+                    aria-owns="create-proposition-page--proposition--text-listbox"
+                    class="rmd-text-field-container rmd-text-field-container--hoverable rmd-text-field-container--label rmd-text-field-container--underline rmd-text-field-container--underline-labelled rmd-text-field-container--underline-active rmd-text-field-container--underline-left rmd-autocomplate"
+                    id="create-proposition-page--proposition--text-combobox"
+                    role="combobox"
+                    style="flex-grow: 1;"
                   >
                     <label
-                      class="md-floating-label md-floating-label--floating md-text--theme-primary"
+                      class="rmd-label rmd-label--active rmd-floating-label rmd-floating-label--active"
                       for="create-proposition-page--proposition--text"
                     >
-                      Text *
+                      Text
                     </label>
-                    <div
-                      class="md-text-field-multiline-container md-text-field--floating-margin"
-                      style="height: 0px;"
-                    >
-                      <span
-                        aria-hidden="true"
-                      />
-                      <textarea
-                        aria-hidden="true"
-                        class="md-text-field md-text-field--multiline md-full-width md-text md-text-field--multiline-mask"
-                        readonly=""
-                        rows="1"
-                        tabindex="-1"
-                      />
-                      <textarea
-                        aria-autocomplete="list"
-                        autocomplete="off"
-                        class="md-text-field md-text-field--multiline md-full-width md-text"
-                        id="create-proposition-page--proposition--text"
-                        name="proposition.text"
-                        required=""
-                        rows="1"
-                        style="height: 0px;"
-                      />
-                    </div>
-                    <hr
-                      class="md-divider md-divider--text-field md-divider--expand-from-left md-divider--text-field-expanded md-divider--text-field-active"
+                    <input
+                      aria-activedescendant=""
+                      aria-autocomplete="list"
+                      aria-controls="create-proposition-page--proposition--text-combobox"
+                      autocomplete="off"
+                      class="rmd-text-field rmd-text-field--floating"
+                      id="create-proposition-page--proposition--text"
+                      maxlength="512"
+                      name="proposition.text"
+                      required=""
+                      type="text"
+                      value=""
                     />
-                    <div
-                      class="md-text-field-message-container md-text-field-message-container--count-only md-full-width md-text--disabled"
-                    >
-                      <div
-                        aria-hidden="false"
-                        class="md-text-field-message md-text-field-message--active md-text-field-message--counter"
-                      >
-                        0 / 512
-                      </div>
-                    </div>
                   </div>
                 </div>
               </div>

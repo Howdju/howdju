@@ -28,20 +28,12 @@ interface Props
   suggestionsKey: SuggestionsKey;
   onPropertyChange: OnPropertyChangeCallback;
   onKeyDown: OnKeyDownCallback;
-  focusInputOnAutocomplete: boolean;
   onAutocomplete?: (tag: Tag) => void;
 }
 
 export default function TagNameAutocomplete(props: Props) {
-  const {
-    id,
-    name,
-    suggestionsKey,
-    onPropertyChange,
-    onKeyDown,
-    focusInputOnAutocomplete,
-    ...rest
-  } = props;
+  const { id, name, suggestionsKey, onPropertyChange, onKeyDown, ...rest } =
+    props;
 
   const onAutocomplete = (tag: Tag) => {
     onPropertyChange({ [name]: tag.name });
@@ -68,7 +60,6 @@ export default function TagNameAutocomplete(props: Props) {
       name={name}
       dataLabel="name"
       dataValue="id"
-      focusInputOnAutocomplete={focusInputOnAutocomplete}
       onAutocomplete={onAutocomplete}
       onKeyDown={onKeyDown}
       onPropertyChange={onPropertyChange}
