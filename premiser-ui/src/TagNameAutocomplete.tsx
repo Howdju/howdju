@@ -3,10 +3,8 @@ import React from "react";
 import { schemaSettings, Tag } from "howdju-common";
 
 import { api } from "./actions";
-import ApiAutocomplete, { ApiAutocompleteProps } from "./ApiAutocomplete";
 import { tagSchema } from "./normalizationSchemas";
 import { cancelTagNameSuggestions } from "./apiActions";
-import { useAppDispatch } from "./hooks";
 import {
   ComponentId,
   ComponentName,
@@ -14,53 +12,53 @@ import {
   OnPropertyChangeCallback,
   SuggestionsKey,
 } from "./types";
+import ApiAutocompleteV2, {
+  Props as ApiAutocompleteProps,
+} from "./ApiAutoCompleteV2";
 
 interface Props
   extends Omit<
-    ApiAutocompleteProps,
-    | "onAutocomplete"
-    | "fetchSuggestions"
-    | "cancelSuggestions"
-    | "suggestionSchema"
+    ApiAutocompleteProps<Tag>,
+    "labelKey" | "fetchSuggestions" | "cancelSuggestions" | "suggestionSchema"
   > {
   id: ComponentId;
   name: ComponentName;
   suggestionsKey: SuggestionsKey;
   onPropertyChange: OnPropertyChangeCallback;
   onKeyDown: OnKeyDownCallback;
-  onAutocomplete?: (tag: Tag) => void;
+  onAutoComplete?: (tag: Tag) => void;
 }
 
-export default function TagNameAutocomplete(props: Props) {
-  const { id, name, suggestionsKey, onPropertyChange, onKeyDown, ...rest } =
-    props;
-
-  const onAutocomplete = (tag: Tag) => {
+export default function TagNameAutocomplete({
+  id,
+  name,
+  suggestionsKey,
+  onPropertyChange,
+  onKeyDown,
+  onAutoComplete,
+  ...rest
+}: Props) {
+  const _onAutoComplete = (tag: Tag) => {
     onPropertyChange({ [name]: tag.name });
-    if (props.onAutocomplete) {
-      props.onAutocomplete(tag);
+    if (onAutoComplete) {
+      onAutoComplete(tag);
     }
   };
 
-  const dispatch = useAppDispatch();
-
-  const fetchSuggestions = () => dispatch(api.fetchTagNameSuggestions);
-
   return (
-    <ApiAutocomplete
+    <ApiAutocompleteV2
       maxLength={schemaSettings.tagNameMaxLength}
       singleLine={true}
       label="Tag"
       {...rest}
       id={id}
-      fetchSuggestions={fetchSuggestions}
+      fetchSuggestions={api.fetchTagNameSuggestions}
       cancelSuggestions={cancelTagNameSuggestions}
       suggestionsKey={suggestionsKey}
       suggestionSchema={tagSchema}
       name={name}
-      dataLabel="name"
-      dataValue="id"
-      onAutocomplete={onAutocomplete}
+      labelKey="name"
+      onAutoComplete={_onAutoComplete}
       onKeyDown={onKeyDown}
       onPropertyChange={onPropertyChange}
     />

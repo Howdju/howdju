@@ -30,8 +30,11 @@ export type CancelSuggestionsActionCreator = (
   suggestionsKey: SuggestionsKey
 ) => PayloadAction<any>;
 
-interface Props
-  extends Omit<ComponentProps<typeof AutoComplete>, "data" | "onBlur"> {
+export interface Props<T>
+  extends Omit<
+    ComponentProps<typeof AutoComplete>,
+    "data" | "onBlur" | "onAutoComplete"
+  > {
   id: ComponentId;
   name: string;
   autocompleteThrottleMs?: number;
@@ -42,7 +45,7 @@ interface Props
   onPropertyChange?: OnPropertyChangeCallback;
   suggestionsKey: SuggestionsKey;
   /** The schema which the component uses to denormalize suggestions */
-  suggestionSchema: Schema;
+  suggestionSchema: Schema<T>;
   /** The property on the suggestions to use to display them. */
   labelKey: string;
   onBlur?: OnBlurCallback;
@@ -50,6 +53,7 @@ interface Props
   errorText?: string;
   /** Controls to display to the right of the input. */
   rightControls?: ReactNode;
+  onAutoComplete?: (suggestion: T) => void;
 }
 
 export default function ApiAutocompleteV2({
@@ -67,8 +71,9 @@ export default function ApiAutocompleteV2({
   error,
   errorText,
   rightControls,
+  onAutoComplete,
   ...rest
-}: Props) {
+}: Props<any>) {
   const dispatch = useAppDispatch();
   const debouncedFetchSuggestions = useDebouncedCallback((value: string) => {
     dispatch(fetchSuggestions(value, suggestionsKey));
@@ -98,9 +103,6 @@ export default function ApiAutocompleteV2({
   function clearSuggestions() {
     dispatch(autocompletes.clearSuggestions(suggestionsKey));
   }
-  function onAutoComplete({ value }: AutoCompleteResult) {
-    _onPropertyChange({ [name]: value });
-  }
   function _onBlur(event: FocusEvent<HTMLInputElement>) {
     if (onBlur) {
       onBlur(event.target.name);
@@ -117,6 +119,14 @@ export default function ApiAutocompleteV2({
     ) || [];
   const suggestionsData = suggestions.map((s: any) => s[labelKey]);
 
+  function _onAutoComplete({ value, dataIndex }: AutoCompleteResult) {
+    _onPropertyChange({ [name]: value });
+    if (onAutoComplete) {
+      const suggestion = suggestions[dataIndex];
+      onAutoComplete(suggestion);
+    }
+  }
+
   return (
     <>
       <div style={{ display: "flex", alignItems: "center" }}>
@@ -129,7 +139,7 @@ export default function ApiAutocompleteV2({
           valueKey={labelKey}
           onBlur={_onBlur}
           onChange={onChange}
-          onAutoComplete={onAutoComplete}
+          onAutoComplete={_onAutoComplete}
           error={error}
           disableShowOnFocus
           style={{ flexGrow: 1 }}

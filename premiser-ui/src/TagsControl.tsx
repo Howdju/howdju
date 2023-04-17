@@ -186,17 +186,16 @@ export default function TagsControl(props: Props) {
         value={tagName}
         className="tag-name-autocomplete"
         suggestionsKey={suggestionsKey}
-        onAutocomplete={onTagNameAutocomplete}
+        onAutoComplete={onTagNameAutocomplete}
         onPropertyChange={onTagNamePropertyChange}
         onKeyDown={onTagNameKeyDown}
-        rightIcon={
+        rightControls={
           inputCollapsable ? (
             <Button icon onClick={() => closeInput()}>
               done
             </Button>
           ) : undefined
         }
-        rightIconStateful={false}
         onSubmit={onSubmit}
       />
     );

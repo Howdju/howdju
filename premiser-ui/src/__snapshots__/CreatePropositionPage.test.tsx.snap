@@ -115,42 +115,35 @@ exports[`CreatePropositionPage can add URL while editing a WritQuote-based justi
                 class="chips-list"
               >
                 <div
-                  aria-expanded="false"
-                  aria-haspopup="true"
-                  class="md-layover md-layover--simplified md-full-width md-menu-container md-menu-container--menu-below md-autocomplete-container tag-name-autocomplete"
-                  id="create-proposition-page--tags--tag-name-menu"
+                  style="display: flex; align-items: center;"
                 >
                   <div
-                    class="md-text-field-container md-full-width md-text-field-container--input md-autocomplete"
+                    aria-expanded="false"
+                    aria-haspopup="listbox"
+                    aria-owns="create-proposition-page--tags--tag-name-listbox"
+                    class="rmd-text-field-container rmd-text-field-container--hoverable rmd-text-field-container--label rmd-text-field-container--underline rmd-text-field-container--underline-labelled rmd-text-field-container--underline-left rmd-autocomplate tag-name-autocomplete"
+                    id="create-proposition-page--tags--tag-name-combobox"
+                    role="combobox"
+                    style="flex-grow: 1;"
                   >
                     <label
-                      class="md-floating-label md-floating-label--inactive md-floating-label--inactive-sized md-text--secondary"
+                      class="rmd-label rmd-floating-label"
                       for="create-proposition-page--tags--tag-name"
                     >
                       Tag
                     </label>
                     <input
+                      aria-activedescendant=""
                       aria-autocomplete="list"
+                      aria-controls="create-proposition-page--tags--tag-name-combobox"
                       autocomplete="off"
-                      class="md-text-field md-text-field--floating-margin md-full-width md-text"
+                      class="rmd-text-field rmd-text-field--floating"
                       id="create-proposition-page--tags--tag-name"
+                      maxlength="64"
                       name="tagName"
                       type="text"
                       value=""
                     />
-                    <hr
-                      class="md-divider md-divider--text-field md-divider--expand-from-left"
-                    />
-                    <div
-                      class="md-text-field-message-container md-text-field-message-container--count-only md-full-width md-text--disabled"
-                    >
-                      <div
-                        aria-hidden="true"
-                        class="md-text-field-message md-text-field-message--inactive md-text-field-message--counter"
-                      >
-                        0 / 64
-                      </div>
-                    </div>
                   </div>
                 </div>
               </div>
@@ -808,42 +801,35 @@ exports[`CreatePropositionPage renders correctly with query params 1`] = `
                 class="chips-list"
               >
                 <div
-                  aria-expanded="false"
-                  aria-haspopup="true"
-                  class="md-layover md-layover--simplified md-full-width md-menu-container md-menu-container--menu-below md-autocomplete-container tag-name-autocomplete"
-                  id="create-proposition-page--tags--tag-name-menu"
+                  style="display: flex; align-items: center;"
                 >
                   <div
-                    class="md-text-field-container md-full-width md-text-field-container--input md-autocomplete"
+                    aria-expanded="false"
+                    aria-haspopup="listbox"
+                    aria-owns="create-proposition-page--tags--tag-name-listbox"
+                    class="rmd-text-field-container rmd-text-field-container--hoverable rmd-text-field-container--label rmd-text-field-container--underline rmd-text-field-container--underline-labelled rmd-text-field-container--underline-left rmd-autocomplate tag-name-autocomplete"
+                    id="create-proposition-page--tags--tag-name-combobox"
+                    role="combobox"
+                    style="flex-grow: 1;"
                   >
                     <label
-                      class="md-floating-label md-floating-label--inactive md-floating-label--inactive-sized md-text--secondary"
+                      class="rmd-label rmd-floating-label"
                       for="create-proposition-page--tags--tag-name"
                     >
                       Tag
                     </label>
                     <input
+                      aria-activedescendant=""
                       aria-autocomplete="list"
+                      aria-controls="create-proposition-page--tags--tag-name-combobox"
                       autocomplete="off"
-                      class="md-text-field md-text-field--floating-margin md-full-width md-text"
+                      class="rmd-text-field rmd-text-field--floating"
                       id="create-proposition-page--tags--tag-name"
+                      maxlength="64"
                       name="tagName"
                       type="text"
                       value=""
                     />
-                    <hr
-                      class="md-divider md-divider--text-field md-divider--expand-from-left"
-                    />
-                    <div
-                      class="md-text-field-message-container md-text-field-message-container--count-only md-full-width md-text--disabled"
-                    >
-                      <div
-                        aria-hidden="true"
-                        class="md-text-field-message md-text-field-message--inactive md-text-field-message--counter"
-                      >
-                        0 / 64
-                      </div>
-                    </div>
                   </div>
                 </div>
               </div>
