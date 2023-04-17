@@ -203,16 +203,22 @@ export default handleActions(
     },
     [api.deleteJustification.response]: {
       next: (state, action) => {
-        const deletedJustification = action.meta.requestMeta.justification;
+        const {
+          justificationId,
+          justificationTargetType,
+          justificationTargetId,
+        } = action.meta.requestMeta;
         const stateWithoutJustification = {
           ...state,
           justifications: pickBy(
             state.justifications,
-            (j, id) => !idEqual(id, deletedJustification.id)
+            (j, id) => !idEqual(id, justificationId)
           ),
         };
         const targetUpdate = makeUpdateRemovingJustificationFromTarget(
-          deletedJustification,
+          justificationId,
+          justificationTargetType,
+          justificationTargetId,
           stateWithoutJustification
         );
         return {
@@ -412,13 +418,15 @@ export function makeUpdatesAddingJustificationsToTargets(entities, state) {
 }
 
 export function makeUpdateRemovingJustificationFromTarget(
-  justification,
+  justificationId,
+  justificationTargetType,
+  justificationTargetId,
   state
 ) {
   const updates = {};
   let entitiesKey, justificationsKey;
-  const targetId = justification.target.entity.id;
-  switch (justification.target.type) {
+  const targetId = justificationTargetId;
+  switch (justificationTargetType) {
     case JustificationTargetTypes.PROPOSITION:
       entitiesKey = "propositions";
       justificationsKey = "justifications";
@@ -432,7 +440,7 @@ export function makeUpdateRemovingJustificationFromTarget(
       justificationsKey = "counterJustifications";
       break;
     default:
-      throw newExhaustedEnumError(justification.target.type);
+      throw newExhaustedEnumError(justificationTargetType);
   }
   const target = state[entitiesKey][targetId];
   if (!updates[entitiesKey]) {
@@ -443,7 +451,7 @@ export function makeUpdateRemovingJustificationFromTarget(
       ...target,
       [justificationsKey]: filter(
         target[justificationsKey],
-        (id) => !idEqual(id, justification.id)
+        (id) => !idEqual(id, justificationId)
       ),
     };
   }
