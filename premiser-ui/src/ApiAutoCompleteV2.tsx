@@ -6,6 +6,7 @@ import React, {
 } from "react";
 import { PayloadAction } from "@reduxjs/toolkit";
 import { AutoComplete, AutoCompleteResult } from "@react-md/autocomplete";
+import { FormMessage } from "@react-md/form";
 import { useDebouncedCallback } from "use-debounce";
 import { denormalize, Schema } from "normalizr";
 
@@ -20,7 +21,8 @@ import {
 } from "./types";
 import { useAppDispatch, useAppSelector } from "./hooks";
 import { autocompletes } from "./actions";
-import { FormMessage } from "@react-md/form";
+
+import "./ApiAutoCompleteV2.scss";
 
 export type FetchSuggestionsActionCreator = (
   value: string,

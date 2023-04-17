@@ -1,11 +1,8 @@
 import React from "react";
-import { useDispatch } from "react-redux";
 
-import { Writ } from "howdju-common";
-
-import ApiAutocomplete from "./ApiAutocomplete";
 import { writSchema } from "./normalizationSchemas";
 import {
+  ComponentId,
   ComponentName,
   OnKeyDownCallback,
   OnPropertyChangeCallback,
@@ -13,8 +10,10 @@ import {
 } from "./types";
 import { api } from "./actions";
 import { cancelWritTitleSuggestions } from "./apiActions";
+import ApiAutocompleteV2 from "./ApiAutoCompleteV2";
 
 interface Props {
+  id: ComponentId;
   name: ComponentName;
   value: string;
   suggestionsKey: SuggestionsKey;
@@ -22,32 +21,27 @@ interface Props {
   onPropertyChange: OnPropertyChangeCallback;
 }
 
-const WritTitleAutocomplete = (props: Props) => {
-  const { name, value, suggestionsKey, onKeyDown, onPropertyChange, ...rest } =
-    props;
-  const onAutocomplete = (writ: Writ) => {
-    onPropertyChange({ [name]: writ.title });
-  };
-
-  const dispatch = useDispatch();
-
+const WritTitleAutocomplete = ({
+  id,
+  name,
+  value,
+  suggestionsKey,
+  onKeyDown,
+  onPropertyChange,
+  ...rest
+}: Props) => {
   return (
-    <ApiAutocomplete
+    <ApiAutocompleteV2
+      id={id}
       name={name}
       singleLine={true}
       {...rest}
       value={value}
-      onAutocomplete={onAutocomplete}
-      fetchSuggestions={(text: string, suggestionsKey: SuggestionsKey) =>
-        dispatch(api.fetchWritTitleSuggestions(text, suggestionsKey))
-      }
-      cancelSuggestions={(suggestionsKey: SuggestionsKey) =>
-        dispatch(cancelWritTitleSuggestions(suggestionsKey))
-      }
+      fetchSuggestions={api.fetchWritTitleSuggestions}
+      cancelSuggestions={cancelWritTitleSuggestions}
       onPropertyChange={onPropertyChange}
       suggestionsKey={suggestionsKey}
-      dataLabel="title"
-      dataValue="id"
+      labelKey="title"
       suggestionSchema={writSchema}
       onKeyDown={onKeyDown}
     />
