@@ -1,17 +1,26 @@
 import React from "react";
-import { screen } from "@testing-library/react";
+import { fireEvent, screen } from "@testing-library/react";
 import TagsControl from "./TagsControl";
 import {
   renderWithProviders,
   setupUserEvent,
   withFakeTimers,
+  withMockServer,
 } from "./testUtils";
-import { CreatePropositionInput, Tag, TagVote } from "howdju-common";
+import {
+  CreatePropositionInput,
+  httpStatusCodes,
+  Tag,
+  TagVote,
+} from "howdju-common";
+import { InferResponseBody, serviceRoutes } from "howdju-service-routes";
+import { rest } from "msw";
 
 withFakeTimers();
+const server = withMockServer();
 
 describe("TagsControl", () => {
-  test("pressing enter with non-empty tag name adds tag", async () => {
+  test("pressing enter with non-empty tag name adds tag and doesn't submit enclosing form", async () => {
     const onSubmit = jest.fn();
     const onTag = jest.fn();
     const onUnTag = jest.fn();
@@ -42,33 +51,32 @@ describe("TagsControl", () => {
     expect(onUnTag).not.toHaveBeenCalled();
   });
 
-  test("pressing enter with empty tag name submits", async () => {
-    const onSubmit = jest.fn();
+  test("pressing enter with empty tag name collapses input", async () => {
     const onTag = jest.fn();
     const onUnTag = jest.fn();
 
     renderWithProviders(
-      <form onSubmit={onSubmit}>
-        <TagsControl
-          id="test-tags-control"
-          tags={[]}
-          votes={[]}
-          suggestionsKey="test-suggestions-key"
-          onTag={onTag}
-          onUnTag={onUnTag}
-          onSubmit={onSubmit}
-        />
-      </form>
+      <TagsControl
+        id="test-tags-control"
+        tags={[]}
+        votes={[]}
+        suggestionsKey="test-suggestions-key"
+        onTag={onTag}
+        onUnTag={onUnTag}
+        inputCollapsable={true}
+      />
     );
 
     const user = setupUserEvent();
 
     // Act
+    await user.click(screen.getByRole("button", { description: /add tag/i }));
     await user.type(screen.getByLabelText(/tag/i), "{Enter}");
 
     // Assert
-    // Ensure we didn't submit for both form and TagsControl.
-    expect(onSubmit).toHaveBeenCalledOnce();
+    expect(
+      screen.queryByRole("input", { name: "tagName" })
+    ).not.toBeInTheDocument();
   });
 
   test("downvoting tag calls untag", async () => {
@@ -101,5 +109,53 @@ describe("TagsControl", () => {
     // Assert
     expect(onUnTag).toHaveBeenCalled();
   });
-  // TODO(222): add more coverage
+
+  test("autocompleting with partial input tags only the autocompleted tag.", async () => {
+    const user = setupUserEvent();
+    const onTag = jest.fn();
+    const onUnTag = jest.fn();
+
+    server.use(
+      rest.get(`http://localhost/search-tags`, (_req, res, ctx) => {
+        const response: InferResponseBody<typeof serviceRoutes.searchTags> = {
+          tags: [
+            { id: "1", name: "Politics" },
+            { id: "2", name: "Political" },
+          ],
+        };
+        return res(ctx.status(httpStatusCodes.OK), ctx.json(response));
+      })
+    );
+
+    renderWithProviders(
+      <TagsControl
+        id="test-tags-control"
+        tags={[]}
+        votes={[]}
+        suggestionsKey="test-suggestions-key"
+        onTag={onTag}
+        onUnTag={onUnTag}
+        autocompleteDebounceMs={0}
+      />
+    );
+
+    // Act
+
+    const input = screen.getByLabelText(/tag/i);
+
+    await user.type(input, "Poli");
+    fireEvent.keyDown(input, { key: "ArrowDown" });
+    await user.type(input, "{Enter}");
+
+    // Assert
+
+    // Ensure we didn't tag both "Poli" (the text entry) and "Politics" (the first tag, selected
+    // using down-arrow.)
+    expect(onTag).toHaveBeenCalledOnceWith({ id: "1", name: "Politics" });
+  });
+  test.todo("initially shows tags with votes");
+  test.todo("initially hides tags lacking votes");
+  test.todo("shows tags lacking votes after clicking show all");
+  test.todo("shows recommended tags initially");
+  test.todo("hides recommended tags after downvoting them");
 });

@@ -1,11 +1,6 @@
-# Debugging Tests
+# Howdju web app (`premiser-ui`)
 
-```
-yarn test:debug
-```
-
-Then open Chrome at `chrome://inspect` and select the node instance.
-[Details](https://jestjs.io/docs/en/troubleshooting#tests-are-failing-and-you-don-t-know-why)
+This is the yarn workspace for Howdju's web app.
 
 ## Hot module reload
 
@@ -31,3 +26,11 @@ I did:
 
 But then I discovered that iframe.onLoad wasn't working in local development (used by extension), and I suspected the
 hot loaders interaction with react-dom, so I just switched to `yarn add 'react-dom@^16.2.0'`
+
+## react-md
+
+This workspace currently depends on a patch of @react-md/autocomplete@2.9.1 that adds
+`event.preventDefault()` when the user presses enter to autocomplete. This change prevents
+submitting a form when the user is autocompleting.
+
+PR for that change is here: https://github.com/mlaursen/react-md/pull/1439

@@ -39,7 +39,8 @@ export interface Props<T>
   > {
   id: ComponentId;
   name: string;
-  autocompleteThrottleMs?: number;
+  /** The number of milliseconds after typing to wait before fetching suggestions. */
+  autocompleteDebounceMs?: number;
   fetchSuggestions: FetchSuggestionsActionCreator;
   cancelSuggestions: CancelSuggestionsActionCreator;
   /** Whether the input should be constrained to a single line. */
@@ -61,7 +62,7 @@ export interface Props<T>
 export default function ApiAutoComplete({
   id,
   name,
-  autocompleteThrottleMs = 250,
+  autocompleteDebounceMs = 250,
   fetchSuggestions,
   cancelSuggestions,
   singleLine = true,
@@ -79,7 +80,7 @@ export default function ApiAutoComplete({
   const dispatch = useAppDispatch();
   const debouncedFetchSuggestions = useDebouncedCallback((value: string) => {
     dispatch(fetchSuggestions(value, suggestionsKey));
-  }, autocompleteThrottleMs);
+  }, autocompleteDebounceMs);
 
   function onChange(event: ChangeEvent<HTMLInputElement>) {
     const name = event.target.name;
