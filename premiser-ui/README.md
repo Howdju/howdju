@@ -30,6 +30,7 @@ hot loaders interaction with react-dom, so I just switched to `yarn add 'react-d
 ## react-md
 
 This workspace currently depends on a patch of @react-md/autocomplete@2.9.1 that adds
-`event.preventDefault()` when the user presses enter to autocomplete. This prevents form submission.
+`event.preventDefault()` when the user presses enter to autocomplete. This change prevents
+submitting a form when the user is autocompleting.
 
 PR for that change is here: https://github.com/mlaursen/react-md/pull/1439

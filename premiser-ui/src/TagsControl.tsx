@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { FormEvent, useState } from "react";
 import find from "lodash/find";
 import get from "lodash/get";
 import includes from "lodash/includes";
@@ -60,6 +60,8 @@ export interface Props {
   /** Enable collapsing the tag name input */
   inputCollapsable?: boolean;
   addTitle?: string;
+  /** The autocomplete suggestion fetch debounce milliseconds. */
+  autocompleteDebounceMs?: number;
 }
 
 export default function TagsControl(props: Props) {
@@ -80,13 +82,19 @@ export default function TagsControl(props: Props) {
     onUnTag,
     onAntiTag,
     addTitle = "Add tag",
+    autocompleteDebounceMs,
     ...rest
   } = props;
 
   const [tagName, setTagName] = useState("");
   const [isInputCollapsed, setIsInputCollapsed] = useState(true);
 
-  function submitTagName() {
+  function submitTagName(event: FormEvent<HTMLFormElement>) {
+    // Stop it from submitting an enclosing form
+    event.preventDefault();
+    // Stop it from propagating to an enclosing form
+    event.stopPropagation();
+
     addTag(tagName);
     setTagName("");
     if (inputCollapsable) {
@@ -177,6 +185,12 @@ export default function TagsControl(props: Props) {
   const extraChildren = [];
   if (!inputCollapsable || !isInputCollapsed) {
     extraChildren.push(
+      // This form makes it easier to receive a submit only when the autocomplete listbox is closed.
+      // But it also makes it possible for us to nest forms, which is tecnically invalid HTML.
+      // Other solutions include updating AutoComplete to call onKeyDown after it has
+      // preventedDefault so that our onKeyDown could inspect that and do nothing. Or to define a
+      // custom onKeyDown that passes information about the current AutoComplete state, like whether
+      // the listbox is visible.
       <form onSubmit={submitTagName}>
         <TagNameAutocomplete
           id={tagNameAutocompleteId}
@@ -195,6 +209,7 @@ export default function TagsControl(props: Props) {
               </Button>
             ) : undefined
           }
+          autocompleteDebounceMs={autocompleteDebounceMs}
         />
       </form>
     );

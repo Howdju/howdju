@@ -491,7 +491,6 @@ class CreatePropositionPage extends Component<Props> {
                     suggestionsKey={combineSuggestionsKeys(id, tagsName)}
                     onTag={this.onTagProposition}
                     onUnTag={this.onUnTagProposition}
-                    onSubmit={onSubmit}
                   />
                 </CardText>
 

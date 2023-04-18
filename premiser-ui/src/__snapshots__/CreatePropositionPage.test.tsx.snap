@@ -114,38 +114,40 @@ exports[`CreatePropositionPage can add URL while editing a WritQuote-based justi
               <div
                 class="chips-list"
               >
-                <div
-                  style="display: flex; align-items: center;"
-                >
+                <form>
                   <div
-                    aria-expanded="false"
-                    aria-haspopup="listbox"
-                    aria-owns="create-proposition-page--tags--tag-name-listbox"
-                    class="rmd-text-field-container rmd-text-field-container--hoverable rmd-text-field-container--label rmd-text-field-container--underline rmd-text-field-container--underline-labelled rmd-text-field-container--underline-left rmd-autocomplate tag-name-autocomplete"
-                    id="create-proposition-page--tags--tag-name-combobox"
-                    role="combobox"
-                    style="flex-grow: 1;"
+                    style="display: flex; align-items: center;"
                   >
-                    <label
-                      class="rmd-label rmd-floating-label"
-                      for="create-proposition-page--tags--tag-name"
+                    <div
+                      aria-expanded="false"
+                      aria-haspopup="listbox"
+                      aria-owns="create-proposition-page--tags--tag-name-listbox"
+                      class="rmd-text-field-container rmd-text-field-container--hoverable rmd-text-field-container--label rmd-text-field-container--underline rmd-text-field-container--underline-labelled rmd-text-field-container--underline-left rmd-autocomplate tag-name-autocomplete"
+                      id="create-proposition-page--tags--tag-name-combobox"
+                      role="combobox"
+                      style="flex-grow: 1;"
                     >
-                      Tag
-                    </label>
-                    <input
-                      aria-activedescendant=""
-                      aria-autocomplete="list"
-                      aria-controls="create-proposition-page--tags--tag-name-combobox"
-                      autocomplete="off"
-                      class="rmd-text-field rmd-text-field--floating"
-                      id="create-proposition-page--tags--tag-name"
-                      maxlength="64"
-                      name="tagName"
-                      type="text"
-                      value=""
-                    />
+                      <label
+                        class="rmd-label rmd-floating-label"
+                        for="create-proposition-page--tags--tag-name"
+                      >
+                        Tag
+                      </label>
+                      <input
+                        aria-activedescendant=""
+                        aria-autocomplete="list"
+                        aria-controls="create-proposition-page--tags--tag-name-combobox"
+                        autocomplete="off"
+                        class="rmd-text-field rmd-text-field--floating"
+                        id="create-proposition-page--tags--tag-name"
+                        maxlength="64"
+                        name="tagName"
+                        type="text"
+                        value=""
+                      />
+                    </div>
                   </div>
-                </div>
+                </form>
               </div>
             </section>
             <div
@@ -793,38 +795,40 @@ exports[`CreatePropositionPage renders correctly with query params 1`] = `
               <div
                 class="chips-list"
               >
-                <div
-                  style="display: flex; align-items: center;"
-                >
+                <form>
                   <div
-                    aria-expanded="false"
-                    aria-haspopup="listbox"
-                    aria-owns="create-proposition-page--tags--tag-name-listbox"
-                    class="rmd-text-field-container rmd-text-field-container--hoverable rmd-text-field-container--label rmd-text-field-container--underline rmd-text-field-container--underline-labelled rmd-text-field-container--underline-left rmd-autocomplate tag-name-autocomplete"
-                    id="create-proposition-page--tags--tag-name-combobox"
-                    role="combobox"
-                    style="flex-grow: 1;"
+                    style="display: flex; align-items: center;"
                   >
-                    <label
-                      class="rmd-label rmd-floating-label"
-                      for="create-proposition-page--tags--tag-name"
+                    <div
+                      aria-expanded="false"
+                      aria-haspopup="listbox"
+                      aria-owns="create-proposition-page--tags--tag-name-listbox"
+                      class="rmd-text-field-container rmd-text-field-container--hoverable rmd-text-field-container--label rmd-text-field-container--underline rmd-text-field-container--underline-labelled rmd-text-field-container--underline-left rmd-autocomplate tag-name-autocomplete"
+                      id="create-proposition-page--tags--tag-name-combobox"
+                      role="combobox"
+                      style="flex-grow: 1;"
                     >
-                      Tag
-                    </label>
-                    <input
-                      aria-activedescendant=""
-                      aria-autocomplete="list"
-                      aria-controls="create-proposition-page--tags--tag-name-combobox"
-                      autocomplete="off"
-                      class="rmd-text-field rmd-text-field--floating"
-                      id="create-proposition-page--tags--tag-name"
-                      maxlength="64"
-                      name="tagName"
-                      type="text"
-                      value=""
-                    />
+                      <label
+                        class="rmd-label rmd-floating-label"
+                        for="create-proposition-page--tags--tag-name"
+                      >
+                        Tag
+                      </label>
+                      <input
+                        aria-activedescendant=""
+                        aria-autocomplete="list"
+                        aria-controls="create-proposition-page--tags--tag-name-combobox"
+                        autocomplete="off"
+                        class="rmd-text-field rmd-text-field--floating"
+                        id="create-proposition-page--tags--tag-name"
+                        maxlength="64"
+                        name="tagName"
+                        type="text"
+                        value=""
+                      />
+                    </div>
                   </div>
-                </div>
+                </form>
               </div>
             </section>
             <div
