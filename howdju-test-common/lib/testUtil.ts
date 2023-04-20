@@ -1,5 +1,4 @@
 import { isMoment } from "moment";
-import { expect } from "@jest/globals";
 
 import { mapValuesDeep } from "howdju-common";
 
@@ -10,6 +9,8 @@ import { mapValuesDeep } from "howdju-common";
  */
 export function expectToBeSameMomentDeep(value: any) {
   return mapValuesDeep(value, (v) =>
-    isMoment(v) ? expect.toBeSameMoment(v) : v
+    // Can't add `import { expect } from "@jest/globals";` above or else the esbuild fails.
+    // So just typecast expect.
+    isMoment(v) ? (expect as any).toBeSameMoment(v) : v
   );
 }
