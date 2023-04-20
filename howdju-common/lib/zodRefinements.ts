@@ -4,14 +4,17 @@ import isUrl from "validator/lib/isURL";
 
 import { extractDomain } from "./urls";
 
-type UrlOptions = { domain?: RegExp };
+type UrlOptions = {
+  domain?: RegExp;
+};
+
 /** Zod refinement for whether a string is a valid URL.
  *
- * If domain is present, the URL must match it.
+ * If domain is present, the URL's domain must match it.
  */
 const urlRefinement =
   (options: UrlOptions) => (val: string, ctx: z.RefinementCtx) => {
-    const { domain } = options ?? {};
+    const { domain: domainPattern } = options ?? {};
     if (!isUrl(val, { protocols: ["http", "https"], require_protocol: true })) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
@@ -19,12 +22,12 @@ const urlRefinement =
       });
     }
 
-    if (domain) {
+    if (domainPattern) {
       const domain = extractDomain(val);
-      if (!domain.test(domain)) {
+      if (!domainPattern.test(domain)) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          message: `URL domain must match: ${domain}.`,
+          message: `URL domain must match: ${domainPattern}.`,
         });
       }
     }
