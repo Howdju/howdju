@@ -175,9 +175,7 @@ describe("JustificationsService", () => {
       // Arrange
       const { authToken, user } = await makeUser();
 
-      const createJustification = makeWritQuoteBasedJustification(
-        "https://www.trustworthy.news"
-      );
+      const createJustification = makeWritQuoteBasedJustification();
 
       // Act
       const { isExtant, justification: justificationOut } =
@@ -779,7 +777,9 @@ function makePropositionCompoundBasedJustification(): CreateJustification {
   };
 }
 
-function makeWritQuoteBasedJustification(url: string): CreateJustification {
+function makeWritQuoteBasedJustification(
+  url: string = "https://www.trustworthy.news"
+): CreateJustification {
   return {
     target: {
       type: "PROPOSITION",
