@@ -247,7 +247,6 @@ export function makePicRegion(): PicRegion {
   return { pic: {} };
 }
 
-// DO_NOT_MERGE
 export const makeCreateJustifiedSentenceInput = (
   propositionProps: PartialDeep<CreatePropositionInput> = {},
   justificationProps: PartialDeep<CreateJustificationInput> = {}
