@@ -188,3 +188,15 @@ export function setupUserEvent() {
   // (https://github.com/testing-library/user-event/issues/833#issuecomment-1171452841)
   return userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
 }
+
+/** Throws if progress is in the document and visible. */
+export function progressToBeGone(progress: HTMLElement | null) {
+  try {
+    expect(progress).not.toBeInTheDocument();
+  } catch {
+    // Sometimes CircularProgress hangs around in the DOM even though it is invisible.
+    // TODO(17): Check if this is still necessary after upgrading react-md
+    // eslint-disable-next-line jest/no-conditional-expect
+    expect(progress).toHaveStyle({ opacity: 0 });
+  }
+}

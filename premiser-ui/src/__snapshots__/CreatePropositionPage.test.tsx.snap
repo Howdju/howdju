@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`CreatePropositionPage can add URL while editing a WritQuote-based justification 1`] = `
+exports[`CreatePropositionPage (with fake timers) can add URL while editing a WritQuote-based justification 1`] = `
 <div>
   <div
     id="edit-proposition-justification-page"
@@ -12,8 +12,7 @@ exports[`CreatePropositionPage can add URL while editing a WritQuote-based justi
         class="md-cell md-cell--12"
       >
         <p>
-          The
-           
+          The 
           <a
             href="/tools"
           >
@@ -700,7 +699,7 @@ exports[`CreatePropositionPage can add URL while editing a WritQuote-based justi
 </div>
 `;
 
-exports[`CreatePropositionPage renders correctly with query params 1`] = `
+exports[`CreatePropositionPage (with fake timers) renders correctly with query params 1`] = `
 <div>
   <div
     id="edit-proposition-justification-page"

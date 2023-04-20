@@ -1,14 +1,9 @@
 import { Pool } from "pg";
 
 import { ContextTrailItemInfo } from "howdju-common";
-import { mockLogger } from "howdju-test-common";
+import { mockLogger, expectToBeSameMomentDeep } from "howdju-test-common";
 
-import {
-  endPoolAndDropDb,
-  expectToBeSameMomentDeep,
-  initDb,
-  makeTestDbConfig,
-} from "@/util/testUtil";
+import { endPoolAndDropDb, initDb, makeTestDbConfig } from "@/util/testUtil";
 import {
   AuthService,
   ConflictError,

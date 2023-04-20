@@ -130,16 +130,24 @@ export default function PropositionCompoundEditorFields(props: Props) {
           onSubmit,
           ...errorProps((pc) => pc.atoms[index].entity.text),
         };
-        return suggestionsKey && !disabled ? (
-          <PropositionTextAutocomplete
-            {...inputProps}
-            suggestionsKey={combineSuggestionsKeys(
-              suggestionsKey,
-              atomPropositionTextName
-            )}
-          />
-        ) : (
-          <SingleLineTextField {...inputProps} />
+        const input =
+          suggestionsKey && !disabled ? (
+            <PropositionTextAutocomplete
+              {...inputProps}
+              suggestionsKey={combineSuggestionsKeys(
+                suggestionsKey,
+                atomPropositionTextName
+              )}
+            />
+          ) : (
+            <SingleLineTextField {...inputProps} />
+          );
+        return (
+          <>
+            {input}
+            <ErrorMessages errors={errors?.atoms?.[index]?._errors} />
+            <ErrorMessages errors={errors?.atoms?.[index]?.entity?._errors} />
+          </>
         );
       })}
       <ErrorMessages errors={errors?._errors} />

@@ -20,6 +20,7 @@
   "devDependencies": {
     "eslint": "^8.27.0",
     "eslint-config-howdju": "workspace:eslint-config-howdju",
+    "howdju-test-common": "workspace:howdju-test-common",
     "prettier": "2.7.1",
     "typescript": "^4.9.4"
   },

@@ -9,6 +9,7 @@ import {
   withStaticFromNowMoment,
   withMockServer,
   setupUserEvent,
+  progressToBeGone,
 } from "@/testUtils";
 import {
   httpStatusCodes,
@@ -53,18 +54,6 @@ beforeEach(() => {
     })
   );
 });
-
-/** Throws if progress is in the document and visible. */
-function progressToBeGone(progress: HTMLElement | null) {
-  try {
-    expect(progress).not.toBeInTheDocument();
-  } catch {
-    // Sometimes CircularProgress hangs around in the DOM even though it is invisible.
-    // TODO(17): Check if this is still necessary after upgrading react-md
-    // eslint-disable-next-line jest/no-conditional-expect
-    expect(progress).toHaveStyle({ opacity: 0 });
-  }
-}
 
 describe("ListEntitiesWidget", () => {
   describe("RecentPropositionsWidget", () => {

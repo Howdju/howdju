@@ -111,7 +111,11 @@ export const makeCreateContentReportInput = (
     fields
   );
 
-/** Remove the fields that are circular, unserializable, or not part of the API update model. */
+/**
+ * Remove the fields that are circular.
+ *
+ * TODO(386) add a generic circularity check in our action creators.
+ */
 export function toUpdatePropositionInput(
   proposition: PropositionOut
 ): UpdatePropositionInput {

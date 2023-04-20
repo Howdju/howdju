@@ -1,3 +1,5 @@
+/// <reference path="../../howdju-test-common/lib/globals.d.ts" />
+
 // Babel runtime dependencies
 import "core-js/stable";
 import "regenerator-runtime/runtime";

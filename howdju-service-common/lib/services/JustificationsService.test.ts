@@ -191,6 +191,47 @@ describe("JustificationsService", () => {
         },
       });
     });
+
+    test("fails to create a writ quote based justification with a javascript URL", async () => {
+      // Arrange
+      const { authToken } = await makeUser();
+
+      const createJustification = makeWritQuoteBasedJustification(
+        "javascript:alert('gotcha')"
+      );
+
+      // Act
+      let err;
+      try {
+        // Act
+        await service.readOrCreate(createJustification, authToken);
+        throw "Should have failed validation.";
+      } catch (e) {
+        err = e;
+      }
+
+      // Assert
+      expect(err).toBeInstanceOf(EntityValidationError);
+      expect(err).toMatchObject({
+        errors: {
+          basis: {
+            entity: {
+              urls: {
+                0: {
+                  url: {
+                    _errors: [
+                      {
+                        message: expect.stringContaining("Must be a valid URL"),
+                      },
+                    ],
+                  },
+                },
+              },
+            },
+          },
+        },
+      });
+    });
     test("can create a counter justification", async () => {
       // Arrange
       const { authToken, user } = await makeUser();
@@ -736,7 +777,9 @@ function makePropositionCompoundBasedJustification(): CreateJustification {
   };
 }
 
-function makeWritQuoteBasedJustification(): CreateJustification {
+function makeWritQuoteBasedJustification(
+  url: string = "https://www.trustworthy.news"
+): CreateJustification {
   return {
     target: {
       type: "PROPOSITION",
@@ -752,7 +795,7 @@ function makeWritQuoteBasedJustification(): CreateJustification {
         writ: {
           title: "Trustworthy online news source",
         },
-        urls: [{ url: "https://www.trustworthy.news" }],
+        urls: [{ url: url }],
       },
     },
     polarity: "POSITIVE",

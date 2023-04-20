@@ -1,4 +1,5 @@
 import moment from "moment";
+import { urlString } from "./zodRefinements";
 import { Justification } from "./zodSchemas";
 
 describe("Justification schema", () => {
@@ -42,5 +43,20 @@ describe("Justification schema", () => {
     const result = Justification.parse(justification);
 
     expect(result).toEqual(justification);
+  });
+});
+
+describe("urlString", () => {
+  it("should match a domain", () => {
+    const result = urlString({
+      domain: /some-websites.com$/,
+    }).safeParse("https://www.some-websites.com/the-path");
+    expect(result.success).toBe(true);
+  });
+  it("should not match a different domain", () => {
+    const result = urlString({
+      domain: /the-other-site.com$/,
+    }).safeParse("https://www.some-websites.com/the-path");
+    expect(result.success).toBe(false);
   });
 });
