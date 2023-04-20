@@ -128,7 +128,7 @@ export const Persorg = Entity.extend({
    */
   knownFor: z.string().optional(),
   /** The official or primary website representing the persorg. */
-  websiteUrl: z.string().url().optional(),
+  websiteUrl: urlString().optional(),
   /** The persorg's Twitter. */
   twitterUrl: urlString({ domain: /twitter.com$/ }).optional(),
   /** The persorg's Wikipedia URL. */
@@ -278,7 +278,7 @@ export const UrlTarget = Entity.extend({
 });
 
 export const Url = Entity.extend({
-  url: z.string().url(),
+  url: urlString(),
   // TODO(38) I don't think target should be part of URL. Targets should be related to URLs.
   target: UrlTarget.optional(),
 });
@@ -988,7 +988,7 @@ export const ContentReport = Entity.extend({
   // When creating or reading a content report, we only need to keep the unique types.
   types: z.array(ContentReportType),
   description: z.string(),
-  url: z.string().url(),
+  url: urlString(),
   reporterUserId: z.string(),
   created: momentObject,
 });
