@@ -6,7 +6,7 @@ import {
 } from "howdju-common";
 
 import { editors, flows, str, goto } from "../../actions";
-import CreatePropositionPage from "../../CreatePropositionPage";
+import { editorType, editorId } from "../../CreatePropositionPage";
 import { PayloadAction } from "@reduxjs/toolkit";
 import { PayloadType } from "@/actionHelpers";
 
@@ -20,11 +20,7 @@ export function* beginEditOfNewJustificationFromTarget() {
     ) {
       const propositionJustification = toJustifiedSentence(action.payload);
       yield* put(
-        editors.beginEdit(
-          CreatePropositionPage.editorType,
-          CreatePropositionPage.editorId,
-          propositionJustification
-        )
+        editors.beginEdit(editorType, editorId, propositionJustification)
       );
       yield* put(goto.createJustification());
     }

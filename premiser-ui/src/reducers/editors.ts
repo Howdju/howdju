@@ -822,9 +822,8 @@ export default (
   action: ActionMeta<any, EditorMeta>
 ) => {
   const isEditorAction = has(EditorActions, action.type);
-  if (isEditorAction) {
-    return handleEditorAction(state, action);
-  } else {
-    return handleNonEditorAction(state, action);
-  }
+  const newState = isEditorAction
+    ? handleEditorAction(state, action)
+    : handleNonEditorAction(state, action);
+  return newState;
 };

@@ -1,3 +1,5 @@
+/// <reference path="../../howdju-test-common/lib/globals.d.ts" />
+
 import anyPromiseRegister from "any-promise/register";
 import * as moment from "moment";
 import momentDurationFormatSetup from "moment-duration-format";

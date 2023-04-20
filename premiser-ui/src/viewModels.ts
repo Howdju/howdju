@@ -3,7 +3,6 @@ import camelCase from "lodash/camelCase";
 import drop from "lodash/drop";
 import dropWhile from "lodash/dropWhile";
 import flatMap from "lodash/flatMap";
-import forEach from "lodash/forEach";
 import head from "lodash/head";
 import join from "lodash/join";
 import kebabCase from "lodash/kebabCase";
@@ -19,9 +18,6 @@ import {
   isFalsey,
   JustificationRootTargetType,
   newExhaustedEnumError,
-  Proposition,
-  PropositionCompound,
-  WritQuote,
   EntityId,
   CreatePersorgInput,
   CreatePropositionInput,
@@ -39,47 +35,6 @@ import {
 import * as characters from "./characters";
 import { propositionSchema, statementSchema } from "./normalizationSchemas";
 import { ComponentId, ComponentName, EditorId, SuggestionsKey } from "./types";
-
-export const removePropositionCompoundIds = (
-  propositionCompound: PropositionCompound
-) => {
-  if (!propositionCompound) return propositionCompound;
-  delete propositionCompound.id;
-
-  forEach(propositionCompound.atoms, (atom) => {
-    removePropositionIds(atom.entity);
-  });
-  return propositionCompound;
-};
-
-export const removePropositionIds = (proposition: Proposition) => {
-  delete proposition.id;
-  return proposition;
-};
-
-export const removeWritQuoteIds = (writQuote: WritQuote) => {
-  delete writQuote.id;
-  delete writQuote.writ.id;
-  return writQuote;
-};
-
-export const removeSourceExcerptIds = (sourceExcerpt: SourceExcerpt) => {
-  delete sourceExcerpt.id;
-  delete sourceExcerpt.entity.id;
-  switch (sourceExcerpt.type) {
-    case "WRIT_QUOTE":
-      delete sourceExcerpt.entity.writ.id;
-      break;
-    case "PIC_REGION":
-      delete sourceExcerpt.entity.pic.id;
-      break;
-    case "VID_SEGMENT":
-      delete sourceExcerpt.entity.vid.id;
-      break;
-    default:
-      throw newExhaustedEnumError(sourceExcerpt);
-  }
-};
 
 /** Return a Statement with speakers stating the proposition */
 export function constructStatementInput(

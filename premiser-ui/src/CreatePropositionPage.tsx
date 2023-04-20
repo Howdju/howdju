@@ -1,5 +1,4 @@
-import React, { Component, FormEvent } from "react";
-import { connect, ConnectedProps } from "react-redux";
+import React, { FormEvent } from "react";
 import { Link, RouteComponentProps } from "react-router-dom";
 import { goBack } from "connected-react-router";
 import {
@@ -62,7 +61,6 @@ import PersorgEditorFields from "./PersorgEditorFields";
 import EntityViewer from "./EntityViewer";
 import { CreatePropositionPageMode, PropertyChanges } from "./types";
 import { CreateJustifiedSentenceConfig } from "./sagas/editors/editorCommitEditSaga";
-import { RootState } from "./setupStore";
 import {
   EditorFieldsActionCreator,
   noopEditorDispatch,
@@ -71,6 +69,8 @@ import {
 import SubmitButton from "./editors/SubmitButton";
 import { toCompatibleTagVotes } from "./util";
 import { toCreatePersorgInput } from "howdju-client-common";
+import { useAppDispatch, useAppSelector } from "./hooks";
+import useDeepCompareEffect from "use-deep-compare-effect";
 
 const titleTextKeyByMode = {
   [CreatePropositionPageMode.CREATE_PROPOSITION]: CREATE_PROPOSITION_TITLE,
@@ -100,488 +100,396 @@ const tagsName = "tags";
 const doCreateJustificationName = "doCreateJustification";
 const justificationName = "justification";
 
-interface OwnProps extends RouteComponentProps {
+interface Props extends RouteComponentProps {
   mode: CreatePropositionPageMode;
 }
-interface Props extends OwnProps, PropsFromRedux {}
 
-class CreatePropositionPage extends Component<Props> {
-  static id = "create-proposition-page";
-  static editorType = EditorTypes.JUSTIFIED_SENTENCE;
-  static editorId = CreatePropositionPage.id;
+const id = "create-proposition-page";
+export const editorType = EditorTypes.JUSTIFIED_SENTENCE;
+export const editorId = id;
 
-  componentDidMount() {
-    this.initializeEditor();
+export default function CreatePropositionPage({ mode, location }: Props) {
+  const queryParams = queryString.parse(location.search);
+  const dispatch = useAppDispatch();
+
+  useDeepCompareEffect(
+    () =>
+      (function initializeEditor() {
+        switch (mode) {
+          case "CREATE_PROPOSITION":
+            dispatch(
+              editors.beginEdit(
+                editorType,
+                editorId,
+                makeCreateJustifiedSentenceInput()
+              )
+            );
+            break;
+          case "CREATE_JUSTIFICATION": {
+            const { basisSourceType, basisSourceId } = queryParams;
+            if (basisSourceType || basisSourceId) {
+              // First clear out the editor
+              dispatch(editors.cancelEdit(editorType, editorId));
+              if (!(basisSourceType && basisSourceId)) {
+                logger.error(
+                  `If either of basisSourceType/basisSourceId are present, both must be: ${{
+                    basisSourceType,
+                    basisSourceId,
+                  }}`
+                );
+                return;
+              }
+              if (isArray(basisSourceType) || isArray(basisSourceId)) {
+                logger.error(
+                  `basisSourceType/basisSourceId can only appear once (appeared multiple times.)`
+                );
+                return;
+              }
+              if (!(basisSourceType in JustificationBasisSourceTypes)) {
+                logger.error(
+                  `basisSourceType must be one of ${keys(
+                    JustificationBasisSourceTypes
+                  ).join(", ")}`
+                );
+              }
+              // Then fetch the stuff for editing
+              dispatch(
+                flows.fetchAndBeginEditOfNewJustificationFromBasisSource(
+                  editorType,
+                  editorId,
+                  basisSourceType as JustificationBasisSourceType,
+                  basisSourceId
+                )
+              );
+            }
+            // if neither basisSourceType or basisSourceId is present in the queryParams, then the editorModel should
+            // already be present, e.g. from the browser extension.  We could check that here, I think.
+            break;
+          }
+          case "SUBMIT_JUSTIFICATION_VIA_QUERY_STRING": {
+            const { url, description, quoteText } = queryParams;
+            if (isArray(url) || isArray(description) || isArray(quoteText)) {
+              logger.error(
+                "url/description/quoteText can only appear once in query params."
+              );
+              return;
+            }
+            const writQuote = {
+              quoteText: quoteText || undefined,
+              writ: {
+                title: description || undefined,
+              },
+              urls: url ? [{ url }] : [],
+            };
+            const justificationProps = {
+              basis: {
+                type: JustificationBasisTypes.WRIT_QUOTE as JustificationBasisType,
+                writQuote,
+              },
+            };
+            const justifiedSentence = makeCreateJustifiedSentenceInput(
+              {},
+              justificationProps
+            );
+            dispatch(
+              editors.beginEdit(editorType, editorId, justifiedSentence)
+            );
+            break;
+          }
+          default: {
+            logger.warn(`unsupported CreatePropositionPageMode: ${mode}`);
+          }
+        }
+      })(),
+    [mode, dispatch, queryParams]
+  );
+
+  function onAddSpeakerClick() {
+    dispatch(editors.addSpeaker(editorType, editorId));
   }
-
-  initializeEditor = () => {
-    switch (this.props.mode) {
-      case CreatePropositionPageMode.CREATE_PROPOSITION:
-        this.props.dispatch(
-          editors.beginEdit(
-            CreatePropositionPage.editorType,
-            CreatePropositionPage.editorId,
-            makeCreateJustifiedSentenceInput()
-          )
-        );
-        break;
-      case CreatePropositionPageMode.CREATE_JUSTIFICATION: {
-        const { basisSourceType, basisSourceId } = this.props.queryParams;
-        if (basisSourceType || basisSourceId) {
-          // First clear out the editor
-          this.props.dispatch(
-            editors.cancelEdit(
-              CreatePropositionPage.editorType,
-              CreatePropositionPage.editorId
-            )
-          );
-          if (!(basisSourceType && basisSourceId)) {
-            logger.error(
-              `If either of basisSourceType/basisSourceId are present, both must be: ${{
-                basisSourceType,
-                basisSourceId,
-              }}`
-            );
-            return;
-          }
-          if (isArray(basisSourceType) || isArray(basisSourceId)) {
-            logger.error(
-              `basisSourceType/basisSourceId can only appear once (appeared multiple times.)`
-            );
-            return;
-          }
-          if (!(basisSourceType in JustificationBasisSourceTypes)) {
-            logger.error(
-              `basisSourceType must be one of ${keys(
-                JustificationBasisSourceTypes
-              ).join(", ")}`
-            );
-          }
-          // Then fetch the stuff for editing
-          this.props.dispatch(
-            flows.fetchAndBeginEditOfNewJustificationFromBasisSource(
-              CreatePropositionPage.editorType,
-              CreatePropositionPage.editorId,
-              basisSourceType as JustificationBasisSourceType,
-              basisSourceId
-            )
-          );
-        }
-        // if neither basisSourceType or basisSourceId is present in the queryParams, then the editorModel should
-        // already be present, e.g. from the browser extension.  We could check that here, I think.
-        break;
-      }
-      case CreatePropositionPageMode.SUBMIT_JUSTIFICATION_VIA_QUERY_STRING: {
-        const { url, description, quoteText } = this.props.queryParams;
-        if (isArray(url) || isArray(description) || isArray(quoteText)) {
-          logger.error(
-            "url/description/quoteText can only appear once in query params."
-          );
-          return;
-        }
-        const writQuote = {
-          quoteText: quoteText || undefined,
-          writ: {
-            title: description || undefined,
-          },
-          urls: url ? [{ url }] : [],
-        };
-        const justificationProps = {
-          basis: {
-            type: JustificationBasisTypes.WRIT_QUOTE as JustificationBasisType,
-            writQuote,
-          },
-        };
-        const justifiedSentence = makeCreateJustifiedSentenceInput(
-          {},
-          justificationProps
-        );
-        this.props.dispatch(
-          editors.beginEdit(
-            CreatePropositionPage.editorType,
-            CreatePropositionPage.editorId,
-            justifiedSentence
-          )
-        );
-        break;
-      }
-      default: {
-        logger.warn(
-          `unsupported CreatePropositionPageMode: ${this.props.mode}`
-        );
-      }
-    }
-  };
-  onAddSpeakerClick = () => {
-    this.props.dispatch(
-      editors.addSpeaker(
-        CreatePropositionPage.editorType,
-        CreatePropositionPage.editorId
-      )
-    );
-  };
-  onRemoveSpeakerClick = (speaker: Persorg, index: number) => {
-    this.props.dispatch(
-      editors.removeSpeaker(
-        CreatePropositionPage.editorType,
-        CreatePropositionPage.editorId,
-        speaker,
-        index
-      )
-    );
-  };
-  onPersorgAutocomplete = (persorg: PersorgOut, index: number) => {
-    this.props.dispatch(
+  function onRemoveSpeakerClick(speaker: Persorg, index: number) {
+    dispatch(editors.removeSpeaker(editorType, editorId, speaker, index));
+  }
+  function onPersorgAutocomplete(persorg: PersorgOut, index: number) {
+    dispatch(
       editors.replaceSpeaker(
-        CreatePropositionPage.editorType,
-        CreatePropositionPage.editorId,
+        editorType,
+        editorId,
         toCreatePersorgInput(persorg),
         index
       )
     );
-  };
-  onPropertyChange = (properties: PropertyChanges) => {
-    this.props.dispatch(
-      editors.propertyChange(
-        CreatePropositionPage.editorType,
-        CreatePropositionPage.editorId,
-        properties
-      )
-    );
-  };
-  onDoCreateJustificationSwitchChange = (checked: boolean) => {
-    this.props.dispatch(
-      editors.propertyChange(
-        CreatePropositionPage.editorType,
-        CreatePropositionPage.editorId,
-        { [doCreateJustificationName]: checked }
-      )
-    );
-  };
-  onTagProposition = (tag: Tag) => {
-    this.props.dispatch(
-      editors.tagProposition(
-        CreatePropositionPage.editorType,
-        CreatePropositionPage.editorId,
-        tag
-      )
-    );
-  };
-  onUnTagProposition = (tag: Tag) => {
-    this.props.dispatch(
-      editors.unTagProposition(
-        CreatePropositionPage.editorType,
-        CreatePropositionPage.editorId,
-        tag
-      )
-    );
-  };
-
-  onClickSubmit = (_event: React.MouseEvent<HTMLElement>) => {
-    this.props.dispatch(
-      editors.attemptedSubmit(
-        CreatePropositionPage.editorType,
-        CreatePropositionPage.editorId
-      )
-    );
-  };
-
-  onCancel = () => {
-    this.props.dispatch(goBack());
-  };
-
-  render() {
-    const { mode, editorState } = this.props;
-    if (!editorState) {
-      return (
-        <CircularProgress id="create-proposition-page-circular-progress" />
-      );
-    }
-    const {
-      errors: apiValidationErrors,
-      isSaving,
-      editEntity,
-      wasSubmitAttempted,
-      dirtyFields,
-      blurredFields,
-    } = editorState;
-    if (!editEntity) {
-      return <CircularProgress id="create-justified-sentence-progress" />;
-    }
-    const { proposition, speakers, justification, doCreateJustification } =
-      editEntity;
-    // const isEditing = !!editEntity
-    const id = CreatePropositionPage.id;
-    const title = t(titleTextKeyByMode[mode]);
-    const submitButtonLabel = t(submitButtonLabelTextKeyByMode[mode]);
-    const submitButtonTitle = t(submitButtonTitleTextKeyByMode[mode]);
-    const isCreateJustificationMode =
-      mode === CreatePropositionPageMode.CREATE_JUSTIFICATION;
-
-    const { errors, isValidRequest } = validateEditorEntity(
-      CreateJustifiedSentenceConfig,
-      CreateJustifiedSentenceInput,
-      apiValidationErrors,
-      editEntity
-    );
-
-    const propositionTags = get(proposition, "tags");
-    const propositionTagVotes = get(proposition, "propositionTagVotes");
-    const hasSpeakers = speakers && speakers.length > 0;
-    const doShowTypeSelection = !isCreateJustificationMode;
-
-    const editorDispatch = (actionCreator: EditorFieldsActionCreator) => {
-      const action = actionCreator(
-        CreatePropositionPage.editorType,
-        CreatePropositionPage.editorId
-      );
-      if (isArray(action)) {
-        for (const a of action) {
-          this.props.dispatch(a);
-        }
-      } else {
-        this.props.dispatch(action);
-      }
-    };
-
-    const onSubmit = (event: FormEvent) => {
-      event.preventDefault();
-
-      this.props.dispatch(
-        editors.attemptedSubmit(
-          CreatePropositionPage.editorType,
-          CreatePropositionPage.editorId
-        )
-      );
-
-      if (!isValidRequest) {
-        return;
-      }
-
-      this.props.dispatch(
-        flows.commitEditThenView(
-          CreatePropositionPage.editorType,
-          CreatePropositionPage.editorId
-        )
-      );
-    };
-
-    const tagVotes = propositionTagVotes
-      ? toCompatibleTagVotes(propositionTagVotes)
-      : [];
-    return (
-      <div id="edit-proposition-justification-page">
-        <Helmet>
-          <title>{title} — Howdju</title>
-        </Helmet>
-        {mode === CreatePropositionPageMode.CREATE_PROPOSITION && (
-          <div className="md-grid">
-            <div className="md-cell md-cell--12">
-              <p>
-                The{" "}
-                <Link to={paths.tools()}>Chrome extension & bookmarklet</Link>{" "}
-                are convenient ways to create justifications based upon web
-                pages you visit
-              </p>
-            </div>
-          </div>
-        )}
-        <form onSubmit={onSubmit}>
-          <div className="md-grid">
-            <div className="md-cell md-cell--12">
-              <Card>
-                <CardTitle title={title} />
-
-                <CardText>
-                  <Button
-                    flat
-                    iconEl={<FontIcon>person_add</FontIcon>}
-                    title={"Add Speaker"}
-                    onClick={this.onAddSpeakerClick}
-                    disabled={isSaving}
-                  >
-                    Add Speaker
-                  </Button>
-                  {hasSpeakers && (
-                    <div className="md-grid">
-                      <div className="md-cell md-cell--6">
-                        {map(speakers, (speaker, index) => (
-                          <div key={index}>
-                            <EntityViewer
-                              iconName="person"
-                              iconTitle="Person/Organization"
-                              menu={
-                                <Button
-                                  icon
-                                  onClick={() =>
-                                    this.onRemoveSpeakerClick(speaker, index)
-                                  }
-                                  title="Delete speaker"
-                                >
-                                  delete
-                                </Button>
-                              }
-                              entity={
-                                <PersorgEditorFields
-                                  id={combineIds(
-                                    id,
-                                    speakersName,
-                                    toString(index)
-                                  )}
-                                  key={combineIds(
-                                    id,
-                                    speakersName,
-                                    toString(index)
-                                  )}
-                                  persorg={speaker}
-                                  suggestionsKey={combineSuggestionsKeys(
-                                    id,
-                                    speakersName,
-                                    toString(index)
-                                  )}
-                                  name={combineNames(
-                                    speakersName,
-                                    array(index)
-                                  )}
-                                  disabled={isSaving}
-                                  onPersorgNameAutocomplete={(
-                                    persorg: Persorg
-                                  ) =>
-                                    this.onPersorgAutocomplete(persorg, index)
-                                  }
-                                  onPropertyChange={this.onPropertyChange}
-                                  errors={errors.speakers?.[index]}
-                                  wasSubmitAttempted={wasSubmitAttempted}
-                                  blurredFields={
-                                    blurredFields?.speakers?.[index]
-                                  }
-                                  dirtyFields={dirtyFields?.speakers?.[index]}
-                                  onSubmit={onSubmit}
-                                />
-                              }
-                            />
-                            <div>Said that:</div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </CardText>
-
-                <CardText>
-                  <PropositionEditorFields
-                    id={combineIds(id, propositionName)}
-                    proposition={proposition}
-                    name={propositionName}
-                    autoFocus={true}
-                    suggestionsKey={combineSuggestionsKeys(id, propositionName)}
-                    onPropertyChange={this.onPropertyChange}
-                    errors={errors.proposition}
-                    disabled={isSaving}
-                    onSubmit={onSubmit}
-                    wasSubmitAttempted={wasSubmitAttempted}
-                    dirtyFields={dirtyFields?.proposition}
-                    blurredFields={blurredFields?.proposition}
-                    editorDispatch={noopEditorDispatch}
-                  />
-                  <TagsControl
-                    id={combineIds(id, tagsName)}
-                    tags={propositionTags ?? []}
-                    votes={tagVotes}
-                    suggestionsKey={combineSuggestionsKeys(id, tagsName)}
-                    onTag={this.onTagProposition}
-                    onUnTag={this.onUnTagProposition}
-                  />
-                </CardText>
-
-                {!isCreateJustificationMode && (
-                  <Switch
-                    id={combineIds(id, doCreateJustificationName)}
-                    name={doCreateJustificationName}
-                    label={t(ADD_JUSTIFICATION_TO_CREATE_PROPOSITION)}
-                    checked={doCreateJustification}
-                    onChange={this.onDoCreateJustificationSwitchChange}
-                    disabled={isSaving}
-                  />
-                )}
-
-                <CardTitle
-                  title={t(JUSTIFICATION_TITLE)}
-                  className={cn({
-                    hidden:
-                      !isCreateJustificationMode && !doCreateJustification,
-                  })}
-                />
-
-                <CardText
-                  className={cn({
-                    hidden:
-                      !isCreateJustificationMode && !doCreateJustification,
-                  })}
-                >
-                  <JustificationEditorFields
-                    justification={justification}
-                    id={combineIds(id, justificationName)}
-                    name={justificationName}
-                    suggestionsKey={combineSuggestionsKeys(
-                      id,
-                      justificationName
-                    )}
-                    disabled={isSaving}
-                    doShowTypeSelection={doShowTypeSelection}
-                    onPropertyChange={this.onPropertyChange}
-                    errors={errors.justification}
-                    editorDispatch={editorDispatch}
-                    wasSubmitAttempted={wasSubmitAttempted}
-                    onSubmit={onSubmit}
-                  />
-                </CardText>
-
-                <CardActions>
-                  {isSaving && (
-                    <CircularProgress key="progress" id="progress" />
-                  )}
-                  <Button
-                    flat
-                    children="Cancel"
-                    disabled={isSaving}
-                    onClick={this.onCancel}
-                  />
-                  <SubmitButton
-                    type="submit"
-                    children={submitButtonLabel}
-                    title={submitButtonTitle}
-                    disabled={isSaving}
-                    appearDisabled={!isValidRequest}
-                    onClick={this.onClickSubmit}
-                  />
-                </CardActions>
-              </Card>
-            </div>
-          </div>
-        </form>
-      </div>
+  }
+  function onPropertyChange(properties: PropertyChanges) {
+    dispatch(editors.propertyChange(editorType, editorId, properties));
+  }
+  function onDoCreateJustificationSwitchChange(checked: boolean) {
+    dispatch(
+      editors.propertyChange(editorType, editorId, {
+        [doCreateJustificationName]: checked,
+      })
     );
   }
-}
-const mapStateToProps = (state: RootState, ownProps: OwnProps) => {
-  const editorState = get(state.editors, [
-    CreatePropositionPage.editorType,
-    CreatePropositionPage.editorId,
-  ]) as EditorState<
+  function onTagProposition(tag: Tag) {
+    dispatch(editors.tagProposition(editorType, editorId, tag));
+  }
+  function onUnTagProposition(tag: Tag) {
+    dispatch(editors.unTagProposition(editorType, editorId, tag));
+  }
+  function onClickSubmit(_event: React.MouseEvent<HTMLElement>) {
+    dispatch(editors.attemptedSubmit(editorType, editorId));
+  }
+  function onCancel() {
+    dispatch(goBack());
+  }
+  function editorDispatch(actionCreator: EditorFieldsActionCreator) {
+    const action = actionCreator(editorType, editorId);
+    if (isArray(action)) {
+      for (const a of action) {
+        dispatch(a);
+      }
+    } else {
+      dispatch(action);
+    }
+  }
+  function onSubmit(event: FormEvent) {
+    event.preventDefault();
+
+    dispatch(editors.attemptedSubmit(editorType, editorId));
+
+    if (!isValidRequest) {
+      return;
+    }
+
+    dispatch(flows.commitEditThenView(editorType, editorId));
+  }
+
+  const editorState = useAppSelector(
+    (state) =>
+      state.editors[editorType]?.[editorId] as EditorState<
+        CreateJustifiedSentenceInput,
+        CreateJustifiedSentence,
+        ModelErrors<CreateProposition | CreateJustification>
+      >,
+    (left, right) => {
+      const equal = left === right;
+      return equal;
+    }
+  );
+
+  if (!editorState) {
+    return <CircularProgress id="create-proposition-page-circular-progress" />;
+  }
+  const {
+    errors: apiValidationErrors,
+    isSaving,
+    editEntity,
+    wasSubmitAttempted,
+    dirtyFields,
+    blurredFields,
+  } = editorState;
+  if (!editEntity) {
+    return <CircularProgress id="create-justified-sentence-progress" />;
+  }
+  const { proposition, speakers, justification, doCreateJustification } =
+    editEntity;
+  const title = t(titleTextKeyByMode[mode]);
+  const submitButtonLabel = t(submitButtonLabelTextKeyByMode[mode]);
+  const submitButtonTitle = t(submitButtonTitleTextKeyByMode[mode]);
+  const isCreateJustificationMode =
+    mode === CreatePropositionPageMode.CREATE_JUSTIFICATION;
+
+  const { errors, isValidRequest } = validateEditorEntity(
+    CreateJustifiedSentenceConfig,
     CreateJustifiedSentenceInput,
-    CreateJustifiedSentence,
-    // The editor submits either a proposition or justification.
-    ModelErrors<CreateProposition | CreateJustification>
-  >;
-  const queryParams = queryString.parse(ownProps.location.search);
-  return {
-    editorState,
-    queryParams,
-  };
-};
-const connector = connect(mapStateToProps);
+    apiValidationErrors,
+    editEntity
+  );
 
-type PropsFromRedux = ConnectedProps<typeof connector>;
+  const propositionTags = get(proposition, "tags");
+  const propositionTagVotes = get(proposition, "propositionTagVotes");
+  const hasSpeakers = speakers && speakers.length > 0;
+  const doShowTypeSelection = !isCreateJustificationMode;
 
-export default connector(CreatePropositionPage);
+  const tagVotes = propositionTagVotes
+    ? toCompatibleTagVotes(propositionTagVotes)
+    : [];
+  return (
+    <div id="edit-proposition-justification-page">
+      <Helmet>
+        <title>{title} — Howdju</title>
+      </Helmet>
+      {mode === "CREATE_PROPOSITION" && (
+        <div className="md-grid">
+          <div className="md-cell md-cell--12">
+            <p>
+              The <Link to={paths.tools()}>Chrome extension & bookmarklet</Link>{" "}
+              are convenient ways to create justifications based upon web pages
+              you visit
+            </p>
+          </div>
+        </div>
+      )}
+      <form onSubmit={onSubmit}>
+        <div className="md-grid">
+          <div className="md-cell md-cell--12">
+            <Card>
+              <CardTitle title={title} />
+
+              <CardText>
+                <Button
+                  flat
+                  iconEl={<FontIcon>person_add</FontIcon>}
+                  title={"Add Speaker"}
+                  onClick={onAddSpeakerClick}
+                  disabled={isSaving}
+                >
+                  Add Speaker
+                </Button>
+                {hasSpeakers && (
+                  <div className="md-grid">
+                    <div className="md-cell md-cell--6">
+                      {map(speakers, (speaker, index) => (
+                        <div key={index}>
+                          <EntityViewer
+                            iconName="person"
+                            iconTitle="Person/Organization"
+                            menu={
+                              <Button
+                                icon
+                                onClick={() =>
+                                  onRemoveSpeakerClick(speaker, index)
+                                }
+                                title="Delete speaker"
+                              >
+                                delete
+                              </Button>
+                            }
+                            entity={
+                              <PersorgEditorFields
+                                id={combineIds(
+                                  id,
+                                  speakersName,
+                                  toString(index)
+                                )}
+                                key={combineIds(
+                                  id,
+                                  speakersName,
+                                  toString(index)
+                                )}
+                                persorg={speaker}
+                                suggestionsKey={combineSuggestionsKeys(
+                                  id,
+                                  speakersName,
+                                  toString(index)
+                                )}
+                                name={combineNames(speakersName, array(index))}
+                                disabled={isSaving}
+                                onPersorgNameAutocomplete={(persorg: Persorg) =>
+                                  onPersorgAutocomplete(persorg, index)
+                                }
+                                onPropertyChange={onPropertyChange}
+                                errors={errors.speakers?.[index]}
+                                wasSubmitAttempted={wasSubmitAttempted}
+                                blurredFields={blurredFields?.speakers?.[index]}
+                                dirtyFields={dirtyFields?.speakers?.[index]}
+                                onSubmit={onSubmit}
+                              />
+                            }
+                          />
+                          <div>Said that:</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </CardText>
+
+              <CardText>
+                <PropositionEditorFields
+                  id={combineIds(id, propositionName)}
+                  proposition={proposition}
+                  name={propositionName}
+                  autoFocus={true}
+                  suggestionsKey={combineSuggestionsKeys(id, propositionName)}
+                  onPropertyChange={onPropertyChange}
+                  errors={errors.proposition}
+                  disabled={isSaving}
+                  onSubmit={onSubmit}
+                  wasSubmitAttempted={wasSubmitAttempted}
+                  dirtyFields={dirtyFields?.proposition}
+                  blurredFields={blurredFields?.proposition}
+                  editorDispatch={noopEditorDispatch}
+                />
+                <TagsControl
+                  id={combineIds(id, tagsName)}
+                  tags={propositionTags ?? []}
+                  votes={tagVotes}
+                  suggestionsKey={combineSuggestionsKeys(id, tagsName)}
+                  onTag={onTagProposition}
+                  onUnTag={onUnTagProposition}
+                />
+              </CardText>
+
+              {!isCreateJustificationMode && (
+                <Switch
+                  id={combineIds(id, doCreateJustificationName)}
+                  name={doCreateJustificationName}
+                  label={t(ADD_JUSTIFICATION_TO_CREATE_PROPOSITION)}
+                  checked={doCreateJustification}
+                  onChange={onDoCreateJustificationSwitchChange}
+                  disabled={isSaving}
+                />
+              )}
+
+              <CardTitle
+                title={t(JUSTIFICATION_TITLE)}
+                className={cn({
+                  hidden: !isCreateJustificationMode && !doCreateJustification,
+                })}
+              />
+
+              <CardText
+                className={cn({
+                  hidden: !isCreateJustificationMode && !doCreateJustification,
+                })}
+              >
+                <JustificationEditorFields
+                  justification={justification}
+                  id={combineIds(id, justificationName)}
+                  name={justificationName}
+                  suggestionsKey={combineSuggestionsKeys(id, justificationName)}
+                  disabled={isSaving}
+                  doShowTypeSelection={doShowTypeSelection}
+                  onPropertyChange={onPropertyChange}
+                  errors={errors.justification}
+                  editorDispatch={editorDispatch}
+                  wasSubmitAttempted={wasSubmitAttempted}
+                  onSubmit={onSubmit}
+                />
+              </CardText>
+
+              <CardActions>
+                {isSaving && <CircularProgress key="progress" id="progress" />}
+                <Button
+                  flat
+                  children="Cancel"
+                  disabled={isSaving}
+                  onClick={onCancel}
+                />
+                <SubmitButton
+                  type="submit"
+                  children={submitButtonLabel}
+                  title={submitButtonTitle}
+                  disabled={isSaving}
+                  appearDisabled={!isValidRequest}
+                  onClick={onClickSubmit}
+                />
+              </CardActions>
+            </Card>
+          </div>
+        </div>
+      </form>
+    </div>
+  );
+}

@@ -3,13 +3,8 @@ import moment from "moment";
 import { expect } from "@jest/globals";
 
 import { JustificationsDao } from "./JustificationsDao";
-import { mockLogger } from "howdju-test-common";
-import {
-  endPoolAndDropDb,
-  expectToBeSameMomentDeep,
-  initDb,
-  makeTestDbConfig,
-} from "@/util/testUtil";
+import { mockLogger, expectToBeSameMomentDeep } from "howdju-test-common";
+import { endPoolAndDropDb, initDb, makeTestDbConfig } from "@/util/testUtil";
 import { Pool } from "pg";
 import {
   AuthService,

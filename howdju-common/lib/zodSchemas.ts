@@ -37,7 +37,7 @@ export const Proposition = Entity.extend({
    */
   text: z.string().min(1),
   created: momentObject,
-}).strict();
+});
 export type Proposition = z.infer<typeof Proposition>;
 
 export const UpdatePropositionInput = Proposition.merge(PersistedEntity).omit({
@@ -133,7 +133,7 @@ export const Persorg = Entity.extend({
   twitterUrl: urlString({ domain: /twitter.com$/ }).optional(),
   /** The persorg's Wikipedia URL. */
   wikipediaUrl: urlString({ domain: /wikipedia.org$/ }).optional(),
-}).strict();
+});
 export type Persorg = z.infer<typeof Persorg>;
 
 export const CreatePersorg = Persorg;
@@ -173,12 +173,12 @@ export const Statement: z.ZodType<Statement> = z.lazy(() =>
       sentenceType: z.literal(sentenceTypes.Enum.PROPOSITION),
       sentence: Proposition,
       ...baseStatement,
-    }).strict(),
+    }),
     Entity.extend({
       sentenceType: z.literal(sentenceTypes.Enum.STATEMENT),
       sentence: Statement,
       ...baseStatement,
-    }).strict(),
+    }),
   ])
 );
 export type Sentence = Statement["sentence"];
@@ -204,12 +204,12 @@ export const CreateStatementInput: z.ZodType<CreateStatementInput> = z.lazy(
         sentenceType: z.literal(sentenceTypes.Enum.PROPOSITION),
         sentence: CreatePropositionInput,
         speaker: Persorg,
-      }).strict(),
+      }),
       Entity.extend({
         sentenceType: z.literal(sentenceTypes.Enum.STATEMENT),
         sentence: CreateStatementInput,
         speaker: Persorg,
-      }).strict(),
+      }),
     ])
 );
 
@@ -231,12 +231,12 @@ export const CreateStatement: z.ZodType<CreateStatement> = z.lazy(() =>
       sentenceType: z.literal(sentenceTypes.Enum.PROPOSITION),
       sentence: CreateProposition,
       speaker: CreatePersorg,
-    }).strict(),
+    }),
     Entity.extend({
       sentenceType: z.literal(sentenceTypes.Enum.STATEMENT),
       sentence: CreateStatement,
       speaker: CreatePersorg,
-    }).strict(),
+    }),
   ])
 );
 // Statement has no Update models; users can edit the proposition/statement or the speaker.
