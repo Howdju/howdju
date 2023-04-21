@@ -5147,11 +5147,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-md/autocomplete@npm:2.9.1":
+"@react-md/autocomplete@Howdju/react-md#workspace=@react-md/autocomplete&commit=c5bb05609126221985da30395a71cfdebd9d07d9":
   version: 2.9.1
-  resolution: "@react-md/autocomplete@npm:2.9.1"
+  resolution: "@react-md/autocomplete@https://github.com/Howdju/react-md.git#workspace=%40react-md%2Fautocomplete&commit=c5bb05609126221985da30395a71cfdebd9d07d9"
   dependencies:
-    "@react-md/form": ^2.9.1
+    "@react-md/form": "https://github.com/Howdju/react-md.git#workspace=%40react-md%2Fform&commit=c5bb05609126221985da30395a71cfdebd9d07d9"
     "@react-md/list": ^2.9.1
     "@react-md/portal": ^2.9.1
     "@react-md/states": ^2.9.1
@@ -5166,30 +5166,7 @@ __metadata:
   dependenciesMeta:
     prop-types:
       optional: true
-  checksum: 48890d70245496b27913b01a8557eb88256084740e0427b29b64975a642afd6487d658ecb625b0b7e8567b8f96a893e017d2e7da0fb1b59134f3904415246db7
-  languageName: node
-  linkType: hard
-
-"@react-md/autocomplete@patch:@react-md/autocomplete@npm%3A2.9.1#./.yarn/patches/@react-md-autocomplete-npm-2.9.1-0914f23b5c.patch::locator=howdju-monorepo%40workspace%3A.":
-  version: 2.9.1
-  resolution: "@react-md/autocomplete@patch:@react-md/autocomplete@npm%3A2.9.1#./.yarn/patches/@react-md-autocomplete-npm-2.9.1-0914f23b5c.patch::version=2.9.1&hash=5903b9&locator=howdju-monorepo%40workspace%3A."
-  dependencies:
-    "@react-md/form": ^2.9.1
-    "@react-md/list": ^2.9.1
-    "@react-md/portal": ^2.9.1
-    "@react-md/states": ^2.9.1
-    "@react-md/theme": ^2.9.1
-    "@react-md/transition": ^2.9.1
-    "@react-md/typography": ^2.9.1
-    "@react-md/utils": ^2.9.1
-    classnames: ^2.3.1
-    prop-types: ">= 15.6"
-  peerDependencies:
-    react: ">= 16.8"
-  dependenciesMeta:
-    prop-types:
-      optional: true
-  checksum: 92f565c5de36053b0179c9528d1b0da8c90b139f9e2b1cd2b8fd8c959ac2eba51b2161fc6f073769655596d0ce23ebf97ffd9e4ce60cf5638b06278b81d789b1
+  checksum: c6fbdda09e571146e81bbf9eba92185cb9e268c73dffad9a2a812807ce936c1edbe8bccdfbd6d4fe7750f2a05537467024855ff36bea29b8b3fad95a92d4e876
   languageName: node
   linkType: hard
 
@@ -5285,7 +5262,34 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-md/form@npm:^2, @react-md/form@npm:^2.9.1":
+"@react-md/form@https://github.com/Howdju/react-md.git#workspace=%40react-md%2Fform&commit=c5bb05609126221985da30395a71cfdebd9d07d9":
+  version: 2.9.1
+  resolution: "@react-md/form@https://github.com/Howdju/react-md.git#workspace=%40react-md%2Fform&commit=c5bb05609126221985da30395a71cfdebd9d07d9"
+  dependencies:
+    "@react-md/button": ^2.9.1
+    "@react-md/icon": ^2.9.1
+    "@react-md/list": ^2.9.1
+    "@react-md/portal": ^2.9.1
+    "@react-md/progress": ^2.9.1
+    "@react-md/states": ^2.9.1
+    "@react-md/theme": ^2.9.1
+    "@react-md/tooltip": ^2.9.1
+    "@react-md/transition": ^2.9.1
+    "@react-md/typography": ^2.9.1
+    "@react-md/utils": ^2.9.1
+    classnames: ^2.3.1
+    nanoid: ^3.1.23
+    prop-types: ">= 15.6"
+  peerDependencies:
+    react: ">= 16.8"
+  dependenciesMeta:
+    prop-types:
+      optional: true
+  checksum: 32a881d7e356f753321ab14443ba1f064ad13cc764428cdc244df0cda96d145899071daa1b0f0f07d3fc38678897afa63ffa7e9367f1f728b923f20c86886925
+  languageName: node
+  linkType: hard
+
+"@react-md/form@npm:^2.9.1":
   version: 2.9.1
   resolution: "@react-md/form@npm:2.9.1"
   dependencies:
@@ -22216,8 +22220,7 @@ __metadata:
     "@babel/preset-react": ^7.13.13
     "@babel/preset-typescript": ^7.18.6
     "@grrr/cookie-consent": ^1.0.4
-    "@react-md/autocomplete": ^2
-    "@react-md/form": ^2
+    "@react-md/autocomplete": "Howdju/react-md#workspace=@react-md/autocomplete&commit=c5bb05609126221985da30395a71cfdebd9d07d9"
     "@react-md/icon": ^2
     "@react-md/layout": ^2
     "@react-md/menu": ^2

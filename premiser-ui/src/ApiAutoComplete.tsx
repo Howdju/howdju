@@ -6,7 +6,6 @@ import React, {
 } from "react";
 import { PayloadAction } from "@reduxjs/toolkit";
 import { AutoComplete, AutoCompleteResult } from "@react-md/autocomplete";
-import { FormMessage } from "@react-md/form";
 import { useDebouncedCallback } from "use-debounce";
 import { denormalize, Schema } from "normalizr";
 
@@ -57,6 +56,17 @@ export interface Props<T>
   /** Controls to display to the right of the input. */
   rightControls?: ReactNode;
   onAutoComplete?: (suggestion: T) => void;
+  /**
+   * The number of rows to display by default. The textarea will automatically
+   * update and animate its height when the users types if the `resize` prop is
+   * set to `"auto"`.
+   */
+  rows?: number;
+  /**
+   * The maximum number of rows that are allowed. When this is set to `-1`, it
+   * will infinitely expand based on the text content.
+   */
+  maxRows?: number;
 }
 
 export default function ApiAutoComplete({
@@ -75,6 +85,9 @@ export default function ApiAutoComplete({
   errorText,
   rightControls,
   onAutoComplete,
+  rows = 1,
+  maxRows = -1,
+  maxLength,
   ...rest
 }: Props<any>) {
   const dispatch = useAppDispatch();
@@ -82,7 +95,7 @@ export default function ApiAutoComplete({
     dispatch(fetchSuggestions(value, suggestionsKey));
   }, autocompleteDebounceMs);
 
-  function onChange(event: ChangeEvent<HTMLInputElement>) {
+  function onChange(event: ChangeEvent<HTMLTextAreaElement>) {
     const name = event.target.name;
     const value = singleLine
       ? toSingleLine(event.target.value)
@@ -106,7 +119,7 @@ export default function ApiAutoComplete({
   function clearSuggestions() {
     dispatch(autocompletes.clearSuggestions(suggestionsKey));
   }
-  function _onBlur(event: FocusEvent<HTMLInputElement>) {
+  function _onBlur(event: FocusEvent<HTMLTextAreaElement>) {
     if (onBlur) {
       onBlur(event.target.name);
     }
@@ -130,6 +143,14 @@ export default function ApiAutoComplete({
     }
   }
 
+  const messageProps =
+    error && errorText
+      ? {
+          error,
+          children: <span>{errorText}</span>,
+        }
+      : undefined;
+
   return (
     <>
       <div style={{ display: "flex", alignItems: "center" }}>
@@ -137,6 +158,7 @@ export default function ApiAutoComplete({
           {...rest}
           id={id}
           name={name}
+          className="api-autocomplete"
           data={suggestionsData}
           labelKey={labelKey}
           valueKey={labelKey}
@@ -144,18 +166,16 @@ export default function ApiAutoComplete({
           onChange={onChange}
           onAutoComplete={_onAutoComplete}
           error={error}
-          disableShowOnFocus
           style={{ flexGrow: 1 }}
           theme="underline"
           filter="none"
+          rows={rows}
+          maxRows={maxRows}
+          maxLength={maxLength}
+          messageProps={messageProps}
         />
         {rightControls}
       </div>
-      {error && errorText && (
-        <FormMessage id={`${id}-error`} error>
-          {errorText}
-        </FormMessage>
-      )}
     </>
   );
 }

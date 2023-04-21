@@ -1,3 +1,5 @@
+@import "~@react-md/form/dist/mixins";
+
 @import "../../colors";
 
 @mixin placeholder {
@@ -37,7 +39,14 @@
   }
 }
 
+.main-search-box-form {
+  padding-left: 0.5rem;
+}
+
 #mainSearch-combobox {
+  // The search box is too far up. Increase top padding.
+  @include rmd-form-theme-update-var(textarea-padding, 1.3rem);
+
   &.rmd-text-field-container--underline::after {
     background-color: darken($light-text-color, 20%);
     height: 1px;
