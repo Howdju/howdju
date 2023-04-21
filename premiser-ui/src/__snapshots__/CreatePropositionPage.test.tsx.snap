@@ -135,6 +135,10 @@ exports[`CreatePropositionPage (with fake timers) can add URL while editing a Wr
                       </span>
                     </div>
                   </div>
+                  <input
+                    style="display: none;"
+                    type="submit"
+                  />
                 </div>
               </div>
               <div
@@ -198,6 +202,10 @@ exports[`CreatePropositionPage (with fake timers) can add URL while editing a Wr
                       </span>
                     </div>
                   </div>
+                  <input
+                    style="display: none;"
+                    type="submit"
+                  />
                 </div>
               </div>
             </section>
@@ -604,6 +612,10 @@ exports[`CreatePropositionPage (with fake timers) can add URL while editing a Wr
                         </span>
                       </div>
                     </div>
+                    <input
+                      style="display: none;"
+                      type="submit"
+                    />
                   </div>
                   <div
                     class="md-text-field-container md-full-width md-text-field-container--multiline writ-quote-url-input"
@@ -895,6 +907,10 @@ exports[`CreatePropositionPage (with fake timers) renders correctly with query p
                       </span>
                     </div>
                   </div>
+                  <input
+                    style="display: none;"
+                    type="submit"
+                  />
                 </div>
               </div>
               <div
@@ -958,6 +974,10 @@ exports[`CreatePropositionPage (with fake timers) renders correctly with query p
                       </span>
                     </div>
                   </div>
+                  <input
+                    style="display: none;"
+                    type="submit"
+                  />
                 </div>
               </div>
             </section>
@@ -1372,6 +1392,10 @@ exports[`CreatePropositionPage (with fake timers) renders correctly with query p
                         </span>
                       </div>
                     </div>
+                    <input
+                      style="display: none;"
+                      type="submit"
+                    />
                   </div>
                   <div
                     class="md-text-field-container md-full-width md-text-field-container--multiline writ-quote-url-input"

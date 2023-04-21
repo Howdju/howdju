@@ -21,7 +21,7 @@ const server = withMockServer();
 
 describe("TagsControl", () => {
   test("pressing enter with non-empty tag name adds tag and doesn't submit enclosing form", async () => {
-    const onSubmit = jest.fn();
+    const onSubmit = jest.fn((e) => e.preventDefault());
     const onTag = jest.fn();
     const onUnTag = jest.fn();
 

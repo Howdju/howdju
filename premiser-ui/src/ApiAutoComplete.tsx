@@ -91,6 +91,7 @@ export default function ApiAutoComplete({
   rows = 1,
   maxRows = -1,
   maxLength,
+  onKeyDown,
   ...rest
 }: Props<any>) {
   const dispatch = useAppDispatch();
@@ -155,8 +156,11 @@ export default function ApiAutoComplete({
       : undefined;
 
   const submitInputRef = useRef<HTMLInputElement | null>(null);
-  function onKeyDown(event: KeyboardEvent<HTMLTextAreaElement>) {
-    if (singleLine && event.key === Keys.ENTER) {
+  function _onKeyDown(event: KeyboardEvent<HTMLTextAreaElement>) {
+    if (onKeyDown) {
+      onKeyDown(event);
+    }
+    if (!event.isDefaultPrevented() && singleLine && event.key === Keys.ENTER) {
       // Since the ApiAutoComplete input is a textarea which lacks the 'enter submits form'
       // behavior, simulate it with a submit input.
       submitInputRef.current?.click();
@@ -176,7 +180,7 @@ export default function ApiAutoComplete({
           valueKey={labelKey}
           onBlur={_onBlur}
           onChange={onChange}
-          onKeyDown={onKeyDown}
+          onKeyDown={_onKeyDown}
           onAutoComplete={_onAutoComplete}
           error={error}
           style={{ flexGrow: 1 }}
