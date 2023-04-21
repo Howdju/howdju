@@ -38,10 +38,13 @@ This workspace currently depends on a branch in a fork of react-md. This fork:
   [this comment](https://github.com/Howdju/howdju/issues/304#issuecomment-1511515470).)
 - upgrades the repo to Yarn berry so that I can add it (command below)
 
+Ater making changes there, must run `yarn run setup` and then `git push --force` to update the
+branch. Get the git commit hash like `git rev-parse HEAD`.
+
 The steps to add this dependency are to run this command:
 
 ```sh
-yarn add '@react-md/autocomplete@Howdju/react-md#workspace=@react-md/autocomplete&commit=c5bb05609126221985da30395a71cfdebd9d07d9'
+yarn add '@react-md/autocomplete@Howdju/react-md#workspace=@react-md/autocomplete&commit=739fcf8b359727d958d6befe46014fe8b3dfe11c'
 ```
 
 And then manually to edit the `yarn.lock` entry for @react-md/autocomplete to point @react-md/form
@@ -50,5 +53,5 @@ to the same version:
 ```diff
 dependencies:
 -    "@react-md/form": ^2.9.1
-+    "@react-md/form": https://github.com/Howdju/react-md.git#workspace=%40react-md%2Fform&commit=c5bb05609126221985da30395a71cfdebd9d07d9
++    "@react-md/form": https://github.com/Howdju/react-md.git#workspace=%40react-md%2Fform&commit=739fcf8b359727d958d6befe46014fe8b3dfe11c
 ```
