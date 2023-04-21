@@ -2,7 +2,9 @@ import React, {
   ChangeEvent,
   ComponentProps,
   FocusEvent,
+  KeyboardEvent,
   ReactNode,
+  useRef,
 } from "react";
 import { PayloadAction } from "@reduxjs/toolkit";
 import { AutoComplete, AutoCompleteResult } from "@react-md/autocomplete";
@@ -22,6 +24,7 @@ import { useAppDispatch, useAppSelector } from "./hooks";
 import { autocompletes } from "./actions";
 
 import "./ApiAutoComplete.scss";
+import { Keys } from "./keyCodes";
 
 export type FetchSuggestionsActionCreator = (
   value: string,
@@ -88,6 +91,7 @@ export default function ApiAutoComplete({
   rows = 1,
   maxRows = -1,
   maxLength,
+  onKeyDown,
   ...rest
 }: Props<any>) {
   const dispatch = useAppDispatch();
@@ -151,6 +155,18 @@ export default function ApiAutoComplete({
         }
       : undefined;
 
+  const submitInputRef = useRef<HTMLInputElement | null>(null);
+  function _onKeyDown(event: KeyboardEvent<HTMLTextAreaElement>) {
+    if (onKeyDown) {
+      onKeyDown(event);
+    }
+    if (!event.isDefaultPrevented() && singleLine && event.key === Keys.ENTER) {
+      // Since the ApiAutoComplete input is a textarea which lacks the 'enter submits form'
+      // behavior, simulate it with a submit input.
+      submitInputRef.current?.click();
+    }
+  }
+
   return (
     <>
       <div style={{ display: "flex", alignItems: "center" }}>
@@ -164,6 +180,7 @@ export default function ApiAutoComplete({
           valueKey={labelKey}
           onBlur={_onBlur}
           onChange={onChange}
+          onKeyDown={_onKeyDown}
           onAutoComplete={_onAutoComplete}
           error={error}
           style={{ flexGrow: 1 }}
@@ -175,6 +192,13 @@ export default function ApiAutoComplete({
           messageProps={messageProps}
         />
         {rightControls}
+        <input
+          ref={(input) => {
+            submitInputRef.current = input;
+          }}
+          type="submit"
+          style={{ display: "none" }}
+        />
       </div>
     </>
   );
