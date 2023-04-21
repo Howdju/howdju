@@ -29,8 +29,26 @@ hot loaders interaction with react-dom, so I just switched to `yarn add 'react-d
 
 ## react-md
 
-This workspace currently depends on a patch of @react-md/autocomplete@2.9.1 that adds
-`event.preventDefault()` when the user presses enter to autocomplete. This change prevents
-submitting a form when the user is autocompleting.
+This workspace currently depends on a branch in a fork of react-md. This fork:
 
-PR for that change is here: https://github.com/mlaursen/react-md/pull/1439
+- adds `event.preventDefault()` when the user presses enter to autocomplete. This change prevents
+  submitting a form when the user is autocompleting.
+  [PR](https://github.com/mlaursen/react-md/pull/1439)
+- uses TextArea in AutoComplete instead of TextInput. (See autocomplete requires in
+  [this comment](https://github.com/Howdju/howdju/issues/304#issuecomment-1511515470).)
+- upgrades the repo to Yarn berry so that I can add it (command below)
+
+The steps to add this dependency are to run this command:
+
+```sh
+yarn add '@react-md/autocomplete@Howdju/react-md#workspace=@react-md/autocomplete&commit=c5bb05609126221985da30395a71cfdebd9d07d9'
+```
+
+And then manually to edit the `yarn.lock` entry for @react-md/autocomplete to point @react-md/form
+to the same version:
+
+```diff
+dependencies:
+-    "@react-md/form": ^2.9.1
++    "@react-md/form": https://github.com/Howdju/react-md.git#workspace=%40react-md%2Fform&commit=c5bb05609126221985da30395a71cfdebd9d07d9
+```

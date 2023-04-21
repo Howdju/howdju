@@ -112,8 +112,7 @@
   },
   "dependencies": {
     "@grrr/cookie-consent": "^1.0.4",
-    "@react-md/autocomplete": "^2",
-    "@react-md/form": "^2",
+    "@react-md/autocomplete": "Howdju/react-md#workspace=@react-md/autocomplete&commit=c5bb05609126221985da30395a71cfdebd9d07d9",
     "@react-md/icon": "^2",
     "@react-md/layout": "^2",
     "@react-md/menu": "^2",

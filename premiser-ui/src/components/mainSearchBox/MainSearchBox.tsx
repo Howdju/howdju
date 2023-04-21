@@ -42,7 +42,10 @@ export default function MainSearchBox() {
   };
 
   return (
-    <form className="md-cell--12 md-cell--top" onSubmit={onSubmit}>
+    <form
+      className="main-search-box-form md-cell--12 md-cell--top"
+      onSubmit={onSubmit}
+    >
       <ApiAutoComplete
         id="mainSearch"
         name={name}
@@ -56,7 +59,7 @@ export default function MainSearchBox() {
         fetchSuggestions={api.fetchMainSearchSuggestions}
         cancelSuggestions={cancelMainSearchSuggestions}
         className="mainSearchAutocomplete"
-        inputClassName="md-text-field--toolbar"
+        areaClassName="md-text-field--toolbar"
         singleLine={true}
         onSubmit={onSubmit}
       />

@@ -80,48 +80,77 @@ exports[`CreatePropositionPage (with fake timers) can add URL while editing a Wr
                   style="display: flex; align-items: center;"
                 >
                   <div
-                    aria-expanded="false"
-                    aria-haspopup="listbox"
-                    aria-owns="create-proposition-page--proposition--text-listbox"
-                    class="rmd-text-field-container rmd-text-field-container--hoverable rmd-text-field-container--label rmd-text-field-container--underline rmd-text-field-container--underline-labelled rmd-text-field-container--underline-left rmd-autocomplate"
-                    id="create-proposition-page--proposition--text-combobox"
-                    role="combobox"
-                    style="flex-grow: 1;"
+                    class="rmd-field-message-container"
                   >
-                    <label
-                      class="rmd-label rmd-floating-label"
-                      for="create-proposition-page--proposition--text"
+                    <div
+                      aria-expanded="false"
+                      aria-haspopup="listbox"
+                      aria-owns="create-proposition-page--proposition--text-listbox"
+                      class="rmd-text-field-container rmd-text-field-container--hoverable rmd-text-field-container--label rmd-text-field-container--underline rmd-text-field-container--underline-labelled rmd-text-field-container--underline-left rmd-textarea-container rmd-textarea-container--animate rmd-textarea-container--cursor rmd-autocomplate api-autocomplete"
+                      id="create-proposition-page--proposition--text-combobox"
+                      role="combobox"
+                      style="flex-grow: 1;"
                     >
-                      Text
-                    </label>
-                    <input
-                      aria-activedescendant=""
-                      aria-autocomplete="list"
-                      aria-controls="create-proposition-page--proposition--text-combobox"
-                      autocomplete="off"
-                      class="rmd-text-field rmd-text-field--floating"
-                      id="create-proposition-page--proposition--text"
-                      maxlength="512"
-                      name="proposition.text"
-                      required=""
-                      type="text"
-                      value=""
-                    />
+                      <label
+                        class="rmd-label rmd-floating-label"
+                        for="create-proposition-page--proposition--text"
+                      >
+                        Text
+                      </label>
+                      <div
+                        class="rmd-textarea-container__inner rmd-textarea-container__inner--animate"
+                      >
+                        <textarea
+                          aria-activedescendant=""
+                          aria-autocomplete="list"
+                          aria-controls="create-proposition-page--proposition--text-combobox"
+                          autocomplete="off"
+                          class="rmd-textarea rmd-textarea--floating rmd-textarea--rn"
+                          id="create-proposition-page--proposition--text"
+                          maxlength="512"
+                          name="proposition.text"
+                          required=""
+                          rows="1"
+                        />
+                        <textarea
+                          aria-hidden="true"
+                          class="rmd-textarea rmd-textarea--rn rmd-textarea--mask rmd-textarea--floating"
+                          id="create-proposition-page--proposition--text-mask"
+                          readonly=""
+                          rows="1"
+                          tabindex="-1"
+                        />
+                      </div>
+                    </div>
+                    <div
+                      aria-live="polite"
+                      class="rmd-form-message rmd-form-message--outline"
+                      id="create-proposition-page--proposition--text-message"
+                    >
+                      <span
+                        class="rmd-form-message__counter"
+                        id="create-proposition-page--proposition--text-message-counter"
+                      >
+                        0 / 512
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>
               <div
                 class="chips-list"
               >
-                <form>
+                <div
+                  style="display: flex; align-items: center;"
+                >
                   <div
-                    style="display: flex; align-items: center;"
+                    class="rmd-field-message-container"
                   >
                     <div
                       aria-expanded="false"
                       aria-haspopup="listbox"
                       aria-owns="create-proposition-page--tags--tag-name-listbox"
-                      class="rmd-text-field-container rmd-text-field-container--hoverable rmd-text-field-container--label rmd-text-field-container--underline rmd-text-field-container--underline-labelled rmd-text-field-container--underline-left rmd-autocomplate tag-name-autocomplete"
+                      class="rmd-text-field-container rmd-text-field-container--hoverable rmd-text-field-container--label rmd-text-field-container--underline rmd-text-field-container--underline-labelled rmd-text-field-container--underline-left rmd-textarea-container rmd-textarea-container--animate rmd-textarea-container--cursor rmd-autocomplate api-autocomplete"
                       id="create-proposition-page--tags--tag-name-combobox"
                       role="combobox"
                       style="flex-grow: 1;"
@@ -132,21 +161,44 @@ exports[`CreatePropositionPage (with fake timers) can add URL while editing a Wr
                       >
                         Tag
                       </label>
-                      <input
-                        aria-activedescendant=""
-                        aria-autocomplete="list"
-                        aria-controls="create-proposition-page--tags--tag-name-combobox"
-                        autocomplete="off"
-                        class="rmd-text-field rmd-text-field--floating"
-                        id="create-proposition-page--tags--tag-name"
-                        maxlength="64"
-                        name="tagName"
-                        type="text"
-                        value=""
-                      />
+                      <div
+                        class="rmd-textarea-container__inner rmd-textarea-container__inner--animate"
+                      >
+                        <textarea
+                          aria-activedescendant=""
+                          aria-autocomplete="list"
+                          aria-controls="create-proposition-page--tags--tag-name-combobox"
+                          autocomplete="off"
+                          class="rmd-textarea rmd-textarea--floating rmd-textarea--rn"
+                          id="create-proposition-page--tags--tag-name"
+                          maxlength="64"
+                          name="tagName"
+                          rows="1"
+                        />
+                        <textarea
+                          aria-hidden="true"
+                          class="rmd-textarea rmd-textarea--rn rmd-textarea--mask rmd-textarea--floating"
+                          id="create-proposition-page--tags--tag-name-mask"
+                          readonly=""
+                          rows="1"
+                          tabindex="-1"
+                        />
+                      </div>
+                    </div>
+                    <div
+                      aria-live="polite"
+                      class="rmd-form-message rmd-form-message--outline"
+                      id="create-proposition-page--tags--tag-name-message"
+                    >
+                      <span
+                        class="rmd-form-message__counter"
+                        id="create-proposition-page--tags--tag-name-message-counter"
+                      >
+                        0 / 64
+                      </span>
                     </div>
                   </div>
-                </form>
+                </div>
               </div>
             </section>
             <div
@@ -496,34 +548,61 @@ exports[`CreatePropositionPage (with fake timers) can add URL while editing a Wr
                     style="display: flex; align-items: center;"
                   >
                     <div
-                      aria-expanded="false"
-                      aria-haspopup="listbox"
-                      aria-owns="create-proposition-page--justification--basis-writ-quote--writ-title-listbox"
-                      class="rmd-text-field-container rmd-text-field-container--hoverable rmd-text-field-container--label rmd-text-field-container--underline rmd-text-field-container--underline-labelled rmd-text-field-container--underline-left rmd-autocomplate"
-                      id="create-proposition-page--justification--basis-writ-quote--writ-title-combobox"
-                      role="combobox"
-                      style="flex-grow: 1;"
+                      class="rmd-field-message-container"
                     >
-                      <label
-                        class="rmd-label rmd-floating-label"
-                        for="create-proposition-page--justification--basis-writ-quote--writ-title"
+                      <div
+                        aria-expanded="false"
+                        aria-haspopup="listbox"
+                        aria-owns="create-proposition-page--justification--basis-writ-quote--writ-title-listbox"
+                        class="rmd-text-field-container rmd-text-field-container--hoverable rmd-text-field-container--label rmd-text-field-container--underline rmd-text-field-container--underline-labelled rmd-text-field-container--underline-left rmd-textarea-container rmd-textarea-container--animate rmd-textarea-container--cursor rmd-autocomplate api-autocomplete"
+                        id="create-proposition-page--justification--basis-writ-quote--writ-title-combobox"
+                        role="combobox"
+                        style="flex-grow: 1;"
                       >
-                        Title
-                      </label>
-                      <input
-                        aria-activedescendant=""
-                        aria-autocomplete="list"
-                        aria-controls="create-proposition-page--justification--basis-writ-quote--writ-title-combobox"
-                        autocomplete="off"
-                        class="rmd-text-field rmd-text-field--floating"
-                        id="create-proposition-page--justification--basis-writ-quote--writ-title"
-                        maxlength="512"
-                        minlength="1"
-                        name="justification.basis.writQuote.writ.title"
-                        required=""
-                        type="text"
-                        value=""
-                      />
+                        <label
+                          class="rmd-label rmd-floating-label"
+                          for="create-proposition-page--justification--basis-writ-quote--writ-title"
+                        >
+                          Title
+                        </label>
+                        <div
+                          class="rmd-textarea-container__inner rmd-textarea-container__inner--animate"
+                        >
+                          <textarea
+                            aria-activedescendant=""
+                            aria-autocomplete="list"
+                            aria-controls="create-proposition-page--justification--basis-writ-quote--writ-title-combobox"
+                            autocomplete="off"
+                            class="rmd-textarea rmd-textarea--floating rmd-textarea--rn"
+                            id="create-proposition-page--justification--basis-writ-quote--writ-title"
+                            maxlength="512"
+                            minlength="1"
+                            name="justification.basis.writQuote.writ.title"
+                            required=""
+                            rows="1"
+                          />
+                          <textarea
+                            aria-hidden="true"
+                            class="rmd-textarea rmd-textarea--rn rmd-textarea--mask rmd-textarea--floating"
+                            id="create-proposition-page--justification--basis-writ-quote--writ-title-mask"
+                            readonly=""
+                            rows="1"
+                            tabindex="-1"
+                          />
+                        </div>
+                      </div>
+                      <div
+                        aria-live="polite"
+                        class="rmd-form-message rmd-form-message--outline"
+                        id="create-proposition-page--justification--basis-writ-quote--writ-title-message"
+                      >
+                        <span
+                          class="rmd-form-message__counter"
+                          id="create-proposition-page--justification--basis-writ-quote--writ-title-message-counter"
+                        >
+                          0 / 512
+                        </span>
+                      </div>
                     </div>
                   </div>
                   <div
@@ -761,48 +840,77 @@ exports[`CreatePropositionPage (with fake timers) renders correctly with query p
                   style="display: flex; align-items: center;"
                 >
                   <div
-                    aria-expanded="false"
-                    aria-haspopup="listbox"
-                    aria-owns="create-proposition-page--proposition--text-listbox"
-                    class="rmd-text-field-container rmd-text-field-container--hoverable rmd-text-field-container--label rmd-text-field-container--underline rmd-text-field-container--underline-labelled rmd-text-field-container--underline-active rmd-text-field-container--underline-left rmd-autocomplate"
-                    id="create-proposition-page--proposition--text-combobox"
-                    role="combobox"
-                    style="flex-grow: 1;"
+                    class="rmd-field-message-container"
                   >
-                    <label
-                      class="rmd-label rmd-label--active rmd-floating-label rmd-floating-label--active"
-                      for="create-proposition-page--proposition--text"
+                    <div
+                      aria-expanded="false"
+                      aria-haspopup="listbox"
+                      aria-owns="create-proposition-page--proposition--text-listbox"
+                      class="rmd-text-field-container rmd-text-field-container--hoverable rmd-text-field-container--label rmd-text-field-container--underline rmd-text-field-container--underline-labelled rmd-text-field-container--underline-active rmd-text-field-container--underline-left rmd-textarea-container rmd-textarea-container--animate rmd-textarea-container--cursor rmd-autocomplate api-autocomplete"
+                      id="create-proposition-page--proposition--text-combobox"
+                      role="combobox"
+                      style="flex-grow: 1;"
                     >
-                      Text
-                    </label>
-                    <input
-                      aria-activedescendant=""
-                      aria-autocomplete="list"
-                      aria-controls="create-proposition-page--proposition--text-combobox"
-                      autocomplete="off"
-                      class="rmd-text-field rmd-text-field--floating"
-                      id="create-proposition-page--proposition--text"
-                      maxlength="512"
-                      name="proposition.text"
-                      required=""
-                      type="text"
-                      value=""
-                    />
+                      <label
+                        class="rmd-label rmd-label--active rmd-floating-label rmd-floating-label--active"
+                        for="create-proposition-page--proposition--text"
+                      >
+                        Text
+                      </label>
+                      <div
+                        class="rmd-textarea-container__inner rmd-textarea-container__inner--animate"
+                      >
+                        <textarea
+                          aria-activedescendant=""
+                          aria-autocomplete="list"
+                          aria-controls="create-proposition-page--proposition--text-combobox"
+                          autocomplete="off"
+                          class="rmd-textarea rmd-textarea--floating rmd-textarea--rn"
+                          id="create-proposition-page--proposition--text"
+                          maxlength="512"
+                          name="proposition.text"
+                          required=""
+                          rows="1"
+                        />
+                        <textarea
+                          aria-hidden="true"
+                          class="rmd-textarea rmd-textarea--rn rmd-textarea--mask rmd-textarea--floating"
+                          id="create-proposition-page--proposition--text-mask"
+                          readonly=""
+                          rows="1"
+                          tabindex="-1"
+                        />
+                      </div>
+                    </div>
+                    <div
+                      aria-live="polite"
+                      class="rmd-form-message rmd-form-message--outline"
+                      id="create-proposition-page--proposition--text-message"
+                    >
+                      <span
+                        class="rmd-form-message__counter"
+                        id="create-proposition-page--proposition--text-message-counter"
+                      >
+                        0 / 512
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>
               <div
                 class="chips-list"
               >
-                <form>
+                <div
+                  style="display: flex; align-items: center;"
+                >
                   <div
-                    style="display: flex; align-items: center;"
+                    class="rmd-field-message-container"
                   >
                     <div
                       aria-expanded="false"
                       aria-haspopup="listbox"
                       aria-owns="create-proposition-page--tags--tag-name-listbox"
-                      class="rmd-text-field-container rmd-text-field-container--hoverable rmd-text-field-container--label rmd-text-field-container--underline rmd-text-field-container--underline-labelled rmd-text-field-container--underline-left rmd-autocomplate tag-name-autocomplete"
+                      class="rmd-text-field-container rmd-text-field-container--hoverable rmd-text-field-container--label rmd-text-field-container--underline rmd-text-field-container--underline-labelled rmd-text-field-container--underline-left rmd-textarea-container rmd-textarea-container--animate rmd-textarea-container--cursor rmd-autocomplate api-autocomplete"
                       id="create-proposition-page--tags--tag-name-combobox"
                       role="combobox"
                       style="flex-grow: 1;"
@@ -813,21 +921,44 @@ exports[`CreatePropositionPage (with fake timers) renders correctly with query p
                       >
                         Tag
                       </label>
-                      <input
-                        aria-activedescendant=""
-                        aria-autocomplete="list"
-                        aria-controls="create-proposition-page--tags--tag-name-combobox"
-                        autocomplete="off"
-                        class="rmd-text-field rmd-text-field--floating"
-                        id="create-proposition-page--tags--tag-name"
-                        maxlength="64"
-                        name="tagName"
-                        type="text"
-                        value=""
-                      />
+                      <div
+                        class="rmd-textarea-container__inner rmd-textarea-container__inner--animate"
+                      >
+                        <textarea
+                          aria-activedescendant=""
+                          aria-autocomplete="list"
+                          aria-controls="create-proposition-page--tags--tag-name-combobox"
+                          autocomplete="off"
+                          class="rmd-textarea rmd-textarea--floating rmd-textarea--rn"
+                          id="create-proposition-page--tags--tag-name"
+                          maxlength="64"
+                          name="tagName"
+                          rows="1"
+                        />
+                        <textarea
+                          aria-hidden="true"
+                          class="rmd-textarea rmd-textarea--rn rmd-textarea--mask rmd-textarea--floating"
+                          id="create-proposition-page--tags--tag-name-mask"
+                          readonly=""
+                          rows="1"
+                          tabindex="-1"
+                        />
+                      </div>
+                    </div>
+                    <div
+                      aria-live="polite"
+                      class="rmd-form-message rmd-form-message--outline"
+                      id="create-proposition-page--tags--tag-name-message"
+                    >
+                      <span
+                        class="rmd-form-message__counter"
+                        id="create-proposition-page--tags--tag-name-message-counter"
+                      >
+                        0 / 64
+                      </span>
                     </div>
                   </div>
-                </form>
+                </div>
               </div>
             </section>
             <div
@@ -1181,34 +1312,65 @@ exports[`CreatePropositionPage (with fake timers) renders correctly with query p
                     style="display: flex; align-items: center;"
                   >
                     <div
-                      aria-expanded="false"
-                      aria-haspopup="listbox"
-                      aria-owns="create-proposition-page--justification--basis-writ-quote--writ-title-listbox"
-                      class="rmd-text-field-container rmd-text-field-container--hoverable rmd-text-field-container--label rmd-text-field-container--underline rmd-text-field-container--underline-labelled rmd-text-field-container--underline-left rmd-autocomplate"
-                      id="create-proposition-page--justification--basis-writ-quote--writ-title-combobox"
-                      role="combobox"
-                      style="flex-grow: 1;"
+                      class="rmd-field-message-container"
                     >
-                      <label
-                        class="rmd-label rmd-floating-label rmd-floating-label--active rmd-floating-label--inactive"
-                        for="create-proposition-page--justification--basis-writ-quote--writ-title"
+                      <div
+                        aria-expanded="false"
+                        aria-haspopup="listbox"
+                        aria-owns="create-proposition-page--justification--basis-writ-quote--writ-title-listbox"
+                        class="rmd-text-field-container rmd-text-field-container--hoverable rmd-text-field-container--label rmd-text-field-container--underline rmd-text-field-container--underline-labelled rmd-text-field-container--underline-left rmd-textarea-container rmd-textarea-container--animate rmd-textarea-container--cursor rmd-autocomplate api-autocomplete"
+                        id="create-proposition-page--justification--basis-writ-quote--writ-title-combobox"
+                        role="combobox"
+                        style="flex-grow: 1;"
                       >
-                        Title
-                      </label>
-                      <input
-                        aria-activedescendant=""
-                        aria-autocomplete="list"
-                        aria-controls="create-proposition-page--justification--basis-writ-quote--writ-title-combobox"
-                        autocomplete="off"
-                        class="rmd-text-field rmd-text-field--floating"
-                        id="create-proposition-page--justification--basis-writ-quote--writ-title"
-                        maxlength="512"
-                        minlength="1"
-                        name="justification.basis.writQuote.writ.title"
-                        required=""
-                        type="text"
-                        value="A credible source"
-                      />
+                        <label
+                          class="rmd-label rmd-floating-label rmd-floating-label--active rmd-floating-label--inactive"
+                          for="create-proposition-page--justification--basis-writ-quote--writ-title"
+                        >
+                          Title
+                        </label>
+                        <div
+                          class="rmd-textarea-container__inner rmd-textarea-container__inner--animate"
+                        >
+                          <textarea
+                            aria-activedescendant=""
+                            aria-autocomplete="list"
+                            aria-controls="create-proposition-page--justification--basis-writ-quote--writ-title-combobox"
+                            autocomplete="off"
+                            class="rmd-textarea rmd-textarea--floating rmd-textarea--rn"
+                            id="create-proposition-page--justification--basis-writ-quote--writ-title"
+                            maxlength="512"
+                            minlength="1"
+                            name="justification.basis.writQuote.writ.title"
+                            required=""
+                            rows="1"
+                          >
+                            A credible source
+                          </textarea>
+                          <textarea
+                            aria-hidden="true"
+                            class="rmd-textarea rmd-textarea--rn rmd-textarea--mask rmd-textarea--floating"
+                            id="create-proposition-page--justification--basis-writ-quote--writ-title-mask"
+                            readonly=""
+                            rows="1"
+                            tabindex="-1"
+                          >
+                            A credible source
+                          </textarea>
+                        </div>
+                      </div>
+                      <div
+                        aria-live="polite"
+                        class="rmd-form-message rmd-form-message--outline"
+                        id="create-proposition-page--justification--basis-writ-quote--writ-title-message"
+                      >
+                        <span
+                          class="rmd-form-message__counter"
+                          id="create-proposition-page--justification--basis-writ-quote--writ-title-message-counter"
+                        >
+                          17 / 512
+                        </span>
+                      </div>
                     </div>
                   </div>
                   <div

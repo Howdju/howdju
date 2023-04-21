@@ -91,4 +91,14 @@
     // For atoms, they are the only child and they don't look good with a large padding bottom
     padding-bottom: 16px;
   }
+
+  .rmd-field-message-container {
+    // Otherwise the fields are not full-width in the form.
+    flex-grow: 1;
+  }
+  body .rmd-form-message {
+    // This thing takes up way too much space.
+    min-height: 0;
+    margin-bottom: 0;
+  }
 }

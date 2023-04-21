@@ -1,4 +1,17 @@
+@import "~@react-md/form/dist/mixins";
+
 .rmd-floating-label {
   // TODO(17) figure out the source of this (.md-text--secondary?)
   color: rgba(0, 0, 0, 0.54);
+}
+
+.api-autocomplete {
+  .rmd-textarea {
+    // The default text-height is too large.
+    @include rmd-form-theme-update-var(text-height, 2rem);
+  }
+  .rmd-floating-label {
+    // The label isn't far enough down.
+    @include rmd-form-theme-update-var(floating-top, 1.7rem);
+  }
 }

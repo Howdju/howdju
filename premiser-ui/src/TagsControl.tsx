@@ -1,4 +1,4 @@
-import React, { FormEvent, useState } from "react";
+import React, { useState } from "react";
 import find from "lodash/find";
 import get from "lodash/get";
 import includes from "lodash/includes";
@@ -69,7 +69,7 @@ export default function TagsControl(props: Props) {
     tags,
     votes,
     recommendedTags,
-    commitChipKeys = [Keys.COMMA],
+    commitChipKeys = [Keys.COMMA, Keys.ENTER],
     id,
     suggestionsKey,
     votePolarity = {
@@ -89,24 +89,17 @@ export default function TagsControl(props: Props) {
   const [tagName, setTagName] = useState("");
   const [isInputCollapsed, setIsInputCollapsed] = useState(true);
 
-  function submitTagName(event: FormEvent<HTMLFormElement>) {
-    // Stop it from submitting an enclosing form
-    event.preventDefault();
-    // Stop it from propagating to an enclosing form
-    event.stopPropagation();
-
-    addTag(tagName);
-    setTagName("");
-    if (inputCollapsable) {
-      setIsInputCollapsed(true);
-    }
-  }
-
   const onTagNameKeyDown: OnKeyDownCallback = (event) => {
+    if (event.isDefaultPrevented()) {
+      return;
+    }
     if (includes(commitChipKeys, event.key) && tagName) {
       event.preventDefault();
       addTag(tagName);
       setTagName("");
+      if (inputCollapsable) {
+        setIsInputCollapsed(true);
+      }
     }
   };
 
@@ -185,33 +178,25 @@ export default function TagsControl(props: Props) {
   const extraChildren = [];
   if (!inputCollapsable || !isInputCollapsed) {
     extraChildren.push(
-      // This form makes it easier to receive a submit only when the autocomplete listbox is closed.
-      // But it also makes it possible for us to nest forms, which is tecnically invalid HTML.
-      // Other solutions include updating AutoComplete to call onKeyDown after it has
-      // preventedDefault so that our onKeyDown could inspect that and do nothing. Or to define a
-      // custom onKeyDown that passes information about the current AutoComplete state, like whether
-      // the listbox is visible.
-      <form onSubmit={submitTagName}>
-        <TagNameAutocomplete
-          id={tagNameAutocompleteId}
-          key={tagNameAutocompleteId}
-          name="tagName"
-          value={tagName}
-          className="tag-name-autocomplete"
-          suggestionsKey={suggestionsKey}
-          onAutoComplete={onTagNameAutocomplete}
-          onPropertyChange={onTagNamePropertyChange}
-          onKeyDown={onTagNameKeyDown}
-          rightControls={
-            inputCollapsable ? (
-              <Button icon onClick={() => closeInput()}>
-                done
-              </Button>
-            ) : undefined
-          }
-          autocompleteDebounceMs={autocompleteDebounceMs}
-        />
-      </form>
+      <TagNameAutocomplete
+        id={tagNameAutocompleteId}
+        key={tagNameAutocompleteId}
+        name="tagName"
+        value={tagName}
+        className="tag-name-autocomplete"
+        suggestionsKey={suggestionsKey}
+        onAutoComplete={onTagNameAutocomplete}
+        onPropertyChange={onTagNamePropertyChange}
+        onKeyDown={onTagNameKeyDown}
+        rightControls={
+          inputCollapsable ? (
+            <Button icon onClick={() => closeInput()}>
+              done
+            </Button>
+          ) : undefined
+        }
+        autocompleteDebounceMs={autocompleteDebounceMs}
+      />
     );
   }
   if (inputCollapsable && isInputCollapsed) {
