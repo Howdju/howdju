@@ -13,6 +13,7 @@ import { ComponentId, EditorId, SuggestionsKey } from "./types";
 import { useAppSelector } from "./hooks";
 import { EditorType } from "./reducers/editors";
 import { WithEditorProps } from "./editors/withEditor";
+import { defaultEditorId } from "./viewModels";
 
 type EntityPropNameProps<ET extends EditorType> = ET extends "PROPOSITION"
   ? { proposition?: Proposition }
@@ -26,7 +27,7 @@ interface EditorProps extends WithEditorProps {
   /** Required for the CircularProgress */
   id: ComponentId;
   /** Identifies the editor's state */
-  editorId: EditorId;
+  editorId?: EditorId;
   /** If omitted, no autocomplete */
   suggestionsKey: SuggestionsKey;
 }
@@ -68,7 +69,7 @@ export default function withEditableEntity<
 
   return function EditableEntity({
     id,
-    editorId,
+    editorId = defaultEditorId(id),
     suggestionsKey,
     showStatusText = true,
     ...rest

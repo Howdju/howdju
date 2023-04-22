@@ -1,6 +1,6 @@
 import React, { HTMLAttributes } from "react";
 
-import { WritQuote } from "howdju-common";
+import { WritQuoteOut } from "howdju-common";
 
 import { smallCellClasses } from "./CellList";
 import ListEntitiesWidget from "./ListEntitiesWidget";
@@ -20,7 +20,7 @@ export default function RecentWritQuotesWidget({
   widgetId,
   ...rest
 }: Props) {
-  const writQuoteToCard = (writQuote: WritQuote) => {
+  const writQuoteToCard = (writQuote: WritQuoteOut) => {
     const cardId = `${id}-writ-quote-${writQuote.id}`;
     return (
       <WritQuoteCard

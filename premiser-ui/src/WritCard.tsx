@@ -1,12 +1,19 @@
 import React, { Component } from "react";
-import PropTypes from "prop-types";
 import { Card, CardText } from "react-md";
 import cn from "classnames";
 
 import WritEntityViewer from "./WritEntityViewer";
+import { WritOut } from "howdju-common";
+import { ComponentId } from "./types";
+
+interface WritCardProps {
+  id: ComponentId;
+  writ: WritOut;
+  className?: string;
+}
 
 // TODO(221) convert to functional component
-export default class WritCard extends Component {
+export default class WritCard extends Component<WritCardProps, {}> {
   render() {
     const { id, writ, className, ...rest } = this.props;
     return (
@@ -18,6 +25,3 @@ export default class WritCard extends Component {
     );
   }
 }
-WritCard.propTypes = {
-  writ: PropTypes.object.isRequired,
-};

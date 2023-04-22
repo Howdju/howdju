@@ -113,6 +113,11 @@ export function combineIds(...ids: ComponentId[]) {
   return join(ids, idDelimiter);
 }
 
+/** Create a default editor ID. */
+export function defaultEditorId(id: ComponentId) {
+  return combineEditorIds(id, "-editor");
+}
+
 export function combineEditorIds(...editorIds: EditorId[]) {
   return join(editorIds, "_");
 }

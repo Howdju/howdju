@@ -1,41 +1,39 @@
 import React from "react";
 import { CircularProgress } from "react-md";
 
-import { WritQuoteOut } from "howdju-common";
+import { WritOut } from "howdju-common";
 
-import WritQuoteViewer, { OnClickWritQuoteUrl } from "./WritQuoteViewer";
-import WritQuoteEditor from "./editors/UpdateWritQuoteEditor";
+import { OnClickWritQuoteUrl } from "./WritQuoteViewer";
 import { ComponentId, EditorId } from "./types";
 import { useAppSelector } from "./hooks";
-import { defaultEditorId } from "./viewModels";
+import { combineIds, defaultEditorId } from "./viewModels";
+import WritViewer from "./WritViewer";
+import UpdateWritEditor from "./editors/UpdateWritEditor";
 
 interface Props {
   id: ComponentId;
   editorId?: EditorId;
-  writQuote: WritQuoteOut;
-  showStatusText: boolean;
-  showUrls: boolean;
+  writ: WritOut;
+  showStatusText?: boolean;
+  showUrls?: boolean;
   onClickUrl?: OnClickWritQuoteUrl;
 }
 
-export default function EditableWritQuote({
+export default function EditableWrit({
   id,
   editorId = defaultEditorId(id),
-  writQuote,
+  writ,
   showStatusText,
-  showUrls,
-  onClickUrl,
 }: Props) {
   const editor = () => (
-    <WritQuoteEditor id={id} writQuote={writQuote} editorId={editorId} />
+    <UpdateWritEditor id={id} writ={writ} editorId={editorId} />
   );
 
   const viewer = (
-    <WritQuoteViewer
-      writQuote={writQuote}
+    <WritViewer
+      id={combineIds(id, "viewer")}
+      writ={writ}
       showStatusText={showStatusText}
-      showUrls={showUrls}
-      onClickUrl={onClickUrl}
     />
   );
   const progress = <CircularProgress id={`${id}-Progress`} />;
@@ -43,7 +41,7 @@ export default function EditableWritQuote({
   const { editEntity } =
     useAppSelector((state) => state.editors.WRIT_QUOTE?.[editorId]) || {};
   const isEditing = !!editEntity;
-  const isFetching = !writQuote;
+  const isFetching = !writ;
 
   return isFetching ? progress : isEditing ? editor() : viewer;
 }

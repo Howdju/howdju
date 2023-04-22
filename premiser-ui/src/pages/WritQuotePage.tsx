@@ -7,7 +7,6 @@ import { CircularProgress } from "react-md";
 import { api } from "@/actions";
 import HowdjuHelmet from "@/Helmet";
 import { writQuoteSchema } from "@/normalizationSchemas";
-import { combineIds } from "@/viewModels";
 import WritQuoteCard from "@/WritQuoteCard";
 import { useAppSelector } from "@/hooks";
 
@@ -19,8 +18,6 @@ type Params = {
 /** Displays a WritQuote */
 const WritQuotePage = () => {
   const { writQuoteId } = useParams<Params>();
-  const editorId = combineIds("write-quote", writQuoteId);
-  const suggestionsKey = "writ-quote-page";
 
   const dispatch = useDispatch();
   useEffect(() => {
@@ -40,10 +37,7 @@ const WritQuotePage = () => {
       id={id}
       writQuote={writQuote}
       showUrls={true}
-      editorId={editorId}
-      suggestionsKey={suggestionsKey}
       className="md-cell--12"
-      editorCommitBehavior={"JustCommit"}
     />
   );
   return (

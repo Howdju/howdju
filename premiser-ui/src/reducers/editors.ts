@@ -61,6 +61,8 @@ import {
   CreateProposition,
   PropositionTagVote,
   assert,
+  UpdateWritQuoteInput,
+  UpdateWritInput,
 } from "howdju-common";
 
 import {
@@ -128,6 +130,8 @@ export type EditorEntity =
   | CreateCounterJustificationInput
   | CreateJustifiedSentenceInput
   | CreateWritQuoteInput
+  | UpdateWritQuoteInput
+  | UpdateWritInput
   | UpdateAccountSettingsInput
   | CreateRegistrationRequestInput
   | CreateContentReportInput

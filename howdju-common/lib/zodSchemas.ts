@@ -256,6 +256,11 @@ export type CreateWrit = z.infer<typeof CreateWrit>;
 export const CreateWritInput = CreateWrit;
 export type CreateWritInput = z.infer<typeof CreateWritInput>;
 
+export const UpdateWrit = Writ;
+export type UpdateWrit = z.infer<typeof UpdateWrit>;
+export const UpdateWritInput = UpdateWrit;
+export type UpdateWritInput = z.infer<typeof UpdateWritInput>;
+
 const urlTargetAnchorTypes = z.enum(["TEXT_QUOTE"]);
 /**
  * A reference to a portion of a URL document.

@@ -205,6 +205,103 @@ describe("CreatePropositionPage", () => {
       expect(history.location.pathname).toMatch(pathToRegexp("/p/:id"));
     });
 
+    test("can submit a proposition justified via a new WritQote", async () => {
+      // Arrange
+      const user = setupUserEvent();
+
+      const quoteText = "An important conclusion.";
+      const title = "A credible source";
+      const url = "https://www.info.com";
+
+      const history = createMemoryHistory();
+      const { location, match } = makeRouteComponentProps("create-proposition");
+
+      renderWithProviders(
+        <CreatePropositionPage
+          mode={"CREATE_PROPOSITION"}
+          history={history}
+          location={location}
+          match={match}
+        />,
+        { history }
+      );
+
+      const proposition: CreateProposition = {
+        text: "A bonny wee proposition.",
+      };
+      const justification: CreateJustification = {
+        target: {
+          type: "PROPOSITION",
+          entity: proposition,
+        },
+        polarity: "POSITIVE",
+        basis: {
+          type: "WRIT_QUOTE",
+          entity: {
+            quoteText,
+            writ: {
+              title,
+            },
+            urls: [{ url }],
+          },
+        },
+      };
+
+      const response: InferResponseBody<
+        typeof serviceRoutes.createJustification
+      > = {
+        isExtant: false,
+        justification: merge({}, justification, {
+          id: "1582",
+          target: { entity: { id: "9483" } },
+          basis: { entity: { id: "910" } },
+          rootTargetType: "PROPOSITION",
+          rootTarget: { id: "9483" },
+        }) as JustificationOut,
+      };
+      let requestBody;
+      server.use(
+        rest.post(`http://localhost/justifications`, async (req, res, ctx) => {
+          requestBody = await req.json();
+          return res(ctx.status(httpStatusCodes.OK), ctx.json(response));
+        }),
+        rest.get("http://localhost/search-propositions", (_req, res, ctx) => {
+          // delay so that we can cancel the request.
+          return res(ctx.delay(1), ctx.json([]));
+        }),
+        rest.get("http://localhost/search-writs", (_req, res, ctx) => {
+          // delay so that we can cancel the request.
+          return res(ctx.delay(1), ctx.json([]));
+        })
+      );
+      // Use click/keyboard instead of type to trigger autocompletes.
+      await user.type(
+        document.querySelector('textarea[name="proposition.text"]')!,
+        proposition.text
+      );
+      const writQuoteRadio = Array.from(
+        document.querySelectorAll('input[name="justification.basis.type"]')
+      ).find((el) => /Quote/i.test(el.parentElement?.textContent!));
+      await user.click(writQuoteRadio!);
+      await user.type(
+        document.querySelectorAll(".writ-quote-editor-fields textarea")[0],
+        quoteText
+      );
+      await user.type(screen.getByLabelText(/Title/i), title);
+      await user.type(screen.getByLabelText(/URL/i), url);
+
+      // Act
+      await user.click(screen.getByRole("button", { name: /create/i }));
+
+      // Assert
+      jest.runAllTimers();
+      expect(requestBody).toMatchObject({
+        justification,
+      });
+      // TODO(196): get path pattern from routesById instead.
+      expect(history.location.pathname).toMatch(pathToRegexp("/p/:id"));
+    });
+
     test("removing a tag removes it", async () => {
       // Arrange
       const user = setupUserEvent();

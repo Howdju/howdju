@@ -58,7 +58,7 @@ export default function PropositionEditorFields(props: Props) {
     onKeyDown,
     onSubmit,
     onPropertyChange,
-    disabled: disabled,
+    disabled,
     ...textErrorProps,
   };
 

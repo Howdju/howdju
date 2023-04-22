@@ -9,10 +9,10 @@ import { OnClickWritQuoteUrl } from "./WritQuoteViewer";
 interface Props {
   id: ComponentId;
   writQuote: WritQuoteOut;
-  editorId: EditorId;
+  editorId?: EditorId;
   showUrls: boolean;
   showStatusText: boolean;
-  onClickUrl: OnClickWritQuoteUrl;
+  onClickUrl?: OnClickWritQuoteUrl;
   menu?: ReactNode;
 }
 
