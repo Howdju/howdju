@@ -394,6 +394,7 @@ export default function CreatePropositionPage({ mode, location }: Props) {
                                 blurredFields={blurredFields?.speakers?.[index]}
                                 dirtyFields={dirtyFields?.speakers?.[index]}
                                 onSubmit={onSubmit}
+                                editorDispatch={editorDispatch}
                               />
                             }
                           />

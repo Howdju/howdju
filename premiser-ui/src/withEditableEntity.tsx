@@ -111,9 +111,9 @@ export default function withEditableEntity<
     // `Type 'EditorProps & EntityPropNameProps<ET>' is not assignable to type 'IntrinsicAttributes'`.
     // Removing EntityPropNameProps from EP fixes the issue.
     const editor = editorId ? (
-      <div />
-    ) : (
       <EditorComponent {...(editorProps as any)} />
+    ) : (
+      <div />
     );
 
     const viewerProps = {
