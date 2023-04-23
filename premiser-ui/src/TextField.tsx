@@ -1,5 +1,5 @@
 import React, { ReactNode } from "react";
-import { TextField, TextFieldProps } from "react-md";
+import { TextField as ReactMdTextField, TextFieldProps } from "react-md";
 
 import {
   OnBlurCallback,
@@ -15,7 +15,7 @@ interface Props extends Omit<TextFieldProps, "onBlur" | "onChange"> {
 }
 
 /** A TextField translating more convenient callback's into react-md's versions. */
-export default function HowdjuTextField({
+export default function TextField({
   value,
   children,
   onPropertyChange,
@@ -25,13 +25,13 @@ export default function HowdjuTextField({
   const onChange = toTextFieldOnChangeCallback(onPropertyChange);
 
   return (
-    <TextField
+    <ReactMdTextField
       {...rest}
       onChange={onChange}
       value={value || ""}
       onBlur={toReactMdOnBlur(onBlur)}
     >
       {children}
-    </TextField>
+    </ReactMdTextField>
   );
 }
