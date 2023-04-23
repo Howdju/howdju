@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, FontIcon, TextField } from "react-md";
+import { Button, FontIcon } from "react-md";
 import map from "lodash/map";
 
 import {
@@ -13,7 +13,7 @@ import {
 import ErrorMessages from "@/ErrorMessages";
 import SingleLineTextField from "@/SingleLineTextField";
 import { combineIds, combineNames, combineSuggestionsKeys } from "@/viewModels";
-import { OnKeyDownCallback, toReactMdOnBlur } from "@/types";
+import { OnKeyDownCallback } from "@/types";
 import {
   EditorFieldsDispatch,
   EntityEditorFieldsProps,
@@ -21,10 +21,10 @@ import {
 import { makeErrorPropCreator } from "./modelErrorMessages";
 import { EditorType } from "./reducers/editors";
 import { editors } from "./actions";
-import { logger } from "./logger";
+import WritEditorFields from "./editors/WritEditorFields";
+import TextField from "./TextField";
 
 import "./WritQuoteEditorFields.scss";
-import WritEditorFields from "./editors/WritEditorFields";
 
 interface Props
   extends EntityEditorFieldsProps<
@@ -54,19 +54,6 @@ const WritQuoteEditorFields = (props: Props) => {
     blurredFields,
     wasSubmitAttempted,
   } = props;
-
-  const onChange = (value: number | string, event: Event) => {
-    if (onPropertyChange) {
-      if (!event.target || !("name" in event.target)) {
-        logger.warn(
-          "Unable to fire onPropertyChange because event lacked target.name"
-        );
-        return;
-      }
-      const name = event.target.name;
-      onPropertyChange({ [name]: value });
-    }
-  };
 
   const urls = writQuote?.urls ?? [];
 
@@ -112,8 +99,8 @@ const WritQuoteEditorFields = (props: Props) => {
         maxRows={8}
         maxLength={schemaSettings.writQuoteQuoteTextMaxLength}
         value={quoteText}
-        onBlur={toReactMdOnBlur(onBlur)}
-        onChange={onChange}
+        onBlur={onBlur}
+        onPropertyChange={onPropertyChange}
         disabled={disabled}
         onKeyDown={onKeyDown}
       />

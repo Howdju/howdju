@@ -999,8 +999,11 @@ export const ContentReport = Entity.extend({
 });
 export type ContentReport = z.infer<typeof ContentReport>;
 
-export const CreateContentReport = ContentReport;
-export type CreateContentReport = ContentReport;
+export const CreateContentReport = ContentReport.omit({
+  reporterUserId: true,
+  created: true,
+});
+export type CreateContentReport = z.input<typeof CreateContentReport>;
 
 export const CreateContentReportInput = ContentReport.extend({
   // When creating a content report, we maintain a map of whether any particular type is selected.

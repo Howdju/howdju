@@ -17,7 +17,7 @@ import UrlTextField from "./UrlTextField";
 import {
   isTwitterUrl,
   isWikipediaUrl,
-  toOnCheckboxChangeCallback,
+  toCheckboxOnChangeCallback,
 } from "./util";
 import { ComponentId } from "./types";
 import {
@@ -64,7 +64,7 @@ export default function PersorgEditorFields(props: Props) {
 
   const [showUrls, setShowUrls] = useState(false);
 
-  const onChange = toOnCheckboxChangeCallback(onPropertyChange);
+  const onChange = toCheckboxOnChangeCallback(onPropertyChange);
 
   const onNameAutocomplete = (persorg: Persorg) => {
     if (onPersorgNameAutocomplete) {

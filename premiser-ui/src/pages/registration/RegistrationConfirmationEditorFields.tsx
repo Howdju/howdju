@@ -12,7 +12,7 @@ import SingleLineTextField from "../../SingleLineTextField";
 import { EntityEditorFieldsProps } from "@/editors/withEditor";
 import { makeErrorPropCreator } from "@/modelErrorMessages";
 import ErrorMessages from "@/ErrorMessages";
-import { toOnCheckboxChangeCallback } from "@/util";
+import { toCheckboxOnChangeCallback } from "@/util";
 import { toReactMdOnBlur } from "@/types";
 
 interface Props
@@ -23,7 +23,7 @@ interface Props
   email: string | null;
 }
 
-export default function RegistrationConfirmationEditotFields({
+export default function RegistrationConfirmationEditorFields({
   registrationConfirmation,
   email,
   disabled,
@@ -40,7 +40,7 @@ export default function RegistrationConfirmationEditotFields({
     onSubmit,
     disabled,
   };
-  const onCheckboxChange = toOnCheckboxChangeCallback(onPropertyChange);
+  const onCheckboxChange = toCheckboxOnChangeCallback(onPropertyChange);
   const errorProps = makeErrorPropCreator(
     wasSubmitAttempted,
     errors,
@@ -60,8 +60,14 @@ export default function RegistrationConfirmationEditotFields({
         label="Username"
         value={registrationConfirmation?.username}
         onPropertyChange={onPropertyChange}
-        minLength={CreateRegistrationConfirmationInput.shape.username.minLength}
-        maxLength={CreateRegistrationConfirmationInput.shape.username.maxLength}
+        minLength={
+          CreateRegistrationConfirmationInput.shape.username.minLength ||
+          undefined
+        }
+        maxLength={
+          CreateRegistrationConfirmationInput.shape.username.maxLength ||
+          undefined
+        }
         required
         {...errorProps((rc) => rc.username)}
       />
@@ -81,11 +87,14 @@ export default function RegistrationConfirmationEditotFields({
         {...commonFieldsProps}
         id="long-name"
         name="longName"
-        autocomplete="name"
         label="Full Name"
+        autocomplete="name"
         value={registrationConfirmation?.longName}
         onPropertyChange={onPropertyChange}
-        maxLength={CreateRegistrationConfirmationInput.shape.longName.maxLength}
+        maxLength={
+          CreateRegistrationConfirmationInput.shape.longName.maxLength ||
+          undefined
+        }
         required
         {...errorProps((rc) => rc.longName)}
       />
@@ -93,12 +102,13 @@ export default function RegistrationConfirmationEditotFields({
         {...commonFieldsProps}
         id="short-name"
         name="shortName"
-        autocomplete="given-name"
         label="First Name"
+        autocomplete="given-name"
         value={registrationConfirmation?.shortName}
         onPropertyChange={onPropertyChange}
         maxLength={
-          CreateRegistrationConfirmationInput.shape.shortName.unwrap().maxLength
+          CreateRegistrationConfirmationInput.shape.shortName.unwrap()
+            .maxLength || undefined
         }
         {...errorProps((rc) => rc.shortName)}
       />

@@ -39,7 +39,10 @@ export default function AccountSettingsEditorFields({
         label="Paid contributions disclosure"
         rows={2}
         maxRows={8}
-        maxLength={AccountSettings.shape.paidContributionsDisclosure.maxLength}
+        maxLength={
+          AccountSettings.shape.paidContributionsDisclosure.maxLength ||
+          undefined
+        }
         value={accountSettings?.paidContributionsDisclosure}
         onPropertyChange={onPropertyChange}
         disabled={disabled}

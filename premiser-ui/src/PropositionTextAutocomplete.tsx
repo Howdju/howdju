@@ -1,6 +1,6 @@
 import React from "react";
 
-import { schemaSettings } from "howdju-common";
+import { PropositionOut, schemaSettings } from "howdju-common";
 
 import { api } from "./actions";
 import { propositionSchema } from "./normalizationSchemas";
@@ -13,9 +13,15 @@ import {
   OnPropertyChangeCallback,
   SuggestionsKey,
 } from "./types";
-import ApiAutoComplete from "./ApiAutoComplete";
+import ApiAutoComplete, {
+  Props as ApiAutoCompleteProps,
+} from "./ApiAutoComplete";
 
-interface Props {
+interface Props
+  extends Omit<
+    ApiAutoCompleteProps<PropositionOut>,
+    "fetchSuggestions" | "cancelSuggestions" | "labelKey" | "suggestionSchema"
+  > {
   id: ComponentId;
   name: ComponentName;
   /** The value to display in the text input */
