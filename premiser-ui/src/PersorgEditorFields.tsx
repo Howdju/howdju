@@ -3,9 +3,9 @@ import { Button, Switch } from "react-md";
 
 import {
   CreatePersorgInput,
-  ModelErrors,
   Persorg,
   schemaSettings,
+  UpdatePersorgInput,
 } from "howdju-common";
 
 import PersorgNameAutocomplete from "./PersorgNameAutocomplete";
@@ -19,35 +19,26 @@ import {
   isWikipediaUrl,
   toOnCheckboxChangeCallback,
 } from "./util";
+import { ComponentId } from "./types";
 import {
-  ComponentId,
-  ComponentName,
-  OnPropertyChangeCallback,
-  SuggestionsKey,
-} from "./types";
-import { BlurredFields, DirtyFields } from "./reducers/editors";
+  EditorFieldsDispatch,
+  EntityEditorFieldsProps,
+} from "./editors/withEditor";
 
 const nameName = "name";
-export interface Props {
-  persorg: CreatePersorgInput;
-  id: ComponentId;
+export interface Props
+  extends EntityEditorFieldsProps<
+    "persorg",
+    CreatePersorgInput | UpdatePersorgInput
+  > {
   /** An optional override of the ID of the input for editing the Persorg name.  If absent, an ID will be auto generated based upon {@see id} */
   nameId?: ComponentId;
-  /** If present, this string will be prepended to this editor's controls' names, with an intervening "." */
-  name: ComponentName;
-  /** If omitted, no autocomplete */
-  suggestionsKey?: SuggestionsKey;
-  /** Will be called with the persorg upon an autocomplete */
-  onPersorgNameAutocomplete: (persorg: Persorg) => void;
-  onPropertyChange: OnPropertyChangeCallback;
-  errors: ModelErrors<CreatePersorgInput> | undefined;
-  disabled?: boolean;
   /** If present, overrides the default label for the proposition text input */
   nameLabel?: string;
+  /** Will be called with the persorg upon an autocomplete */
+  onPersorgNameAutocomplete?: (persorg: Persorg) => void;
   onSubmit?: FormEventHandler;
-  wasSubmitAttempted: boolean;
-  dirtyFields: DirtyFields<CreatePersorgInput> | undefined;
-  blurredFields: BlurredFields<CreatePersorgInput> | undefined;
+  editorDispatch: EditorFieldsDispatch;
 }
 
 export default function PersorgEditorFields(props: Props) {
@@ -66,6 +57,8 @@ export default function PersorgEditorFields(props: Props) {
     wasSubmitAttempted,
     dirtyFields,
     blurredFields,
+    // unused TODO(341) remove
+    editorDispatch,
     ...rest
   } = props;
 
@@ -95,7 +88,7 @@ export default function PersorgEditorFields(props: Props) {
     name: combineNames(name, nameName),
     label: nameLabel,
     maxLength: schemaSettings.persorgNameMaxLength,
-    value: persorg.name,
+    value: persorg?.name ?? "",
     required: true,
     onSubmit,
     onPropertyChange,
@@ -121,17 +114,17 @@ export default function PersorgEditorFields(props: Props) {
       <Switch
         id={combineIds(id, "is-organization")}
         name={combineNames(name, "isOrganization")}
-        checked={persorg.isOrganization}
+        checked={persorg?.isOrganization ?? false}
         label="Is Organization?"
         disabled={disabled}
         onChange={onChange}
       />
-      {!persorg.isOrganization && (
+      {persorg && !persorg.isOrganization && (
         <SingleLineTextField
           id={combineIds(id, "known-for")}
           name={combineNames(name, "knownFor")}
           label="Known for"
-          value={persorg.knownFor}
+          value={persorg?.knownFor ?? ""}
           helpText="What is this person or organization known for?  (Helps disambiguate people with the same name or for obscure organizations with a better known purpose.)"
           disabled={disabled}
           onPropertyChange={onPropertyChange}
@@ -147,7 +140,7 @@ export default function PersorgEditorFields(props: Props) {
           id={combineIds(id, "website-url")}
           name={combineNames(name, "websiteUrl")}
           label="Website"
-          value={persorg.websiteUrl}
+          value={persorg?.websiteUrl ?? ""}
           disabled={disabled}
           onPropertyChange={onPropertyChange}
           onSubmit={onSubmit}
@@ -157,7 +150,7 @@ export default function PersorgEditorFields(props: Props) {
           id={combineIds(id, "wikipedia-url")}
           name={combineNames(name, "wikipediaUrl")}
           label="Wikipedia"
-          value={persorg.wikipediaUrl}
+          value={persorg?.wikipediaUrl ?? ""}
           validator={isWikipediaUrl}
           invalidErrorText="Must be a wikipedia.org address"
           disabled={disabled}
@@ -169,7 +162,7 @@ export default function PersorgEditorFields(props: Props) {
           id={combineIds(id, "twitter-url")}
           name={combineNames(name, "twitterUrl")}
           label="Twitter"
-          value={persorg.twitterUrl}
+          value={persorg?.twitterUrl ?? ""}
           validator={isTwitterUrl}
           invalidErrorText="Must be a twitter.com address"
           disabled={disabled}

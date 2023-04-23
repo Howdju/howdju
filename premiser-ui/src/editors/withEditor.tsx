@@ -265,10 +265,10 @@ export default function withEditor<
     }
 
     const editorFieldsProps = {
+      ...rest,
       id,
       ...(name ? { name } : {}),
       ...{ [entityPropName]: editEntity },
-      ...rest,
       disabled: isSaving,
       suggestionsKey: combineSuggestionsKeys(editorType, editorId),
       onBlur,
