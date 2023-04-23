@@ -22,7 +22,7 @@ import {
 import config from "../../config";
 import { logger } from "../../logger";
 import TagsViewer from "../../TagsViewer";
-import { Proposition, WritOut, WritQuoteOut } from "howdju-common";
+import { PropositionOut, WritOut, WritQuoteOut } from "howdju-common";
 import { useAppSelector } from "@/hooks";
 import { useLocation } from "react-router";
 
@@ -156,7 +156,7 @@ function denormalizeResults(
   };
 }
 
-function toPropositionCard(proposition: Proposition) {
+function toPropositionCard(proposition: PropositionOut) {
   const id = `proposition-card-${proposition.id}`;
   return (
     <PropositionCard

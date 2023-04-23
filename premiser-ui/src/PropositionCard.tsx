@@ -1,12 +1,22 @@
 import React, { Component } from "react";
-import PropTypes from "prop-types";
 import { Card, CardText } from "react-md";
 import cn from "classnames";
 
+import { ContextTrailItem, PropositionOut } from "howdju-common";
+
 import PropositionEntityViewer from "./PropositionEntityViewer";
+import { ComponentId } from "./types";
+
+interface Props {
+  id: ComponentId;
+  proposition: PropositionOut;
+  showStatusText?: boolean;
+  className?: string;
+  contextTrailItems?: ContextTrailItem[];
+}
 
 // TODO(221) convert to functional component
-export default class PropositionCard extends Component {
+export default class PropositionCard extends Component<Props> {
   render() {
     const {
       id,
@@ -30,7 +40,3 @@ export default class PropositionCard extends Component {
     );
   }
 }
-PropositionCard.propTypes = {
-  id: PropTypes.string.isRequired,
-  proposition: PropTypes.object.isRequired,
-};

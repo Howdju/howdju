@@ -13,9 +13,9 @@ interface Props {
   /** Required for the CircularProgress */
   id: ComponentId;
   /** Identifies the editor's state */
-  editorId: EditorId;
+  editorId?: EditorId;
   proposition: PropositionOut;
-  showStatusText: boolean;
+  showStatusText?: boolean;
   contextTrailItems?: ContextTrailItem[];
   showJustificationCount?: boolean;
 }
@@ -24,7 +24,7 @@ export default function EditableProposition({
   id,
   editorId,
   proposition,
-  showStatusText,
+  showStatusText = true,
   contextTrailItems,
   showJustificationCount = true,
 }: Props) {
