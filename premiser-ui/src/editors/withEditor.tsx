@@ -18,7 +18,11 @@ import { validateRawErrors } from "howdju-ajv-sourced";
 
 import { editors, flows } from "@/actions";
 import { RootState } from "@/setupStore";
-import { combineIds, combineSuggestionsKeys } from "@/viewModels";
+import {
+  combineIds,
+  combineSuggestionsKeys,
+  defaultEditorId,
+} from "@/viewModels";
 import t, {
   CANCEL_BUTTON_LABEL,
   EDIT_ENTITY_SUBMIT_BUTTON_LABEL,
@@ -83,7 +87,7 @@ export type WithEditorProps = {
   id: ComponentId;
   /** An optional name to prefix to the form's input's names. */
   name?: ComponentName;
-  editorId: EditorId;
+  editorId?: EditorId;
   className?: string;
   submitButtonText?: string;
   onKeyDown?: OnKeyDownCallback;
@@ -171,7 +175,7 @@ export default function withEditor<
     const {
       id,
       name,
-      editorId,
+      editorId = defaultEditorId(id),
       className,
       submitButtonText,
       onKeyDown,

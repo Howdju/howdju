@@ -1,15 +1,28 @@
 import React from "react";
-import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 import cn from "classnames";
 import moment from "moment";
 
+import { WritOut } from "howdju-common";
+
 import paths from "./paths";
 import config from "./config";
+import { ComponentId } from "./types";
 
-export default function WritViewer(props) {
-  const { id, writ, className, ...rest } = props;
+interface Props {
+  id: ComponentId;
+  writ: WritOut;
+  className?: string;
+  showStatusText?: boolean;
+}
 
+export default function WritViewer({
+  id,
+  writ,
+  className,
+  showStatusText,
+  ...rest
+}: Props) {
   const age = writ.created ? moment(writ.created).fromNow() : "";
   const created = writ.created
     ? moment(writ.created).format(config.humanDateTimeFormat)
@@ -24,14 +37,13 @@ export default function WritViewer(props) {
               {writ.title}
             </Link>
           </div>
-          <div className="entity-status-text">
-            created <span title={created}>{age}</span>
-          </div>
+          {showStatusText && (
+            <div className="entity-status-text">
+              created <span title={created}>{age}</span>
+            </div>
+          )}
         </div>
       )}
     </div>
   );
 }
-WritViewer.propTypes = {
-  writ: PropTypes.object,
-};

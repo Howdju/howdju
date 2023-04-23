@@ -1,6 +1,6 @@
 import React, { HTMLAttributes } from "react";
 
-import { Writ } from "howdju-common";
+import { WritOut } from "howdju-common";
 
 import ListEntitiesWidget from "./ListEntitiesWidget";
 import WritCard from "./WritCard";
@@ -16,7 +16,7 @@ interface Props extends HTMLAttributes<HTMLDivElement> {
 }
 
 export default function RecentWritsWidget({ id, widgetId, ...rest }: Props) {
-  const writToCard = (writ: Writ) => {
+  const writToCard = (writ: WritOut) => {
     const cardId = `${id}-writ-${writ.id}`;
     return (
       <WritCard

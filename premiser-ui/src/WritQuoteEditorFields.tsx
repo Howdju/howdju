@@ -7,11 +7,9 @@ import {
   makeUrl,
   schemaSettings,
   Url,
-  Writ,
   CreateWritQuoteInput,
 } from "howdju-common";
 
-import WritTitleAutocomplete from "@/WritTitleAutocomplete";
 import ErrorMessages from "@/ErrorMessages";
 import SingleLineTextField from "@/SingleLineTextField";
 import { combineIds, combineNames, combineSuggestionsKeys } from "@/viewModels";
@@ -26,6 +24,7 @@ import { editors } from "./actions";
 import { logger } from "./logger";
 
 import "./WritQuoteEditorFields.scss";
+import WritEditorFields from "./editors/WritEditorFields";
 
 interface Props
   extends EntityEditorFieldsProps<
@@ -37,7 +36,6 @@ interface Props
 }
 
 const writQuoteTextName = "quoteText";
-const writTitleName = "writ.title";
 
 const WritQuoteEditorFields = (props: Props) => {
   const {
@@ -79,30 +77,7 @@ const WritQuoteEditorFields = (props: Props) => {
     blurredFields
   );
 
-  const writTitleInputErrorProps = errorProps((wq) => wq.writ.title);
-
   const quoteText = writQuote?.quoteText ?? "";
-  const writTitle = writQuote?.writ.title ?? "";
-
-  const writTitleInputProps = {
-    id: combineIds(id, writTitleName),
-    name: combineNames(name, writTitleName),
-    label: "Title",
-    value: writTitle,
-    minLength: Writ.shape.title.minLength,
-    maxLength: Writ.shape.title.maxLength,
-    required: true,
-    disabled: disabled,
-    onBlur,
-    onKeyDown,
-    onPropertyChange,
-    onSubmit,
-  };
-
-  const combinedSuggestionKeys = combineSuggestionsKeys(
-    suggestionsKey,
-    writTitleName
-  );
 
   const onAddUrl = (index: number) =>
     editorDispatch((editorType: EditorType, editorId: string) =>
@@ -142,18 +117,16 @@ const WritQuoteEditorFields = (props: Props) => {
         disabled={disabled}
         onKeyDown={onKeyDown}
       />
-      {suggestionsKey && !disabled ? (
-        <WritTitleAutocomplete
-          {...writTitleInputProps}
-          {...writTitleInputErrorProps}
-          suggestionsKey={combinedSuggestionKeys}
-        />
-      ) : (
-        <SingleLineTextField
-          {...writTitleInputProps}
-          {...writTitleInputErrorProps}
-        />
-      )}
+      <WritEditorFields
+        id={combineIds(id, "writ")}
+        writ={writQuote?.writ}
+        editorDispatch={editorDispatch}
+        name={combineNames(name, "writ")}
+        disabled={disabled}
+        suggestionsKey={combineSuggestionsKeys(suggestionsKey, "writ")}
+        onPropertyChange={onPropertyChange}
+        wasSubmitAttempted={wasSubmitAttempted}
+      />
       {map(
         urls,
         (url, index, urls) =>

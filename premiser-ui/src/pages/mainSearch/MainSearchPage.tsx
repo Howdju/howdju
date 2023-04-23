@@ -22,7 +22,7 @@ import {
 import config from "../../config";
 import { logger } from "../../logger";
 import TagsViewer from "../../TagsViewer";
-import { Proposition, Writ, WritQuote } from "howdju-common";
+import { Proposition, WritOut, WritQuoteOut } from "howdju-common";
 import { useAppSelector } from "@/hooks";
 import { useLocation } from "react-router";
 
@@ -168,7 +168,7 @@ function toPropositionCard(proposition: Proposition) {
   );
 }
 
-function toWritQuoteCard(writQuote: WritQuote) {
+function toWritQuoteCard(writQuote: WritQuoteOut) {
   const id = `writ-quote-card-${writQuote.id}`;
   return (
     <WritQuoteCard
@@ -180,7 +180,7 @@ function toWritQuoteCard(writQuote: WritQuote) {
   );
 }
 
-function toWritQuoteWithUrlsCard(writQuote: WritQuote) {
+function toWritQuoteWithUrlsCard(writQuote: WritQuoteOut) {
   const id = `writ-quote-card-${writQuote.id}`;
   return (
     <WritQuoteCard
@@ -193,7 +193,7 @@ function toWritQuoteWithUrlsCard(writQuote: WritQuote) {
   );
 }
 
-function toWritCard(writ: Writ) {
+function toWritCard(writ: WritOut) {
   const id = `writ-card-${writ.id}`;
   return <WritCard writ={writ} id={id} key={id} className={smallCellClasses} />;
 }
