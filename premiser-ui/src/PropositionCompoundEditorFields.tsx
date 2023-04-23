@@ -18,6 +18,7 @@ import { combineNames, combineIds, combineSuggestionsKeys } from "./viewModels";
 import { EntityEditorFieldsProps } from "./editors/withEditor";
 import { EditorType } from "./reducers/editors";
 import { editors } from "./actions";
+import { toReactMdOnBlur } from "./types";
 
 interface Props
   extends EntityEditorFieldsProps<
@@ -140,7 +141,10 @@ export default function PropositionCompoundEditorFields(props: Props) {
               )}
             />
           ) : (
-            <SingleLineTextField {...inputProps} />
+            <SingleLineTextField
+              {...inputProps}
+              onBlur={toReactMdOnBlur(onBlur)}
+            />
           );
         return (
           <>

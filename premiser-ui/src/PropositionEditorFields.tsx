@@ -6,7 +6,7 @@ import { makeErrorPropCreator } from "./modelErrorMessages";
 import ErrorMessages from "./ErrorMessages";
 import { combineIds, combineNames, combineSuggestionsKeys } from "./viewModels";
 import { CreatePropositionInput, UpdatePropositionInput } from "howdju-common";
-import { OnKeyDownCallback } from "./types";
+import { OnKeyDownCallback, toReactMdOnBlur } from "./types";
 import { EntityEditorFieldsProps } from "./editors/withEditor";
 
 const textName = "text";
@@ -37,6 +37,7 @@ export default function PropositionEditorFields(props: Props) {
     autoFocus,
     // ignore
     editorDispatch,
+    onBlur,
     ...rest
   } = props;
 
@@ -67,10 +68,15 @@ export default function PropositionEditorFields(props: Props) {
       <PropositionTextAutocomplete
         {...rest}
         {...textProps}
+        onBlur={onBlur}
         suggestionsKey={combineSuggestionsKeys(suggestionsKey, textName)}
       />
     ) : (
-      <SingleLineTextField {...rest} {...textProps} />
+      <SingleLineTextField
+        {...rest}
+        onBlur={toReactMdOnBlur(onBlur)}
+        {...textProps}
+      />
     );
   return (
     <div>

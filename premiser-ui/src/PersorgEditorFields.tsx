@@ -19,7 +19,7 @@ import {
   isWikipediaUrl,
   toCheckboxOnChangeCallback,
 } from "./util";
-import { ComponentId } from "./types";
+import { ComponentId, toReactMdOnBlur } from "./types";
 import {
   EditorFieldsDispatch,
   EntityEditorFieldsProps,
@@ -57,6 +57,7 @@ export default function PersorgEditorFields(props: Props) {
     wasSubmitAttempted,
     dirtyFields,
     blurredFields,
+    onBlur,
     // unused TODO(341) remove
     editorDispatch,
     ...rest
@@ -101,11 +102,16 @@ export default function PersorgEditorFields(props: Props) {
       <PersorgNameAutocomplete
         {...rest}
         {...nameInputProps}
+        onBlur={onBlur}
         onAutoComplete={onNameAutocomplete}
         suggestionsKey={combineSuggestionsKeys(suggestionsKey, nameName)}
       />
     ) : (
-      <SingleLineTextField {...rest} {...nameInputProps} />
+      <SingleLineTextField
+        {...rest}
+        {...nameInputProps}
+        onBlur={toReactMdOnBlur(onBlur)}
+      />
     );
   return (
     <div>

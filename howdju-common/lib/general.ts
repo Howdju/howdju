@@ -6,12 +6,13 @@ import {
   camelCase,
   filter,
   pickBy,
+  toString,
+  isNumber,
 } from "lodash";
 import cloneDeepWith from "lodash/cloneDeepWith";
 import forEach from "lodash/forEach";
 import isArray from "lodash/isArray";
 import isFunction from "lodash/isFunction";
-import isNumber from "lodash/isNumber";
 import isObject from "lodash/isObject";
 import isUndefined from "lodash/isUndefined";
 import keys from "lodash/keys";
@@ -361,19 +362,21 @@ export const decodeSorts = (param: string | undefined) => {
 };
 
 /** Removes linebreaks from a string, ensuring whitespace between the joined characters */
-export const toSingleLine = (val: string) =>
-  val
-    // Remove leading newlines
-    .replace(/^[\r\n]/, "")
-    // Remove trailing newlines
-    .replace(/[\r\n]$/, "")
-    // Remove other newlines, replacing with space if they lacked other surrounding whitespace.
-    .replace(
-      /(\s*)[\r\n]+(\s*)/,
-      (_match, leadingWhitespace, trailingWhitespace) => {
-        return !leadingWhitespace && !trailingWhitespace ? " " : "";
-      }
-    );
+export const toSingleLine = (val: string | number) =>
+  isNumber(val)
+    ? toString(val)
+    : val
+        // Remove leading newlines
+        .replace(/^[\r\n]/, "")
+        // Remove trailing newlines
+        .replace(/[\r\n]$/, "")
+        // Remove other newlines, replacing with space if they lacked other surrounding whitespace.
+        .replace(
+          /(\s*)[\r\n]+(\s*)/,
+          (_match, leadingWhitespace, trailingWhitespace) => {
+            return !leadingWhitespace && !trailingWhitespace ? " " : "";
+          }
+        );
 
 export const cleanWhitespace = (text: string) => {
   text = trim(text);

@@ -148,18 +148,20 @@ export const toCheckboxOnChangeCallback = (
   };
 };
 
-export const toTextFieldOnChangeCallback = (
-  onPropertyChange?: OnPropertyChangeCallback
-): ((value: string | number, event: Event) => void) => {
+export function toTextFieldOnChangeCallback(
+  onPropertyChange?: OnPropertyChangeCallback,
+  transform?: (val: string | number) => string
+): (value: string | number, event: Event) => void {
   return function onChange(value: string | number, event: Event) {
     if (!onPropertyChange) {
       return;
     }
     const name = (event as unknown as ChangeEvent<HTMLInputElement>).target
       .name;
-    onPropertyChange({ [name]: value });
+    const val = transform ? transform(value) : value;
+    onPropertyChange({ [name]: val });
   };
-};
+}
 
 export function getQueryParam(
   location: Location,

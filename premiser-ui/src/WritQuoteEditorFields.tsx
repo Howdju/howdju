@@ -152,7 +152,7 @@ const WritQuoteEditorFields = (props: Props) => {
               }
               rightIconStateful={false}
               disabled={!!url.id || disabled || !!url.target}
-              onBlur={onBlur}
+              onBlur={toReactMdOnBlur(onBlur)}
               onPropertyChange={onPropertyChange}
               onSubmit={onSubmit}
             />

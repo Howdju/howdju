@@ -6,7 +6,7 @@ import WritTitleAutocomplete from "@/WritTitleAutocomplete";
 import ErrorMessages from "@/ErrorMessages";
 import SingleLineTextField from "@/SingleLineTextField";
 import { combineIds, combineNames, combineSuggestionsKeys } from "@/viewModels";
-import { OnKeyDownCallback } from "@/types";
+import { OnKeyDownCallback, toReactMdOnBlur } from "@/types";
 import { EditorFieldsDispatch, EntityEditorFieldsProps } from "./withEditor";
 import { makeErrorPropCreator } from "../modelErrorMessages";
 
@@ -49,11 +49,11 @@ export default function WritEditorFields(props: Props) {
     name: combineNames(name, "title"),
     label: "Title",
     value: writTitle,
-    minLength: Writ.shape.title.minLength,
-    maxLength: Writ.shape.title.maxLength,
+    minLength: Writ.shape.title.minLength || undefined,
+    maxLength: Writ.shape.title.maxLength || undefined,
     required: true,
     disabled: disabled,
-    onBlur,
+    onBlur: toReactMdOnBlur(onBlur),
     onKeyDown,
     onPropertyChange,
     onSubmit,
