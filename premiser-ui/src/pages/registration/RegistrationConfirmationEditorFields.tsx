@@ -12,7 +12,7 @@ import SingleLineTextField from "../../SingleLineTextField";
 import { EntityEditorFieldsProps } from "@/editors/withEditor";
 import { makeErrorPropCreator } from "@/modelErrorMessages";
 import ErrorMessages from "@/ErrorMessages";
-import { toOnCheckboxChangeCallback } from "@/util";
+import { toCheckboxOnChangeCallback } from "@/util";
 import { toReactMdOnBlur } from "@/types";
 
 interface Props
@@ -40,7 +40,7 @@ export default function RegistrationConfirmationEditotFields({
     onSubmit,
     disabled,
   };
-  const onCheckboxChange = toOnCheckboxChangeCallback(onPropertyChange);
+  const onCheckboxChange = toCheckboxOnChangeCallback(onPropertyChange);
   const errorProps = makeErrorPropCreator(
     wasSubmitAttempted,
     errors,
