@@ -2,19 +2,20 @@ import React from "react";
 import { useDispatch } from "react-redux";
 import { Card, DialogContainer } from "react-md";
 
-import { isTruthy, schemaIds } from "howdju-common";
+import { isTruthy } from "howdju-common";
 
+import app from "@/app/appSlice";
 import { editors } from "../actions";
-import { defaultEditorState, EditorTypes } from "../reducers/editors";
-import ContentReportEditorFields from "./ContentReportEditorFields";
+import { defaultEditorState } from "../reducers/editors";
 import { combineIds } from "../viewModels";
 import { RootState } from "@/setupStore";
 import { useAppSelector } from "@/hooks";
-import withEditor from "@/editors/withEditor";
+import ContentReportEditor from "./ContentReportEditor";
+import { CommitThenPutAction } from "@/editors/withEditor";
 
 const baseId = "reportContentDialog";
 const id = combineIds(baseId, "editor");
-export const editorType = EditorTypes.CONTENT_REPORT;
+export const editorType = "CONTENT_REPORT";
 const editorId = combineIds(baseId, "contentReportEditor");
 export const contentReportEditorId = editorId;
 
@@ -27,12 +28,6 @@ export default function ReportContentDialog() {
   );
   const isEditing = isTruthy(editEntity);
 
-  const ContentReportEditor = withEditor(
-    EditorTypes.CONTENT_REPORT,
-    ContentReportEditorFields,
-    "contentReport",
-    schemaIds.contentReport
-  );
   return (
     <DialogContainer
       id="report-content-dialog"
@@ -46,8 +41,9 @@ export default function ReportContentDialog() {
           <Card>
             <ContentReportEditor
               id={id}
-              name="report-content-editor"
-              editorCommitBehavior="JustCommit"
+              editorCommitBehavior={
+                new CommitThenPutAction(app.addToast("Submitted report."))
+              }
               editorId={editorId}
               submitButtonText="Report"
             />

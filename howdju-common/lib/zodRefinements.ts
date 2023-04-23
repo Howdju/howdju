@@ -15,7 +15,15 @@ type UrlOptions = {
 const urlRefinement =
   (options: UrlOptions) => (val: string, ctx: z.RefinementCtx) => {
     const { domain: domainPattern } = options ?? {};
-    if (!isUrl(val, { protocols: ["http", "https"], require_protocol: true })) {
+    // Allow localhost while in development
+    const require_tld = process.env.NODE_ENV !== "development";
+    if (
+      !isUrl(val, {
+        protocols: ["http", "https"],
+        require_protocol: true,
+        require_tld,
+      })
+    ) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         message: "Must be a valid URL",
