@@ -1,6 +1,6 @@
 import React, { HTMLAttributes } from "react";
 
-import { Proposition } from "howdju-common";
+import { PropositionOut } from "howdju-common";
 
 import { smallCellClasses } from "./CellList";
 import ListEntitiesWidget from "./ListEntitiesWidget";
@@ -24,7 +24,7 @@ export default function RecentPropositionsWidget({
   fetchCount,
   ...rest
 }: Props) {
-  const propositionToCard = (proposition: Proposition) => {
+  const propositionToCard = (proposition: PropositionOut) => {
     const cardId = `${id}-proposition-${proposition.id}`;
     return (
       <PropositionCard

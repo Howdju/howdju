@@ -11,7 +11,7 @@ interface Props {
   id: ComponentId;
   className?: string;
   proposition: PropositionOut;
-  editorId: EditorId;
+  editorId?: EditorId;
   menu?: ReactNode;
   showStatusText?: boolean;
   contextTrailItems?: ContextTrailItem[];
