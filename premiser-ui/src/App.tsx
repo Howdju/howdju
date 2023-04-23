@@ -22,7 +22,7 @@ import map from "lodash/map";
 import throttle from "lodash/throttle";
 
 import { isTruthy } from "howdju-common";
-import { actions } from "howdju-client-common";
+import { actions, inIframe } from "howdju-client-common";
 
 import Helmet from "./Helmet";
 import {
@@ -117,11 +117,14 @@ class App extends Component<Props> {
     window.addEventListener("message", this.receiveMessage, false);
 
     this.windowMessageHandler = new WindowMessageHandler({
-      extension: this.props.extension,
-      extensionFrame: this.props.extensionFrame,
-      flows: this.props.flows,
-      goto: this.props.goto,
+      beginEditOfNewJustificationFromTarget:
+        this.props.flows.beginEditOfNewJustificationFromTarget,
+      gotoJustification: this.props.goto.justification,
+      extensionFrameAckMessage: this.props.extensionFrame.ackMessage,
     });
+    if (inIframe()) {
+      this.props.extension.messageHandlerReady();
+    }
 
     // Persist the current settings first in case cookieConsent.on('update') fires.
     this.props.privacyConsent.update(cookieConsent.getPreferences());
@@ -234,7 +237,7 @@ class App extends Component<Props> {
     window.removeEventListener("message", this.receiveMessage);
   }
 
-  receiveMessage = (event: MessageEvent<any>) => {
+  receiveMessage = (event: MessageEvent) => {
     if (!this.windowMessageHandler) {
       logger.warn("Unable to handle window message.");
       return;

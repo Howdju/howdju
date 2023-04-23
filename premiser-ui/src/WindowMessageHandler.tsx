@@ -1,23 +1,34 @@
 import { logger } from "./logger";
-import {
-  EXTENSION_MESSAGE_SOURCE,
-  actions,
-  inIframe,
-} from "howdju-client-common";
+
+import { EXTENSION_MESSAGE_SOURCE, actions } from "howdju-client-common";
+
 import {
   getOrCreateSessionStorageId,
   clearSessionStorageId,
 } from "./identifiers";
+import { flows, goto } from "./actions";
+import { toJson } from "howdju-common";
+
+/** Dispatch-bound action creators needed by WindowMessageHandler. */
+export interface WindowMessageHandlerActionCreators {
+  beginEditOfNewJustificationFromTarget: typeof flows.beginEditOfNewJustificationFromTarget;
+  gotoJustification: typeof goto.justification;
+  extensionFrameAckMessage: typeof actions.extensionFrame.ackMessage;
+}
+
+export type HandleActionPayload = ReturnType<
+  | typeof actions.extensionFrame.createJustification
+  | typeof actions.extensionFrame.gotoJustification
+  | typeof actions.extensionFrame.ackMessage
+>;
 
 export default class WindowMessageHandler {
-  constructor(actionCreatorGroups) {
-    this.actionCreatorGroups = actionCreatorGroups;
-    if (inIframe()) {
-      this.actionCreatorGroups.extension.messageHandlerReady();
-    }
+  actionCreators: WindowMessageHandlerActionCreators;
+  constructor(actionCreators: WindowMessageHandlerActionCreators) {
+    this.actionCreators = actionCreators;
   }
 
-  handleEvent(event) {
+  handleEvent(event: MessageEvent) {
     if (event.source === window) {
       if (event.data.howdjuTrackingConsent) {
         const { enabled } = event.data.howdjuTrackingConsent;
@@ -41,16 +52,17 @@ export default class WindowMessageHandler {
     }
     const action = event.data.action;
     if (!action) {
-      logger.error(`extension message lacked action`, event.data);
+      logger.error(`extension message lacked action ${toJson(event.data)}`);
       return;
     }
     this.handleAction(event.origin, action);
   }
 
-  handleAction(eventOrigin, action) {
+  private handleAction(eventOrigin: string, action: HandleActionPayload) {
     const type = action.type;
+    const str = actions.str;
     switch (type) {
-      case actions.str(actions.extensionFrame.createJustification): {
+      case str(actions.extensionFrame.createJustification): {
         const { content, source, target } = action.payload;
         if (!target.url.startsWith(eventOrigin)) {
           logger.error(
@@ -66,21 +78,21 @@ export default class WindowMessageHandler {
           );
           return;
         }
-        this.actionCreatorGroups.flows.beginEditOfNewJustificationFromTarget(
+        this.actionCreators.beginEditOfNewJustificationFromTarget(
           content,
           source,
           target
         );
         break;
       }
-      case actions.str(actions.extensionFrame.gotoJustification): {
+      case str(actions.extensionFrame.gotoJustification): {
         logger.trace(`extensionFrame.gotoJustification`, { action });
         const { justification } = action.payload;
-        this.actionCreatorGroups.goto.justification(justification);
+        this.actionCreators.gotoJustification(justification);
         break;
       }
-      case actions.str(actions.extensionFrame.ackMessage): {
-        this.actionCreatorGroups.extensionFrame.ackMessage();
+      case str(actions.extensionFrame.ackMessage): {
+        this.actionCreators.extensionFrameAckMessage();
         break;
       }
       default: {

@@ -14,6 +14,7 @@
     "package": "bin/package.sh",
     "test": "jest",
     "test-inspect": "node --inspect-brk ../node_modules/.bin/jest --watch --runInBand",
+    "typecheck": "tsc",
     "watch": "webpack --watch --progress --color --mode development"
   },
   "dependencies": {
