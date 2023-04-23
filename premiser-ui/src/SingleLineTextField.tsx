@@ -1,4 +1,4 @@
-import React, { FocusEvent, KeyboardEvent, ReactNode } from "react";
+import React, { KeyboardEvent, ReactNode } from "react";
 import { TextField, TextFieldProps, TextFieldTypes } from "react-md";
 import isNull from "lodash/isNull";
 
@@ -6,13 +6,15 @@ import { toSingleLine } from "howdju-common";
 
 import { Keys } from "./keyCodes";
 import {
+  OnBlurCallback,
   OnKeyDownCallback,
   OnPropertyChangeCallback,
   OnSubmitCallback,
+  toReactMdOnBlur,
 } from "./types";
 import { toTextFieldOnChangeCallback } from "./util";
 
-export interface SingleLineTextProps extends TextFieldProps {
+export interface SingleLineTextProps extends Omit<TextFieldProps, "onBlur"> {
   name: string;
   type?: TextFieldTypes;
   // ignored if type=password
@@ -22,7 +24,7 @@ export interface SingleLineTextProps extends TextFieldProps {
   disabled: boolean;
   onKeyDown?: OnKeyDownCallback;
   onSubmit?: OnSubmitCallback;
-  onBlur?: (event: FocusEvent<HTMLElement, Element>) => void;
+  onBlur?: OnBlurCallback;
   onPropertyChange?: OnPropertyChangeCallback;
   value: string | undefined;
   rightControls?: ReactNode;
@@ -85,7 +87,7 @@ export default function SingleLineTextField({
         value={textareaValue}
         {...rowProps}
         disabled={disabled}
-        onBlur={onBlur}
+        onBlur={toReactMdOnBlur(onBlur)}
         onKeyDown={_onKeyDown}
         onChange={_onChange}
       />

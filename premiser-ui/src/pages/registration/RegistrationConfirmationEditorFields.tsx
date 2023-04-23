@@ -36,7 +36,7 @@ export default function RegistrationConfirmationEditorFields({
   wasSubmitAttempted,
 }: Props) {
   const commonFieldsProps = {
-    onBlur: toReactMdOnBlur(onBlur),
+    onBlur,
     onSubmit,
     disabled,
   };
