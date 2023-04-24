@@ -103,7 +103,7 @@ class Extension {
   }
 
   getLastErrorMessage() {
-    this.extension.extension.lastError.message;
+    return this.extension.extension.lastError.message;
   }
 
   addWebRequestOnHeadersReceivedListener(
