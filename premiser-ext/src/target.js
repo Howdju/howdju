@@ -39,8 +39,8 @@ export class TextQuoteAnchor {
 }
 
 function rangeToAnchor(range) {
-  const selector = textQuote.fromTextPosition(document.body, position);
   const position = textPosition.fromRange(document.body, range);
+  const selector = textQuote.fromTextPosition(document.body, position);
   return new TextQuoteAnchor(selector, position);
 }
 

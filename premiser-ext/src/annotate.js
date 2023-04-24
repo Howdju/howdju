@@ -3,7 +3,6 @@ import concat from "lodash/concat";
 import { logger } from "howdju-common";
 
 import { getNodeData } from "./node-data";
-import { objectValues } from "./util";
 import {
   getSelection,
   clearSelection,
@@ -116,7 +115,7 @@ export function getEquivalentAnnotation(nodes) {
   }
 
   // annotations can be co-extensive with all of the nodes but still non-equivalent if they have an unequal number of nodes
-  const potentialEquivalentAnnotations = objectValues(
+  const potentialEquivalentAnnotations = Object.values(
     partiallyCoextensiveAnnotationsByIndex
   );
   const equivalentAnnotations = [];
