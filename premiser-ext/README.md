@@ -2,16 +2,16 @@
 
 ## Building
 
-```bash
-# Done in root project directory once
-yarn install
-# Will automatically rebuild the source
-yarn watch
+```sh
+# Done once in workspace root
+yarn run install
+# Automatically rebuild from the source
+yarn run watch
 ```
 
 ## Development
 
-- Run `yarn build` or `yarn watch`.
+- Run `yarn run build-dev` or `yarn run watch`.
 - Load the `dist` directory as an unpackaged extension.
 - Watch for any startup errors in the extension card on Chrome's Extensions page.
 - Reload the extension using the refresh icon on the card.
@@ -20,15 +20,15 @@ yarn watch
 ## Tests
 
 ```sh
-yarn test
+yarn run test
 ```
 
 ### Debugging tests
 
 Open `chrome://inspect` in Chrome and click "Open dedicated DevTools for node". Then run:
 
-```bash
-yarn test:debug
+```sh
+yarn run test-inspect
 ```
 
 Chrome should automatically connect to the session. If not, maybe look for the message like
@@ -42,8 +42,8 @@ Hitting enter in the console will allow the tests to re-run any changes since th
 Update the version in `package.json` and `manifest.json`. Then:
 
 ```sh
-yarn build-prod
-yarn package
+yarn run build-prod
+yarn run package
 ```
 
 Upload `dist/howdju.zip` to the [Chrome Developer Dashboard](https://chrome.google.com/webstore/developer/dashboard).

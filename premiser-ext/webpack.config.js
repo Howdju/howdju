@@ -30,7 +30,10 @@ module.exports = (env, argv) => ({
   module: {
     rules: [
       {
-        test: /\.js$/,
+        test: /\.[tj]s$/,
+        resolve: {
+          extensions: [".ts", "..."],
+        },
         loader: "babel-loader",
         options: {
           cacheDirectory: true,
