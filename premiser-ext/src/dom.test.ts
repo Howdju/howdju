@@ -4,8 +4,8 @@ describe("getCommonAncestor", () => {
   test("gets an ancestor", () => {
     document.body.innerHTML = `<p id="wrapper">This <span id="span1">will be annotated</span> <span id="span2">this will not</span></p>`;
     const wrapper = document.getElementById("wrapper");
-    const span1 = document.getElementById("span1");
-    const span2 = document.getElementById("span2");
+    const span1 = document.getElementById("span1")!;
+    const span2 = document.getElementById("span2")!;
     expect(getCommonAncestor(span1, span2)).toBe(wrapper);
   });
 });
@@ -13,27 +13,27 @@ describe("getCommonAncestor", () => {
 describe("nodePositionCompare", () => {
   test("works for siblings", () => {
     document.body.innerHTML = `<span id="outer">The only <span id="inner1">way</span> <span id="inner2">out</span> is through</span>`;
-    const inner1 = document.getElementById("inner1");
-    const inner2 = document.getElementById("inner2");
+    const inner1 = document.getElementById("inner1")!;
+    const inner2 = document.getElementById("inner2")!;
     expect(nodePositionCompare(inner1, inner2)).toBe(-1);
     expect(nodePositionCompare(inner2, inner1)).toBe(1);
   });
   test("works for non-siblings", () => {
     document.body.innerHTML = `<span id="outer">The <span>only <span id="inner1">way</span> </span> <span><span>blah</span></span> <span id="inner2">out</span> is through</span>`;
-    const inner1 = document.getElementById("inner1");
-    const inner2 = document.getElementById("inner2");
+    const inner1 = document.getElementById("inner1")!;
+    const inner2 = document.getElementById("inner2")!;
     expect(nodePositionCompare(inner1, inner2)).toBe(-1);
     expect(nodePositionCompare(inner2, inner1)).toBe(1);
   });
   test("detects same node", () => {
     document.body.innerHTML = `<span id="outer">The only way out is through</span>`;
-    const outer = document.getElementById("outer");
+    const outer = document.getElementById("outer")!;
     expect(nodePositionCompare(outer, outer)).toBe(0);
   });
   test("handles one node inside the other", () => {
     document.body.innerHTML = `<span id="outer">The only <span id="inner">way out</span> is through</span>`;
-    const outer = document.getElementById("outer");
-    const inner = document.getElementById("inner");
+    const outer = document.getElementById("outer")!;
+    const inner = document.getElementById("inner")!;
     expect(nodePositionCompare(outer, inner)).toBe(-1);
     expect(nodePositionCompare(inner, outer)).toBe(1);
   });
@@ -42,15 +42,15 @@ describe("nodePositionCompare", () => {
 describe("isCoextensive", () => {
   test("is true when they are coextensive", () => {
     document.body.innerHTML = `<span id="outer"><span id="inner">The only way out is through</span></span>`;
-    const outer = document.getElementById("outer");
-    const inner = document.getElementById("inner");
+    const outer = document.getElementById("outer")!;
+    const inner = document.getElementById("inner")!;
     expect(isCoextensive(inner, outer)).toBe(true);
     expect(isCoextensive(outer, inner)).toBe(true);
   });
   test("is false when they are not coextensive", () => {
     document.body.innerHTML = `<span id="outer">The only <span id="inner">way out</span> is through</span>`;
-    const outer = document.getElementById("outer");
-    const inner = document.getElementById("inner");
+    const outer = document.getElementById("outer")!;
+    const inner = document.getElementById("inner")!;
     expect(isCoextensive(inner, outer)).toBe(false);
     expect(isCoextensive(outer, inner)).toBe(false);
   });

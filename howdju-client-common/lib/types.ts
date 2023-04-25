@@ -13,12 +13,12 @@ export interface Source {
 
 export interface Target {
   url: string;
-  anchors: TextQuoteAnchor[];
+  anchors: TextAnchor[];
   date: Date;
 }
 
-// TODO: dedupe with TextQuoteAnchor in the extension package, UrlTargetAnchor_TextQuote (entites), and UrlTargetAnchor (zodSchemas).
-export interface TextQuoteAnchor {
+// TODO(38) dedupe with TextQuoteAnchor in the extension package, UrlTargetAnchor_TextQuote (entites), and UrlTargetAnchor (zodSchemas).
+export interface TextAnchor {
   type: UrlTargetAnchorType;
   // Texts correspond to dom-anchor-text-quote
   exactText: string;
