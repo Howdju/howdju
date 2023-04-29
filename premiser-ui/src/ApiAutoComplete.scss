@@ -1,4 +1,5 @@
 @import "~@react-md/form/dist/mixins";
+@import "~react-md/src/scss/grids";
 
 .rmd-floating-label {
   // TODO(17) figure out the source of this (.md-text--secondary?)
@@ -13,5 +14,20 @@
   .rmd-floating-label {
     // The label isn't far enough down.
     @include rmd-form-theme-update-var(floating-top, 1.7rem);
+  }
+}
+
+.api-autocomplete-listbox {
+  .rmd-list-item__text {
+    // Don't wrap autocomplete results since they can be long and we want users to be able to see
+    // their whole value for context.
+    white-space: normal;
+  }
+  // On narrow screens, we want to recover some of the horizontal space so that there's more room
+  // for the value of the list items.
+  @media (max-width: $md-grid-tablet-breakpoint) {
+    .rmd-option {
+      @include rmd-list-theme-update-var(item-horizontal-padding, 0.5rem);
+    }
   }
 }
