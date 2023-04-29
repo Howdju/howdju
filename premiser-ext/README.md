@@ -81,5 +81,5 @@ Here is a list of them along with short explanations:
   `ExtensionFrameAction`s.
 - `IframedAppMessage`: a container for a `ExtensionFrameAction` that a
   content script sends to the iframed web app to add a `source`.
-- `WindowMessage = ExtensionWindowMessage | TrackingConsentWindowMessage`: messages the
+- `WindowMessage = IframedAppMessage | TrackingConsentWindowMessage`: messages the
   `WindowMessageHandler` can receive.

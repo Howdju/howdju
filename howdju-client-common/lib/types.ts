@@ -1,4 +1,4 @@
-import { ExtensionFrameAction } from "./actionTypes";
+import { ExtensionFrameAction } from "./actions";
 
 export type WindowMessageSource = "extension";
 

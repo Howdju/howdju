@@ -1,11 +1,6 @@
 import { logger } from "./logger";
 
-import {
-  actions,
-  ExtensionFrameAction,
-  IframedAppMessage,
-  PayloadOf,
-} from "howdju-client-common";
+import { actions, IframedAppMessage, PayloadOf } from "howdju-client-common";
 
 import {
   getOrCreateSessionStorageId,
@@ -66,7 +61,10 @@ export default class WindowMessageHandler {
     this.handleAction(event.origin, action);
   }
 
-  private handleAction(eventOrigin: string, action: ExtensionFrameAction) {
+  private handleAction(
+    eventOrigin: string,
+    action: actions.ExtensionFrameAction
+  ) {
     const type = action.type;
     switch (type) {
       case `${actions.extensionFrame.createJustification}`: {

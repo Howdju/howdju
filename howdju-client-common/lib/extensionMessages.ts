@@ -1,7 +1,7 @@
 import { UrlTarget } from "howdju-common";
 import { RequireExactlyOne } from "type-fest";
 import { actions } from ".";
-import { ExtensionFrameActionName } from "./actionTypes";
+import { ExtensionFrameActionName } from "./actions";
 
 /**
  * Contains an `ExtensionFrameAction` for the content script to send to the iframed web app.

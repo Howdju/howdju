@@ -49,7 +49,7 @@ beforeEach(() => {
 describe("getNodesBetween", () => {
   test("gets a single text node", () => {
     document.body.innerHTML = `<p id="wrapper">This will be annotated <span>this will not</span></p>`;
-    const wrapper = document.getElementById("wrapper")!;
+    const wrapper = getElementById("wrapper");
     const textNode = wrapper.childNodes[0];
 
     const nodes = getNodesFor(textNode, 0, textNode, 22);
@@ -66,7 +66,7 @@ describe("annotateNodes/getNodesFor", () => {
         Part of this will be annotated
       </p>
     `.trim();
-    const wrapper = document.getElementById("wrapper")!;
+    const wrapper = getElementById("wrapper");
     const textNode = wrapper.childNodes[0];
     const text = "this will be";
     const textOffset = textNode.textContent!.indexOf(text);
@@ -96,7 +96,7 @@ describe("annotateNodes/getNodesFor", () => {
         <span>part of this will too</span>
       </p>
     `.trim();
-    const wrapper = document.getElementById("wrapper")!;
+    const wrapper = getElementById("wrapper");
     const textNode = wrapper.childNodes[0];
     const textNodeText = "this will be annotated";
     const textOffset = textNode.textContent!.indexOf(textNodeText);
@@ -133,7 +133,7 @@ describe("annotateNodes/getNodesFor", () => {
         )}this will be annotated${close()} part of this will too
       </p>
     `.trim();
-    const wrapper = document.getElementById("wrapper")!;
+    const wrapper = getElementById("wrapper");
     const beforeTextNode = wrapper.childNodes[0];
     const annotationNode = wrapper.childNodes[1] as HTMLElement;
     const annotationTextNode = annotationNode.childNodes[0];
@@ -173,7 +173,7 @@ describe("annotateNodes/getNodesFor", () => {
         )}this will be annotated${close()} part of this will too
       </p>
     `.trim();
-    const wrapper = document.getElementById("wrapper")!;
+    const wrapper = getElementById("wrapper");
     const annotationNode = wrapper.childNodes[1] as HTMLElement;
     const annotationTextNode = annotationNode.childNodes[0];
     const startText = "annotated";
@@ -215,7 +215,7 @@ describe("annotateNodes/getNodesFor", () => {
         this is back to 1
       </p>
     `.trim();
-    const wrapper = document.getElementById("wrapper")!;
+    const wrapper = getElementById("wrapper");
     const beforeTextNode = wrapper.childNodes[0];
     const afterTextNode = wrapper.childNodes[2];
     const annotationNode = wrapper.childNodes[1] as HTMLElement;
@@ -254,7 +254,7 @@ describe("annotateNodes/getNodesFor", () => {
         ${close()}this is back to 1
       </p>
     `.trim();
-    const wrapper = document.getElementById("wrapper")!;
+    const wrapper = getElementById("wrapper");
     const beforeTextNode = wrapper.childNodes[0];
     const afterTextNode = wrapper.childNodes[4];
     createAnnotation(
@@ -300,7 +300,7 @@ describe("annotateNodes/getNodesFor", () => {
         this is back to 1
       ${close()}</p>
     `.trim();
-    const wrapper = document.getElementById("wrapper")!;
+    const wrapper = getElementById("wrapper");
     const annotationNode = wrapper.childNodes[0] as HTMLElement;
     const textNode = annotationNode.childNodes[0];
     const newAnnotationText = "this is 2";
@@ -336,7 +336,7 @@ describe("annotateNodes/getNodesFor", () => {
         this is back to 1
       ${close()}</p>
     `.trim();
-    const wrapper = document.getElementById("wrapper")!;
+    const wrapper = getElementById("wrapper");
     const annotation0Node0 = wrapper.childNodes[0] as HTMLElement;
     const annotation0Node1 = wrapper.childNodes[1] as HTMLElement;
     const annotation0Node2 = wrapper.childNodes[2] as HTMLElement;
@@ -395,7 +395,7 @@ describe("annotateNodes/getNodesFor", () => {
         </p>
       </div>
     `.trim();
-    const wrapper = document.getElementById("wrapper")!;
+    const wrapper = getElementById("wrapper");
     const startNode = wrapper.childNodes[1].childNodes[0];
     const startOffset = 0;
     const endNode = wrapper.childNodes[3];
@@ -463,4 +463,8 @@ function createElementFromHTML(htmlString: string) {
   const div = document.createElement("div");
   div.innerHTML = htmlString.trim();
   return div.childElementCount > 1 ? div.childNodes : div.firstChild;
+}
+
+function getElementById(id: string) {
+  return document.getElementById(id)!;
 }

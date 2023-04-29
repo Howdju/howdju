@@ -1,7 +1,6 @@
 /// <reference types="chrome"/>
 
 export * as actions from "./actions";
-export * from "./actionTypes";
 export * from "./actionUtils";
 export * from "./dom";
 export * from "./extension";

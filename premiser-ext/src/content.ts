@@ -7,6 +7,7 @@ import "regenerator-runtime/runtime";
 
 import find from "lodash/find";
 import { forEach } from "lodash";
+import { Exact } from "type-fest";
 
 import {
   logger,
@@ -22,15 +23,12 @@ import {
   PayloadOf,
   runCommandsWhenTabReloaded,
   ContentScriptCommand,
-  ExtensionFrameAction,
-  ExtensionFrameActionName,
 } from "howdju-client-common";
 
 import { annotateSelection, annotateTarget } from "./annotate";
 import { getFrameApi, showSidebar, toggleSidebar } from "./sidebar";
 import { getOption } from "./options";
 import { FramePanelApi } from "./framePanel";
-import { Exact } from "type-fest";
 
 const didLoadKey = "HowdjuDidLoad";
 
@@ -151,7 +149,7 @@ function runCommand<T extends Exact<ContentScriptCommand, T>>(command: T) {
     // TODO(38) remove any typecast
     forEach(command.postActionMessageToFrame, (value: any, key: any) => {
       const actionCreator =
-        actions.extensionFrame[key as ExtensionFrameActionName];
+        actions.extensionFrame[key as actions.ExtensionFrameActionName];
       if (!actionCreator) {
         logger.error(`Unrecognized extensionFrame action: ${key}`);
         return;
@@ -212,7 +210,7 @@ function annotateSelectionAndEdit() {
   );
 }
 
-function postActionMessageToFrame(action: ExtensionFrameAction) {
+function postActionMessageToFrame(action: actions.ExtensionFrameAction) {
   getOption("howdjuBaseUrl", (baseUrl) => {
     logger.trace(
       `difficult postActionMessageToFrame ${JSON.stringify({ action })}`

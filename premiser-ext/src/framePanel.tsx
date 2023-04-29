@@ -1,4 +1,4 @@
-import React, { Component, ReactNode } from "react";
+import React, { Component, CSSProperties, ReactNode } from "react";
 import cn from "classnames";
 import { css } from "glamor";
 import { IframedAppMessage } from "howdju-client-common";
@@ -34,18 +34,16 @@ export type FramePanelApi = Pick<FramePanel, "toggle" | "show" | "postMessage">;
 
 interface Props {
   url: string;
-  delay: number;
+  delay?: number;
   className?: string;
-  maskClassName: string;
-  maskStyle: object;
-  containerClassName: string;
-  containerStyle: object;
-  minimumContainerWidth: number;
-  iframeClassName: string;
-  iframeStyle: object;
+  containerClassName?: string;
+  containerStyle?: CSSProperties;
+  minimumContainerWidth?: number;
+  iframeClassName?: string;
+  iframeStyle?: CSSProperties;
   children?: ReactNode;
   containerChildren?: ReactNode;
-  initialContainerWidth: number;
+  initialContainerWidth?: number;
   onMount: (api: FramePanelApi) => void;
   onLoad: (val: { frame: HTMLIFrameElement | undefined }) => void;
 }
@@ -66,7 +64,7 @@ export class FramePanel extends Component<Props> {
       iframeStyle,
       children,
       containerChildren,
-      minimumContainerWidth,
+      minimumContainerWidth = 200,
     } = this.props;
 
     const containerClass = css({
@@ -137,16 +135,12 @@ export class FramePanel extends Component<Props> {
   static defaultProps = {
     url: "",
     initialContainerWidth: 400,
-    minimumContainerWidth: 200,
     delay: 500,
-    maskClassName: "",
-    maskStyle: {},
     containerClassName: "",
     containerStyle: {},
     iframeClassName: "",
     iframeStyle: {},
     onMount: () => {},
-    onUnmount: () => {},
     onLoad: () => {},
   };
 
