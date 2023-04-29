@@ -10,11 +10,13 @@ import { editorType, editorId } from "../../CreatePropositionPage";
 import { PayloadAction } from "@reduxjs/toolkit";
 import { PayloadType } from "@/actionHelpers";
 
-type Payload = PayloadType<typeof flows.beginEditOfNewJustificationFromTarget>;
+type Payload = PayloadType<
+  typeof flows.beginEditOfNewJustificationFromWritQuote
+>;
 
 export function* beginEditOfNewJustificationFromTarget() {
   yield* takeEvery(
-    str(flows.beginEditOfNewJustificationFromTarget),
+    str(flows.beginEditOfNewJustificationFromWritQuote),
     function* beginEditOfNewJustificationFromTargetWorker(
       action: PayloadAction<Payload>
     ) {
@@ -28,18 +30,7 @@ export function* beginEditOfNewJustificationFromTarget() {
 }
 
 function toJustifiedSentence(payload: Payload) {
-  const { content, source, target } = payload;
-  const { title } = source;
-  const quoteText = content.text.trim();
-  const { url } = target;
-
-  const writQuote = {
-    quoteText,
-    writ: {
-      title,
-    },
-    urls: [{ url, target }],
-  };
+  const { writQuote } = payload;
   const justificationProps = {
     basis: {
       type: JustificationBasisTypes.WRIT_QUOTE,

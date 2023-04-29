@@ -1,8 +1,7 @@
 import concat from "lodash/concat";
+import { isUndefined } from "lodash";
 
-import { logger } from "howdju-common";
-
-import { getNodeData } from "./node-data";
+import { logger, UrlTarget } from "howdju-common";
 import {
   getSelection,
   clearSelection,
@@ -12,9 +11,12 @@ import {
   isCoextensive,
   insertNodeAfter,
   insertNodeBefore,
-} from "./dom";
-import { selectionToTarget, targetToRanges } from "./target";
-import { Annotation } from "./annotation";
+  selectionToWritQuote,
+  targetToRanges,
+} from "howdju-client-common";
+
+import { getNodeData } from "./node-data";
+import { Annotation, AnnotationExcerpt } from "./annotation";
 
 export const annotationClass = "howdju-annotation";
 export const annotationLevelClassPrefix = "howdju-annotation-level-";
@@ -23,66 +25,70 @@ export const annotationIndexDataKey = "annotationIndexDataKey";
 export const annotationLevelStyleElementId = "howdju-annotation-level-styles";
 
 let maxAnnotationLevel = 0;
-export const annotations = [];
+export const annotations: Annotation[] = [];
 
-export function annotateSelection() {
+export function annotateSelection(): AnnotationExcerpt | undefined {
   const selection = getSelection();
+  if (!selection) {
+    logger.warn("Selection was null, can't annotate it.");
+    return;
+  }
   if (isSelectionEmpty(selection)) {
-    logger.debug("selection was empty, returning");
+    logger.warn("selection was empty, can't annotate it.");
+    return;
   }
 
   // Get target before selection may change
-  const target = selectionToTarget(selection);
+  const writQuote = selectionToWritQuote(selection);
 
   const nodes = getNodesForSelection(selection);
 
-  const annotation = getOrCreateAnnotation(nodes, target);
+  const annotation = getOrCreateAnnotation(nodes);
 
   // The selection can get messed up if we modify nodes within it.  For expediency, just clear it.  That also might be
   //  a reasonable UX choice, since the selection in a sense has been replaced with the annotation.
   clearSelection();
 
-  return annotation;
+  return { annotation, writQuote };
 }
 
-export function annotateTarget(target) {
+export function annotateTarget(target: UrlTarget) {
   const ranges = targetToRanges(target);
   const nodes = rangesToNodes(ranges);
-  return getOrCreateAnnotation(nodes, target);
+  return getOrCreateAnnotation(nodes);
 }
 
 /** Returns an existing annotation if it's equivalent; only uses target if it returns a new annotation. */
-function getOrCreateAnnotation(nodes, target) {
+function getOrCreateAnnotation(nodes: Node[]) {
   const equivalentAnnotation = getEquivalentAnnotation(nodes);
   if (equivalentAnnotation) {
     return equivalentAnnotation;
   }
 
   const annotation = annotateNodes(nodes);
-  annotation.target = target;
   return annotation;
 }
 
-function rangesToNodes(ranges) {
+function rangesToNodes(ranges: Range[]) {
   const rangeNodes = [];
   for (const range of ranges) {
     rangeNodes.push(getNodesForRange(range));
   }
-  return concat.apply(null, rangeNodes);
+  return concat(...rangeNodes);
 }
 
-function isSelectionEmpty(selection) {
+function isSelectionEmpty(selection: Selection) {
   return (
-    selection.anchorNode === selection.extentNode &&
-    selection.anchorOffset === selection.extentOffset
+    selection.anchorNode === selection.focusNode &&
+    selection.anchorOffset === selection.focusOffset
   );
 }
 
 /**
  * If the nodes are equal in number and each coextensive to an annotation's nodes, that annotation is equivalent to one we would create
  */
-export function getEquivalentAnnotation(nodes) {
-  let partiallyCoextensiveAnnotationsByIndex = {};
+export function getEquivalentAnnotation(nodes: Node[]) {
+  let partiallyCoextensiveAnnotationsByIndex: Record<number, Annotation> = {};
   if (nodes.length < 1) {
     return null;
   }
@@ -100,7 +106,7 @@ export function getEquivalentAnnotation(nodes) {
     const node = nodes[i];
     const annotationsCoextensiveWithNode =
       getAnnotationsHavingCoextensiveNodes(node);
-    const newAnnotationsByIndex = {};
+    const newAnnotationsByIndex: Record<number, Annotation> = {};
     for (const encompassingAnnotation of annotationsCoextensiveWithNode) {
       if (
         partiallyCoextensiveAnnotationsByIndex[encompassingAnnotation.index]
@@ -135,19 +141,24 @@ export function getEquivalentAnnotation(nodes) {
   return equivalentAnnotations.length ? equivalentAnnotations[0] : null;
 }
 
-function getAnnotationsHavingCoextensiveNodes(node) {
+function getAnnotationsHavingCoextensiveNodes(node: Node) {
   const annotations = [];
-  let curr = node;
+  let curr: Node | null = node;
   while (curr) {
-    if (isAnnotationNode(curr) && isCoextensive(curr, node)) {
-      annotations.push(getAnnotationOf(curr));
+    const annotation = getAnnotationOf(curr);
+    if (annotation && isCoextensive(curr, node)) {
+      if (!annotation) {
+        logger.error("Node missing annotation despite isAnnotationNode.");
+      } else {
+        annotations.push(annotation);
+      }
     }
     curr = curr.parentElement;
   }
   return annotations;
 }
 
-function getNodesForSelection(selection) {
+function getNodesForSelection(selection: Selection) {
   const nodes = [];
 
   if (selection.anchorNode) {
@@ -163,55 +174,70 @@ function getNodesForSelection(selection) {
   return nodes;
 }
 
-function getNodesForRange(range) {
-  const startNode = range.startContainer;
+function getNodesForRange(range: Range) {
+  const startNode = range.startContainer as HTMLElement;
   const startOffset = range.startOffset;
-  const endNode = range.endContainer;
+  const endNode = range.endContainer as HTMLElement;
   const endOffset = range.endOffset;
   return getNodesFor(startNode, startOffset, endNode, endOffset);
 }
 
-export function getNodesFor(startNode, startOffset, endNode, endOffset) {
+function isTextNode(node: Node): node is Text {
+  return node.nodeType === Node.TEXT_NODE;
+}
+
+export function getNodesFor(
+  startNode: Node,
+  startOffset: number,
+  endNode: Node,
+  endOffset: number
+) {
   const nodes = [];
 
   // if the start is at the very end of the content of a node, just move it ahead to the next node that has content
   // if the end is at the very start of the content of a node, just move it back to the next node having content
 
-  if (startNode === endNode && startNode.nodeType === Node.TEXT_NODE) {
-    if (startOffset > 0) {
-      startNode = startNode.splitText(startOffset);
-    }
+  if (startNode === endNode && isTextNode(startNode)) {
+    const textNode =
+      startOffset > 0 ? startNode.splitText(startOffset) : startNode;
+
     endOffset -= startOffset;
-    if (endOffset < startNode.nodeValue.length) {
-      startNode.splitText(endOffset);
+    const textNodeValueLength = textNode.nodeValue
+      ? textNode.nodeValue.length
+      : 0;
+    if (endOffset < textNodeValueLength) {
+      textNode.splitText(endOffset);
     }
-    nodes.push(startNode);
+    nodes.push(textNode);
     return nodes;
   }
 
   let lastValidAscendingNode;
   const commonAncestor = getCommonAncestor(startNode, endNode);
 
-  if (startNode.nodeType === Node.TEXT_NODE && startOffset > 0) {
+  if (isTextNode(startNode) && startOffset > 0) {
     // startNode modified to start after the offset
     startNode = startNode.splitText(startOffset);
   }
   // Start by ascending the tree
-  let curr = startNode;
+  let curr: Node | null = startNode;
   while (curr && curr !== commonAncestor && !curr.contains(endNode)) {
     nodes.push(curr);
     lastValidAscendingNode = curr;
     if (curr.nextSibling) {
       curr = curr.nextSibling;
     } else {
+      if (!curr.parentElement) {
+        throw new Error(
+          "Unable to get nodes because parentElement was missing"
+        );
+      }
       curr = curr.parentElement.nextSibling;
     }
   }
 
-  if (
-    endNode.nodeType === Node.TEXT_NODE &&
-    endOffset < endNode.nodeValue.length
-  ) {
+  const endNodeValueLength = endNode.nodeValue ? endNode.nodeValue.length : 0;
+  if (isTextNode(endNode) && endOffset < endNodeValueLength) {
     // endNode modified to contain text up to endOffset
     endNode.splitText(endOffset);
   }
@@ -223,6 +249,11 @@ export function getNodesFor(startNode, startOffset, endNode, endOffset) {
     if (curr.previousSibling) {
       curr = curr.previousSibling;
     } else {
+      if (!curr.parentElement) {
+        throw new Error(
+          "Unable to get nodes because parentElement was missing"
+        );
+      }
       curr = curr.parentElement.previousSibling;
     }
   }
@@ -237,6 +268,11 @@ export function getNodesFor(startNode, startOffset, endNode, endOffset) {
     if (curr.previousSibling) {
       curr = curr.previousSibling;
     } else {
+      if (!curr.parentElement) {
+        throw new Error(
+          "Unable to get nodes because parentElement was missing"
+        );
+      }
       curr = curr.parentElement.previousSibling;
     }
   }
@@ -244,7 +280,7 @@ export function getNodesFor(startNode, startOffset, endNode, endOffset) {
   return nodes;
 }
 
-export function annotateNodes(targetNodes) {
+export function annotateNodes(targetNodes: Node[]) {
   const annotation = createAnnotation(targetNodes);
 
   const intersectedAnnotations = findIntersectingAnnotations(annotation);
@@ -261,7 +297,7 @@ export function annotateNodes(targetNodes) {
   return annotation;
 }
 
-function createAnnotation(targetNodes) {
+function createAnnotation(targetNodes: Node[]) {
   const annotationNodes = createAndInsertAnnotationNodes(targetNodes);
   const annotationLevel = determineAnnotationLevel(annotationNodes);
   const annotation = new Annotation(
@@ -273,7 +309,7 @@ function createAnnotation(targetNodes) {
   return annotation;
 }
 
-function ensureSufficientAnnotationLevelStyles(annotations) {
+function ensureSufficientAnnotationLevelStyles(annotations: Annotation[]) {
   let doUpdateAnnotationLevelStyles = false;
   for (const annotation of annotations) {
     if (annotation.level > maxAnnotationLevel) {
@@ -287,7 +323,7 @@ function ensureSufficientAnnotationLevelStyles(annotations) {
   }
 }
 
-function createAndInsertAnnotationNodes(targetNodes) {
+function createAndInsertAnnotationNodes(targetNodes: Node[]) {
   const firstNode = targetNodes[0];
   const annotationNodes = [];
   for (const targetNode of targetNodes) {
@@ -296,11 +332,14 @@ function createAndInsertAnnotationNodes(targetNodes) {
   return annotationNodes;
 }
 
-export function createAndInsertAnnotationNode(firstTargetNode, targetNode) {
+export function createAndInsertAnnotationNode(
+  firstTargetNode: Node,
+  targetNode: Node
+) {
   const annotationNode = createAnnotationNode();
   let ancestorAnnotationNodes;
-  if (isAnnotationNode(targetNode)) {
-    const targetNodeAnnotation = getAnnotationOf(targetNode);
+  const targetNodeAnnotation = getAnnotationOf(targetNode);
+  if (targetNodeAnnotation) {
     if (nodeIsBefore(firstTargetNode, targetNodeAnnotation.nodes[0])) {
       wrapNodeWith(targetNode, annotationNode);
     } else {
@@ -314,6 +353,10 @@ export function createAndInsertAnnotationNode(firstTargetNode, targetNode) {
       splitAnnotationNode(ancestorAnnotationNode, targetNode);
       // Go up the ancestors until we find one that starts before the first target node
       const ancestorAnnotation = getAnnotationOf(ancestorAnnotationNode);
+      if (!ancestorAnnotation) {
+        logger.error("No ancestor although should have been.");
+        continue;
+      }
       if (
         !didInsert &&
         nodeIsBefore(ancestorAnnotation.nodes[0], firstTargetNode)
@@ -338,7 +381,7 @@ export function createAndInsertAnnotationNode(firstTargetNode, targetNode) {
   return annotationNode;
 }
 
-function splitAnnotationNode(annotationNode, pivotNode) {
+function splitAnnotationNode(annotationNode: Element, pivotNode: Node) {
   const beforePivotChildren = [];
   const afterPivotChildren = [];
   let isPastPivot = false;
@@ -353,6 +396,9 @@ function splitAnnotationNode(annotationNode, pivotNode) {
   }
 
   const annotation = getAnnotationOf(annotationNode);
+  if (!annotation) {
+    throw new Error("Cannot split annotation of node that has no annotation.");
+  }
   let beforeClone = null,
     afterClone = null;
   if (beforePivotChildren.length) {
@@ -375,19 +421,23 @@ function splitAnnotationNode(annotationNode, pivotNode) {
   return { beforeClone, afterClone };
 }
 
-function cloneWithChildren(templateNode, children, insert) {
+function cloneWithChildren<E extends Element>(
+  templateNode: E,
+  children: Node[],
+  insert: typeof insertNodeBefore | typeof insertNodeAfter
+) {
   const isDeep = false;
   const cloneNode = templateNode.cloneNode(isDeep);
   for (const node of children) {
     cloneNode.appendChild(node);
   }
   insert(cloneNode, templateNode);
-  return cloneNode;
+  return cloneNode as E;
 }
 
-function getAncestorAnnotationNodes(node) {
-  let curr = node,
-    ancestorAnnotationNodes = [];
+function getAncestorAnnotationNodes(node: Node) {
+  let curr: Node | null = node;
+  const ancestorAnnotationNodes: Element[] = [];
   while (curr) {
     if (isAnnotationNode(curr)) {
       ancestorAnnotationNodes.push(curr);
@@ -397,8 +447,14 @@ function getAncestorAnnotationNodes(node) {
   return ancestorAnnotationNodes;
 }
 
-export function getAnnotationOf(annotationNode) {
-  const annotationIndex = getNodeData(annotationNode, annotationIndexDataKey);
+export function getAnnotationOf(annotationNode: Node) {
+  const annotationIndex = getNodeData<number>(
+    annotationNode,
+    annotationIndexDataKey
+  );
+  if (isUndefined(annotationIndex)) {
+    return undefined;
+  }
   const annotation = annotations[annotationIndex];
   return annotation;
 }
@@ -408,12 +464,16 @@ function createAnnotationNode() {
   return annotationNode;
 }
 
-function wrapNodeWith(node, wrapper) {
+function wrapNodeWith<N extends Node>(node: Node, wrapper: N) {
+  if (!node.parentElement) {
+    throw new Error("Cannot wrap node that lacks a parentElement.");
+  }
   node.parentElement.insertBefore(wrapper, node);
   wrapper.appendChild(node);
+  return wrapper;
 }
 
-function wrapNodeContentsWith(node, wrapper) {
+function wrapNodeContentsWith(node: Node, wrapper: Node) {
   // can't iterate over node.childNodes because moving the child modifies the collection
   while (node.firstChild) {
     wrapper.appendChild(node.firstChild);
@@ -421,7 +481,7 @@ function wrapNodeContentsWith(node, wrapper) {
   node.appendChild(wrapper);
 }
 
-function determineAnnotationLevel(annotationNodes) {
+function determineAnnotationLevel(annotationNodes: Node[]) {
   let maxNodeAnnotationLevel = 0;
   for (const node of annotationNodes) {
     const nodeAnnotationLevel = determineNodeAnnotationLevel(node);
@@ -432,12 +492,12 @@ function determineAnnotationLevel(annotationNodes) {
   return maxNodeAnnotationLevel;
 }
 
-function determineNodeAnnotationLevel(node) {
+function determineNodeAnnotationLevel(node: Node) {
   let maxAnnotationLevel = 1;
   let ancestorElement = node.parentElement;
   while (ancestorElement) {
-    if (isAnnotationNode(ancestorElement)) {
-      const ancestorAnnotation = getAnnotationOf(ancestorElement);
+    const ancestorAnnotation = getAnnotationOf(ancestorElement);
+    if (ancestorAnnotation) {
       const annotationLevelFromAncestor = ancestorAnnotation.level + 1;
       if (annotationLevelFromAncestor > maxAnnotationLevel) {
         maxAnnotationLevel = annotationLevelFromAncestor;
@@ -448,26 +508,28 @@ function determineNodeAnnotationLevel(node) {
   return maxAnnotationLevel;
 }
 
-export function isAnnotationNode(node) {
+export function isAnnotationNode(node: Node): node is Element {
+  if (!("tagName" in node) || typeof node.tagName !== "string") {
+    return false;
+  }
   // (the document doesn't have a tag name, so check that it exists)
   return (
-    node.tagName &&
     node.tagName.toLowerCase() === annotationTagName &&
-    node.classList.contains(annotationClass)
+    (node as Element).classList.contains(annotationClass)
   );
 }
 
-function findIntersectingAnnotations(annotation, seenAnnotationIndices = null) {
-  if (!seenAnnotationIndices) {
-    seenAnnotationIndices = {};
-  }
+function findIntersectingAnnotations(
+  annotation: Annotation,
+  seenAnnotationIndices: Set<number> = new Set()
+): Annotation[] {
   const intersectingAnnotations = [];
   for (const node of annotation.nodes) {
     const annotationsIntersectingNode = findAnnotationsWithinNode(node);
     for (const intersectingAnnotation of annotationsIntersectingNode) {
-      if (!seenAnnotationIndices[intersectingAnnotation.index]) {
+      if (!seenAnnotationIndices.has(intersectingAnnotation.index)) {
         intersectingAnnotations.push(intersectingAnnotation);
-        seenAnnotationIndices[intersectingAnnotation.index] = true;
+        seenAnnotationIndices.add(intersectingAnnotation.index);
         const recursiveAnnotations = findIntersectingAnnotations(
           intersectingAnnotation,
           seenAnnotationIndices
@@ -482,14 +544,14 @@ function findIntersectingAnnotations(annotation, seenAnnotationIndices = null) {
   return intersectingAnnotations;
 }
 
-function findAnnotationsWithinNode(node) {
+function findAnnotationsWithinNode(node: Node) {
   const annotations = [];
 
   const treeWalker = document.createTreeWalker(node, NodeFilter.SHOW_ELEMENT);
   while (treeWalker.nextNode()) {
     const currentNode = treeWalker.currentNode;
-    if (isAnnotationNode(currentNode)) {
-      const annotation = getAnnotationOf(currentNode);
+    const annotation = getAnnotationOf(currentNode);
+    if (annotation) {
       annotations.push(annotation);
     }
   }
@@ -497,28 +559,26 @@ function findAnnotationsWithinNode(node) {
   return annotations;
 }
 
-function refreshAnnotationLevelStyles(annotationLevel) {
+function refreshAnnotationLevelStyles(annotationLevel: number) {
   const cssElement = getOrCreateAnnotationLevelStyleElement();
   const cssText = generateAnnotationLevelCssText(annotationLevel);
   updateStyles(cssElement, cssText);
 }
 
 function getOrCreateAnnotationLevelStyleElement() {
-  let annotationLevelStyleElement = document.getElementById(
-    annotationLevelStyleElementId
-  );
-  if (!annotationLevelStyleElement) {
-    annotationLevelStyleElement = document.createElement("style");
-    annotationLevelStyleElement.id = annotationLevelStyleElementId;
-    annotationLevelStyleElement.type = "text/css";
-    document
-      .getElementsByTagName("head")[0]
-      .appendChild(annotationLevelStyleElement);
+  const extantElement = document.getElementById(annotationLevelStyleElementId);
+  if (extantElement) {
+    return extantElement as HTMLStyleElement;
   }
-  return annotationLevelStyleElement;
+
+  const element = document.createElement("style");
+  element.id = annotationLevelStyleElementId;
+  element.type = "text/css";
+  document.getElementsByTagName("head")[0].appendChild(element);
+  return element;
 }
 
-function generateAnnotationLevelCssText(annotationLevel) {
+function generateAnnotationLevelCssText(annotationLevel: number) {
   const baseLineHeight = 26;
   const lineHeightIncrement = 4;
 
@@ -532,9 +592,9 @@ function generateAnnotationLevelCssText(annotationLevel) {
   return rules.join(" ");
 }
 
-function updateStyles(styleElement, cssText) {
-  if (styleElement.styleSheet) {
-    styleElement.styleSheet.cssText = cssText;
+function updateStyles(styleElement: HTMLStyleElement, cssText: string) {
+  if ("styleSheet" in styleElement) {
+    (styleElement.styleSheet as any).cssText = cssText;
   } else {
     styleElement.childNodes.forEach((n) => styleElement.removeChild(n));
     styleElement.appendChild(document.createTextNode(cssText));

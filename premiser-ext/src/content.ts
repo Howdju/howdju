@@ -1,28 +1,34 @@
+/// <reference path="../../howdju-client-common/lib/dom-anchor-text-position.d.ts" />
+/// <reference path="../../howdju-client-common/lib/dom-anchor-text-quote.d.ts" />
+
 // Babel runtime dependencies
 import "core-js/stable";
 import "regenerator-runtime/runtime";
 
 import find from "lodash/find";
-import forOwn from "lodash/forOwn";
+import { forEach } from "lodash";
+import { Exact } from "type-fest";
 
-import { decircularizeJustification, logger } from "howdju-common";
+import {
+  logger,
+  PersistedJustificationWithRootRef,
+  UrlOut,
+} from "howdju-common";
 import {
   extension as ext,
-  EXTENSION_MESSAGE_SOURCE,
   actions,
   urlEquivalent,
   getCurrentCanonicalUrl,
+  ExtensionMessage,
+  PayloadOf,
+  runCommandsWhenTabReloaded,
+  ContentScriptCommand,
 } from "howdju-client-common";
 
 import { annotateSelection, annotateTarget } from "./annotate";
 import { getFrameApi, showSidebar, toggleSidebar } from "./sidebar";
 import { getOption } from "./options";
-import {
-  ANNOTATE_SELECTION,
-  runCommandsWhenTabReloaded,
-  RUN_COMMANDS,
-  TOGGLE_SIDEBAR,
-} from "./messages";
+import { FramePanelApi } from "./framePanel";
 
 const didLoadKey = "HowdjuDidLoad";
 
@@ -31,8 +37,9 @@ const allowedOrigins = [
   "https://pre-prod-www.howdju.com",
   "https://www.howdju.com",
 ];
+type FramePanelApiCallback = (frameApi: FramePanelApi) => void;
 let messageHandlerReady = false;
-let messageHandlerReadyCallbacks = [];
+let messageHandlerReadyCallbacks: FramePanelApiCallback[] = [];
 
 if (!window[didLoadKey]) {
   logger.trace(
@@ -43,7 +50,7 @@ if (!window[didLoadKey]) {
   window[didLoadKey] = true;
 }
 
-function onWindowMessage(event) {
+function onWindowMessage(event: MessageEvent) {
   const { data, origin } = event;
   if (!find(allowedOrigins, (ao) => ao === origin)) {
     logger.trace(
@@ -56,26 +63,32 @@ function onWindowMessage(event) {
   routeWindowMessage(data);
 }
 
-function onRuntimeMessage(request, sender, callback) {
+function onRuntimeMessage(
+  message: ExtensionMessage,
+  sender: chrome.runtime.MessageSender,
+  sendResponse: (response?: any) => void
+) {
   try {
-    routeRuntimeMessage(request, sender);
+    routeRuntimeMessage(message, sender);
   } catch (err) {
     logger.error(err);
   }
-  if (callback) callback();
+  if (sendResponse) sendResponse();
 }
 
-function routeWindowMessage(action) {
+function routeWindowMessage(action: actions.ExtensionAction) {
   const { type, payload } = action;
   if (!type) {
     logger.error(`window message lacked an action type: ${action}`);
   }
   let isRecognized = true;
   switch (type) {
-    case actions.str(actions.extension.highlightTarget):
-      highlightTarget(payload);
+    case `${actions.extension.highlightTarget}`:
+      highlightTarget(
+        payload as PayloadOf<typeof actions.extension.highlightTarget>
+      );
       break;
-    case actions.str(actions.extension.messageHandlerReady):
+    case `${actions.extension.messageHandlerReady}`:
       setMessageHandlerReady(true);
       break;
     default:
@@ -89,15 +102,24 @@ function routeWindowMessage(action) {
   }
 }
 
-function highlightTarget({ justification, writQuote, url }) {
+function highlightTarget({
+  justification,
+  url,
+}: {
+  justification: PersistedJustificationWithRootRef;
+  url: UrlOut;
+}) {
   const { target } = url;
   // When we reload the page in the callback below, we lose the sidebar.
   // So we ask the background script to call us when we have reloaded,
   // and we both 1) tell the sidebar to load the justification and 2)
   // annotate the target in the new page.
-  justification = decircularizeJustification(justification);
-  const commands = [
-    { postActionMessageToFrame: { gotoJustification: [justification] } },
+  const commands: ContentScriptCommand[] = [
+    {
+      postActionMessageToFrame: {
+        gotoJustification: [justification],
+      },
+    },
   ];
   if (target) {
     commands.push({ annotateTarget: [target] });
@@ -111,7 +133,7 @@ function highlightTarget({ justification, writQuote, url }) {
   }
 }
 
-function runCommands(commands) {
+function runCommands(commands: ContentScriptCommand[]) {
   for (const command of commands) {
     try {
       runCommand(command);
@@ -121,52 +143,53 @@ function runCommands(commands) {
   }
 }
 
-function runCommand(command) {
+function runCommand<T extends Exact<ContentScriptCommand, T>>(command: T) {
   logger.trace(`difficult runCommand ${JSON.stringify({ command })}`);
-  forOwn(command, (value, key) => {
-    switch (key) {
-      case "postActionMessageToFrame":
-        // We expect there to be a single key. But this is a convenient way to access it.
-        forOwn(value, (value, key) => {
-          const actionCreator = actions.extensionFrame[key];
-          if (!actionCreator) {
-            logger.error(`Unrecognized extensionFrame action: ${key}`);
-            return;
-          }
-          logger.trace(
-            `difficult postActionMessageToFrame ${JSON.stringify({
-              key,
-              value,
-            })}`
-          );
-          postActionMessageToFrame(actionCreator.apply(actionCreator, value));
-        });
-        break;
-      case "annotateTarget": {
-        const annotation = annotateTarget(...value);
-        annotation.nodes[0].scrollIntoView({
-          behavior: "smooth",
-          block: "center",
-          inline: "center",
-        });
-        break;
+  if ("postActionMessageToFrame" in command) {
+    // TODO(38) remove any typecast
+    forEach(command.postActionMessageToFrame, (value: any, key: any) => {
+      const actionCreator =
+        actions.extensionFrame[key as actions.ExtensionFrameActionName];
+      if (!actionCreator) {
+        logger.error(`Unrecognized extensionFrame action: ${key}`);
+        return;
       }
-      default:
-        logger.error(`Unrecognized command ${key}`);
-    }
-  });
+      logger.trace(
+        `difficult postActionMessageToFrame ${JSON.stringify({
+          key,
+          value,
+        })}`
+      );
+      postActionMessageToFrame(actionCreator(...(value as [any])));
+    });
+    return;
+  }
+  if ("annotateTarget" in command) {
+    // TODO(38) remove any typecast
+    const annotation = annotateTarget(...(command.annotateTarget as [any]));
+    annotation.nodes[0].scrollIntoView({
+      behavior: "smooth",
+      block: "center",
+      inline: "center",
+    });
+    return;
+  }
+  logger.error(`Unrecognized command ${command}`);
 }
 
-function routeRuntimeMessage(message, sender) {
+function routeRuntimeMessage(
+  message: ExtensionMessage,
+  sender: chrome.runtime.MessageSender
+) {
   logger.debug("routeMessage:", { message, sender });
   switch (message.type) {
-    case ANNOTATE_SELECTION:
+    case "ANNOTATE_SELECTION":
       annotateSelectionAndEdit();
       break;
-    case TOGGLE_SIDEBAR:
+    case "TOGGLE_SIDEBAR":
       toggleSidebar();
       break;
-    case RUN_COMMANDS:
+    case "RUN_COMMANDS":
       logger.trace(`difficult RUN_COMMANDS ${JSON.stringify({ message })}`);
       runCommands(message.payload.commands);
       break;
@@ -177,25 +200,25 @@ function routeRuntimeMessage(message, sender) {
 }
 
 function annotateSelectionAndEdit() {
-  const annotation = annotateSelection();
+  const annotationExcerpt = annotateSelection();
+  if (!annotationExcerpt) {
+    logger.warn("Unable to annotate selection");
+    return;
+  }
   postActionMessageToFrame(
-    actions.extensionFrame.createJustification({
-      content: annotation.getContent(),
-      source: new Source(),
-      target: annotation.target,
-    })
+    actions.extensionFrame.createJustification(annotationExcerpt.writQuote)
   );
 }
 
-function postActionMessageToFrame(action) {
+function postActionMessageToFrame(action: actions.ExtensionFrameAction) {
   getOption("howdjuBaseUrl", (baseUrl) => {
     logger.trace(
       `difficult postActionMessageToFrame ${JSON.stringify({ action })}`
     );
-    doWhenFrameMessageHandlerReady((frameApi) => {
+    doWhenFrameMessageHandlerReady((frameApi: FramePanelApi) => {
       frameApi.postMessage(
         {
-          source: EXTENSION_MESSAGE_SOURCE,
+          source: "extension",
           action,
         },
         baseUrl
@@ -205,7 +228,7 @@ function postActionMessageToFrame(action) {
   });
 }
 
-function doWhenFrameMessageHandlerReady(callback) {
+function doWhenFrameMessageHandlerReady(callback: FramePanelApiCallback) {
   if (messageHandlerReady) {
     logger.trace("difficult doWhenFrameMessageHandlerReady.ready");
     const frameApi = getFrameApi();
@@ -216,7 +239,7 @@ function doWhenFrameMessageHandlerReady(callback) {
   }
 }
 
-function setMessageHandlerReady(isReady) {
+function setMessageHandlerReady(isReady: boolean) {
   if (isReady) {
     logger.trace("difficult setMessageHandlerReady.ready");
     const frameApi = getFrameApi();
@@ -233,11 +256,4 @@ function setMessageHandlerReady(isReady) {
     messageHandlerReadyCallbacks = [];
   }
   messageHandlerReady = isReady;
-}
-
-class Source {
-  constructor() {
-    this.url = getCurrentCanonicalUrl();
-    this.title = document.title;
-  }
 }

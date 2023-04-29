@@ -7,7 +7,7 @@ import split from "lodash/split";
 import cn from "classnames";
 import moment from "moment";
 
-import { extractDomain, Url, WritQuoteOut } from "howdju-common";
+import { extractDomain, UrlOut, WritQuoteOut } from "howdju-common";
 
 import { truncateWritQuoteText, isTextLong } from "./viewModels";
 import * as characters from "./characters";
@@ -20,7 +20,7 @@ import "./WritQuoteViewer.scss";
 export type OnClickWritQuoteUrl = (
   event: MouseEvent,
   writQuote: WritQuoteOut,
-  url: Url
+  url: UrlOut
 ) => void;
 
 interface Props {
@@ -40,7 +40,7 @@ export default function WritQuoteViewer({
 }: Props) {
   const [isExpanded, setIsExpanded] = useState(false);
 
-  function _onClickUrl(event: MouseEvent, url: Url) {
+  function _onClickUrl(event: MouseEvent, url: UrlOut) {
     if (onClickUrl) {
       onClickUrl(event, writQuote, url);
     }

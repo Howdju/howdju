@@ -268,10 +268,35 @@ const urlTargetAnchorTypes = z.enum(["TEXT_QUOTE"]);
 export const UrlTargetAnchor = z.object({
   // later this can be a discriminatedUnion on type.
   type: z.literal(urlTargetAnchorTypes.Enum.TEXT_QUOTE),
+  /**
+   * The text this anchor targets
+   *
+   * See dom-anchor-text-quote.
+   */
   exactText: z.string(),
+  /**
+   * The text appearing before the exactText
+   *
+   * See dom-anchor-text-quote.
+   */
   prefixText: z.string(),
+  /**
+   * The text appearing after the exactText
+   *
+   * See dom-anchor-text-quote.
+   */
   suffixText: z.string(),
+  /**
+   * The character offset of the beginning of exactText in the DOM
+   *
+   * See dom-anchor-text-position.
+   */
   startOffset: z.number(),
+  /**
+   * The character offset of the end of exactText in the DOM
+   *
+   * See dom-anchor-text-position.
+   */
   endOffset: z.number(),
 });
 export type UrlTargetAnchor = z.infer<typeof UrlTargetAnchor>;
@@ -281,6 +306,7 @@ export const UrlTargetAnchorTypes = urlTargetAnchorTypes.Enum;
 export const UrlTarget = Entity.extend({
   anchors: z.array(UrlTargetAnchor),
 });
+export type UrlTarget = z.infer<typeof UrlTarget>;
 
 export const Url = Entity.extend({
   url: urlString(),

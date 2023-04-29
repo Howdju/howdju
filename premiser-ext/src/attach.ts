@@ -1,9 +1,17 @@
+import { Extension } from "howdju-client-common";
+
 export function attachHeadersListener({
   ext,
   hosts,
   iframeHosts,
   overrideFrameOptions,
   isDevelopment,
+}: {
+  ext: Extension;
+  hosts: string | string[];
+  iframeHosts: string | string[];
+  overrideFrameOptions: boolean;
+  isDevelopment: boolean;
 }) {
   if (typeof hosts !== "string") {
     if (hosts) {
@@ -21,7 +29,7 @@ export function attachHeadersListener({
     }
   }
 
-  const types = ["main_frame"];
+  const types: chrome.webRequest.ResourceType[] = ["main_frame"];
 
   if (overrideFrameOptions) {
     types.push("sub_frame");
@@ -29,7 +37,7 @@ export function attachHeadersListener({
 
   ext.addWebRequestOnHeadersReceivedListener(
     (details) => {
-      const responseHeaders = details.responseHeaders.map((header) =>
+      const responseHeaders = details.responseHeaders?.map((header) =>
         modifyHeader(
           header,
           hosts,
@@ -49,11 +57,11 @@ export function attachHeadersListener({
 }
 
 function modifyHeader(
-  header,
-  hosts,
-  iframeHosts,
-  overrideFrameOptions,
-  isDevelopment
+  header: chrome.webRequest.HttpHeader,
+  hosts: string | string[],
+  iframeHosts: string | string[],
+  overrideFrameOptions: boolean,
+  isDevelopment: boolean
 ) {
   const isCSPHeader = /content-security-policy/i.test(header.name);
   const isFrameHeader = /x-frame-options/i.test(header.name);
@@ -61,17 +69,17 @@ function modifyHeader(
   if (isCSPHeader) {
     let csp = header.value;
 
-    csp = csp.replace("script-src", `script-src ${hosts}`);
-    csp = csp.replace("style-src", `style-src ${hosts}`);
-    csp = csp.replace("frame-src", `frame-src ${iframeHosts}`);
-    csp = csp.replace("child-src", `child-src ${hosts}`);
+    csp = csp?.replace("script-src", `script-src ${hosts}`);
+    csp = csp?.replace("style-src", `style-src ${hosts}`);
+    csp = csp?.replace("frame-src", `frame-src ${iframeHosts}`);
+    csp = csp?.replace("child-src", `child-src ${hosts}`);
     if (isDevelopment) {
-      csp = csp.replace("block-all-mixed-content;", "");
-      csp = csp.replace("upgrade-insecure-requests;", "");
+      csp = csp?.replace("block-all-mixed-content;", "");
+      csp = csp?.replace("upgrade-insecure-requests;", "");
     }
 
     if (overrideFrameOptions) {
-      csp = csp.replace(/frame-ancestors (.*?);/gi, "");
+      csp = csp?.replace(/frame-ancestors (.*?);/gi, "");
     }
 
     header.value = csp;

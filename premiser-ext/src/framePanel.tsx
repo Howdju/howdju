@@ -1,7 +1,7 @@
-import React, { Component } from "react";
+import React, { Component, CSSProperties, ReactNode } from "react";
 import cn from "classnames";
 import { css } from "glamor";
-import { node, object, string, number, func } from "prop-types";
+import { IframedAppMessage } from "howdju-client-common";
 
 const dragTargetClass = css({
   top: 0,
@@ -30,10 +30,29 @@ const containerMinimizedClass = css({
   },
 });
 
-const FRAME_TOGGLE_FUNCTION = "howdjuFramePanelToggle";
-const FRAME_SHOW_FUNCTION = "howdjuFramePanelShow";
+export type FramePanelApi = Pick<FramePanel, "toggle" | "show" | "postMessage">;
 
-export class FramePanel extends Component {
+interface Props {
+  url: string;
+  delay?: number;
+  className?: string;
+  containerClassName?: string;
+  containerStyle?: CSSProperties;
+  minimumContainerWidth?: number;
+  iframeClassName?: string;
+  iframeStyle?: CSSProperties;
+  children?: ReactNode;
+  containerChildren?: ReactNode;
+  initialContainerWidth?: number;
+  onMount: (api: FramePanelApi) => void;
+  onLoad: (val: { frame: HTMLIFrameElement | undefined }) => void;
+}
+
+export class FramePanel extends Component<Props> {
+  dragTarget: HTMLElement | undefined;
+  frame: HTMLIFrameElement | undefined;
+  _visibleRenderTimeout: NodeJS.Timeout | undefined;
+
   render() {
     const { isVisible, isMinimized, containerWidth, isDragging } = this.state;
     const {
@@ -45,7 +64,7 @@ export class FramePanel extends Component {
       iframeStyle,
       children,
       containerChildren,
-      minimumContainerWidth,
+      minimumContainerWidth = 200,
     } = this.props;
 
     const containerClass = css({
@@ -54,8 +73,8 @@ export class FramePanel extends Component {
       right: "0px",
       height: "100%",
       width: "65%",
-      maxWidth: containerWidth + "px",
-      minWidth: minimumContainerWidth + "px",
+      maxWidth: `${containerWidth}px`,
+      minWidth: `${minimumContainerWidth}px`,
       padding: "8px",
       boxSizing: "border-box",
       transform: "translateX(100%)",
@@ -79,28 +98,28 @@ export class FramePanel extends Component {
       <div className={className}>
         <div
           className={cn({
-            [containerClass]: true,
-            [containerVisibleClass]: isVisible,
-            [containerMinimizedClass]: isMinimized,
-            [containerClassName]: true,
+            [`${containerClass}`]: true,
+            [`${containerVisibleClass}`]: isVisible,
+            [`${containerMinimizedClass}`]: isMinimized,
+            [`${containerClassName}`]: true,
           })}
           style={containerStyle}
           onClick={this.onFramePanelClick}
         >
           <div
             className={cn({
-              [dragTargetClass]: true,
+              [`${dragTargetClass}`]: true,
             })}
             onMouseDown={this.onDragTargetMouseDown}
-            ref={(drag) => (this.dragTarget = drag)}
+            ref={(drag) => (this.dragTarget = drag || undefined)}
           />
           <iframe
             className={cn({
-              [iframeClass]: true,
-              [iframeClassName]: true,
+              [`${iframeClass}`]: true,
+              [`${iframeClassName}`]: true,
             })}
             style={iframeStyle}
-            ref={(frame) => (this.frame = frame)}
+            ref={(frame) => (this.frame = frame || undefined)}
             onLoad={this.onLoad}
             src={url}
           />
@@ -116,16 +135,12 @@ export class FramePanel extends Component {
   static defaultProps = {
     url: "",
     initialContainerWidth: 400,
-    minimumContainerWidth: 200,
     delay: 500,
-    maskClassName: "",
-    maskStyle: {},
     containerClassName: "",
     containerStyle: {},
     iframeClassName: "",
     iframeStyle: {},
     onMount: () => {},
-    onUnmount: () => {},
     onLoad: () => {},
   };
 
@@ -134,35 +149,22 @@ export class FramePanel extends Component {
     isMinimized: false,
     isDragging: false,
     containerWidth: FramePanel.defaultProps.initialContainerWidth,
-  };
-
-  static propTypes = {
-    url: string,
-    delay: number,
-    maskClassName: string,
-    maskStyle: object,
-    containerClassName: string,
-    containerStyle: object,
-    iframeClassName: string,
-    iframeStyle: object,
-    children: node,
-    containerChildren: node,
-    onMount: func,
-    onUnmount: func,
-    onLoad: func,
+    dragX: 0,
   };
 
   componentDidMount() {
     const { delay, onMount, initialContainerWidth } = this.props;
 
-    window[FRAME_TOGGLE_FUNCTION] = this.toggle;
-    window[FRAME_SHOW_FUNCTION] = this.show;
+    window.howdjuFramePanelToggle = this.toggle;
+    window.howdjuFramePanelShow = this.show;
 
     // Expose an API of methods
     onMount({
       toggle: this.toggle,
       show: this.show,
-      postMessage: this.postMessage,
+      postMessage: (message: IframedAppMessage, origin: string) => {
+        this.postMessage(message, origin);
+      },
     });
 
     this._visibleRenderTimeout = setTimeout(() => {
@@ -175,8 +177,8 @@ export class FramePanel extends Component {
   }
 
   componentWillUnmount() {
-    delete window[FRAME_TOGGLE_FUNCTION];
-    delete window[FRAME_SHOW_FUNCTION];
+    delete window.howdjuFramePanelToggle;
+    delete window.howdjuFramePanelShow;
     clearTimeout(this._visibleRenderTimeout);
   }
 
@@ -188,7 +190,7 @@ export class FramePanel extends Component {
     }
   };
 
-  onDragTargetMouseDown = (e) => {
+  onDragTargetMouseDown = (e: React.MouseEvent) => {
     e = e || window.event;
     e.preventDefault();
     // get the mouse cursor position at startup:
@@ -200,7 +202,7 @@ export class FramePanel extends Component {
     document.onmousemove = this.onDrag;
   };
 
-  onDrag = (e) => {
+  onDrag = (e: MouseEvent) => {
     e = e || window.event;
     e.preventDefault();
     // calculate the new cursor position:
@@ -211,7 +213,7 @@ export class FramePanel extends Component {
     });
   };
 
-  onEndDrag = (e) => {
+  onEndDrag = (_e: MouseEvent) => {
     /* stop moving when mouse button is released:*/
     document.onmouseup = null;
     document.onmousemove = null;
@@ -232,29 +234,34 @@ export class FramePanel extends Component {
     });
   };
 
-  show = (onShow) => {
+  show = () => {
     this.setState({
       isMinimized: false,
     });
   };
 
-  postMessage = (message, origin) => {
+  postMessage(message: IframedAppMessage, origin: string) {
+    if (!this.frame?.contentWindow) {
+      throw new Error(
+        "Unable to postMessage because frame.contentWindow was missing."
+      );
+    }
     this.frame.contentWindow.postMessage(message, origin);
-  };
+  }
 
   static isReady() {
-    return typeof window[FRAME_TOGGLE_FUNCTION] !== "undefined";
+    return typeof window.howdjuFramePanelToggle !== "undefined";
   }
 
   static toggle() {
-    if (window[FRAME_TOGGLE_FUNCTION]) {
-      window[FRAME_TOGGLE_FUNCTION]();
+    if (window.howdjuFramePanelToggle) {
+      window.howdjuFramePanelToggle();
     }
   }
 
-  static show(onShow) {
-    if (window[FRAME_SHOW_FUNCTION]) {
-      window[FRAME_SHOW_FUNCTION](onShow);
+  static show() {
+    if (window.howdjuFramePanelShow) {
+      window.howdjuFramePanelShow();
     }
   }
 }

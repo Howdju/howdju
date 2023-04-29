@@ -1,4 +1,4 @@
-import { Entity, JustificationOut, Url, WritQuoteOut } from "howdju-common";
+import { Entity, JustificationOut, UrlOut } from "howdju-common";
 import { FocusEvent, MouseEvent } from "react";
 import { logger } from "./logger";
 
@@ -93,8 +93,7 @@ export type OnRemoveCallback<T> = (
 export type OnClickJustificationWritQuoteUrl = (
   event: MouseEvent,
   justification: JustificationOut,
-  writQuote: WritQuoteOut,
-  url: Url
+  url: UrlOut
 ) => void;
 
 export type ListEventCallback<T, E extends React.UIEvent = React.UIEvent> = (

@@ -1,3 +1,5 @@
+import { CreateWritQuoteInput } from "howdju-common";
+
 import { setNodeData } from "./node-data";
 import {
   annotationClass,
@@ -6,24 +8,25 @@ import {
   getAnnotationOf,
   isAnnotationNode,
 } from "./annotate";
-import { logger } from "howdju-common";
 import { arrayInsertAfter, arrayInsertBefore } from "./util";
 
 export const annotationMouseOverClass = "howdju-annotation-mouse-over";
 export const annotationIndexClassPrefix = "howdju-annotation-index-";
 
-export class AnnotationContent {}
-
-export class TextContent extends AnnotationContent {
-  constructor(text) {
-    super();
-    this.type = "text";
-    this.title = document.title;
-    this.text = text;
-  }
+export interface AnnotationExcerpt {
+  writQuote: CreateWritQuoteInput;
+  annotation: Annotation;
 }
 
 export class Annotation {
+  index: number;
+  nodes: HTMLElement[];
+  level: number;
+
+  _isMouseOver: boolean = false;
+  onMouseEnterBound;
+  onMouseOutBound;
+
   /**
    * Represents an annotation on the page.
    * @param index The index of the annotation in the annotations on the page.  Effectively an ID, but since we store
@@ -32,18 +35,17 @@ export class Annotation {
    * @param nodes The nodes that correspond to the annotation.
    * @param level The current level of the annotation.
    */
-  constructor(index, nodes, level = 1) {
+  constructor(index: number, nodes: HTMLElement[], level = 1) {
     this.index = index;
     this.nodes = nodes;
     this.level = level;
-    this.anchor = null;
 
     this.isMouseOver = false;
-    this.onMouseEnter = this.onMouseEnter.bind(this);
-    this.onMouseOut = this.onMouseOut.bind(this);
+    this.onMouseEnterBound = this.onMouseEnter.bind(this);
+    this.onMouseOutBound = this.onMouseOut.bind(this);
 
-    const annotationIndexClass = annotationIndexClassPrefix + this.index;
-    const annotationLevelClass = annotationLevelClassPrefix + this.level;
+    const annotationIndexClass = `${annotationIndexClassPrefix}${this.index}`;
+    const annotationLevelClass = `${annotationLevelClassPrefix}${this.level}`;
     for (const node of this.nodes) {
       setNodeData(node, annotationIndexDataKey, this.index);
       node.classList.add(
@@ -51,13 +53,13 @@ export class Annotation {
         annotationIndexClass,
         annotationLevelClass
       );
-      node.addEventListener("mouseenter", this.onMouseEnter, false);
+      node.addEventListener("mouseenter", this.onMouseEnterBound, false);
     }
   }
 
   destructor() {
     for (const node of this.nodes) {
-      node.removeEventListener(this.onMouseEnter);
+      node.removeEventListener("mouseenter", this.onMouseEnterBound);
     }
   }
 
@@ -70,10 +72,10 @@ export class Annotation {
       for (const node of this.nodes) {
         if (value) {
           node.classList.add(annotationMouseOverClass);
-          node.addEventListener("mouseout", this.onMouseOut, false);
+          node.addEventListener("mouseout", this.onMouseOutBound, false);
         } else {
           node.classList.remove(annotationMouseOverClass);
-          node.removeEventListener("mouseout", this.onMouseOut);
+          node.removeEventListener("mouseout", this.onMouseOutBound);
         }
       }
     }
@@ -81,37 +83,42 @@ export class Annotation {
   }
 
   incrementLevel() {
-    const prevClass = annotationLevelClassPrefix + this.level;
+    const prevClass = `${annotationLevelClassPrefix}${this.level}`;
     this.level++;
-    const newClass = annotationLevelClassPrefix + this.level;
+    const newClass = `${annotationLevelClassPrefix}${this.level}`;
     for (const node of this.nodes) {
       node.classList.replace(prevClass, newClass);
     }
   }
 
-  insertNodeAfter(node, refNode) {
+  insertNodeAfter(node: Element, refNode: Node) {
     setNodeData(node, annotationIndexDataKey, this.index);
-    node.addEventListener("mouseenter", this.onMouseEnter, false);
+    node.addEventListener("mouseenter", this.onMouseEnterBound, false);
     arrayInsertAfter(this.nodes, refNode, node);
   }
 
-  insertNodeBefore(node, refNode) {
+  insertNodeBefore(node: Element, refNode: Node) {
     setNodeData(node, annotationIndexDataKey, this.index);
-    node.addEventListener("mouseenter", this.onMouseEnter, false);
+    node.addEventListener("mouseenter", this.onMouseEnterBound, false);
     arrayInsertBefore(this.nodes, refNode, node);
   }
 
-  onMouseEnter(e) {
+  onMouseEnter(e: Event) {
     // Doesn't seem to be stopping bubbling
     e.stopPropagation();
     this.isMouseOver = true;
 
     // set isMouseOver = false for all enclosing annotations
-    let curr = e.currentTarget.parentElement;
+    let curr: Element | null =
+      e.currentTarget && "parentElement" in e.currentTarget
+        ? (e.currentTarget.parentElement as Element)
+        : null;
     while (curr) {
       if (isAnnotationNode(curr)) {
         const annotation = getAnnotationOf(curr);
-        annotation.isMouseOver = false;
+        if (annotation) {
+          annotation.isMouseOver = false;
+        }
       }
       curr = curr.parentElement;
     }
@@ -119,30 +126,5 @@ export class Annotation {
 
   onMouseOut() {
     this.isMouseOver = false;
-  }
-
-  getContent() {
-    const range = document.createRange();
-    range.setStart(this.nodes[0], 0);
-    const lastNode = this.nodes[this.nodes.length - 1];
-
-    let endOffset = 0;
-    switch (lastNode.nodeType) {
-      case Node.TEXT_NODE: {
-        endOffset = lastNode.nodeValue.length;
-        break;
-      }
-      case Node.ELEMENT_NODE: {
-        endOffset = lastNode.childNodes.length;
-        break;
-      }
-      default: {
-        logger.error(`Unsupported annotation node type: ${lastNode.nodeType}`);
-      }
-    }
-
-    range.setEnd(lastNode, endOffset);
-    const text = range.toString();
-    return new TextContent(text);
   }
 }

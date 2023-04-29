@@ -1,13 +1,13 @@
 import { extension as ext } from "howdju-client-common";
 
 document.addEventListener("DOMContentLoaded", restoreOptions);
-document.getElementById("save").addEventListener("click", saveOptions);
+saveButton().addEventListener("click", saveOptions);
 // document.getElementById('remove-howdju-base-url').addEventListener('click', (event) => removeOption(event, 'howdjuBaseUrl'))
 
-function saveOptions(event) {
+function saveOptions(event: MouseEvent) {
   event.preventDefault();
-  const howdjuBaseUrl = document.getElementById("howdju-base-url").value;
-  const isDevelopment = document.getElementById("is-development").checked;
+  const howdjuBaseUrl = howdjuBaseUrlInput().value;
+  const isDevelopment = isDevelopmentInput().checked;
   ext.setStorageLocal(
     {
       howdjuBaseUrl,
@@ -20,10 +20,22 @@ function saveOptions(event) {
 function restoreOptions() {
   ext.getStorageLocal(["howdjuBaseUrl", "isDevelopment"], (items) => {
     if (items.howdjuBaseUrl) {
-      document.getElementById("howdju-base-url").value = items.howdjuBaseUrl;
+      howdjuBaseUrlInput().value = items.howdjuBaseUrl;
     }
-    document.getElementById("is-development").checked = items.isDevelopment;
+    isDevelopmentInput().checked = items.isDevelopment;
   });
+}
+
+function saveButton() {
+  return document.getElementById("save") as HTMLButtonElement;
+}
+
+function howdjuBaseUrlInput() {
+  return document.getElementById("howdju-base-url") as HTMLInputElement;
+}
+
+function isDevelopmentInput() {
+  return document.getElementById("is-development") as HTMLInputElement;
 }
 
 // function removeOption(event, key) {
@@ -43,10 +55,10 @@ function restoreOptions() {
 //   return null
 // }
 
-function flashStatus(message, duration = 1500) {
+function flashStatus(message: string, durationMs = 1500) {
   const status = document.getElementById("status");
-  status.textContent = message;
+  status!.textContent = message;
   setTimeout(function () {
-    status.textContent = "";
-  }, duration);
+    status!.textContent = "";
+  }, durationMs);
 }

@@ -25,14 +25,14 @@ module.exports = (env, argv) => ({
     }),
   ],
   resolve: {
-    extensions: [".js"],
+    extensions: [".ts", "..."],
   },
   module: {
     rules: [
       {
-        test: /\.[tj]s$/,
+        test: /\.[tj]sx?$/,
         resolve: {
-          extensions: [".ts", "..."],
+          extensions: [".ts", ".tsx", "..."],
         },
         loader: "babel-loader",
         options: {

@@ -1,6 +1,8 @@
 {
   "extends": "../tsconfig.json",
   "compilerOptions": {
+    "jsx": "react",
+    "lib": ["DOM"],
     "paths": {
       // Support project-relative imports
       "@/*": ["./src/*"]

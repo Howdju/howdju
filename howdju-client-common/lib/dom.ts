@@ -1,29 +1,35 @@
+import { logger } from "howdju-common";
+
 export function getSelection() {
   return document.getSelection();
 }
 
 export function clearSelection() {
   if (window.getSelection) {
-    if (window.getSelection().empty) {
-      // Chrome
-      window.getSelection().empty();
-    } else if (window.getSelection().removeAllRanges) {
-      // Firefox
-      window.getSelection().removeAllRanges();
+    const selection = window.getSelection();
+    if (!selection) {
+      return;
     }
-  } else if (document.selection) {
+    if (selection.empty) {
+      // Chrome
+      selection.empty();
+    } else if (selection.removeAllRanges) {
+      // Firefox
+      selection.removeAllRanges();
+    }
+  } else if ("selection" in document) {
     // IE?
-    document.selection.empty();
+    (document.selection as any).empty();
   }
 }
 
-export function normalizeNodes(nodes) {
+export function normalizeNodes(nodes: Node[]) {
   for (const node of nodes) {
     node.normalize();
   }
 }
 
-export function getCommonAncestor(node1, node2) {
+export function getCommonAncestor(node1: Node, node2: Node) {
   if (!node1 || !node2) {
     throw new Error(
       "cannot get common ancestor when one or both nodes are missing"
@@ -33,27 +39,27 @@ export function getCommonAncestor(node1, node2) {
     return node1;
   }
 
-  let ancestor = node1;
-  while (!ancestor.contains(node2)) {
+  let ancestor: Node | null = node1;
+  while (ancestor && !ancestor.contains(node2)) {
     ancestor = ancestor.parentElement;
   }
 
   return ancestor;
 }
 
-export function nodeIsBefore(node1, node2) {
+export function nodeIsBefore(node1: Node, node2: Node) {
   return nodePositionCompare(node1, node2) < 0;
 }
 
-export function nodeIsAfter(node1, node2) {
+export function nodeIsAfter(node1: Node, node2: Node) {
   return nodePositionCompare(node1, node2) > 0;
 }
 
-export function nodeIsAfterOrSame(node1, node2) {
+export function nodeIsAfterOrSame(node1: Node, node2: Node) {
   return nodePositionCompare(node1, node2) >= 0;
 }
 
-export function nodePositionCompare(node1, node2) {
+export function nodePositionCompare(node1: Node, node2: Node) {
   if (node1 === node2) {
     return 0;
   } else if (node1.contains(node2)) {
@@ -64,12 +70,15 @@ export function nodePositionCompare(node1, node2) {
 
   // Get the two ancestors that are children of the common ancestor and contain each the two nodes.
   let ancestor1 = node1;
-  while (!ancestor1.parentNode.contains(node2)) {
+  while (ancestor1.parentNode && !ancestor1.parentNode.contains(node2)) {
     ancestor1 = ancestor1.parentNode;
   }
 
   let ancestor2 = node2;
-  while (ancestor2.parentNode !== ancestor1.parentNode) {
+  while (
+    ancestor2.parentNode &&
+    ancestor2.parentNode !== ancestor1.parentNode
+  ) {
     ancestor2 = ancestor2.parentNode;
   }
 
@@ -91,7 +100,7 @@ export function nodePositionCompare(node1, node2) {
  these two are not, because of the content (space, " ") between their start nodes
  <span> <span>some text</span></span>
  */
-export function isCoextensive(node1, node2) {
+export function isCoextensive(node1: Node, node2: Node) {
   if (node1 === node2) {
     return true;
   }
@@ -108,8 +117,8 @@ export function isCoextensive(node1, node2) {
 /**
  * Returns true if there are any nodes between the starts/ends of startNode, or any ancestor of startNode, and endNode
  */
-function hasSiblingsBetween(startNode, endNode) {
-  let curr = startNode;
+function hasSiblingsBetween(startNode: Node, endNode: Node) {
+  let curr: Node | null = startNode;
   while (curr && curr !== endNode) {
     if (curr.previousSibling || curr.nextSibling) {
       return true;
@@ -119,7 +128,10 @@ function hasSiblingsBetween(startNode, endNode) {
   return false;
 }
 
-export function insertNodeAfter(node, refNode) {
+export function insertNodeAfter(node: Node, refNode: Node) {
+  if (!refNode.parentNode) {
+    throw new Error("Unable to insert node because refNode lacked a parent.");
+  }
   if (refNode.nextSibling) {
     refNode.parentNode.insertBefore(node, refNode.nextSibling);
   } else {
@@ -127,18 +139,28 @@ export function insertNodeAfter(node, refNode) {
   }
 }
 
-export function insertNodeBefore(node, refNode) {
+export function insertNodeBefore(node: Node, refNode: Node) {
+  if (!refNode.parentNode) {
+    throw new Error("Unable to insert node because refNode lacked a parent.");
+  }
   refNode.parentNode.insertBefore(node, refNode);
 }
 
-export function getPreviousLeafNode(node) {
+export function getPreviousLeafNode(node: Node) {
   // previousSibling is null for first child of a node
-  while (!node.previousSibling) {
-    node = node.parentNode;
+  let prevLeafNode: Node | null = node;
+  while (prevLeafNode && !prevLeafNode.previousSibling) {
+    prevLeafNode = prevLeafNode.parentNode;
   }
-  node = node.previousSibling;
-  while (node.childNodes.length) {
-    node = node.childNodes[node.childNodes.length - 1];
+  if (!prevLeafNode) {
+    logger.error(
+      "Unable to return previous leaf node because we exhausted parents while looking for a previous sibling."
+    );
+    return null;
   }
-  return node;
+  prevLeafNode = prevLeafNode.previousSibling;
+  while (prevLeafNode && prevLeafNode.childNodes.length) {
+    prevLeafNode = prevLeafNode.childNodes[prevLeafNode.childNodes.length - 1];
+  }
+  return prevLeafNode;
 }

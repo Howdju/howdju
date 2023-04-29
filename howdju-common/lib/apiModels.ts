@@ -22,6 +22,7 @@ import {
   Statement,
   Tag,
   TagVote,
+  Url,
   User,
   VidSegment,
   Writ,
@@ -84,6 +85,8 @@ export type JustificationOut = PersistedJustificationWithRootRef & {
   /** The current user's vote on this justification. */
   vote?: JustificationVote;
 };
+
+export type UrlOut = Persisted<Url>;
 
 export type JustificationRootTargetOut = PropositionOut | StatementOut;
 

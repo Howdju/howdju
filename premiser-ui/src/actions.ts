@@ -14,12 +14,9 @@ import {
   Statement,
   Justification,
   JustificationBasisSourceType,
+  PersistedJustificationWithRootRef,
+  CreateWritQuoteInput,
 } from "howdju-common";
-import {
-  Source,
-  Target,
-  ExtensionAnnotationContent,
-} from "howdju-client-common";
 
 import { EditorEntity, EditorType } from "./reducers/editors";
 import {
@@ -322,7 +319,9 @@ export const goto = {
   })),
   justification: createAction(
     "GOTO/JUSTIFICATION",
-    (justification: Justification) => ({ justification })
+    (justification: Justification | PersistedJustificationWithRootRef) => ({
+      justification,
+    })
   ),
   mainSearch: createAction("GOTO/MAIN_SEARCH", (mainSearchText: string) => ({
     mainSearchText,
@@ -345,12 +344,10 @@ export const flows = {
       basisSourceId: EntityId
     ) => ({ editorType, editorId, basisSourceType, basisSourceId })
   ),
-  beginEditOfNewJustificationFromTarget: createAction(
-    "FLOWS/BEGIN_EDIT_OF_NEW_JUSTIFICATION_FROM_TARGET",
-    (content: ExtensionAnnotationContent, source: Source, target: Target) => ({
-      content,
-      source,
-      target,
+  beginEditOfNewJustificationFromWritQuote: createAction(
+    "FLOWS/BEGIN_EDIT_OF_NEW_JUSTIFICATION_FROM_WRIT_QUOTE",
+    (writQuote: CreateWritQuoteInput) => ({
+      writQuote,
     })
   ),
   commitEditThenView: createAction(

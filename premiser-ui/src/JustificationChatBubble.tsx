@@ -39,9 +39,13 @@ export default function JustificationChatBubble({
   onClickWritQuoteUrl,
   ...rest
 }: Props) {
-  const _onClickWritQuoteUrl: OnClickWritQuoteUrl = (event, writQuote, url) => {
+  const _onClickWritQuoteUrl: OnClickWritQuoteUrl = (
+    event,
+    _writQuote,
+    url
+  ) => {
     if (onClickWritQuoteUrl) {
-      onClickWritQuoteUrl(event, justification, writQuote, url);
+      onClickWritQuoteUrl(event, justification, url);
     }
   };
 

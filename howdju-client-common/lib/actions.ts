@@ -1,12 +1,12 @@
 import { ActionCreator } from "redux";
-import { createAction } from "redux-actions";
+import { createAction } from "@reduxjs/toolkit";
 
 import {
+  CreateWritQuoteInput,
   decircularizeJustification,
-  Justification,
   JustificationOut,
-  Url,
-  WritQuote,
+  PersistedJustificationWithRootRef,
+  UrlOut,
 } from "howdju-common";
 
 /**
@@ -22,25 +22,49 @@ import {
  */
 export const str = (ac: ActionCreator<unknown>) => ac.toString();
 
-// Actions to send to the extension
+/** Actions the iframed web app sends to the content script. */
 export const extension = {
   highlightTarget: createAction(
     "EXTENSION/HIGHLIGHT_TARGET",
-    (justification: JustificationOut, writQuote: WritQuote, url: Url) => ({
-      justification: decircularizeJustification(justification),
-      writQuote,
-      url,
+    (justification: JustificationOut, url: UrlOut) => ({
+      payload: {
+        justification: decircularizeJustification(
+          justification
+        ) as PersistedJustificationWithRootRef,
+        url,
+      },
     })
   ),
   messageHandlerReady: createAction("EXTENSION/MESSAGE_HANDLER_READY"),
-};
+} as const;
 
-// Actions to send to the frame the extension inserts that is hosting the web app
+export type ExtensionAction = ReturnType<
+  typeof extension[keyof typeof extension]
+>;
+
+/** Actions the content script sends to the iframed web app. */
 export const extensionFrame = {
-  createJustification: createAction("EXTENSION_FRAME/CREATE_JUSTIFICATION"),
+  createJustification: createAction(
+    "EXTENSION_FRAME/CREATE_JUSTIFICATION",
+    (writQuote: CreateWritQuoteInput) => ({
+      payload: {
+        writQuote,
+      },
+    })
+  ),
   gotoJustification: createAction(
     "EXTENSION_FRAME/GOTO_JUSTIFICATION",
-    (justification: Justification) => ({ justification })
+    (justification: PersistedJustificationWithRootRef) => ({
+      payload: { justification },
+    })
   ),
   ackMessage: createAction("EXTENSION_FRAME/ACK_MESSAGE"),
-};
+} as const;
+
+export type ExtensionFrameActionName = keyof typeof extensionFrame;
+export type ExtensionFrameActionCreator =
+  typeof extensionFrame[ExtensionFrameActionName];
+/** An extensionFrame action. */
+export type ExtensionFrameAction = ReturnType<
+  typeof extensionFrame[keyof typeof extensionFrame]
+>;
