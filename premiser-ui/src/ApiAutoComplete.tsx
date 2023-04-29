@@ -175,6 +175,7 @@ export default function ApiAutoComplete({
           id={id}
           name={name}
           className="api-autocomplete"
+          listboxClassName="api-autocomplete-listbox"
           data={suggestionsData}
           labelKey={labelKey}
           valueKey={labelKey}
