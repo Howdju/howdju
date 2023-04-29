@@ -2,10 +2,10 @@ import React from "react";
 import ReactDOM from "react-dom";
 
 import { getOption } from "./options";
-import { FramePanel } from "./frame-panel";
+import { FramePanel, FramePanelApi } from "./framePanel";
 import { getCurrentCanonicalUrl } from "howdju-client-common";
 
-let frameApi;
+let frameApi: FramePanelApi;
 
 export function getFrameApi() {
   return frameApi;
@@ -41,6 +41,6 @@ function boot() {
   });
 }
 
-function onFramePanelMount(api) {
+function onFramePanelMount(api: FramePanelApi) {
   frameApi = api;
 }

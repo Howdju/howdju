@@ -1,22 +1,19 @@
 import * as textPosition from "dom-anchor-text-position";
 import * as textQuote from "dom-anchor-text-quote";
-import { logger, UrlTargetAnchorType } from "howdju-common";
-import { getCurrentCanonicalUrl } from "howdju-client-common";
+
+import {
+  CreateWritQuoteInput,
+  logger,
+  UrlTarget,
+  UrlTargetAnchor,
+} from "howdju-common";
+
 import { nodeIsBefore, getPreviousLeafNode } from "./dom";
+import { getCurrentCanonicalUrl } from "./location";
 
-export class Target {
-  url: string;
-  anchors: TextAnchor[];
-  date: Date;
-
-  constructor(url: string, anchors: TextAnchor[], date: Date) {
-    this.url = url;
-    this.anchors = anchors;
-    this.date = date;
-  }
-}
-
-export function selectionToTarget(selection: Selection) {
+export function selectionToWritQuote(
+  selection: Selection
+): CreateWritQuoteInput {
   const anchors = [];
 
   for (let i = 0; i < selection.rangeCount; i++) {
@@ -25,40 +22,42 @@ export function selectionToTarget(selection: Selection) {
     anchors.push(anchor);
   }
 
-  const url = getCurrentCanonicalUrl();
-  const date = new Date();
-
-  return new Target(url, anchors, date);
+  return {
+    quoteText: anchors.map((a) => a.exactText.trim()).join("\n\n"),
+    writ: {
+      title: document.title,
+    },
+    // TODO(38) replace `urls` with `locators: [{anchors, url}]`?
+    // (no need for intermediate `target` prop, and name `locators` better reflects the purpose of
+    // 'a thing to help you locate remotely the authority that is represented locally.')
+    urls: [{ target: { anchors }, url: getCurrentCanonicalUrl() }],
+  };
 }
 
-/** Represents a way of locating a fragment of text. */
-export class TextAnchor {
-  type: UrlTargetAnchorType;
-  exactText: string;
-  prefixText: string;
-  suffixText: string;
-  startOffset: number;
-  endOffset: number;
-  constructor(
-    { exact, prefix, suffix }: textQuote.TextQuoteAnchor,
-    { start, end }: textPosition.TextPositionAnchor
-  ) {
-    this.type = "TEXT_QUOTE";
-    this.exactText = exact;
-    this.prefixText = prefix;
-    this.suffixText = suffix;
-    this.startOffset = start;
-    this.endOffset = end;
-  }
+export function makeTextAnchor(
+  { exact, prefix, suffix }: textQuote.TextQuoteAnchor,
+  { start, end }: textPosition.TextPositionAnchor
+): UrlTargetAnchor {
+  return {
+    type: "TEXT_QUOTE",
+    exactText: exact,
+    prefixText: prefix,
+    suffixText: suffix,
+    startOffset: start,
+    endOffset: end,
+  };
 }
 
-function rangeToAnchor(range: Range) {
-  const position = textPosition.fromRange(document.body, range);
-  const selector = textQuote.fromTextPosition(document.body, position);
-  return new TextAnchor(selector, position);
+function rangeToAnchor(range: Range): UrlTargetAnchor {
+  const positionAnchor = textPosition.fromRange(document.body, range);
+  const textQuoteAnchor = textQuote.fromTextPosition(
+    document.body,
+    positionAnchor
+  );
+  return makeTextAnchor(textQuoteAnchor, positionAnchor);
 }
 
-export function targetToRanges(target: Target) {
+export function targetToRanges(target: UrlTarget) {
   const ranges = [];
   for (const anchor of target.anchors) {
     let options = {};

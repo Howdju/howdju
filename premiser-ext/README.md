@@ -56,3 +56,30 @@ extension can do blocking webrequest?
 - Extension iframe: https://stackoverflow.com/a/24649134/39396
 - https://stackoverflow.com/a/45370418/39396
 - https://transitory.technology/browser-extensions-and-csp-headers/
+
+## Extension signaling
+
+The extension has many similar concepts related to signaling. Actions are usual redux actions.
+Messages are not for redux, but have a similar flux action style (a `type` and a payload.)
+
+Here is a list of them along with short explanations:
+
+- `howdju-client-common/actions.extension`: actions for the iframed web app to signal to the content
+  script.
+- `howdju-client-common/actions.extensionFrame`: actions for the content script to signal to the
+  iframed web app.
+- `ExtensionFrameAction`: a type of all `actions.extensionFrame` actions.
+- `ExtensionMessage`: messages between the background page and a content script in a tab
+- `ContentScriptCommand`: contained in some `ExtensionMessage`s. Represents an action the
+  content script can take.
+
+  Sometimes the content tab must reload, e.g. to show a source, but it
+  wants to take actions afterwards, e.g. to highlight a quote. It sends Commands to the background
+  script whch will send them back after the tab reloads so that they can take affect on a new page.
+
+- `ExtensionFrameCommand`: the contents of the Command `postActionMessageToFrame` for sending
+  `ExtensionFrameAction`s.
+- `IframedAppMessage`: a container for a `ExtensionFrameAction` that a
+  content script sends to the iframed web app to add a `source`.
+- `WindowMessage = ExtensionWindowMessage | TrackingConsentWindowMessage`: messages the
+  `WindowMessageHandler` can receive.

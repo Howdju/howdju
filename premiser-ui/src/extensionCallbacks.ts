@@ -1,6 +1,6 @@
 import { MouseEvent } from "react";
 
-import { JustificationOut, Url, WritQuote } from "howdju-common";
+import { JustificationOut, UrlOut } from "howdju-common";
 import { actions, inIframe } from "howdju-client-common";
 
 import { AppDispatch } from "./setupStore";
@@ -13,8 +13,7 @@ export function makeExtensionHighlightOnClickWritQuoteUrlCallback(
   return function extensionHighlightingOnClickWritQuoteUrl(
     event: MouseEvent,
     justification: JustificationOut,
-    writQuote: WritQuote,
-    url: Url
+    url: UrlOut
   ) {
     // If we aren't in the extension iframe, then allow the native behavior of the link click
     if (!inIframe()) {
@@ -22,6 +21,6 @@ export function makeExtensionHighlightOnClickWritQuoteUrlCallback(
     }
     // Otherwise prevent click from navigating and instead update the page hosting the extension iframe
     event.preventDefault();
-    dispatch(actions.extension.highlightTarget(justification, writQuote, url));
+    dispatch(actions.extension.highlightTarget(justification, url));
   };
 }

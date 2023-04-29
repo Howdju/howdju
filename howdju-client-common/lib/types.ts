@@ -1,30 +1,13 @@
-import { UrlTargetAnchorType } from "howdju-common";
+import { ExtensionFrameAction } from "./actionTypes";
 
-export interface ExtensionAnnotationContent {
-  type: "text";
-  title: string;
-  text: string;
-}
+export type WindowMessageSource = "extension";
 
-export interface Source {
-  url: string;
-  title: string;
-}
-
-export interface Target {
-  url: string;
-  anchors: TextAnchor[];
-  date: Date;
-}
-
-// TODO(38) dedupe with TextQuoteAnchor in the extension package, UrlTargetAnchor_TextQuote (entites), and UrlTargetAnchor (zodSchemas).
-export interface TextAnchor {
-  type: UrlTargetAnchorType;
-  // Texts correspond to dom-anchor-text-quote
-  exactText: string;
-  prefixText: string;
-  suffixText: string;
-  // Offsets correspond to dom-anchor-text-position
-  startOffset: number;
-  endOffset: number;
+/**
+ * Container for sending an `ExtensionFrameAction` to the iframed web app.
+ *
+ * Adds a `source`.
+ */
+export interface IframedAppMessage {
+  source: WindowMessageSource;
+  action: ExtensionFrameAction;
 }

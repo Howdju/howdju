@@ -1,6 +1,11 @@
 import { logger } from "./logger";
 
-import { EXTENSION_MESSAGE_SOURCE, actions } from "howdju-client-common";
+import {
+  actions,
+  ExtensionFrameAction,
+  IframedAppMessage,
+  PayloadOf,
+} from "howdju-client-common";
 
 import {
   getOrCreateSessionStorageId,
@@ -8,19 +13,20 @@ import {
 } from "./identifiers";
 import { flows, goto } from "./actions";
 import { toJson } from "howdju-common";
+import { every } from "lodash";
 
 /** Dispatch-bound action creators needed by WindowMessageHandler. */
 export interface WindowMessageHandlerActionCreators {
-  beginEditOfNewJustificationFromTarget: typeof flows.beginEditOfNewJustificationFromTarget;
+  beginEditOfNewJustificationFromWritQuote: typeof flows.beginEditOfNewJustificationFromWritQuote;
   gotoJustification: typeof goto.justification;
   extensionFrameAckMessage: typeof actions.extensionFrame.ackMessage;
 }
 
-export type HandleActionPayload = ReturnType<
-  | typeof actions.extensionFrame.createJustification
-  | typeof actions.extensionFrame.gotoJustification
-  | typeof actions.extensionFrame.ackMessage
->;
+export interface TrackingConsentWindowMessage {
+  howdjuTrackingConsent: { enabled: boolean };
+}
+
+type WindowMessage = IframedAppMessage | TrackingConsentWindowMessage;
 
 export default class WindowMessageHandler {
   actionCreators: WindowMessageHandlerActionCreators;
@@ -28,17 +34,19 @@ export default class WindowMessageHandler {
     this.actionCreators = actionCreators;
   }
 
-  handleEvent(event: MessageEvent) {
-    if (event.source === window) {
-      if (event.data.howdjuTrackingConsent) {
-        const { enabled } = event.data.howdjuTrackingConsent;
-        if (enabled) {
-          getOrCreateSessionStorageId();
-        } else {
-          clearSessionStorageId();
-        }
+  handleEvent(event: MessageEvent<WindowMessage>) {
+    if ("howdjuTrackingConsent" in event.data) {
+      if (event.source !== window) {
+        logger.error("howdjuTrackingConsent must have source === window.");
         return;
       }
+      const { enabled } = event.data.howdjuTrackingConsent;
+      if (enabled) {
+        getOrCreateSessionStorageId();
+      } else {
+        clearSessionStorageId();
+      }
+      return;
     }
 
     // Howdju would be loaded in an iframe of the content script's window when loaded by the extension
@@ -46,7 +54,7 @@ export default class WindowMessageHandler {
       return;
     }
     const source = event.data.source;
-    if (source !== EXTENSION_MESSAGE_SOURCE) {
+    if (source !== "extension") {
       logger.debug(`ignoring message event with incorrect source: ${source}`);
       return;
     }
@@ -58,40 +66,35 @@ export default class WindowMessageHandler {
     this.handleAction(event.origin, action);
   }
 
-  private handleAction(eventOrigin: string, action: HandleActionPayload) {
+  private handleAction(eventOrigin: string, action: ExtensionFrameAction) {
     const type = action.type;
-    const str = actions.str;
     switch (type) {
-      case str(actions.extensionFrame.createJustification): {
-        const { content, source, target } = action.payload;
-        if (!target.url.startsWith(eventOrigin)) {
+      case `${actions.extensionFrame.createJustification}`: {
+        const { writQuote } = action.payload as PayloadOf<
+          typeof actions.extensionFrame.createJustification
+        >;
+        if (!every(writQuote.urls, (u) => u.url.startsWith(eventOrigin))) {
+          const urls = writQuote.urls.map((u) => u.url).join(", ");
           logger.error(
-            `received message from ${eventOrigin} to createJustification of ${target.url}.` +
-              " The browser extension should only create justifications matching the current origin.  Ignoring."
+            `received message from origin ${eventOrigin} to createJustification including urls: ${toJson(
+              urls
+            )}.` +
+              " The browser extension should only create justifications matching the origin. Ignoring."
           );
           return;
         }
-        if (source.url !== target.url) {
-          logger.error(
-            `received createJustification message where source.url ${source.url} doesn't match` +
-              ` target.url ${target.url}.  Ignoring`
-          );
-          return;
-        }
-        this.actionCreators.beginEditOfNewJustificationFromTarget(
-          content,
-          source,
-          target
-        );
+        this.actionCreators.beginEditOfNewJustificationFromWritQuote(writQuote);
         break;
       }
-      case str(actions.extensionFrame.gotoJustification): {
+      case `${actions.extensionFrame.gotoJustification}`: {
         logger.trace(`extensionFrame.gotoJustification`, { action });
-        const { justification } = action.payload;
+        const { justification } = action.payload as PayloadOf<
+          typeof actions.extensionFrame.gotoJustification
+        >;
         this.actionCreators.gotoJustification(justification);
         break;
       }
-      case str(actions.extensionFrame.ackMessage): {
+      case `${actions.extensionFrame.ackMessage}`: {
         this.actionCreators.extensionFrameAckMessage();
         break;
       }

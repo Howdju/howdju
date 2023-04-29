@@ -1,8 +1,7 @@
 import concat from "lodash/concat";
+import { isUndefined } from "lodash";
 
-import { logger } from "howdju-common";
-
-import { getNodeData } from "./node-data";
+import { logger, UrlTarget } from "howdju-common";
 import {
   getSelection,
   clearSelection,
@@ -12,10 +11,12 @@ import {
   isCoextensive,
   insertNodeAfter,
   insertNodeBefore,
-} from "./dom";
-import { selectionToTarget, Target, targetToRanges } from "./target";
-import { Annotation } from "./annotation";
-import { isUndefined } from "lodash";
+  selectionToWritQuote,
+  targetToRanges,
+} from "howdju-client-common";
+
+import { getNodeData } from "./node-data";
+import { Annotation, AnnotationExcerpt } from "./annotation";
 
 export const annotationClass = "howdju-annotation";
 export const annotationLevelClassPrefix = "howdju-annotation-level-";
@@ -26,7 +27,7 @@ export const annotationLevelStyleElementId = "howdju-annotation-level-styles";
 let maxAnnotationLevel = 0;
 export const annotations: Annotation[] = [];
 
-export function annotateSelection() {
+export function annotateSelection(): AnnotationExcerpt | undefined {
   const selection = getSelection();
   if (!selection) {
     logger.warn("Selection was null, can't annotate it.");
@@ -38,34 +39,33 @@ export function annotateSelection() {
   }
 
   // Get target before selection may change
-  const target = selectionToTarget(selection);
+  const writQuote = selectionToWritQuote(selection);
 
   const nodes = getNodesForSelection(selection);
 
-  const annotation = getOrCreateAnnotation(nodes, target);
+  const annotation = getOrCreateAnnotation(nodes);
 
   // The selection can get messed up if we modify nodes within it.  For expediency, just clear it.  That also might be
   //  a reasonable UX choice, since the selection in a sense has been replaced with the annotation.
   clearSelection();
 
-  return annotation;
+  return { annotation, writQuote };
 }
 
-export function annotateTarget(target: Target) {
+export function annotateTarget(target: UrlTarget) {
   const ranges = targetToRanges(target);
   const nodes = rangesToNodes(ranges);
-  return getOrCreateAnnotation(nodes, target);
+  return getOrCreateAnnotation(nodes);
 }
 
 /** Returns an existing annotation if it's equivalent; only uses target if it returns a new annotation. */
-function getOrCreateAnnotation(nodes: Node[], target: Target) {
+function getOrCreateAnnotation(nodes: Node[]) {
   const equivalentAnnotation = getEquivalentAnnotation(nodes);
   if (equivalentAnnotation) {
     return equivalentAnnotation;
   }
 
   const annotation = annotateNodes(nodes);
-  annotation.target = target;
   return annotation;
 }
 

@@ -5,7 +5,7 @@ import { Entity, Proposition, SourceExcerpt } from "./zodSchemas";
 
 // Recursively replace all Entity subtypes with Entity so that they can be
 // replaced with just an object with an ID.
-type Decircularized<T> = {
+export type Decircularized<T> = {
   [key in keyof T]: T[key] extends Entity
     ? Decircularized<T[key]> | Entity
     : Decircularized<T[key]>;

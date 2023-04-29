@@ -1,4 +1,5 @@
 import { logger } from "howdju-common";
+import { ExtensionMessage } from "./extensionMessages";
 
 // Just reuse the chrome type since types are available for it.
 type NativeExtension = Pick<
@@ -13,20 +14,15 @@ type NativeExtension = Pick<
   | "webRequest"
 >;
 
-interface Action<P> {
-  type: string;
-  payload: P;
-}
-
-class Extension {
+export class Extension {
   extension: NativeExtension;
 
   constructor(extension: NativeExtension) {
     this.extension = extension;
   }
 
-  sendRuntimeMessage<P>(
-    message: Action<P>,
+  sendRuntimeMessage(
+    message: ExtensionMessage,
     responseCallback: (response: any) => void
   ) {
     this.extension.runtime.sendMessage(message, responseCallback);
@@ -45,7 +41,7 @@ class Extension {
 
   sendTabMessage(
     tabId: number,
-    message: any,
+    message: ExtensionMessage,
     responseCallback: (response: any) => void
   ) {
     this.extension.tabs.sendMessage(tabId, message, responseCallback);
@@ -168,7 +164,7 @@ class FakeExtension {
   webRequest = makeCallableProxy<NativeExtension["webRequest"]>();
 }
 
-const extension = makeExtension();
+export const extension = makeExtension();
 function makeExtension() {
   if ("chrome" in window) {
     // Chrome
@@ -182,8 +178,6 @@ function makeExtension() {
     return new Extension(new FakeExtension());
   }
 }
-
-export { extension };
 
 // A singleton function to pass to the proxy so that the proxy supports the `apply` trap.
 // Other than the fact that it is a function, it's value has no effect on the behavior of makeCallableProxy.

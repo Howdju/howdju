@@ -1,3 +1,5 @@
+import { CreateWritQuoteInput } from "howdju-common";
+
 import { setNodeData } from "./node-data";
 import {
   annotationClass,
@@ -6,35 +8,20 @@ import {
   getAnnotationOf,
   isAnnotationNode,
 } from "./annotate";
-import { logger } from "howdju-common";
 import { arrayInsertAfter, arrayInsertBefore } from "./util";
-import { Target, TextAnchor } from "./target";
 
 export const annotationMouseOverClass = "howdju-annotation-mouse-over";
 export const annotationIndexClassPrefix = "howdju-annotation-index-";
 
-export class AnnotationContent {}
-
-export class TextContent extends AnnotationContent {
-  type: "text";
-  title: string;
-  text: string;
-
-  constructor(text: string) {
-    super();
-    this.type = "text";
-    this.title = document.title;
-    this.text = text;
-  }
+export interface AnnotationExcerpt {
+  writQuote: CreateWritQuoteInput;
+  annotation: Annotation;
 }
 
 export class Annotation {
   index: number;
   nodes: HTMLElement[];
   level: number;
-  anchor: TextAnchor | undefined;
-  // DO_NOT_MERGE do we need both anchor and target?
-  target: Target | undefined;
 
   _isMouseOver: boolean = false;
   onMouseEnterBound;
@@ -52,7 +39,6 @@ export class Annotation {
     this.index = index;
     this.nodes = nodes;
     this.level = level;
-    this.anchor = undefined;
 
     this.isMouseOver = false;
     this.onMouseEnterBound = this.onMouseEnter.bind(this);
@@ -140,30 +126,5 @@ export class Annotation {
 
   onMouseOut() {
     this.isMouseOver = false;
-  }
-
-  getContent() {
-    const range = document.createRange();
-    range.setStart(this.nodes[0], 0);
-    const lastNode = this.nodes[this.nodes.length - 1];
-
-    let endOffset = 0;
-    switch (lastNode.nodeType) {
-      case Node.TEXT_NODE: {
-        endOffset = lastNode.nodeValue!.length;
-        break;
-      }
-      case Node.ELEMENT_NODE: {
-        endOffset = lastNode.childNodes.length;
-        break;
-      }
-      default: {
-        logger.error(`Unsupported annotation node type: ${lastNode.nodeType}`);
-      }
-    }
-
-    range.setEnd(lastNode, endOffset);
-    const text = range.toString();
-    return new TextContent(text);
   }
 }

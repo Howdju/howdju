@@ -10,12 +10,8 @@ import config from "../config";
 let contentScriptHasAcked = false;
 
 export function* postExtensionMessages() {
-  const extensionActionCreators = [
-    actions.extension.highlightTarget,
-    actions.extension.messageHandlerReady,
-  ];
   yield takeEvery(
-    extensionActionCreators,
+    [actions.extension.highlightTarget, actions.extension.messageHandlerReady],
     function* postExtensionMessagesWorker(action) {
       if (!inIframe()) {
         throw new Error(
