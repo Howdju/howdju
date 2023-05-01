@@ -15,8 +15,8 @@ import {
   Justification,
   JustificationBasisSourceType,
   PersistedJustificationWithRootRef,
-  CreateWritQuoteInput,
 } from "howdju-common";
+import { AnchorInfo } from "howdju-client-common";
 
 import { EditorEntity, EditorType } from "./reducers/editors";
 import {
@@ -344,11 +344,9 @@ export const flows = {
       basisSourceId: EntityId
     ) => ({ editorType, editorId, basisSourceType, basisSourceId })
   ),
-  beginEditOfNewJustificationFromWritQuote: createAction(
+  beginEditOfNewJustificationFromAnchorInfo: createAction(
     "FLOWS/BEGIN_EDIT_OF_NEW_JUSTIFICATION_FROM_WRIT_QUOTE",
-    (writQuote: CreateWritQuoteInput) => ({
-      writQuote,
-    })
+    (anchorInfo: AnchorInfo) => anchorInfo
   ),
   commitEditThenView: createAction(
     "FLOWS/COMMIT_PROPOSITION_THEN_VIEW",

@@ -3,7 +3,7 @@ import ReactDOM from "react-dom";
 
 import { getOption } from "./options";
 import { FramePanel, FramePanelApi } from "./framePanel";
-import { getCurrentCanonicalUrl } from "howdju-client-common";
+import { getCanonicalOrCurrentUrl } from "howdju-client-common";
 
 let frameApi: FramePanelApi;
 
@@ -33,7 +33,7 @@ function boot() {
 
   getOption("howdjuBaseUrl", (baseUrl) => {
     // TODO move paths to howdju-client-common: paths.searchJustificaitons({url, includeUrls: true})
-    const url = encodeURIComponent(getCurrentCanonicalUrl());
+    const url = encodeURIComponent(getCanonicalOrCurrentUrl());
     const frameUrl =
       baseUrl + `/search-justifications?url=${url}&includeUrls=true`;
     const App = <FramePanel url={frameUrl} onMount={onFramePanelMount} />;

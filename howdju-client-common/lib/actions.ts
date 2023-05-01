@@ -2,12 +2,12 @@ import { ActionCreator } from "redux";
 import { createAction } from "@reduxjs/toolkit";
 
 import {
-  CreateWritQuoteInput,
   decircularizeJustification,
   JustificationOut,
   PersistedJustificationWithRootRef,
   UrlOut,
 } from "howdju-common";
+import { AnchorInfo } from "./target";
 
 /**
  * redux-actions and @reduxjs/toolkit have a convention that action creators get a .toString method
@@ -44,12 +44,10 @@ export type ExtensionAction = ReturnType<
 
 /** Actions the content script sends to the iframed web app. */
 export const extensionFrame = {
-  createJustification: createAction(
-    "EXTENSION_FRAME/CREATE_JUSTIFICATION",
-    (writQuote: CreateWritQuoteInput) => ({
-      payload: {
-        writQuote,
-      },
+  createJustificationFromAnchorInfo: createAction(
+    "EXTENSION_FRAME/CREATE_JUSTIFICATION_FROM_ANCHOR_INFO",
+    (anchorInfo: AnchorInfo) => ({
+      payload: anchorInfo,
     })
   ),
   gotoJustification: createAction(

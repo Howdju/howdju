@@ -117,8 +117,8 @@ class App extends Component<Props> {
     window.addEventListener("message", this.receiveMessage, false);
 
     this.windowMessageHandler = new WindowMessageHandler({
-      beginEditOfNewJustificationFromWritQuote:
-        this.props.flows.beginEditOfNewJustificationFromWritQuote,
+      beginEditOfNewJustificationFromAnchorInfo:
+        this.props.flows.beginEditOfNewJustificationFromAnchorInfo,
       gotoJustification: this.props.goto.justification,
       extensionFrameAckMessage: this.props.extensionFrame.ackMessage,
     });

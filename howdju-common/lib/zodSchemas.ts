@@ -241,7 +241,7 @@ export const CreateStatement: z.ZodType<CreateStatement> = z.lazy(() =>
 );
 // Statement has no Update models; users can edit the proposition/statement or the speaker.
 
-/** A textual media. */
+/** Textual media. */
 export const Writ = Entity.extend({
   title: z.string().min(1).max(512),
   created: momentObject,
@@ -320,7 +320,7 @@ export type CreateUrl = z.infer<typeof CreateUrl>;
 export const CreateUrlInput = CreateUrl;
 export type CreateUrlInput = z.infer<typeof CreateUrlInput>;
 
-/** A SourceExcerpt of a quote from a written Source. */
+/** A SourceExcerpt of a textual quote from a written Source. */
 export const WritQuote = Entity.extend({
   quoteText: z.string(),
   writ: Writ,
@@ -329,7 +329,7 @@ export const WritQuote = Entity.extend({
 });
 export type WritQuote = z.infer<typeof WritQuote>;
 
-/** A fixed visual media. */
+/** Fixed visual media. */
 export const Pic = Entity.extend({});
 export type Pic = z.infer<typeof Pic>;
 /** A reference to a part of a Pic. */
@@ -338,7 +338,7 @@ export const PicRegion = Entity.extend({
 });
 export type PicRegion = z.infer<typeof PicRegion>;
 
-/** A video media. */
+/** Video media. */
 export const Vid = Entity.extend({});
 export type Vid = z.infer<typeof Vid>;
 /** A reference to a part of a Vid. */
@@ -346,6 +346,15 @@ export const VidSegment = Entity.extend({
   vid: Vid,
 });
 export type VidSegment = z.infer<typeof VidSegment>;
+
+/** Audio media. */
+export const Aud = Entity.extend({});
+export type Aud = z.infer<typeof Aud>;
+/** A reference to a part of a Vid. */
+export const AudSegment = Entity.extend({
+  aud: Aud,
+});
+export type AudSegment = z.infer<typeof AudSegment>;
 
 const sourceExcerptTypes = z.enum(["WRIT_QUOTE", "PIC_REGION", "VID_SEGMENT"]);
 /** An excerpt of some fixed media. */

@@ -1,4 +1,12 @@
-export function urlEquivalent(url1: string, url2: string) {
+import { isUndefined } from "lodash";
+
+export function urlEquivalent(
+  url1: string | undefined,
+  url2: string | undefined
+) {
+  if (isUndefined(url1) || isUndefined(url2)) {
+    return false;
+  }
   // TODO something more sophisticated. E.g. ignore anchor in most cases, ignore query in many cases.
   return url1 === url2;
 }
@@ -18,7 +26,7 @@ const canonicalUrlSelectorAttributes = [
   },
 ];
 
-export function getCurrentCanonicalUrl() {
+export function getCanonicalUrl() {
   for (const selectorAttribute of canonicalUrlSelectorAttributes) {
     const node = window.document.querySelector(selectorAttribute["selector"]);
     if (node) {
@@ -28,5 +36,13 @@ export function getCurrentCanonicalUrl() {
       }
     }
   }
+  return undefined;
+}
+
+export function getCurrentUrl() {
   return window.document.location.href;
+}
+
+export function getCanonicalOrCurrentUrl() {
+  return getCanonicalUrl() || getCurrentUrl();
 }

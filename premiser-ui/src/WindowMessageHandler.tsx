@@ -1,5 +1,6 @@
-import { logger } from "./logger";
+import { isObject } from "lodash";
 
+import { toJson } from "howdju-common";
 import {
   actions,
   IframedAppMessage,
@@ -12,12 +13,11 @@ import {
   clearSessionStorageId,
 } from "./identifiers";
 import { flows, goto } from "./actions";
-import { toJson } from "howdju-common";
-import { every, isObject } from "lodash";
+import { logger } from "./logger";
 
 /** Dispatch-bound action creators needed by WindowMessageHandler. */
 export interface WindowMessageHandlerActionCreators {
-  beginEditOfNewJustificationFromWritQuote: typeof flows.beginEditOfNewJustificationFromWritQuote;
+  beginEditOfNewJustificationFromAnchorInfo: typeof flows.beginEditOfNewJustificationFromAnchorInfo;
   gotoJustification: typeof goto.justification;
   extensionFrameAckMessage: typeof actions.extensionFrame.ackMessage;
 }
@@ -88,21 +88,18 @@ export default class WindowMessageHandler {
   ) {
     const type = action.type;
     switch (type) {
-      case `${actions.extensionFrame.createJustification}`: {
-        const { writQuote } = action.payload as PayloadOf<
-          typeof actions.extensionFrame.createJustification
+      case `${actions.extensionFrame.createJustificationFromAnchorInfo}`: {
+        const payload = action.payload as PayloadOf<
+          typeof actions.extensionFrame.createJustificationFromAnchorInfo
         >;
-        if (!every(writQuote.urls, (u) => u.url.startsWith(eventOrigin))) {
-          const urls = writQuote.urls.map((u) => u.url).join(", ");
+        if (!payload.url.startsWith(eventOrigin)) {
           logger.error(
-            `received message from origin ${eventOrigin} to createJustification including urls: ${toJson(
-              urls
-            )}.` +
+            `received message from origin ${eventOrigin} to createJustification with anchors in url: ${payload.url}.` +
               " The browser extension should only create justifications matching the origin. Ignoring."
           );
           return;
         }
-        this.actionCreators.beginEditOfNewJustificationFromWritQuote(writQuote);
+        this.actionCreators.beginEditOfNewJustificationFromAnchorInfo(payload);
         break;
       }
       case `${actions.extensionFrame.gotoJustification}`: {
