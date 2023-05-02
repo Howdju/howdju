@@ -44,6 +44,13 @@ function getEnvConfig(): Partial<ApiConfig> {
         }:${devWebServerPort()}`;
         corsAllowOrigin = [localOrigin, ...corsAllowOrigin];
       }
+      if (process.env.EXTRA_CORS_HOSTS) {
+        const extraCorsHosts = process.env.EXTRA_CORS_HOSTS.split(",").map(
+          (h) => `http://${h}:${devWebServerPort()}`
+        );
+        corsAllowOrigin = [...extraCorsHosts, ...corsAllowOrigin];
+      }
+      console.log({ corsAllowOrigin });
       return merge({}, devConfig, { corsAllowOrigin });
     }
     case "production":
