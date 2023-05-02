@@ -13,7 +13,7 @@ import {
 } from "./identifiers";
 import { flows, goto } from "./actions";
 import { toJson } from "howdju-common";
-import { every } from "lodash";
+import { every, isObject } from "lodash";
 
 /** Dispatch-bound action creators needed by WindowMessageHandler. */
 export interface WindowMessageHandlerActionCreators {
@@ -34,7 +34,13 @@ export default class WindowMessageHandler {
     this.actionCreators = actionCreators;
   }
 
-  handleEvent(event: MessageEvent<WindowMessage>) {
+  handleEvent(event: MessageEvent<WindowMessage | "undefined">) {
+    if (!isObject(event.data)) {
+      // For reasons I don't understand, on mobile Safari, only in prod (`https`-only?) the
+      // event.data is sometimes the string "undefined".
+      logger.warn(`MessageEvent.data was not an object: ${toJson(event.data)}`);
+      return;
+    }
     if (event.source === window) {
       if ("howdjuTrackingConsent" in event.data) {
         const { enabled } = event.data.howdjuTrackingConsent;
