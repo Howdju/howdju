@@ -1,6 +1,11 @@
 import { logger } from "./logger";
 
-import { actions, IframedAppMessage, PayloadOf } from "howdju-client-common";
+import {
+  actions,
+  IframedAppMessage,
+  isIframedAppMessage,
+  PayloadOf,
+} from "howdju-client-common";
 
 import {
   getOrCreateSessionStorageId,
@@ -30,22 +35,32 @@ export default class WindowMessageHandler {
   }
 
   handleEvent(event: MessageEvent<WindowMessage>) {
-    if ("howdjuTrackingConsent" in event.data) {
-      if (event.source !== window) {
-        logger.error("howdjuTrackingConsent must have source === window.");
+    if (event.source === window) {
+      if ("howdjuTrackingConsent" in event.data) {
+        const { enabled } = event.data.howdjuTrackingConsent;
+        if (enabled) {
+          getOrCreateSessionStorageId();
+        } else {
+          clearSessionStorageId();
+        }
         return;
       }
-      const { enabled } = event.data.howdjuTrackingConsent;
-      if (enabled) {
-        getOrCreateSessionStorageId();
-      } else {
-        clearSessionStorageId();
-      }
-      return;
     }
 
     // Howdju would be loaded in an iframe of the content script's window when loaded by the extension
     if (event.source !== window.parent) {
+      logger.debug(
+        `Window event not from window or window.parent: ${toJson(event)}`
+      );
+      return;
+    }
+    if (!isIframedAppMessage(event)) {
+      // E.g. source "react-devtools-bridge"
+      logger.debug(
+        `Window message from parent must be an Iframed app message ${toJson(
+          event
+        )}`
+      );
       return;
     }
     const source = event.data.source;
