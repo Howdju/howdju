@@ -7,6 +7,7 @@ import { QueryResultRow } from "pg";
 
 import {
   AccountSettingsRef,
+  brandedParse,
   camelCaseKeysDeep,
   ContentReportRef,
   ContentReportType,
@@ -30,9 +31,12 @@ import {
   requireArgs,
   SentenceTypes,
   SourceExcerptTypes,
+  SourceOut,
+  SourceRef,
   StatementRef,
   TagRef,
   toSlug,
+  UrlRef,
   UserRef,
   WritQuoteRef,
   WritRef,
@@ -67,6 +71,7 @@ import {
   ReadPropositionCompoundDataOut,
   RegistrationRequestData,
   RegistrationRequestRow,
+  SourceRow,
   SpeakerBlurbRow,
   StatementData,
   StatementRow,
@@ -576,10 +581,12 @@ function toWritMapper(row: ToWritMapperRow): WritData {
 export const toWrit = wrapMapper(toWritMapper);
 
 export const toUrl = wrapMapper(function toUrlMapper(row) {
-  return {
+  return brandedParse(UrlRef, {
     id: toIdString(row.url_id),
     url: row.url,
-  };
+    creatorUserId: toIdString(row.creator_user_id),
+    created: row.created,
+  });
 });
 
 export const toJustificationVote = wrapMapper(
@@ -958,3 +965,13 @@ export const toContentReport = wrapMapper(function toContentReportMapper(
     created: row.created,
   };
 });
+
+export function toSource(row: SourceRow): SourceOut {
+  return brandedParse(SourceRef, {
+    id: row.source_id,
+    descriptionApa: row.description_apa,
+    normalDescriptionApa: row.normal_description_apa,
+    created: row.created,
+    creatorUserId: row.creator_user_id,
+  });
+}

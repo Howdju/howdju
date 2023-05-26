@@ -8,10 +8,12 @@ import {
 } from "./types";
 import { toTextFieldOnChangeCallback } from "./util";
 
-interface Props extends Omit<TextFieldProps, "onBlur" | "onChange"> {
+interface Props
+  extends Omit<TextFieldProps, "onBlur" | "onChange" | "maxLength"> {
   children?: ReactNode;
   onPropertyChange?: OnPropertyChangeCallback;
   onBlur?: OnBlurCallback;
+  maxLength?: number | null;
 }
 
 /** A TextField translating more convenient callback's into react-md's versions. */
@@ -20,6 +22,7 @@ export default function TextField({
   children,
   onPropertyChange,
   onBlur,
+  maxLength,
   ...rest
 }: Props) {
   const onChange = toTextFieldOnChangeCallback(onPropertyChange);
@@ -27,6 +30,7 @@ export default function TextField({
   return (
     <ReactMdTextField
       {...rest}
+      maxLength={maxLength || undefined}
       onChange={onChange}
       value={value || ""}
       onBlur={toReactMdOnBlur(onBlur)}

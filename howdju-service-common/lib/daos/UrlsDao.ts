@@ -1,22 +1,33 @@
-const forEach = require("lodash/forEach");
-const map = require("lodash/map");
+import forEach from "lodash/forEach";
+import map from "lodash/map";
 
-const {
+import {
   JustificationBasisTypes,
   JustificationBasisCompoundAtomTypes,
   SourceExcerptTypes,
-} = require("howdju-common");
-const { toUrl } = require("./orm");
+  Logger,
+  EntityId,
+  JustificationRootTargetType,
+  CreateUrl,
+  UrlOut,
+} from "howdju-common";
+import { toUrl } from "./orm";
 
-const head = require("lodash/head");
+import head from "lodash/head";
+import { Database } from "../database";
+import { Moment } from "moment";
+import { QueryResultRow } from "pg";
 
-exports.UrlsDao = class UrlsDao {
-  constructor(logger, database) {
+export class UrlsDao {
+  private logger: Logger;
+  private database: Database;
+
+  constructor(logger: Logger, database: Database) {
     this.logger = logger;
     this.database = database;
   }
 
-  readUrlForUrl(url) {
+  readUrlForUrl(url: string) {
     return this.database
       .query(
         "readUrlForUrl",
@@ -31,7 +42,18 @@ exports.UrlsDao = class UrlsDao {
       });
   }
 
-  async readUrlsForIds(ids) {
+  async readUrlForId(id: EntityId) {
+    const {
+      rows: [row],
+    } = await this.database.query(
+      "readUrlsForIds",
+      "select * from urls where url_id = $1 and deleted is null",
+      [id]
+    );
+    return toUrl(row);
+  }
+
+  async readUrlsForIds(ids: EntityId[]) {
     const { rows } = await this.database.query(
       "readUrlsForIds",
       "select * from urls where url_id in ($1) and deleted is null",
@@ -40,7 +62,10 @@ exports.UrlsDao = class UrlsDao {
     return rows.map(toUrl);
   }
 
-  readUrlsByWritQuoteIdForRootTarget(rootTargetType, rootTargetId) {
+  readUrlsByWritQuoteIdForRootTarget(
+    rootTargetType: JustificationRootTargetType,
+    rootTargetId: EntityId
+  ) {
     const sql = `
         select
             wq.writ_quote_id
@@ -99,7 +124,24 @@ exports.UrlsDao = class UrlsDao {
         SourceExcerptTypes.WRIT_QUOTE,
         rootTargetType,
       ])
-      .then(({ rows }) => groupUrlsByWritQuoteId(rows));
+      .then(({ rows }) => this.groupUrlsByWritQuoteId(rows));
+  }
+
+  private groupUrlsByWritQuoteId(rows: QueryResultRow[]) {
+    const urlsByWritQuoteId = {} as Record<number, UrlOut[]>;
+    forEach(rows, (row) => {
+      let urls = urlsByWritQuoteId[row.writ_quote_id];
+      if (!urls) {
+        urlsByWritQuoteId[row.writ_quote_id] = urls = [];
+      }
+      const url = toUrl(row);
+      if (!url) {
+        this.logger.error(`Url row failed to map: ${row}`);
+        return;
+      }
+      urls.push(url);
+    });
+    return urlsByWritQuoteId;
   }
 
   readDomains() {
@@ -111,29 +153,22 @@ exports.UrlsDao = class UrlsDao {
       .then(({ rows }) => map(rows, (row) => row.domain));
   }
 
-  createUrls(urls, userId, now) {
-    return map(urls, (url) => this.createUrl(url, userId, now));
+  createUrls(urls: CreateUrl[], userId: EntityId, created: Moment) {
+    return map(urls, (url) => this.createUrl(url, userId, created));
   }
 
-  createUrl(url, userId, now) {
+  createUrl(url: CreateUrl, userId: EntityId, now: Moment) {
+    const canonicalUrl = url.canonicalUrl || url.url;
     return this.database
       .query(
         "createUrl",
-        "insert into urls (url, creator_user_id, created) values ($1, $2, $3) returning *",
-        [url.url, userId, now]
+        `
+        insert into urls (url, canonical_url, creator_user_id, created)
+        values ($1, $2, $3, $4)
+        returning *
+        `,
+        [url.url, canonicalUrl, userId, now]
       )
       .then(({ rows: [row] }) => toUrl(row));
   }
-};
-
-function groupUrlsByWritQuoteId(rows) {
-  const urlsByWritQuoteId = {};
-  forEach(rows, (row) => {
-    let urls = urlsByWritQuoteId[row.writ_quote_id];
-    if (!urls) {
-      urlsByWritQuoteId[row.writ_quote_id] = urls = [];
-    }
-    urls.push(toUrl(row));
-  });
-  return urlsByWritQuoteId;
 }

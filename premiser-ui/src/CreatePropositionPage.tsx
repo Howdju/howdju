@@ -385,7 +385,7 @@ export default function CreatePropositionPage({ mode, location }: Props) {
                                 )}
                                 name={combineNames(speakersName, array(index))}
                                 disabled={isSaving}
-                                onPersorgNameAutocomplete={(persorg: Persorg) =>
+                                onPersorgNameAutocomplete={(persorg: PersorgOut) =>
                                   onPersorgAutocomplete(persorg, index)
                                 }
                                 onPropertyChange={onPropertyChange}

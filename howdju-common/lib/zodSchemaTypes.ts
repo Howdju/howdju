@@ -34,6 +34,7 @@ import {
   Justification,
   JustificationRootTarget,
   JustificationVote,
+  MediaExcerpt,
   PasswordResetRequest,
   PersistedEntity,
   Persorg,
@@ -42,10 +43,13 @@ import {
   PropositionCompoundAtom,
   PropositionTagVote,
   RegistrationRequest,
+  Source,
   SourceExcerpt,
   Statement,
   Tag,
   TagVote,
+  Url,
+  UrlLocator,
   User,
   Writ,
   WritQuote,
@@ -204,6 +208,16 @@ export type EntityName<T> = T extends Proposition
   ? "User"
   : T extends UserOut
   ? "User"
+  : T extends MediaExcerpt
+  ? "MediaExcerpt"
+  : T extends UrlLocator
+  ? "UrlLocator"
+  : T extends MediaExcerpt
+  ? "MediaExcerpt"
+  : T extends Source
+  ? "Source"
+  : T extends Url
+  ? "Url"
   : never;
 
 /** A reference to an Entity by ID. */
@@ -226,6 +240,11 @@ export type PersistRelated<T> = {
     : T[key] extends object
     ? PersistRelated<T[key]>
     : T[key];
+};
+
+/** Returns a type with some of T's properties persisted. */
+export type PartialPersist<T, Props extends keyof T> = Omit<T, Props> & {
+  [key in Props]: PersistRelated<T[key]>;
 };
 
 /** A persisted entity that may be only a Ref.

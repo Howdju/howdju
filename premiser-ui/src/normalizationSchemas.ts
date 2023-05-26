@@ -5,18 +5,18 @@ import {
   ContextTrailItem,
   Justification,
   JustificationVote,
+  MediaExcerpt,
   Persorg,
-  Pic,
   PicRegion,
   Proposition,
   PropositionCompound,
   PropositionTagVote,
+  Source,
   SourceExcerptParaphrase,
   Statement,
   Tag,
   TagVote,
   User,
-  Vid,
   VidSegment,
   Writ,
   WritQuote,
@@ -90,17 +90,12 @@ export const writQuoteSchema = new schema.Entity<WritQuote>("writQuotes", {
 });
 export const writQuotesSchema = new schema.Array(writQuoteSchema);
 
-export const picSchema = new schema.Entity<Pic>("pics");
+export const picRegionSchema = new schema.Entity<PicRegion>("picRegions", {});
 
-export const picRegionSchema = new schema.Entity<PicRegion>("picRegions", {
-  pic: picSchema,
-});
-
-export const vidSchema = new schema.Entity<Vid>("vids");
-
-export const vidSegmentsSchema = new schema.Entity<VidSegment>("vidSegments", {
-  vid: vidSchema,
-});
+export const vidSegmentsSchema = new schema.Entity<VidSegment>(
+  "vidSegments",
+  {}
+);
 
 export const justificationVoteSchema = new schema.Entity<JustificationVote>(
   "justificationVotes"
@@ -197,6 +192,18 @@ export const contextTrailItemsSchema = new schema.Array(
   new schema.Entity<ContextTrailItem>("contextTrailItems", {
     connectingEntity: connectingEntitySchema,
   })
+);
+
+export const sourceSchema = new schema.Entity<Source>("sources");
+export const sourcesSchema = new schema.Array(sourceSchema);
+export const mediaExcerptSchema = new schema.Entity<MediaExcerpt>(
+  "mediaExcerpts",
+  {
+    citations: new schema.Array({
+      source: sourceSchema,
+    }),
+    speakers: new schema.Array(persorgSchema),
+  }
 );
 
 /**

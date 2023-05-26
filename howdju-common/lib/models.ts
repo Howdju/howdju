@@ -184,7 +184,8 @@ export const makeCreatePropositionCompoundAtomInput =
     entity: makeCreatePropositionInput(),
   });
 
-export const makeUrl = (props?: Partial<Url>): Url => merge({ url: "" }, props);
+export const makeUrl = (props?: Partial<Url>): Url =>
+  merge({ url: "", canonicalUrl: "" }, props);
 
 export const makePersorg = (): Persorg => ({
   isOrganization: false,
@@ -240,11 +241,11 @@ export const doTargetSameRoot = (j1: RootTargetInfo, j2: RootTargetInfo) =>
 export const makeNewAccountSettings = () => ({});
 
 export function makeVidSegment(): VidSegment {
-  return { vid: {} };
+  return {};
 }
 
 export function makePicRegion(): PicRegion {
-  return { pic: {} };
+  return {};
 }
 
 export const makeCreateJustifiedSentenceInput = (

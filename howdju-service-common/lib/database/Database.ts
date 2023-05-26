@@ -24,16 +24,15 @@ export class Database {
     this.pool = pool;
   }
 
-  query<R extends QueryResultRow>(
+  async query<R extends QueryResultRow>(
     queryName: string,
     sql: string,
-    args: any[],
+    args?: any[],
     doArrayMode = false
   ) {
     requireArgs({ queryName, sql });
 
     const utcArgs = map(args, toUtc);
-    this.logger.silly("Database.query", { queryName, sql, utcArgs });
     const config = doArrayMode
       ? {
           text: sql,
@@ -44,7 +43,17 @@ export class Database {
           text: sql,
           values: utcArgs,
         };
-    return this.pool.query<R>(config);
+    try {
+      return await this.pool.query<R>(config);
+    } catch (err) {
+      this.logger.error("Database.query error", {
+        err,
+        queryName,
+        sql,
+        utcArgs,
+      });
+      throw err;
+    }
   }
 
   queries(queryAndArgs: { queryName: string; sql: string; args: any[] }[]) {

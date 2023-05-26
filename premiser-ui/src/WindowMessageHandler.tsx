@@ -17,7 +17,7 @@ import { logger } from "./logger";
 
 /** Dispatch-bound action creators needed by WindowMessageHandler. */
 export interface WindowMessageHandlerActionCreators {
-  beginEditOfNewJustificationFromAnchorInfo: typeof flows.beginEditOfNewJustificationFromAnchorInfo;
+  beginEditOfNewJustificationFromAnchorInfo: typeof flows.submitMediaExcerptFromAnchorInfo;
   gotoJustification: typeof goto.justification;
   extensionFrameAckMessage: typeof actions.extensionFrame.ackMessage;
 }

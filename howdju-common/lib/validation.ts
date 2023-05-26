@@ -1,6 +1,6 @@
 import { cloneDeep, filter, head, isObject } from "lodash";
 import { Writable } from "type-fest";
-import { EntityErrorCode, ModelErrorCode } from "./codes";
+import { EntityConflictCode, EntityErrorCode, ModelErrorCode } from "./codes";
 import { logger } from "./logger";
 
 export interface FieldSubErrors {
@@ -28,9 +28,9 @@ export interface BespokeValidationErrors {
   // Whether there are any errors.
   hasErrors: boolean;
   // Errors that apply to the entire model
-  modelErrors: ModelErrorCode[];
+  modelErrors: (ModelErrorCode | EntityConflictCode)[];
   // Errors for individual fields on the model.
-  fieldErrors: FieldErrors;
+  fieldErrors?: FieldErrors;
 }
 
 export const EmptyBespokeValidationErrors: Readonly<BespokeValidationErrors> = {

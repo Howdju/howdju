@@ -16,6 +16,7 @@ import {
   WritQuoteRef,
   UrlRef,
   ContextTrailItem,
+  brandedParse,
 } from "howdju-common";
 import { makeJustificationViewModel } from "howdju-client-common";
 
@@ -80,10 +81,12 @@ export default class LandingPage extends Component {
             created,
           },
           urls: [
-            {
-              ...UrlRef.parse({ id: "example" }),
+            brandedParse(UrlRef, {
+              id: "example",
               url: "https://archive.amerisurv.com/PDF/TheAmericanSurveyor_Lathrop-TallBuildings_January2009.pdf",
-            },
+              canonicalUrl:
+                "https://archive.amerisurv.com/PDF/TheAmericanSurveyor_Lathrop-TallBuildings_January2009.pdf",
+            }),
           ],
           created,
         },
@@ -153,10 +156,12 @@ export default class LandingPage extends Component {
               "DC Code - § 6–601.05. Street width to control building height; business streets; residence streets; specified properties; structures above top story of building.",
           },
           urls: [
-            {
-              ...UrlRef.parse({ id: "example" }),
+            brandedParse(UrlRef, {
+              id: "example",
               url: "https://code.dccouncil.gov/us/dc/council/code/sections/6-601.05",
-            },
+              canonicalUrl:
+                "https://code.dccouncil.gov/us/dc/council/code/sections/6-601.05",
+            }),
           ],
         },
       },

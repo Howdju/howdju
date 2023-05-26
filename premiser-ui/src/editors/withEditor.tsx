@@ -105,6 +105,11 @@ export type EntityEditorFieldsProps<EntityProp extends string, Schema> = {
   id: ComponentId;
   /** If present, this string will be prepended to this editor's controls' names, with an intervening "." */
   name?: ComponentName;
+  /**
+   * Whether the fields should be disabled.
+   *
+   * withEditor sets this when the form is saving.
+   */
   disabled: boolean;
   suggestionsKey: SuggestionsKey;
   onBlur?: OnBlurCallback;
@@ -146,6 +151,7 @@ type EntityPropProps<EntityProp extends string, EntityType> = {
  * @param commitConfig An optional commit config describing the API endpoint that commiting uses.
  *   When provided, the editor supports pre-request validation (prevents submission if the request
  *   would be invalid.)
+ *   TODO(410): accept just the requestActionCreator and infer inputTransformer to be identity
  *   TODO(273): make commit config required
  * @typeparam EntityProp the name of the property containing the edit entity. It must have SchemaInput type.
  * @typeparam Props the type of props that EntityEditorFields requires.

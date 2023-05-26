@@ -28,7 +28,7 @@ import PropositionUsagesPage from "./pages/propositionUsages/PropositionUsagesPa
 import RecentActivityPage from "./RecentActivityPage";
 import RegistrationConfirmationPage from "./pages/registration/RegistrationConfirmationPage";
 import RegistrationRequestPage from "./pages/registration/RegistrationRequestPage";
-import SubmitSourceExcerptPage from "./pages/SubmitSourceExcerptPage";
+import SubmitMediaExcerptPage from "./pages/SubmitMediaExcerptPage";
 import TagPage from "./pages/tag/TagPage";
 import TestErrorPage from "./TestErrorPage";
 import ToolsPage from "./ToolsPage";
@@ -138,11 +138,11 @@ const routesById = {
     <Route exact path="/proposition-usages" component={PropositionUsagesPage} />
   ),
 
-  submitSourceExcerpt: (
+  submitMediaExcerpt: (
     <Route
       exact
       path="/source-excerpts/new"
-      render={() => <SubmitSourceExcerptPage />}
+      render={() => <SubmitMediaExcerptPage />}
     />
   ),
   createProposition: (

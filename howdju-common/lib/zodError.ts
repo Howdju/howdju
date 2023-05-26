@@ -158,7 +158,7 @@ function makeCallableProxy<T>(): Callable<T, IssueDescriptorArg> {
  */
 export function removeZodErrorDupes<T, U>(
   error: ZodFormattedError<T, U>
-): ZodFormattedError<T, U> {
+): FixedZodFormattedError<T, U> {
   return mapValuesDeep(
     error,
     (val: any, key: string) => {
@@ -171,7 +171,7 @@ export function removeZodErrorDupes<T, U>(
       return val;
     },
     { mapArrays: false }
-  ) as ZodFormattedError<T, U>;
+  ) as FixedZodFormattedError<T, U>;
 }
 
 /**
@@ -179,4 +179,23 @@ export function removeZodErrorDupes<T, U>(
  *
  * This type is an alias for a ZodFormattedError having our custom issue format.
  */
-export type ModelErrors<T> = z.ZodFormattedError<T, ZodCustomIssueFormat>;
+export type ModelErrors<T> = FixedZodFormattedError<T, ZodCustomIssueFormat>;
+
+// DO_NOT_MERGE fix in zod
+type FixedZodFormattedError<T, U = string> = T extends (infer V)[] | undefined
+  ? FixedZodFormattedError<V, U>[]
+  : {
+      _errors: U[];
+    } & (T extends [any, ...any[]]
+      ? {
+          [K in keyof T]?: FixedZodFormattedError<T[K], U>;
+        }
+      : T extends any[]
+      ? {
+          [k: number]: FixedZodFormattedError<T[number], U>;
+        }
+      : T extends object
+      ? {
+          [K in keyof T]?: FixedZodFormattedError<T[K], U>;
+        }
+      : unknown);

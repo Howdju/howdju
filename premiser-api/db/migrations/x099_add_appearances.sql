@@ -1,3 +1,5 @@
+-- DO_NOT_MERGE delete
+
 create table if not exists sentence_appearances (
   sentence_appearance_id serial primary key,
   sentence_type varchar(64) not null, -- PROPOSITION, STATEMENT

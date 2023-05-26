@@ -9,6 +9,7 @@ import {
   JustificationBasisCompoundsService,
   JustificationVotesService,
   MainSearchService,
+  MediaExcerptsService,
   PermissionsService,
   PerspectivesService,
   PicRegionsService,
@@ -28,6 +29,7 @@ import {
   VidSegmentsService,
   WritsService,
   WritQuotesService,
+  SourcesService,
 } from "../services";
 import { AwsProvider } from "./awsInit";
 
@@ -227,6 +229,17 @@ export function servicesInitializer(provider: AwsProvider) {
     justificationsService
   );
 
+  const sourcesService = new SourcesService(provider.sourcesDao);
+
+  const mediaExcerptsService = new MediaExcerptsService(
+    authService,
+    provider.mediaExcerptsDao,
+    writQuotesService,
+    sourcesService,
+    persorgsService,
+    urlsService
+  );
+
   provider.logger.debug("servicesInit complete");
 
   return {
@@ -240,6 +253,7 @@ export function servicesInitializer(provider: AwsProvider) {
     justificationBasisCompoundsService,
     justificationVotesService,
     mainSearchService,
+    mediaExcerptsService,
     permissionsService,
     perspectivesService,
     sourceExcerptParaphrasesService,
@@ -251,6 +265,7 @@ export function servicesInitializer(provider: AwsProvider) {
     propositionTagVotesService,
     registrationService,
     rootTargetJustificationsService,
+    sourcesService,
     statementsService,
     tagsService,
     urlsService,

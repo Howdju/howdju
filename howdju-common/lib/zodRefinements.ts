@@ -1,8 +1,9 @@
 import { z } from "zod";
-import moment, { Moment } from "moment";
+import moment from "moment";
 import isUrl from "validator/lib/isURL";
 
 import { extractDomain } from "./urls";
+import { MomentConstructor } from "./moment";
 
 type UrlOptions = {
   domain?: RegExp;
@@ -44,10 +45,6 @@ const urlRefinement =
 export const urlString = (options?: UrlOptions) =>
   z.string().superRefine(urlRefinement(options ?? {}));
 
-// @types/moment doesn't provide this constructor, but it works.
-type MomentConstructor = {
-  new (...args: Parameters<typeof moment>): Moment;
-};
 export const momentObject = z.instanceof(
   moment as unknown as MomentConstructor,
   {

@@ -12,6 +12,7 @@ import { validatorsInitializer } from "./validatorsInit";
 import { DatabaseProvider } from "./databaseInit";
 import { LoggerProvider } from "./loggerInit";
 import { AwsProvider } from "./awsInit";
+import TestHelper from "./TestHelper";
 
 /**
  * A dependency locator for tests.
@@ -37,6 +38,10 @@ export class TestProvider {
     assign(this, searchersInitializer(this as unknown as DatabaseProvider));
     assign(this, validatorsInitializer(this as unknown as LoggerProvider));
     assign(this, servicesInitializer(this as unknown as AwsProvider));
+    const servicesProvider = this as unknown as ServicesProvider;
+    assign(this, {
+      testHelper: new TestHelper(servicesProvider),
+    });
 
     this.logger.debug("TestProvider initialization complete");
   }
@@ -47,5 +52,7 @@ export class TestProvider {
 }
 
 export function makeTestProvider(database: Database) {
-  return new TestProvider(database) as unknown as ServicesProvider;
+  return new TestProvider(database) as unknown as ServicesProvider & {
+    testHelper: TestHelper;
+  };
 }

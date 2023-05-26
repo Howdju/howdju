@@ -1,24 +1,8 @@
+import { expect } from "@jest/globals";
 import assign from "lodash/assign";
 import moment from "moment";
-import { expect } from "@jest/globals";
-
-import { JustificationsDao } from "./JustificationsDao";
-import { mockLogger, expectToBeSameMomentDeep } from "howdju-test-common";
-import { endPoolAndDropDb, initDb, makeTestDbConfig } from "@/util/testUtil";
 import { Pool } from "pg";
-import {
-  AuthService,
-  Database,
-  makePool,
-  PersorgsDao,
-  PropositionsDao,
-  StatementsService,
-  PropositionCompoundsService,
-  UsersDao,
-  WritQuotesService,
-} from "..";
-import { makeTestProvider } from "@/initializers/TestProvider";
-import { CreateJustificationDataIn } from "./dataTypes";
+
 import {
   JustificationRef,
   negateRootPolarity,
@@ -26,13 +10,27 @@ import {
   StatementRef,
   SortDescription,
   CreatePropositionCompound,
-  CreateWritQuote,
   EntityId,
   PropositionCompound,
   Persisted,
   AuthToken,
   User,
 } from "howdju-common";
+import { mockLogger, expectToBeSameMomentDeep } from "howdju-test-common";
+
+import { JustificationsDao } from "./JustificationsDao";
+import { endPoolAndDropDb, initDb, makeTestDbConfig } from "@/util/testUtil";
+import {
+  Database,
+  makePool,
+  PersorgsDao,
+  PropositionsDao,
+  StatementsService,
+  PropositionCompoundsService,
+} from "..";
+import { makeTestProvider } from "@/initializers/TestProvider";
+import { CreateJustificationDataIn } from "./dataTypes";
+import TestHelper from "@/initializers/TestHelper";
 
 describe("JustificationsDao", () => {
   const dbConfig = makeTestDbConfig();
@@ -42,10 +40,8 @@ describe("JustificationsDao", () => {
   let statementsService: StatementsService;
   let persorgsDao: PersorgsDao;
   let propositionsDao: PropositionsDao;
-  let usersDao: UsersDao;
-  let authService: AuthService;
+  let testHelper: TestHelper;
   let propositionCompoundsService: PropositionCompoundsService;
-  let writQuotesService: WritQuotesService;
   beforeEach(async () => {
     dbName = await initDb(dbConfig);
 
@@ -58,10 +54,8 @@ describe("JustificationsDao", () => {
     statementsService = provider.statementsService;
     persorgsDao = provider.persorgsDao;
     propositionsDao = provider.propositionsDao;
-    usersDao = provider.usersDao;
-    authService = provider.authService;
+    testHelper = provider.testHelper;
     propositionCompoundsService = provider.propositionCompoundsService;
-    writQuotesService = provider.writQuotesService;
   });
   afterEach(async () => {
     await endPoolAndDropDb(pool, dbConfig, dbName);
@@ -111,7 +105,7 @@ describe("JustificationsDao", () => {
   describe("readJustificationForId", () => {
     test("reads a justification for an ID", async () => {
       // Arrange
-      const { user, authToken } = await makeUser();
+      const { user, authToken } = await testHelper.makeUser();
       const statementData = await makeStatement({ user, authToken });
 
       const propositionCompound = await makePropositionCompound({
@@ -161,7 +155,7 @@ describe("JustificationsDao", () => {
   describe("readJustifications", () => {
     test("reads justifications", async () => {
       // Arrange
-      const { user, authToken } = await makeUser();
+      const { user, authToken } = await testHelper.makeUser();
 
       const statementData = await makeStatement({ user, authToken });
 
@@ -259,7 +253,7 @@ describe("JustificationsDao", () => {
     test("read pro and con justifications", async () => {
       // Create a countered writquote justification and a proposition compound disjustification
       // Arrange
-      const { user, authToken } = await makeUser();
+      const { user, authToken } = await testHelper.makeUser();
 
       const statementData = await makeStatement({ user, authToken });
       const statementId = statementData.id;
@@ -267,7 +261,7 @@ describe("JustificationsDao", () => {
       const rootTargetType = "STATEMENT";
       const rootTarget = StatementRef.parse({ id: statementId });
 
-      const writQuote = await makeWritQuote({ authToken });
+      const writQuote = await testHelper.makeWritQuote({ authToken });
 
       const propositionCompound1 = await makePropositionCompound({
         userId: user.id,
@@ -391,20 +385,6 @@ describe("JustificationsDao", () => {
     });
   });
 
-  async function makeUser() {
-    const now = moment();
-    const creatorUserId = null;
-    const userData = {
-      email: "user@domain.com",
-      username: "the-username",
-      isActive: true,
-    };
-
-    const user = await usersDao.createUser(userData, creatorUserId, now);
-    const { authToken } = await authService.createAuthToken(user, now);
-    return { user, authToken };
-  }
-
   async function makeStatement({
     user,
     authToken,
@@ -464,20 +444,5 @@ describe("JustificationsDao", () => {
         now
       );
     return propositionCompound;
-  }
-
-  async function makeWritQuote({ authToken }: { authToken: AuthToken }) {
-    const createWritQuote: CreateWritQuote = {
-      quoteText: "What if a much of a wind",
-      writ: {
-        title: "Leaves of grass",
-      },
-      urls: [],
-    };
-    const { writQuote } = await writQuotesService.createWritQuote({
-      authToken,
-      writQuote: createWritQuote,
-    });
-    return writQuote;
   }
 });

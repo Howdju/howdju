@@ -37,7 +37,7 @@ export type CancelSuggestionsActionCreator = (
 export interface Props<T>
   extends Omit<
     ComponentProps<typeof AutoComplete>,
-    "data" | "onBlur" | "onAutoComplete"
+    "data" | "onBlur" | "onAutoComplete" | "maxLength"
   > {
   id: ComponentId;
   name: string;
@@ -70,6 +70,7 @@ export interface Props<T>
    * will infinitely expand based on the text content.
    */
   maxRows?: number;
+  maxLength?: number | null;
 }
 
 export default function ApiAutoComplete({
@@ -189,7 +190,7 @@ export default function ApiAutoComplete({
           filter="none"
           rows={rows}
           maxRows={maxRows}
-          maxLength={maxLength}
+          maxLength={maxLength || undefined}
           messageProps={messageProps}
         />
         {rightControls}

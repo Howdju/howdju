@@ -193,7 +193,7 @@ export function* redirectUnauthenticatedUserToLoginOnPagesNeedingAuthentication(
       // TODO(247) infer auth requirement from routes
       const doesPathRequireAuthentication = some(
         [
-          "submitSourceExcerpt",
+          "submitMediaExcerpt",
           "createProposition",
           "createJustification",
           "submitJustificationViaQueryString",

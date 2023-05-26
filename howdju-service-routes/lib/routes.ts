@@ -38,6 +38,7 @@ import {
   CreateRegistrationConfirmation,
   parseContextTrail,
   toJson,
+  CreateMediaExcerpt,
 } from "howdju-common";
 import {
   EntityNotFoundError,
@@ -125,6 +126,25 @@ export const serviceRoutes = {
           searchText
         );
         return { body: { persorgs } };
+      }
+    ),
+  },
+  searchSources: {
+    path: "search-sources",
+    method: httpMethods.GET,
+    request: handler(
+      QueryStringParams("searchText"),
+      async (
+        appProvider: ServicesProvider,
+        { queryStringParams: { searchText } }
+      ) => {
+        if (!searchText) {
+          throw new InvalidRequestError("searchText is required.");
+        }
+        const sources = await appProvider.sourcesDescriptionSearcher.search(
+          searchText
+        );
+        return { body: { sources } };
       }
     ),
   },
@@ -784,6 +804,48 @@ export const serviceRoutes = {
       }
     ),
   },
+
+  /*
+   * MediaExcerpts
+   */
+  createMediaExcerpt: {
+    path: "media-excerpts",
+    method: "POST",
+    request: handler(
+      Authed.merge(Body({ mediaExcerpt: CreateMediaExcerpt })),
+      async (
+        appProvider: ServicesProvider,
+        { authToken, body: { mediaExcerpt } }
+      ) => {
+        return {
+          mediaExcerpt:
+            await appProvider.mediaExcerptsService.readOrCreateMediaExcerpt(
+              authToken,
+              mediaExcerpt
+            ),
+        };
+      }
+    ),
+  },
+  readMediaExcerpt: {
+    path: "media-excerpts/:mediaExcerptId",
+    method: "GET",
+    request: handler(
+      PathParams("mediaExcerptId"),
+      async (
+        appProvider: ServicesProvider,
+        { pathParams: { mediaExcerptId } }
+      ) => {
+        return {
+          mediaExcerpt:
+            await appProvider.mediaExcerptsService.readMediaExcerptForId(
+              mediaExcerptId
+            ),
+        };
+      }
+    ),
+  },
+
   /*
    * Auth
    */

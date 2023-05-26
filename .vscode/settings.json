@@ -1,0 +1,5 @@
+{
+  "lldb.library": "/Applications/Xcode.app/Contents/SharedFrameworks/LLDB.framework/Versions/A/LLDB",
+  "java.configuration.updateBuildConfiguration": "automatic",
+  "typescript.tsdk": "node_modules/typescript/lib"
+}

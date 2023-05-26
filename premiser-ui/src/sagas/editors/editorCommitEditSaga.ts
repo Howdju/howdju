@@ -337,6 +337,11 @@ export const CreateRegistrationRequestConfig: EditorCommitCrudActionConfig<
   inputTransformer: identity,
 };
 
+export const MediaExcerptConfig = {
+  requestActionCreator: api.createMediaExcerpt,
+  inputTransformer: identity,
+};
+
 export const editorCommitConfigs: Partial<
   Record<EditorType, EditorCommitConfig>
 > = {
@@ -379,6 +384,9 @@ export const editorCommitConfigs: Partial<
   },
   CONTENT_REPORT: {
     CREATE: api.createContentReport,
+  },
+  MEDIA_EXCERPT: {
+    CREATE: MediaExcerptConfig,
   },
 };
 

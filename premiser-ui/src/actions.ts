@@ -331,6 +331,7 @@ export const goto = {
   writQuote: createAction("GOTO/WRIT_QUOTE", (writQuote: WritQuote) => ({
     writQuote,
   })),
+  submitMediaExcerpt: createAction("GOTO/SUBMIT_SOURCE_EXCERPT"),
 };
 
 /** Actions that represent multi-step flows */
@@ -344,8 +345,8 @@ export const flows = {
       basisSourceId: EntityId
     ) => ({ editorType, editorId, basisSourceType, basisSourceId })
   ),
-  beginEditOfNewJustificationFromAnchorInfo: createAction(
-    "FLOWS/BEGIN_EDIT_OF_NEW_JUSTIFICATION_FROM_WRIT_QUOTE",
+  submitMediaExcerptFromAnchorInfo: createAction(
+    "FLOWS/SUBMIT_MEDIA_EXCERPT_FROM_ANCHOR_INFO",
     (anchorInfo: AnchorInfo) => anchorInfo
   ),
   commitEditThenView: createAction(

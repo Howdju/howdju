@@ -1,13 +1,12 @@
 import React from "react";
 import { Button, FontIcon } from "react-md";
-import map from "lodash/map";
 
 import {
   UpdateWritQuoteInput,
   makeUrl,
   schemaSettings,
-  Url,
   CreateWritQuoteInput,
+  CreateUrlInput,
 } from "howdju-common";
 
 import ErrorMessages from "@/ErrorMessages";
@@ -76,7 +75,11 @@ const WritQuoteEditorFields = (props: Props) => {
         makeUrl
       )
     );
-  const onRemoveUrl = (_url: Url, index: number, _urls: Url[]) =>
+  const onRemoveUrl = (
+    _url: CreateUrlInput,
+    index: number,
+    _urls: CreateUrlInput[]
+  ) =>
     editorDispatch((editorType: EditorType, editorId: string) =>
       editors.removeListItem(
         editorType,
@@ -114,8 +117,7 @@ const WritQuoteEditorFields = (props: Props) => {
         onPropertyChange={onPropertyChange}
         wasSubmitAttempted={wasSubmitAttempted}
       />
-      {map(
-        urls,
+      {urls.map(
         (url, index, urls) =>
           url && (
             <SingleLineTextField

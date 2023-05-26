@@ -16,6 +16,15 @@ SET xmloption = content;
 SET client_min_messages = warning;
 SET row_security = off;
 
+--
+-- Name: media_excerpt_type; Type: TYPE; Schema: public; Owner: -
+--
+
+CREATE TYPE public.media_excerpt_type AS ENUM (
+    'WRIT_QUOTE'
+);
+
+
 SET default_tablespace = '';
 
 SET default_table_access_method = heap;
@@ -88,6 +97,7 @@ CREATE TABLE public.writ_quotes (
 --
 
 CREATE SEQUENCE public.citation_references_citation_reference_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -121,6 +131,7 @@ CREATE TABLE public.writs (
 --
 
 CREATE SEQUENCE public.citations_citation_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -171,6 +182,28 @@ ALTER SEQUENCE public.content_reports_content_report_id_seq OWNED BY public.cont
 
 
 --
+-- Name: dom_anchors; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.dom_anchors (
+    url_locator_id bigint NOT NULL,
+    exact_text character varying(65536),
+    prefix_text character varying(65535),
+    suffix_text character varying(65536),
+    start_offset integer,
+    end_offset integer,
+    creator_user_id bigint NOT NULL,
+    created timestamp without time zone NOT NULL,
+    deleted timestamp without time zone,
+    CONSTRAINT dom_anchors_check CHECK ((end_offset >= start_offset)),
+    CONSTRAINT dom_anchors_exact_text_check CHECK (((exact_text)::text <> ''::text)),
+    CONSTRAINT dom_anchors_prefix_text_check CHECK (((prefix_text)::text <> ''::text)),
+    CONSTRAINT dom_anchors_start_offset_check CHECK ((start_offset >= 0)),
+    CONSTRAINT dom_anchors_suffix_text_check CHECK (((suffix_text)::text <> ''::text))
+);
+
+
+--
 -- Name: group_permissions; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -201,6 +234,7 @@ CREATE TABLE public.groups (
 --
 
 CREATE SEQUENCE public.groups_group_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -223,10 +257,10 @@ CREATE TABLE public.job_history (
     job_history_id integer NOT NULL,
     job_type character varying(256),
     job_scope character varying(256),
+    started_at timestamp without time zone,
     completed_at timestamp without time zone,
     status character varying(64),
-    message character varying(65536),
-    started_at timestamp without time zone
+    message character varying(65536)
 );
 
 
@@ -235,6 +269,7 @@ CREATE TABLE public.job_history (
 --
 
 CREATE SEQUENCE public.job_history_job_history_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -267,6 +302,7 @@ CREATE TABLE public.justification_basis_compound_atoms (
 --
 
 CREATE SEQUENCE public.justification_basis_compound__justification_basis_compound__seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -298,6 +334,7 @@ CREATE TABLE public.justification_basis_compounds (
 --
 
 CREATE SEQUENCE public.justification_basis_compounds_justification_basis_compound__seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -318,10 +355,10 @@ ALTER SEQUENCE public.justification_basis_compounds_justification_basis_compound
 
 CREATE TABLE public.justification_scores (
     justification_id integer,
-    score_type character varying(64),
-    score double precision,
     creator_job_history_id integer,
     deletor_job_history_id integer,
+    score_type character varying(64),
+    score double precision,
     created timestamp without time zone,
     deleted timestamp without time zone
 );
@@ -366,6 +403,7 @@ CREATE TABLE public.justifications (
 --
 
 CREATE SEQUENCE public.justifications_justification_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -378,6 +416,71 @@ CREATE SEQUENCE public.justifications_justification_id_seq
 --
 
 ALTER SEQUENCE public.justifications_justification_id_seq OWNED BY public.justifications.justification_id;
+
+
+--
+-- Name: media_excerpt_citations; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.media_excerpt_citations (
+    media_excerpt_id bigint NOT NULL,
+    source_id bigint NOT NULL,
+    pincite character varying(128),
+    normal_pincite character varying(128),
+    creator_user_id bigint NOT NULL,
+    created timestamp without time zone NOT NULL,
+    deleted timestamp without time zone,
+    CONSTRAINT media_excerpt_citations_normal_pincite_check CHECK (((normal_pincite)::text <> ''::text)),
+    CONSTRAINT media_excerpt_citations_pincite_check CHECK (((pincite)::text <> ''::text))
+);
+
+
+--
+-- Name: media_excerpt_speakers; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.media_excerpt_speakers (
+    media_excerpt_id bigint NOT NULL,
+    speaker_persorg_id bigint NOT NULL,
+    creator_user_id bigint,
+    created timestamp without time zone NOT NULL,
+    deleted timestamp without time zone
+);
+
+
+--
+-- Name: media_excerpts; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.media_excerpts (
+    media_excerpt_id bigint NOT NULL,
+    quotation character varying(4096),
+    normal_quotation character varying(4096),
+    creator_user_id bigint NOT NULL,
+    created timestamp without time zone NOT NULL,
+    deleted timestamp without time zone,
+    CONSTRAINT media_excerpts_normal_quotation_check CHECK (((normal_quotation)::text <> ''::text)),
+    CONSTRAINT media_excerpts_quotation_check CHECK (((quotation)::text <> ''::text))
+);
+
+
+--
+-- Name: media_excerpts_media_excerpt_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.media_excerpts_media_excerpt_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: media_excerpts_media_excerpt_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.media_excerpts_media_excerpt_id_seq OWNED BY public.media_excerpts.media_excerpt_id;
 
 
 --
@@ -447,6 +550,7 @@ CREATE TABLE public.permissions (
 --
 
 CREATE SEQUENCE public.permissions_permission_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -487,6 +591,7 @@ CREATE TABLE public.persorgs (
 --
 
 CREATE SEQUENCE public.persorgs_persorg_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -530,6 +635,7 @@ CREATE TABLE public.perspectives (
 --
 
 CREATE SEQUENCE public.perspectives_perspective_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -572,6 +678,7 @@ CREATE TABLE public.proposition_compounds (
 --
 
 CREATE SEQUENCE public.proposition_compounds_proposition_compound_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -591,10 +698,10 @@ ALTER SEQUENCE public.proposition_compounds_proposition_compound_id_seq OWNED BY
 --
 
 CREATE TABLE public.proposition_tag_scores (
-    score_type character varying(64),
-    score double precision,
     creator_job_history_id integer,
     deletor_job_history_id integer,
+    score_type character varying(64),
+    score double precision,
     created timestamp without time zone,
     deleted timestamp without time zone,
     proposition_id integer,
@@ -608,6 +715,7 @@ CREATE TABLE public.proposition_tag_scores (
 --
 
 CREATE SEQUENCE public.proposition_tag_scores_proposition_tag_score_id_2_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -642,6 +750,7 @@ CREATE TABLE public.proposition_tag_votes (
 --
 
 CREATE SEQUENCE public.proposition_tag_votes_proposition_tag_vote_id
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -675,6 +784,7 @@ CREATE TABLE public.propositions (
 --
 
 CREATE SEQUENCE public.propositions_proposition_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -744,6 +854,7 @@ CREATE TABLE public.source_excerpt_paraphrases (
 --
 
 CREATE SEQUENCE public.source_excerpt_paraphrases_source_excerpt_paraphrase_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -756,6 +867,55 @@ CREATE SEQUENCE public.source_excerpt_paraphrases_source_excerpt_paraphrase_id_s
 --
 
 ALTER SEQUENCE public.source_excerpt_paraphrases_source_excerpt_paraphrase_id_seq OWNED BY public.source_excerpt_paraphrases.source_excerpt_paraphrase_id;
+
+
+--
+-- Name: sources; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.sources (
+    source_id bigint NOT NULL,
+    description_apa character varying(2048) NOT NULL,
+    normal_description_apa character varying(2048) NOT NULL,
+    identifier_doi character varying(128),
+    identifier_isbn character varying(128),
+    identifier_pmid character varying(128),
+    identifier_issn character varying(128),
+    identifier_pmc character varying(128),
+    identifier_oclc character varying(128),
+    identifier_bibcode character varying(128),
+    creator_user_id bigint,
+    created timestamp without time zone NOT NULL,
+    deleted timestamp without time zone,
+    CONSTRAINT sources_description_apa_check CHECK (((description_apa)::text <> ''::text)),
+    CONSTRAINT sources_identifier_bibcode_check CHECK (((identifier_bibcode)::text <> ''::text)),
+    CONSTRAINT sources_identifier_doi_check CHECK (((identifier_doi)::text <> ''::text)),
+    CONSTRAINT sources_identifier_isbn_check CHECK (((identifier_isbn)::text <> ''::text)),
+    CONSTRAINT sources_identifier_issn_check CHECK (((identifier_issn)::text <> ''::text)),
+    CONSTRAINT sources_identifier_oclc_check CHECK (((identifier_oclc)::text <> ''::text)),
+    CONSTRAINT sources_identifier_pmc_check CHECK (((identifier_pmc)::text <> ''::text)),
+    CONSTRAINT sources_identifier_pmid_check CHECK (((identifier_pmid)::text <> ''::text)),
+    CONSTRAINT sources_normal_description_apa_check CHECK (((normal_description_apa)::text <> ''::text))
+);
+
+
+--
+-- Name: sources_source_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.sources_source_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: sources_source_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.sources_source_id_seq OWNED BY public.sources.source_id;
 
 
 --
@@ -779,6 +939,7 @@ CREATE TABLE public.statements (
 --
 
 CREATE SEQUENCE public.statements_statement_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -791,40 +952,6 @@ CREATE SEQUENCE public.statements_statement_id_seq
 --
 
 ALTER SEQUENCE public.statements_statement_id_seq OWNED BY public.statements.statement_id;
-
-
---
--- Name: taggings; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.taggings (
-    tagging_id integer NOT NULL,
-    tag_id integer,
-    target_id integer,
-    target_type character varying(64),
-    creator_user_id integer,
-    created timestamp without time zone,
-    deleted timestamp without time zone
-);
-
-
---
--- Name: taggings_tagging_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.taggings_tagging_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: taggings_tagging_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.taggings_tagging_id_seq OWNED BY public.taggings.tagging_id;
 
 
 --
@@ -847,6 +974,7 @@ CREATE TABLE public.tags (
 --
 
 CREATE SEQUENCE public.tags_tag_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -862,15 +990,51 @@ ALTER SEQUENCE public.tags_tag_id_seq OWNED BY public.tags.tag_id;
 
 
 --
+-- Name: url_locators; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.url_locators (
+    url_locator_id bigint NOT NULL,
+    media_excerpt_id bigint NOT NULL,
+    url_id bigint NOT NULL,
+    creator_user_id bigint NOT NULL,
+    created timestamp without time zone NOT NULL,
+    deleted timestamp without time zone
+);
+
+
+--
+-- Name: url_locators_url_locator_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.url_locators_url_locator_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: url_locators_url_locator_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.url_locators_url_locator_id_seq OWNED BY public.url_locators.url_locator_id;
+
+
+--
 -- Name: urls; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.urls (
-    url_id integer NOT NULL,
-    url character varying(65536),
+    url_id bigint NOT NULL,
+    url character varying(65536) NOT NULL,
     creator_user_id integer,
     created timestamp without time zone,
-    deleted timestamp without time zone
+    deleted timestamp without time zone,
+    canonical_url character varying(65536) NOT NULL,
+    CONSTRAINT urls_canonical_url_check CHECK (((canonical_url)::text <> ''::text)),
+    CONSTRAINT urls_url_check CHECK (((url)::text <> ''::text))
 );
 
 
@@ -879,6 +1043,7 @@ CREATE TABLE public.urls (
 --
 
 CREATE SEQUENCE public.urls_url_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -926,8 +1091,7 @@ CREATE TABLE public.user_external_ids (
     google_analytics_id character varying(128),
     mixpanel_id character varying(128),
     heap_analytics_id character varying(128),
-    sentry_id character varying(128),
-    smallchat_id character varying(128)
+    sentry_id character varying(128)
 );
 
 
@@ -965,13 +1129,13 @@ CREATE TABLE public.users (
     user_id integer NOT NULL,
     email character varying(2048),
     short_name character varying(128),
+    long_name character varying(1024),
     phone_number character varying(64),
     creator_user_id integer,
+    is_active boolean,
     last_login timestamp without time zone,
     created timestamp without time zone,
     deleted timestamp without time zone,
-    long_name character varying(1024),
-    is_active boolean,
     username character varying(64),
     accepted_terms timestamp without time zone,
     affirmed_majority_consent timestamp without time zone,
@@ -985,6 +1149,7 @@ CREATE TABLE public.users (
 --
 
 CREATE SEQUENCE public.users_user_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -1004,6 +1169,7 @@ ALTER SEQUENCE public.users_user_id_seq OWNED BY public.users.user_id;
 --
 
 CREATE SEQUENCE public.votes_vote_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -1156,6 +1322,13 @@ ALTER TABLE ONLY public.justifications ALTER COLUMN justification_id SET DEFAULT
 
 
 --
+-- Name: media_excerpts media_excerpt_id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.media_excerpts ALTER COLUMN media_excerpt_id SET DEFAULT nextval('public.media_excerpts_media_excerpt_id_seq'::regclass);
+
+
+--
 -- Name: password_reset_requests password_reset_request_id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -1226,6 +1399,13 @@ ALTER TABLE ONLY public.source_excerpt_paraphrases ALTER COLUMN source_excerpt_p
 
 
 --
+-- Name: sources source_id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.sources ALTER COLUMN source_id SET DEFAULT nextval('public.sources_source_id_seq'::regclass);
+
+
+--
 -- Name: statements statement_id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -1233,17 +1413,17 @@ ALTER TABLE ONLY public.statements ALTER COLUMN statement_id SET DEFAULT nextval
 
 
 --
--- Name: taggings tagging_id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.taggings ALTER COLUMN tagging_id SET DEFAULT nextval('public.taggings_tagging_id_seq'::regclass);
-
-
---
 -- Name: tags tag_id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.tags ALTER COLUMN tag_id SET DEFAULT nextval('public.tags_tag_id_seq'::regclass);
+
+
+--
+-- Name: url_locators url_locator_id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.url_locators ALTER COLUMN url_locator_id SET DEFAULT nextval('public.url_locators_url_locator_id_seq'::regclass);
 
 
 --
@@ -1289,6 +1469,22 @@ ALTER TABLE ONLY public.writs ALTER COLUMN writ_id SET DEFAULT nextval('public.c
 
 
 --
+-- Name: media_excerpt_speakers media_excerpt_speakers_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.media_excerpt_speakers
+    ADD CONSTRAINT media_excerpt_speakers_pkey PRIMARY KEY (media_excerpt_id, speaker_persorg_id);
+
+
+--
+-- Name: media_excerpts media_excerpts_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.media_excerpts
+    ADD CONSTRAINT media_excerpts_pkey PRIMARY KEY (media_excerpt_id);
+
+
+--
 -- Name: password_reset_requests password_reset_requests_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1321,11 +1517,51 @@ ALTER TABLE ONLY public.registration_requests
 
 
 --
+-- Name: sources sources_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.sources
+    ADD CONSTRAINT sources_pkey PRIMARY KEY (source_id);
+
+
+--
 -- Name: statements statements_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.statements
     ADD CONSTRAINT statements_pkey PRIMARY KEY (statement_id);
+
+
+--
+-- Name: dom_anchors unique_anchor; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.dom_anchors
+    ADD CONSTRAINT unique_anchor UNIQUE (url_locator_id, exact_text, prefix_text, suffix_text, start_offset, end_offset);
+
+
+--
+-- Name: media_excerpt_citations unq; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.media_excerpt_citations
+    ADD CONSTRAINT unq UNIQUE (media_excerpt_id, source_id, normal_pincite, deleted);
+
+
+--
+-- Name: url_locators url_locators_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.url_locators
+    ADD CONSTRAINT url_locators_pkey PRIMARY KEY (url_locator_id);
+
+
+--
+-- Name: urls urls_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.urls
+    ADD CONSTRAINT urls_pkey PRIMARY KEY (url_id);
 
 
 --
@@ -1412,6 +1648,13 @@ CREATE UNIQUE INDEX idx_proposition_compounds_proposition_compound_id ON public.
 --
 
 CREATE UNIQUE INDEX idx_propositions_proposition_id ON public.propositions USING btree (proposition_id);
+
+
+--
+-- Name: idx_registration_requests_email; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_registration_requests_email ON public.registration_requests USING btree (email);
 
 
 --
@@ -1611,13 +1854,6 @@ CREATE UNIQUE INDEX unq_registration_requests_code ON public.registration_reques
 
 
 --
--- Name: idx_registration_requests_email; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX idx_registration_requests_email ON public.registration_requests USING btree (email);
-
-
---
 -- Name: unq_users_username; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -1655,6 +1891,78 @@ ALTER TABLE ONLY public.content_reports
 
 
 --
+-- Name: dom_anchors dom_anchors_creator_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.dom_anchors
+    ADD CONSTRAINT dom_anchors_creator_user_id_fkey FOREIGN KEY (creator_user_id) REFERENCES public.users(user_id);
+
+
+--
+-- Name: dom_anchors dom_anchors_url_locator_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.dom_anchors
+    ADD CONSTRAINT dom_anchors_url_locator_id_fkey FOREIGN KEY (url_locator_id) REFERENCES public.url_locators(url_locator_id);
+
+
+--
+-- Name: media_excerpt_citations media_excerpt_citations_creator_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.media_excerpt_citations
+    ADD CONSTRAINT media_excerpt_citations_creator_user_id_fkey FOREIGN KEY (creator_user_id) REFERENCES public.users(user_id);
+
+
+--
+-- Name: media_excerpt_citations media_excerpt_citations_media_excerpt_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.media_excerpt_citations
+    ADD CONSTRAINT media_excerpt_citations_media_excerpt_id_fkey FOREIGN KEY (media_excerpt_id) REFERENCES public.media_excerpts(media_excerpt_id);
+
+
+--
+-- Name: media_excerpt_citations media_excerpt_citations_source_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.media_excerpt_citations
+    ADD CONSTRAINT media_excerpt_citations_source_id_fkey FOREIGN KEY (source_id) REFERENCES public.sources(source_id);
+
+
+--
+-- Name: media_excerpt_speakers media_excerpt_speakers_creator_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.media_excerpt_speakers
+    ADD CONSTRAINT media_excerpt_speakers_creator_user_id_fkey FOREIGN KEY (creator_user_id) REFERENCES public.users(user_id);
+
+
+--
+-- Name: media_excerpt_speakers media_excerpt_speakers_media_excerpt_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.media_excerpt_speakers
+    ADD CONSTRAINT media_excerpt_speakers_media_excerpt_id_fkey FOREIGN KEY (media_excerpt_id) REFERENCES public.media_excerpts(media_excerpt_id);
+
+
+--
+-- Name: media_excerpt_speakers media_excerpt_speakers_speaker_persorg_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.media_excerpt_speakers
+    ADD CONSTRAINT media_excerpt_speakers_speaker_persorg_id_fkey FOREIGN KEY (speaker_persorg_id) REFERENCES public.persorgs(persorg_id);
+
+
+--
+-- Name: media_excerpts media_excerpts_creator_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.media_excerpts
+    ADD CONSTRAINT media_excerpts_creator_user_id_fkey FOREIGN KEY (creator_user_id) REFERENCES public.users(user_id);
+
+
+--
 -- Name: password_reset_requests password_reset_requests_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1668,6 +1976,14 @@ ALTER TABLE ONLY public.password_reset_requests
 
 ALTER TABLE ONLY public.persorgs
     ADD CONSTRAINT persorgs_creator_user_id_fkey FOREIGN KEY (creator_user_id) REFERENCES public.users(user_id);
+
+
+--
+-- Name: sources sources_creator_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.sources
+    ADD CONSTRAINT sources_creator_user_id_fkey FOREIGN KEY (creator_user_id) REFERENCES public.users(user_id);
 
 
 --
@@ -1692,6 +2008,22 @@ ALTER TABLE ONLY public.statements
 
 ALTER TABLE ONLY public.statements
     ADD CONSTRAINT statements_speaker_persorg_id_fkey FOREIGN KEY (speaker_persorg_id) REFERENCES public.persorgs(persorg_id);
+
+
+--
+-- Name: url_locators url_locators_creator_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.url_locators
+    ADD CONSTRAINT url_locators_creator_user_id_fkey FOREIGN KEY (creator_user_id) REFERENCES public.users(user_id);
+
+
+--
+-- Name: url_locators url_locators_url_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.url_locators
+    ADD CONSTRAINT url_locators_url_id_fkey FOREIGN KEY (url_id) REFERENCES public.urls(url_id);
 
 
 --
@@ -1721,3 +2053,4 @@ ALTER TABLE ONLY public.writ_quote_url_targets
 --
 -- PostgreSQL database dump complete
 --
+
