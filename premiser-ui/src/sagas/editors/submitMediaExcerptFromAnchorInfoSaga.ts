@@ -24,18 +24,16 @@ export function* submitMediaExcerptFromAnchorInfo() {
 
 function toCreateMediaExcerptInput(payload: Payload): CreateMediaExcerptInput {
   const { anchors, documentTitle, url } = payload;
-  const quoteText = anchors.map((a) => a.exactText.trim()).join("\n\n");
+  const quotation = anchors.map((a) => a.exactText.trim()).join("\n\n");
   return {
     localRep: {
-      writQuote: {
-        quoteText,
-      },
+      quotation,
     },
     // Should relate to localRep
-    remoteProcs: {
-      urlLocators: [{ url, anchors }],
+    locators: {
+      urlLocators: [{ url: { url }, anchors }],
     },
-    sources: [
+    citations: [
       {
         source: { descriptionApa: documentTitle },
       },

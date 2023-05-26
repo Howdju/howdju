@@ -220,7 +220,6 @@ export class MediaExcerptsDao {
     const args: any[] = [mediaExcerpt.id, createUrlLocator.url.id];
     let argIndex = 3;
     createUrlLocator.anchors.forEach((a, i) => {
-      // DO_NOT_MERGE select remaining anchor fields and populate UrlLocator.anchors
       selects.push(`
         da${i}.created as da${i}_created,
         da${i}.creator_user_id as da${i}_creator_user_id`);
@@ -275,6 +274,7 @@ export class MediaExcerptsDao {
     if (!row) {
       return undefined;
     }
+
     const urlLocatorId = row.url_locator_id;
     const anchors: Partial<DomAnchor>[] = new Array(
       createUrlLocator.anchors.length

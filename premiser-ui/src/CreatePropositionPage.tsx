@@ -385,9 +385,9 @@ export default function CreatePropositionPage({ mode, location }: Props) {
                                 )}
                                 name={combineNames(speakersName, array(index))}
                                 disabled={isSaving}
-                                onPersorgNameAutocomplete={(persorg: PersorgOut) =>
-                                  onPersorgAutocomplete(persorg, index)
-                                }
+                                onPersorgNameAutocomplete={(
+                                  persorg: PersorgOut
+                                ) => onPersorgAutocomplete(persorg, index)}
                                 onPropertyChange={onPropertyChange}
                                 errors={errors.speakers?.[index]}
                                 wasSubmitAttempted={wasSubmitAttempted}

@@ -11,7 +11,7 @@ import { keys, omit } from "lodash";
 import { Moment } from "moment";
 import { Simplify } from "type-fest";
 import { z } from "zod";
-import { schemaSettings } from "./schemas";
+
 import { momentObject, urlString } from "./zodRefinements";
 import { EntityName, EntityOrRef } from "./zodSchemaTypes";
 
@@ -335,20 +335,17 @@ export const CreateDomAnchor = DomAnchor.omit({
 });
 export type CreateDomAnchor = z.output<typeof CreateDomAnchor>;
 
-/** @deprecated TODO(38) use DomAnchor instead. */
-export const UrlTargetAnchor = DomAnchor;
-/** @deprecated TODO(38) use DomAnchor instead. */
-export type UrlTargetAnchor = DomAnchor;
-
+/** @deprecated */
 export const UrlTarget = Entity.extend({
-  anchors: z.array(UrlTargetAnchor),
+  anchors: z.array(DomAnchor),
 });
+/** @deprecated */
 export type UrlTarget = z.infer<typeof UrlTarget>;
 
 export const Url = Entity.extend({
   url: urlString(),
   canonicalUrl: urlString(),
-  // TODO(38) I don't think target should be part of URL. Targets should be related to URLs.
+  /** @deprecated TODO(38) replace with UrlLocator.anchors */
   target: UrlTarget.optional(),
 });
 export type Url = z.infer<typeof Url>;
@@ -358,13 +355,6 @@ export type CreateUrl = z.infer<typeof CreateUrl>;
 export const CreateUrlInput = CreateUrl;
 export type CreateUrlInput = z.infer<typeof CreateUrlInput>;
 
-// DO_NOT_MERGE replace with UrlLocator?
-export const UrlAnchors = Entity.extend({
-  url: urlString(),
-  anchors: z.array(DomAnchor),
-});
-export type UrlAnchors = z.infer<typeof UrlAnchors>;
-
 export const UrlLocator = Entity.extend({
   url: Url,
   anchors: z.array(DomAnchor).optional(),
@@ -373,7 +363,7 @@ export type UrlLocator = z.output<typeof UrlLocator>;
 
 /** A reference to a part of a textual media. */
 export const WritQuote = Entity.extend({
-  quoteText: z.string().min(1).max(schemaSettings.writQuoteQuoteTextMaxLength),
+  quoteText: z.string().min(1).max(4096),
   writ: Writ,
   urls: z.array(Url),
   created: momentObject,
@@ -413,11 +403,11 @@ export const SourceExcerpt = z.discriminatedUnion("type", [
     entity: VidSegment,
   }),
 ]);
-/** @deprecated */
+/** @deprecated TODO(38) replace with MediaExcerpt */
 export type SourceExcerpt = z.infer<typeof SourceExcerpt>;
-/** @deprecated */
+/** @deprecated TODO(38) replace with MediaExcerpt */
 export type SourceExcerptType = SourceExcerpt["type"];
-/** @deprecated */
+/** @deprecated See SourceExcerpt */
 export const SourceExcerptTypes = sourceExcerptTypes.Enum;
 
 export const CreateUrlLocator = UrlLocator.omit({ id: true }).extend({
@@ -477,11 +467,7 @@ export type CreateMediaExcerptCitationInput = z.output<
   typeof CreateMediaExcerptCitationInput
 >;
 
-/**
- * A representation of an excerpt of some fixed media conveying speech.
- *
- * TODO replace SourceExcerpt with this.
- */
+/** A representation of an excerpt of some fixed media conveying speech. */
 export const MediaExcerpt = Entity.extend({
   /**
    * One or more local representations of the excerpt.
@@ -517,14 +503,8 @@ export const MediaExcerpt = Entity.extend({
      * For textual media, this text must appear in the media. For audio and video media, this
      * text must be a transcription of the speech that appears in the media.
      */
-    quotation: z
-      .string()
-      .min(1)
-      .max(schemaSettings.writQuoteQuoteTextMaxLength),
-    normalQuotation: z
-      .string()
-      .min(1)
-      .max(schemaSettings.writQuoteQuoteTextMaxLength),
+    quotation: z.string().min(1).max(4096),
+    normalQuotation: z.string().min(1).max(4096),
   }),
   /**
    * Provides a procedure for locating the local representation in situ remotely.
@@ -673,6 +653,7 @@ export type Justification = Entity & {
         type: "PROPOSITION_COMPOUND";
         entity: PropositionCompound;
       }
+    /* @deprecated TODO(38) Replace with MediaExcerpt */
     | {
         type: "SOURCE_EXCERPT";
         entity: SourceExcerpt;
@@ -680,7 +661,7 @@ export type Justification = Entity & {
     /**
      * A quote from a written source
      *
-     * @deprecated Use SOURCE_EXCERPT's WRIT_QUOTE type instead.
+     * @deprecated TODO(38) Replace with MediaExcerpt
      */
     | {
         type: "WRIT_QUOTE";

@@ -1,4 +1,4 @@
--- DO_NOT_MERGE delete
+-- TODO(20,38) delete this file
 
 create table if not exists sentence_appearances (
   sentence_appearance_id serial primary key,

@@ -1,11 +1,7 @@
 import * as textPosition from "dom-anchor-text-position";
 import * as textQuote from "dom-anchor-text-quote";
 
-import {
-  CreateDomAnchor,
-  logger,
-  UrlTarget,
-} from "howdju-common";
+import { CreateDomAnchor, logger, UrlTarget } from "howdju-common";
 
 import { nodeIsBefore, getPreviousLeafNode } from "./dom";
 import { getCanonicalOrCurrentUrl } from "./location";

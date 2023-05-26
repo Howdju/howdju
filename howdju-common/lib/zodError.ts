@@ -8,7 +8,7 @@ import {
   toString,
   uniqWith,
 } from "lodash";
-import { z, ZodFormattedError } from "zod";
+import { z } from "zod";
 
 import { assert, mapValuesDeep } from "./general";
 import { logger } from "./logger";
@@ -157,8 +157,8 @@ function makeCallableProxy<T>(): Callable<T, IssueDescriptorArg> {
  * a client (they result in the same error message), we should remove them.
  */
 export function removeZodErrorDupes<T, U>(
-  error: ZodFormattedError<T, U>
-): FixedZodFormattedError<T, U> {
+  error: z.ZodFormattedError<T, U>
+): ZodFormattedError<T, U> {
   return mapValuesDeep(
     error,
     (val: any, key: string) => {
@@ -171,7 +171,7 @@ export function removeZodErrorDupes<T, U>(
       return val;
     },
     { mapArrays: false }
-  ) as FixedZodFormattedError<T, U>;
+  ) as ZodFormattedError<T, U>;
 }
 
 /**
@@ -179,23 +179,31 @@ export function removeZodErrorDupes<T, U>(
  *
  * This type is an alias for a ZodFormattedError having our custom issue format.
  */
-export type ModelErrors<T> = FixedZodFormattedError<T, ZodCustomIssueFormat>;
+export type ModelErrors<T> = ZodFormattedError<T, ZodCustomIssueFormat>;
 
-// DO_NOT_MERGE fix in zod
-type FixedZodFormattedError<T, U = string> = T extends (infer V)[] | undefined
-  ? FixedZodFormattedError<V, U>[]
-  : {
-      _errors: U[];
-    } & (T extends [any, ...any[]]
-      ? {
-          [K in keyof T]?: FixedZodFormattedError<T[K], U>;
+/**
+ * A ZodFormattedError that supports optional arrays
+ *
+ * TODO(349) try to contribut this to zod
+ */
+export type ZodFormattedError<T, U = string> = {
+  _errors: U[];
+} & (T extends [any, ...any[]]
+  ? {
+      [K in keyof T]?: ZodFormattedError<T[K], U>;
+    }
+  : T extends any[]
+  ? {
+      [k: number]: ZodFormattedError<T[number], U>;
+    }
+  : T extends (infer V)[] | undefined
+  ?
+      | {
+          [k: number]: ZodFormattedError<V, U>;
         }
-      : T extends any[]
-      ? {
-          [k: number]: FixedZodFormattedError<T[number], U>;
-        }
-      : T extends object
-      ? {
-          [K in keyof T]?: FixedZodFormattedError<T[K], U>;
-        }
-      : unknown);
+      | undefined
+  : T extends object
+  ? {
+      [K in keyof T]?: ZodFormattedError<T[K], U>;
+    }
+  : unknown);
