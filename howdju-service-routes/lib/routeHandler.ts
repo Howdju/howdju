@@ -8,6 +8,11 @@ interface CommonRequest {
   authToken: AuthToken | undefined;
 }
 
+export interface HandlerResult {
+  body?: Record<string, any>;
+  headers?: Record<string, string>;
+}
+
 /**
  * Creates a service request handler that validates the request and delegates to an impl.
  *
@@ -21,7 +26,7 @@ interface CommonRequest {
  */
 export function handler<
   S extends z.ZodType<T, z.ZodTypeDef>,
-  R,
+  R extends HandlerResult | void,
   T = InferRequest<S>
 >(
   schema: S,

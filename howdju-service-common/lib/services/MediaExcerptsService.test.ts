@@ -129,6 +129,72 @@ describe("MediaExcerptsService", () => {
         )
       );
     });
-    test.todo("reads a media excerpt.");
+    test("re-uses related entities.", async () => {
+      // Arrange
+      const { authToken } = await testHelper.makeUser();
+      const createMediaExcerpt: CreateMediaExcerpt = {
+        localRep: {
+          quotation: "the text quote",
+        },
+        locators: {
+          urlLocators: [
+            {
+              url: {
+                url: "https://www.example.com",
+              },
+              anchors: [
+                {
+                  exactText: "exact text",
+                  prefixText: "prefix text",
+                  suffixText: "suffix text",
+                  startOffset: 0,
+                  endOffset: 1,
+                },
+              ],
+            },
+          ],
+        },
+        citations: [
+          {
+            source: { descriptionApa: "the APA description" },
+            pincite: "the pincite",
+          },
+          {
+            source: { descriptionApa: "the APA description" },
+          },
+        ],
+        speakers: [{ name: "the speaker", isOrganization: false }],
+      };
+      await service.readOrCreateMediaExcerpt(authToken, createMediaExcerpt);
+
+      // Act
+      const { isExtant, mediaExcerpt } = await service.readOrCreateMediaExcerpt(
+        authToken,
+        createMediaExcerpt
+      );
+
+      // Assert
+      const readMediaExcerpt = await service.readMediaExcerptForId(
+        mediaExcerpt.id
+      );
+      expect(readMediaExcerpt).toEqual(expectToBeSameMomentDeep(mediaExcerpt));
+      expect(isExtant).toBe(true);
+    });
+  });
+
+  describe("readMediaExcerptForId", () => {
+    test("reads a media excerpt.", async () => {
+      // Arrange
+      const { authToken } = await testHelper.makeUser();
+      const mediaExcerpt = await testHelper.makeMediaExcerpt(authToken);
+
+      // Act
+      const readMediaExcerpt = await service.readMediaExcerptForId(
+        mediaExcerpt.id
+      );
+
+      // Assert
+      expect(readMediaExcerpt).toEqual(expectToBeSameMomentDeep(mediaExcerpt));
+    });
   });
 });

@@ -1,5 +1,5 @@
 import { Pool } from "pg";
-import { merge } from "lodash";
+import { merge, parseInt, toString } from "lodash";
 
 import {
   CreateDomAnchor,
@@ -42,34 +42,7 @@ describe("MediaExcerptsDao", () => {
   describe("readMediaExcerptForId", () => {
     test("reads a media excerpt for an ID", async () => {
       const { authToken, user } = await testHelper.makeUser();
-      const mediaExcerpt = await testHelper.makeMediaExcerpt(authToken, {
-        quotation: "the text quote",
-        urlLocators: [
-          {
-            url: {
-              url: "https://www.example.com",
-            },
-            anchors: [
-              {
-                exactText: "exact text",
-                prefixText: "prefix text",
-                suffixText: "suffix text",
-                startOffset: 0,
-                endOffset: 1,
-              },
-            ],
-          },
-        ],
-        citations: [
-          {
-            source: {
-              descriptionApa: "the APA description",
-            },
-            pincite: "the pincite",
-          },
-        ],
-        speakers: [{ name: "the speaker", isOrganization: false }],
-      });
+      const mediaExcerpt = await testHelper.makeMediaExcerpt(authToken);
 
       const readMediaExcerpt = await dao.readMediaExcerptForId(mediaExcerpt.id);
 
@@ -117,11 +90,12 @@ describe("MediaExcerptsDao", () => {
     });
     test("doesn't read a missing ID", async () => {
       const { authToken } = await testHelper.makeUser();
-      await testHelper.makeMediaExcerpt(authToken, {
-        quotation: "the text quote",
-      });
+      const mediaExcerpt = await testHelper.makeMediaExcerpt(authToken);
 
-      const readMediaExcerpt = await dao.readMediaExcerptForId("2");
+      const readMediaExcerpt = await dao.readMediaExcerptForId(
+        // Try to get a nonexistent ID.
+        toString(parseInt(mediaExcerpt.id) + 1)
+      );
 
       expect(readMediaExcerpt).toBeUndefined();
     });
@@ -137,8 +111,7 @@ describe("MediaExcerptsDao", () => {
       const { authToken } = await testHelper.makeUser();
       const quotation = "the text quote";
       const mediaExcerpt = await testHelper.makeMediaExcerpt(authToken, {
-        quotation,
-        urlLocators: [],
+        localRep: { quotation },
       });
 
       const readMediaExcerpt = await dao.readEquivalentMediaExcerpt({
@@ -153,7 +126,7 @@ describe("MediaExcerptsDao", () => {
     test("returns an equivalent UrlLocator", async () => {
       const { authToken, user: creator } = await testHelper.makeUser();
       const mediaExcerpt = await testHelper.makeMediaExcerpt(authToken, {
-        quotation: "the text quote",
+        localRep: { quotation: "the text quote" },
       });
       const url = await testHelper.makeUrl({ userId: authToken.userId });
       const createUrlLocator: CreateUrlLocator = {
@@ -188,7 +161,7 @@ describe("MediaExcerptsDao", () => {
     test("doesn't return a UrlLocator with a superset of DomAnchors", async () => {
       const { authToken, user: creator } = await testHelper.makeUser();
       const mediaExcerpt = await testHelper.makeMediaExcerpt(authToken, {
-        quotation: "the text quote",
+        localRep: { quotation: "the text quote" },
       });
       const url = await testHelper.makeUrl({ userId: authToken.userId });
       const createUrlLocator: CreateUrlLocator = {
@@ -256,8 +229,8 @@ describe("MediaExcerptsDao", () => {
         ],
       };
       const mediaExcerpt = await testHelper.makeMediaExcerpt(authToken, {
-        quotation: "the text quote",
-        urlLocators: [urlLocator],
+        localRep: { quotation: "the text quote" },
+        locators: { urlLocators: [urlLocator] },
       });
 
       expect(
@@ -303,7 +276,7 @@ describe("MediaExcerptsDao", () => {
     test("creates a UrlAnchor", async () => {
       const { authToken, user: creator } = await testHelper.makeUser();
       const mediaExcerpt = await testHelper.makeMediaExcerpt(authToken, {
-        quotation: "the text quote",
+        localRep: { quotation: "the text quote" },
       });
       const url = await testHelper.makeUrl({ userId: creator.id });
       const createDomAnchor: CreateDomAnchor = {
@@ -347,14 +320,14 @@ describe("MediaExcerptsDao", () => {
     test("creates a media excerpt citation", async () => {
       const { authToken, user: creator } = await testHelper.makeUser();
       const mediaExcerpt = await testHelper.makeMediaExcerpt(authToken, {
-        quotation: "the text quote",
+        localRep: { quotation: "the text quote" },
       });
       const source = await testHelper.makeSource(creator.id, {
         descriptionApa: "the APA description",
       });
       const createCitation: CreateMediaExcerptCitation = {
         source,
-        pincite: "The  pincite!",
+        pincite: "The lovely pincite!",
       };
       const created = utcNow();
       const citation = await dao.createMediaExcerptCitation(
@@ -369,9 +342,45 @@ describe("MediaExcerptsDao", () => {
           mediaExcerptId: mediaExcerpt.id,
           created,
           creatorUserId: creator.id,
-          normalPincite: "the pincite",
+          normalPincite: "the lovely pincite",
         })
       );
+    });
+
+    test("cannot create a conflicting media excerpt citation", async () => {
+      const { authToken, user: creator } = await testHelper.makeUser();
+      const mediaExcerpt = await testHelper.makeMediaExcerpt(authToken, {
+        localRep: { quotation: "the text quote" },
+      });
+      const source = await testHelper.makeSource(creator.id, {
+        descriptionApa: "the APA description",
+      });
+      const createCitation: CreateMediaExcerptCitation = {
+        source,
+        pincite: "A lovely pincite",
+      };
+      const created = utcNow();
+      await dao.createMediaExcerptCitation(
+        creator.id,
+        mediaExcerpt,
+        createCitation,
+        created
+      );
+
+      // Act/Assert
+      // creating another with the same media excerpt, source, and normalized pincite should fail.
+      await expect(
+        dao.createMediaExcerptCitation(
+          creator.id,
+          mediaExcerpt,
+          createCitation,
+          created
+        )
+      ).rejects.toMatchObject({
+        message: expect.stringContaining(
+          "duplicate key value violates unique constraint"
+        ),
+      });
     });
   });
 
@@ -379,14 +388,14 @@ describe("MediaExcerptsDao", () => {
     test("reads an equivalent media excerpt citation when pincites are not identical", async () => {
       const { authToken, user: creator } = await testHelper.makeUser();
       const mediaExcerpt = await testHelper.makeMediaExcerpt(authToken, {
-        quotation: "the text quote",
+        localRep: { quotation: "the text quote" },
       });
       const source = await testHelper.makeSource(creator.id, {
         descriptionApa: "the APA description",
       });
       const createCitation: CreateMediaExcerptCitation = {
         source,
-        pincite: "the pincite",
+        pincite: "the lovely pincite",
       };
       const created = utcNow();
       const citation = await dao.createMediaExcerptCitation(
@@ -396,14 +405,16 @@ describe("MediaExcerptsDao", () => {
         created
       );
 
+      // Act
       const readCitation = await dao.readEquivalentMediaExcerptCitation(
         mediaExcerpt,
         {
           ...citation,
-          pincite: "The  Pincite...",
+          pincite: "The lovely Pincite.",
         }
       );
 
+      // Assert
       expect(readCitation).toEqual(expectToBeSameMomentDeep(citation));
     });
   });

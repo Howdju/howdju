@@ -16,6 +16,7 @@ import {
   Statement,
   Tag,
   TagVote,
+  UrlLocator,
   User,
   VidSegment,
   Writ,
@@ -194,11 +195,15 @@ export const contextTrailItemsSchema = new schema.Array(
   })
 );
 
+export const urlLocatorSchema = new schema.Entity<UrlLocator>("urlLocators");
 export const sourceSchema = new schema.Entity<Source>("sources");
 export const sourcesSchema = new schema.Array(sourceSchema);
 export const mediaExcerptSchema = new schema.Entity<MediaExcerpt>(
   "mediaExcerpts",
   {
+    locators: {
+      urlLocators: new schema.Array(urlLocatorSchema),
+    },
     citations: new schema.Array({
       source: sourceSchema,
     }),

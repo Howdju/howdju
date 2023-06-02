@@ -45,6 +45,7 @@ import { map } from "lodash";
 import { CreatePropositionPageMode } from "./types";
 import { Location, LocationState } from "history";
 import { PrimaryContextTrailProvider } from "./components/contextTrail/PrimaryContextTrailProvider";
+import MediaExcerptPage from "./pages/MediaExcerptPage";
 
 const renderHomePath = (props: RouteProps) => {
   const mainSearchText =
@@ -141,10 +142,18 @@ const routesById = {
   submitMediaExcerpt: (
     <Route
       exact
-      path="/source-excerpts/new"
-      render={() => <SubmitMediaExcerptPage />}
+      path="/media-excerpts/new"
+      component={SubmitMediaExcerptPage}
     />
   ),
+  mediaExcerpt: (
+    <Route
+      exact
+      path="/media-excerpts/:mediaExcerptId/:slug?"
+      component={MediaExcerptPage}
+    />
+  ),
+
   createProposition: (
     <Route
       exact

@@ -30,6 +30,7 @@ import {
   ConnectingEntityType,
   ContextTrailItem,
   nextContextTrailItem,
+  MediaExcerptOut,
 } from "howdju-common";
 
 import * as characters from "./characters";
@@ -60,7 +61,7 @@ export function constructStatementInput(
   return statement;
 }
 
-const truncateOptions = {
+const defaultTruncateOptions = {
   length: config.ui.shortTextLength,
   omission: characters.ellipsis,
   separator: /[,.]*\s+/,
@@ -70,7 +71,13 @@ export const isTextLong = (text: string) =>
 export const truncateWritQuoteText = (
   quoteText: string,
   options: TruncateOptions
-) => truncate(quoteText, assign({}, truncateOptions, options));
+) => truncate(quoteText, assign({}, defaultTruncateOptions, options));
+export function truncateText(
+  text: string | undefined,
+  options: TruncateOptions
+) {
+  return truncate(text, assign({}, defaultTruncateOptions, options));
+}
 
 export function sourceExcerptDescription(sourceExcerpt: SourceExcerpt) {
   return lowerCase(sourceExcerpt.type);
@@ -230,4 +237,17 @@ export function extendContextTrailItems(
     contextTrailItems[contextTrailItems.length - 1]?.polarity
   );
   return concat(contextTrailItems, [trailItem]);
+}
+
+export interface MediaExcerptView extends MediaExcerptOut {
+  citations: (MediaExcerptOut["citations"][number] & {
+    /** A key uniquely identifying a citation relative to others. */
+    key: string;
+  })[];
+  locators: MediaExcerptOut["locators"] & {
+    urlLocators: (MediaExcerptOut["locators"]["urlLocators"][number] & {
+      /** A key uniquely identifying a url locator relative to others. */
+      key: string;
+    })[];
+  };
 }

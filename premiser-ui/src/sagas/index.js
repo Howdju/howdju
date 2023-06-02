@@ -31,7 +31,7 @@ import { fetchAndBeginEditOfNewJustificationFromBasisSource } from "./editors/fe
 import { editorCommitEdit } from "./editors/editorCommitEditSaga";
 import { submitMediaExcerptFromAnchorInfo } from "./editors/submitMediaExcerptFromAnchorInfoSaga";
 import { deleteJustificationRootTargetTranslator } from "./apiLikeSagas";
-import { contentScriptAck, postExtensionMessages } from "./extensionSagas";
+import { postExtensionMessages } from "./extensionSagas";
 import * as appSagas from "../app/appSagas";
 import * as justificationsSearchPageSagas from "../pages/justificationsSearch/justificationsSearchPageSagas";
 import * as justificationsPageSagas from "../pages/justifications/justificationPageSagas";
@@ -77,5 +77,4 @@ export default () =>
     sendPageView(),
 
     postExtensionMessages(),
-    contentScriptAck(),
   ]);

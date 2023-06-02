@@ -106,6 +106,7 @@ export function daosInitializer(provider: DatabaseProvider) {
   const tagsDao = new TagsDao(logger, database);
   const sourcesDao = new SourcesDao(database);
   const mediaExcerptsDao = new MediaExcerptsDao(
+    logger,
     database,
     urlsDao,
     sourcesDao,

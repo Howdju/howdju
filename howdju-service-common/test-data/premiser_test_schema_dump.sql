@@ -990,6 +990,16 @@ ALTER SEQUENCE public.tags_tag_id_seq OWNED BY public.tags.tag_id;
 
 
 --
+-- Name: test; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.test (
+    the_value character varying(128),
+    deleted timestamp without time zone
+);
+
+
+--
 -- Name: url_locators; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -1541,14 +1551,6 @@ ALTER TABLE ONLY public.dom_anchors
 
 
 --
--- Name: media_excerpt_citations unq; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.media_excerpt_citations
-    ADD CONSTRAINT unq UNIQUE (media_excerpt_id, source_id, normal_pincite, deleted);
-
-
---
 -- Name: url_locators url_locators_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1826,10 +1828,31 @@ CREATE UNIQUE INDEX idx_writs_writ_id ON public.writs USING btree (writ_id);
 
 
 --
+-- Name: media_excerpt_citations_unq_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX media_excerpt_citations_unq_idx ON public.media_excerpt_citations USING btree (media_excerpt_id, source_id, normal_pincite) WHERE (deleted IS NULL);
+
+
+--
+-- Name: sources_description_apa_english_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX sources_description_apa_english_idx ON public.sources USING gin (to_tsvector('english'::regconfig, (description_apa)::text));
+
+
+--
 -- Name: statement_text_fulltext_idx; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX statement_text_fulltext_idx ON public.propositions USING gin (to_tsvector('english'::regconfig, (text)::text));
+
+
+--
+-- Name: test_unq_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX test_unq_idx ON public.test USING btree (the_value) WHERE (deleted IS NULL);
 
 
 --

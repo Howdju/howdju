@@ -815,14 +815,18 @@ export const serviceRoutes = {
       Authed.merge(Body({ mediaExcerpt: CreateMediaExcerpt })),
       async (
         appProvider: ServicesProvider,
-        { authToken, body: { mediaExcerpt } }
+        { authToken, body: { mediaExcerpt: createMediaExcerpt } }
       ) => {
+        const { isExtant, mediaExcerpt } =
+          await appProvider.mediaExcerptsService.readOrCreateMediaExcerpt(
+            authToken,
+            createMediaExcerpt
+          );
         return {
-          mediaExcerpt:
-            await appProvider.mediaExcerptsService.readOrCreateMediaExcerpt(
-              authToken,
-              mediaExcerpt
-            ),
+          body: {
+            isExtant,
+            mediaExcerpt,
+          },
         };
       }
     ),
@@ -836,12 +840,14 @@ export const serviceRoutes = {
         appProvider: ServicesProvider,
         { pathParams: { mediaExcerptId } }
       ) => {
-        return {
-          mediaExcerpt:
-            await appProvider.mediaExcerptsService.readMediaExcerptForId(
-              mediaExcerptId
-            ),
-        };
+        const mediaExcerpt =
+          await appProvider.mediaExcerptsService.readMediaExcerptForId(
+            mediaExcerptId
+          );
+        if (!mediaExcerpt) {
+          throw new EntityNotFoundError("MEDIA_EXCERPT", mediaExcerptId);
+        }
+        return { body: { mediaExcerpt } };
       }
     ),
   },

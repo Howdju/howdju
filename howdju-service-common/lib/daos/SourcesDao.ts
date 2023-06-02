@@ -22,7 +22,7 @@ export class SourcesDao {
     const {
       rows: [row],
     } = await this.db.query<SourceRow>(
-      "readEquivalentSource",
+      "readSourceForId",
       `SELECT * FROM sources WHERE source_id = $1`,
       [normalizeText(sourceId)]
     );

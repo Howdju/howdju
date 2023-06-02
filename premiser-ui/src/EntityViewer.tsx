@@ -2,12 +2,13 @@ import React, { ComponentType, ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { FontIcon } from "react-md";
 import cn from "classnames";
+import { isString } from "lodash";
 
 import "./EntityViewer.scss";
 
 interface Props {
   entity: ReactNode;
-  iconName: string;
+  iconName: string | ReactNode;
   iconTitle: string;
   className?: string;
   iconLink?: string;
@@ -28,10 +29,12 @@ export default function EntityViewer({
 }: Props) {
   // TODO(304) pass title directly to a component that supports it
   const titleProps = { title: iconTitle } as any;
-  let header = (
+  let header = isString(iconName) ? (
     <FontIcon {...titleProps} role="presentation">
       {iconName}
     </FontIcon>
+  ) : (
+    iconName
   );
   if (iconLink) {
     header = <Link to={iconLink}>{header}</Link>;

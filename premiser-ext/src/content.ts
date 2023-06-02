@@ -24,6 +24,7 @@ import {
   ContentScriptCommand,
   getCanonicalUrl,
   getCurrentUrl,
+  WindowMessageSource,
 } from "howdju-client-common";
 
 import { annotateSelection, annotateTarget } from "./annotate";
@@ -224,7 +225,7 @@ function postActionMessageToFrame(action: actions.ExtensionFrameAction) {
     doWhenFrameMessageHandlerReady((frameApi: FramePanelApi) => {
       frameApi.postMessage(
         {
-          source: "extension",
+          source: WindowMessageSource,
           action,
         },
         baseUrl

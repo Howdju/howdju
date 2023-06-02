@@ -2,10 +2,8 @@ import moment from "moment";
 
 import {
   AuthToken,
-  CreateMediaExcerptCitation,
-  CreatePersorg,
+  CreateMediaExcerpt,
   CreateSource,
-  CreateUrlLocator,
   CreateWritQuote,
   EntityId,
   utcNow,
@@ -13,6 +11,7 @@ import {
 } from "howdju-common";
 
 import { ServicesProvider } from "./servicesInit";
+import { merge } from "lodash";
 
 /** A helper for integration tests to create test data. */
 export default class TestHelper {
@@ -37,31 +36,13 @@ export default class TestHelper {
 
   async makeMediaExcerpt(
     authToken: AuthToken,
-    {
-      quotation,
-      urlLocators = [],
-      citations,
-      speakers,
-    }: {
-      quotation: string;
-      urlLocators?: CreateUrlLocator[];
-      citations?: CreateMediaExcerptCitation[];
-      speakers?: CreatePersorg[];
-    }
+    overrides: Partial<CreateMediaExcerpt> = {}
   ) {
+    const createMediaExcerpt = merge({}, defaultMediaExcerpt, overrides);
     const { mediaExcerpt } =
       await this.servicesProvider.mediaExcerptsService.readOrCreateMediaExcerpt(
         authToken,
-        {
-          localRep: {
-            quotation,
-          },
-          locators: {
-            urlLocators,
-          },
-          citations,
-          speakers,
-        }
+        createMediaExcerpt
       );
     return mediaExcerpt;
   }
@@ -116,3 +97,40 @@ export default class TestHelper {
     );
   }
 }
+
+const defaultMediaExcerpt: CreateMediaExcerpt = {
+  localRep: { quotation: "the text quote" },
+  locators: {
+    urlLocators: [
+      {
+        url: {
+          url: "https://www.example.com",
+        },
+        anchors: [
+          {
+            exactText: "exact text",
+            prefixText: "prefix text",
+            suffixText: "suffix text",
+            startOffset: 0,
+            endOffset: 1,
+          },
+        ],
+      },
+    ],
+  },
+  citations: [
+    {
+      source: {
+        descriptionApa: "the APA description",
+      },
+      pincite: "the pincite",
+    },
+    {
+      source: {
+        descriptionApa: "the APA description",
+      },
+      // no pincite
+    },
+  ],
+  speakers: [{ name: "the speaker", isOrganization: false }],
+};

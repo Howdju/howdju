@@ -15,6 +15,7 @@ import {
   Justification,
   JustificationBasisSourceType,
   PersistedJustificationWithRootRef,
+  MediaExcerptOut,
 } from "howdju-common";
 import { AnchorInfo } from "howdju-client-common";
 
@@ -331,7 +332,11 @@ export const goto = {
   writQuote: createAction("GOTO/WRIT_QUOTE", (writQuote: WritQuote) => ({
     writQuote,
   })),
-  submitMediaExcerpt: createAction("GOTO/SUBMIT_SOURCE_EXCERPT"),
+  submitMediaExcerpt: createAction("GOTO/SUBMIT_MEDIA_EXCERPT"),
+  mediaExcerpt: createAction(
+    "GOTO/MEDIA_EXCERPT",
+    (mediaExcerpt: MediaExcerptOut) => ({ mediaExcerpt })
+  ),
 };
 
 /** Actions that represent multi-step flows */

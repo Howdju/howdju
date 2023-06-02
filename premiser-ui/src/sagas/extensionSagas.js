@@ -1,4 +1,4 @@
-import { delay, takeEvery } from "redux-saga/effects";
+import { call, delay, race, take, takeEvery } from "redux-saga/effects";
 
 import { actions, inIframe } from "howdju-client-common";
 import { logger } from "../logger";
@@ -6,8 +6,6 @@ import { logger } from "../logger";
 import config from "../config";
 
 // const EXTENSION_ID = 'amnnpakeakkebmgkgjjenjkbkhkgkadh'
-
-let contentScriptHasAcked = false;
 
 export function* postExtensionMessages() {
   yield takeEvery(
@@ -23,21 +21,28 @@ export function* postExtensionMessages() {
       );
       // The extension's content script could be on any page, so allow any target origin ('*')
       window.parent.postMessage(action, "*");
+
       // For some reason the content script doesn't always see the first message
-      while (!contentScriptHasAcked) {
-        yield delay(config.contentScriptAckDelayMs);
-        window.parent.postMessage(action, "*");
+      const { ack, timeout } = yield race({
+        ack: take(actions.extensionFrame.ackMessage),
+        timeout: delay(config.contentScriptAckTimeoutMs),
+        repostAction: call(repostMessage, action),
+      });
+      if (ack) {
+        logger.debug("Proceeding after contentScriptAck");
+      } else if (timeout) {
+        logger.warn("Timed out waiting for contentScriptAck");
+      } else {
+        logger.error("Unknown contentScriptAck race condition");
       }
     }
   );
 }
 
-export function* contentScriptAck() {
-  yield takeEvery(
-    actions.extensionFrame.ackMessage,
-    function* ackMessageWorker(action) {
-      logger.trace(`difficult ackMessageWorker ${JSON.stringify({ action })}`);
-      contentScriptHasAcked = true;
-    }
-  );
+function* repostMessage(action) {
+  while (true) {
+    yield delay(config.contentScriptAckDelayMs);
+    logger.trace(`repostMessage ${JSON.stringify({ action })}`);
+    window.parent.postMessage(action, "*");
+  }
 }

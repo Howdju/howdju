@@ -1208,6 +1208,7 @@ export type CreateTagVote = z.infer<typeof CreateTagVote>;
 const EntityType = z.enum([
   "JUSTIFICATION",
   "JUSTIFICATION_VOTE",
+  "MEDIA_EXCERPT",
   "PASSWORD_HASH",
   "PASSWORD_RESET_REQUEST",
   "PERSORG",

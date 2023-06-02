@@ -30,17 +30,19 @@ import {
 import { api } from "../actions";
 
 const defaultState = {
+  contextTrailItems: {},
+  justifications: {},
+  justificationVotes: {},
+  mediaExcerpts: {},
+  persorgs: {},
   propositions: {},
   propositionCompounds: {},
-  writs: {},
-  writQuotes: {},
-  justificationVotes: {},
-  justifications: {},
-  persorgs: {},
+  sources: {},
   statements: {},
   tags: {},
   users: {},
-  contextTrailItems: {},
+  writs: {},
+  writQuotes: {},
 };
 
 export default handleActions(
@@ -49,34 +51,35 @@ export default handleActions(
       api.antiTagProposition.response,
       api.createProposition.response,
       api.createStatement.response,
+      api.fetchContextTrail.response,
       api.fetchIndirectPropositionStatements.response,
       api.fetchJustificationsSearch.response,
+      api.fetchMainSearchResults.response,
+      api.fetchMainSearchSuggestions.response,
+      api.fetchMediaExcerpt.response,
       api.fetchPersorg.response,
-      api.fetchSpeakerStatements.response,
+      api.fetchPersorgNameSuggestions.response,
       api.fetchProposition.response,
+      api.tagProposition.response,
       api.fetchPropositions.response,
+      api.fetchPropositionRootJustificationTarget.response,
+      api.fetchPropositionTextSuggestions.response,
+      api.fetchRecentJustifications.response,
       api.fetchRecentPropositions.response,
       api.fetchRecentWrits.response,
       api.fetchRecentWritQuotes.response,
-      api.fetchPropositionRootJustificationTarget.response,
-      api.fetchStatementRootJustificationTarget.response,
-      api.fetchRecentJustifications.response,
       api.fetchRootPropositionStatements.response,
       api.fetchSentenceStatements.response,
+      api.fetchSpeakerStatements.response,
+      api.fetchStatementRootJustificationTarget.response,
       api.fetchTag.response,
+      api.fetchTagNameSuggestions.response,
       api.fetchTaggedPropositions.response,
       api.fetchWritQuote.response,
-      api.fetchMainSearchResults.response,
-      api.fetchMainSearchSuggestions.response,
-      api.fetchPropositionTextSuggestions.response,
-      api.fetchPersorgNameSuggestions.response,
-      api.fetchTagNameSuggestions.response,
       api.fetchWritTitleSuggestions.response,
-      api.tagProposition.response,
-      api.updateProposition.response,
-      api.updateWritQuote.response,
       api.updatePersorg.response,
-      api.fetchContextTrail.response
+      api.updateProposition.response,
+      api.updateWritQuote.response
     )]: {
       next: (state, action) => {
         const { entities } = normalize(
@@ -86,19 +89,22 @@ export default handleActions(
 
         const updates = map(
           [
-            ["justifications", justificationsCustomizer()],
+            ["contextTrailItems"],
+            ["justifications"],
             ["justificationVotes"],
+            ["mediaExcerpts", mediaExcerptCustomizer],
             ["persorgs"],
             ["propositionCompounds"],
             ["propositions", entityAssignWithCustomizer],
             ["propositionTagVotes"],
+            ["sources"],
             ["sourceExcerptParaphrases"],
             ["statements", entityAssignWithCustomizer],
             ["tags"],
+            ["urlLocators", urlLocatorCustomizer],
             ["users"],
             ["writQuotes", stubSkippingCustomizer("quoteText")],
             ["writs", stubSkippingCustomizer("title")],
-            ["contextTrailItems"],
           ],
           ([entitiesKey, customizer]) =>
             createEntityUpdate(state, entities, entitiesKey, customizer)
@@ -495,16 +501,26 @@ function entityAssignWithCustomizer(oldEntity, newEntity, key, object, source) {
   return updatedEntity;
 }
 
-function justificationsCustomizer(objValue, srcValue, key, object, source) {
-  // Don't override a value with one that is missing the relational information
-  if (
-    has(objValue, "target.type") &&
-    has(objValue, "target.entity.id") &&
-    (!has(srcValue, "target.type") || !has(srcValue, "target.entity.id"))
-  ) {
-    return objValue;
-  }
-  return srcValue;
+function urlLocatorCustomizer(
+  oldUrlLocator,
+  newUrlLocator,
+  key,
+  object,
+  source
+) {
+  return merge({}, oldUrlLocator, newUrlLocator, {
+    key: newUrlLocator.id,
+  });
+}
+
+function mediaExcerptCustomizer(oldExcerpt, newExcerpt, key, object, source) {
+  return merge({}, oldExcerpt, newExcerpt, {
+    // Create a key on citations. Since they aren't a normalizr entity, we can update them here.
+    citations: newExcerpt?.citations.map((citation) => ({
+      ...citation,
+      key: `${citation.source.id}-${citation.normalPincite}`,
+    })),
+  });
 }
 
 function createEntityUpdate(state, payloadEntities, key, customizer) {

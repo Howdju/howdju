@@ -1,17 +1,18 @@
 import React, { ComponentType, ReactNode } from "react";
 import { Card, CardText } from "react-md";
-import { ComponentId, EditorId, SuggestionsKey } from "./types";
 import cn from "classnames";
 
+import { ComponentId, EditorId, SuggestionsKey } from "./types";
 import { combineIds } from "./viewModels";
+import { omit } from "lodash";
 
 export type EntityViewerProps<
   EntityPropName extends string,
   Entity extends object
 > = {
   id: ComponentId;
-  editorId: EditorId;
-  suggestionsKey: SuggestionsKey;
+  editorId?: EditorId;
+  suggestionsKey?: SuggestionsKey;
 } & { [key in EntityPropName]: Entity };
 
 export default function withEntityCard<
@@ -25,8 +26,8 @@ export default function withEntityCard<
 ) {
   type EntityCardProps = {
     id: ComponentId;
-    editorId: EditorId;
-    suggestionsKey: SuggestionsKey;
+    editorId?: EditorId;
+    suggestionsKey?: SuggestionsKey;
     menu: ReactNode;
     className?: string;
   } & { [key in EntityPropName]: Entity };
@@ -44,7 +45,10 @@ export default function withEntityCard<
         menu,
       } as EntityViewerProps<EntityPropName, Entity>;
       return (
-        <Card className={cn("entity-card", className)} {...rest}>
+        <Card
+          className={cn("entity-card", className)}
+          {...omit(rest, entityPropName)}
+        >
           <CardText className="entity-card-contents">
             <EntityViewerComponent {...entityProps} />
           </CardText>

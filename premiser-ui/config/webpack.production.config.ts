@@ -1,7 +1,6 @@
 import CopyPlugin from "copy-webpack-plugin";
 import MiniCssExtractPlugin from "mini-css-extract-plugin";
 import webpack from "webpack";
-// import Visualizer from 'webpack-visualizer-plugin2'
 import CssMinimizerPlugin from "css-minimizer-webpack-plugin";
 
 import { utcTimestamp } from "howdju-common";
@@ -76,9 +75,6 @@ export const webpackConfig = {
       ],
     }),
     new MiniCssExtractPlugin(),
-    // new Visualizer({
-    //   filename: './stats.html'
-    // }),
     new webpack.IgnorePlugin({
       resourceRegExp: /^\.\/locale$/,
       contextRegExp: /moment$/,

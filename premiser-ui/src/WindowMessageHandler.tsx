@@ -69,11 +69,6 @@ export default class WindowMessageHandler {
       );
       return;
     }
-    const source = event.data.source;
-    if (source !== "extension") {
-      logger.debug(`ignoring message event with incorrect source: ${source}`);
-      return;
-    }
     const action = event.data.action;
     if (!action) {
       logger.error(`extension message lacked action ${toJson(event.data)}`);

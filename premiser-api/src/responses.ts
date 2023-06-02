@@ -1,13 +1,12 @@
 import { apiErrorCodes, httpStatusCodes } from "howdju-common";
+import { HandlerResult } from "howdju-service-routes/lib/routeHandler";
 
 import { AppProvider } from "./init";
 import { ApiCallback } from "./types";
 
-type ResponseArgs = {
+interface ResponseArgs extends HandlerResult {
   callback: ApiCallback;
-  body?: Record<string, any>;
-  headers?: Record<string, string>;
-};
+}
 
 export const ok = ({ callback, body = {}, headers }: ResponseArgs) =>
   callback({

@@ -20,6 +20,8 @@ import forEach from "lodash/forEach";
 import isFinite from "lodash/isFinite";
 import map from "lodash/map";
 import throttle from "lodash/throttle";
+import { IdPropType } from "react-md/lib";
+import { Location, UnregisterCallback, Action } from "history";
 
 import { isTruthy } from "howdju-common";
 import { actions, inIframe } from "howdju-client-common";
@@ -68,12 +70,10 @@ import t, {
 import { isScrollPastBottom, isScrollPastTop, isDevice } from "./util";
 import WindowMessageHandler from "./WindowMessageHandler";
 import ReportContentDialog from "./content-report/ReportContentDialog";
+import { RootState } from "./setupStore";
 
 import "./App.scss";
 import "./fonts.js";
-import { Location, UnregisterCallback, Action } from "history";
-import { IdPropType } from "react-md/lib";
-import { RootState } from "./setupStore";
 
 const tabInfos = [
   {

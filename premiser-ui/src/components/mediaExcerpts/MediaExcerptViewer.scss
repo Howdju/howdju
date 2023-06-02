@@ -1,0 +1,57 @@
+@import "@/colors";
+@import "@/components";
+
+.quotation {
+  margin: 0.3em 0 1em;
+  padding: 0.5em 0;
+
+  margin-left: 20px;
+
+  p:first-child:before,
+  p:last-child:after {
+    quotes: "\201C""\201D""\2018""\2019";
+    color: $asbestos;
+    font-size: 200%;
+    position: absolute;
+  }
+
+  p:first-child:before {
+    content: open-quote;
+    margin-left: -15px;
+  }
+  p:last-child:after {
+    content: close-quote;
+    margin-left: 10px;
+  }
+}
+
+ul.url-locators {
+  margin-top: 0.8em;
+
+  > li.url {
+    margin: 0.2em $list-item-left-padding;
+
+    @include material-icon-list-item("link");
+
+    > a {
+      .md-icon {
+        vertical-align: middle;
+        font-size: 12px;
+        margin-left: 2px;
+      }
+    }
+  }
+}
+
+ul.citations {
+  margin-top: 0.8em;
+
+  > li.citation {
+    margin: 0.2em $list-item-left-padding;
+
+    @include material-icon-list-item(
+      "import_contacts",
+      "Material Symbols Rounded"
+    );
+  }
+}

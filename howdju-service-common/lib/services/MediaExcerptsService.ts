@@ -1,4 +1,4 @@
-import { every, merge, zip } from "lodash";
+import { merge, zip } from "lodash";
 import { Moment } from "moment";
 
 import {
@@ -75,14 +75,14 @@ export class MediaExcerptsService {
             createCitations.map((c) => c.source),
             now
           )
-        : { sources: [], isExtant: false },
+        : { sources: [], isExtant: true },
       createMediaExcerpt.speakers
         ? this.persorgsService.readOrCreatePersorgs(
             userId,
             createMediaExcerpt.speakers,
             now
           )
-        : { persorgs: [], isExtant: false },
+        : { persorgs: [], isExtant: true },
       this.urlsService.readOrCreateUrlsAsUser(createUrls, userId, now),
     ]);
 
@@ -116,7 +116,7 @@ export class MediaExcerptsService {
             createUrlLocatorsWithUrl,
             now
           )
-        : { urlLocators: [], isExtant: false },
+        : { urlLocators: [], isExtant: true },
       this.readOrCreateMediaExcerptCitations(
         userId,
         mediaExcerpt,
@@ -225,7 +225,7 @@ export class MediaExcerptsService {
       )
     );
     const citations = result.map((r) => r.citation);
-    const isExtant = every(result.map((r) => r.isExtant));
+    const isExtant = result.every((r) => r.isExtant);
     return {
       citations,
       isExtant,
@@ -245,7 +245,7 @@ export class MediaExcerptsService {
       );
     if (extantCitation) {
       return {
-        extantCitation,
+        citation: extantCitation,
         isExtant: true,
       };
     }
@@ -269,7 +269,7 @@ export class MediaExcerptsService {
         this.ensureMediaExcerptSpeaker(userId, mediaExcerpt, c, created)
       )
     );
-    const isExtant = every(result.map((r) => r.isExtant));
+    const isExtant = result.every((r) => r.isExtant);
     return {
       isExtant,
     };

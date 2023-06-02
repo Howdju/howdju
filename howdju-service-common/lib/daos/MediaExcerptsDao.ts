@@ -9,6 +9,7 @@ import {
   CreateUrlLocator,
   DomAnchor,
   EntityId,
+  Logger,
   MediaExcerpt,
   MediaExcerptOut,
   MediaExcerptRef,
@@ -31,17 +32,20 @@ export type CreateMediaExcerptDataIn = Pick<
 >;
 
 export class MediaExcerptsDao {
+  private logger: Logger;
   private database: Database;
   private urlsDao: UrlsDao;
   private sourcesDao: SourcesDao;
   private persorgsDao: PersorgsDao;
 
   constructor(
+    logger: Logger,
     database: Database,
     urlsDao: UrlsDao,
     sourcesDao: SourcesDao,
     persorgsDao: PersorgsDao
   ) {
+    this.logger = logger;
     this.database = database;
     this.urlsDao = urlsDao;
     this.sourcesDao = sourcesDao;
@@ -162,6 +166,16 @@ export class MediaExcerptsDao {
     }));
   }
 
+  // DO_NOT_MERGE technically an equivalent media excerpt has redundant localRep, locators, and
+  // citations. And the same localRep could technically be used in multiple media excerpts if
+  // the same literal quote was used in different contexts to mean different things.
+  // So: 1) return an equivalent MediaExcerpt if the create model
+  // is redundant with existing localRep, locators, and citations, and 2) if a user is creating
+  // a MediaExcerpt with (a) redundant or (b) significantly overlapping localRep, suggest
+  // MediaExcerpts with the redundant localRep (those that are non-equivalent according to both
+  // locators and citations.)
+  //
+  // 1. Trim exact_text (white space and punctuation shouldn't affect the comparison)
   async readEquivalentMediaExcerpt(
     mediaExcerpt: CreateMediaExcerptDataIn
   ): Promise<MediaExcerptOut | undefined> {
@@ -246,7 +260,7 @@ export class MediaExcerptsDao {
     const {
       rows: [row],
     } = await this.database.query(
-      "readEquivalentUrlAnchor",
+      "readEquivalentUrlLocator",
       `
       select * from (
         select
@@ -391,17 +405,31 @@ export class MediaExcerptsDao {
   ) {
     const normalPincite =
       createCitation.pincite && normalizeText(createCitation.pincite);
-    const {
-      rows: [row],
-    } = await this.database.query(
+    const args = normalPincite
+      ? [mediaExcerpt.id, createCitation.source.id, normalPincite]
+      : [mediaExcerpt.id, createCitation.source.id];
+    const { rows } = await this.database.query(
       "readEquivalentMediaExcerptCitation",
       `select * from media_excerpt_citations
-      where media_excerpt_id = $1 and source_id = $2 and normal_pincite = $3 and deleted is null`,
-      [mediaExcerpt.id, createCitation.source.id, normalPincite]
+      where media_excerpt_id = $1 and source_id = $2 and normal_pincite ${
+        normalPincite ? "= $3" : "IS NULL"
+      } and deleted is null`,
+      args
     );
-    if (!row) {
+
+    if (rows.length > 1) {
+      this.logger.error("readEquivalentMediaExcerptCitation: multiple rows", {
+        mediaExcerptId: mediaExcerpt.id,
+        sourceId: createCitation.source.id,
+        normalPincite,
+        rows,
+      });
+    }
+    if (rows.length < 1) {
       return undefined;
     }
+
+    const row = rows[0];
     return {
       mediaExcerptId: mediaExcerpt.id,
       source: createCitation.source,

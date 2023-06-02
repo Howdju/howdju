@@ -1,0 +1,13 @@
+diff --git a/package.json b/package.json
+index 384b8afd63b13d3a2b3b4a57d1d7860cda45429f..5ee3e945b0f312b966112c1536c0555dd7460ced 100644
+--- a/package.json
++++ b/package.json
+@@ -4,7 +4,7 @@
+   "version": "4.1.1",
+   "type": "module",
+   "types": "./dist/index.d.ts",
+-  "main": "./dist/index.umd.cjs",
++  "main": "./dist/index.umd.js",
+   "module": "./dist/index.es.js",
+   "files": [
+     "dist/**/*"

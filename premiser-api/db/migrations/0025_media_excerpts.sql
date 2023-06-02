@@ -77,10 +77,11 @@ create table media_excerpt_citations (
 
   creator_user_id bigint not null references users(user_id),
   created timestamp not null,
-  deleted timestamp,
-
-  constraint unq unique (media_excerpt_id, source_id, normal_pincite, deleted)
+  deleted timestamp
 );
+create unique index media_excerpt_citations_unq_idx
+  on media_excerpt_citations (media_excerpt_id, source_id, normal_pincite)
+  where deleted is null;
 
 create table media_excerpt_speakers(
   media_excerpt_id bigint not null references media_excerpts,
@@ -91,3 +92,6 @@ create table media_excerpt_speakers(
   created timestamp not null,
   deleted timestamp
 );
+
+create table test (the_value varchar(128), deleted timestamp);
+create unique index test_unq_idx on test (the_value) where deleted is null;

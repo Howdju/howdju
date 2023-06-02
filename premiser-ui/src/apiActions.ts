@@ -473,6 +473,14 @@ export const api = {
       normalizationSchema: { mediaExcerpt: mediaExcerptSchema },
     })
   ),
+  fetchMediaExcerpt: apiActionCreator(
+    "FETCH_MEDIA_EXCERPT",
+    serviceRoutes.readMediaExcerpt,
+    (mediaExcerptId: EntityId) => ({
+      pathParams: { mediaExcerptId },
+      normalizationSchema: { mediaExcerpt: mediaExcerptSchema },
+    })
+  ),
 
   /** @deprecated */
   fetchSourceExcerptParaphrase: apiActionCreator(
