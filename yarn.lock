@@ -5826,6 +5826,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@react-native-masked-view/masked-view@npm:^0.2.9":
+  version: 0.2.9
+  resolution: "@react-native-masked-view/masked-view@npm:0.2.9"
+  peerDependencies:
+    react: ">=16"
+    react-native: ">=0.57"
+  checksum: 7eb6c370f000f630bf13ce9177964c430eda7057eb7036460d4e5d2bf2153ebd6a29bec0fb8dc6cd58bb5f9bbc8d1a3e0f13d40c798914a9224f164d4d46f896
+  languageName: node
+  linkType: hard
+
 "@react-native/assets@npm:1.0.0":
   version: 1.0.0
   resolution: "@react-native/assets@npm:1.0.0"
@@ -15397,7 +15407,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"howdju-common@workspace:howdju-common":
+"howdju-common@workspace:^, howdju-common@workspace:howdju-common":
   version: 0.0.0-use.local
   resolution: "howdju-common@workspace:howdju-common"
   dependencies:
@@ -15466,6 +15476,7 @@ __metadata:
     "@callstack/repack": ^2.5.2
     "@react-native-async-storage/async-storage": ^1.17.11
     "@react-native-community/eslint-config": ^2.0.0
+    "@react-native-masked-view/masked-view": ^0.2.9
     "@react-navigation/bottom-tabs": ^6.3.2
     "@react-navigation/native": ^6.0.11
     "@react-navigation/native-stack": ^6.7.0
@@ -15480,6 +15491,7 @@ __metadata:
     eslint: ^8.27.0
     eslint-plugin-jest: ^27.1.5
     eslint-plugin-prettier: ^4.2.1
+    howdju-common: "workspace:^"
     jest: 29.3.1
     metro-react-native-babel-preset: ^0.66
     prettier: 2.7.1
@@ -15497,6 +15509,7 @@ __metadata:
     terser-webpack-plugin: ^5.3.3
     ts-node: ^10.9.1
     typescript: ^4.9.4
+    validator: ^13.9.0
     webpack: ^5.76.0
   languageName: unknown
   linkType: soft
@@ -27304,6 +27317,13 @@ resolve@^2.0.0-next.3:
   version: 13.7.0
   resolution: "validator@npm:13.7.0"
   checksum: 2b83283de1222ca549a7ef57f46e8d49c6669213348db78b7045bce36a3b5843ff1e9f709ebf74574e06223461ee1f264f8cc9a26a0060a79a27de079d8286ef
+  languageName: node
+  linkType: hard
+
+"validator@npm:^13.9.0":
+  version: 13.9.0
+  resolution: "validator@npm:13.9.0"
+  checksum: e2c936f041f61faa42bafd17c6faddf939498666cd82e88d733621c286893730b008959f4cb12ab3e236148a4f3805c30b85e3dcf5e0efd8b0cbcd36c02bfc0c
   languageName: node
   linkType: hard
 

@@ -159,6 +159,7 @@ module.exports = {
           /node_modules(.*[/\\])+metro/,
           /node_modules(.*[/\\])+abort-controller/,
           /node_modules(.*[/\\])+@callstack[/\\]repack/,
+          /node_modules(.*[/\\])+howdju-.+/,
         ],
         use: "babel-loader",
       },
