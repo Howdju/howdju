@@ -8,7 +8,7 @@ grep -R\
  --exclude-dir=.git\
  --exclude-dir=Pods\
  --exclude=check-do-not-merge.sh\
- DO_NOT_MERGE\
+ 'DO_NOT_\(MERGE\|COMMIT\|SUBMIT\)'\
  .
 
 # grep returns 0 if it found matches. It is an error if we found matches.
