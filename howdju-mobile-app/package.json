@@ -27,6 +27,7 @@
     "@react-navigation/native-stack": "^6.7.0",
     "add": "^2.0.6",
     "howdju-common": "workspace:^",
+    "lodash": "^4.17.21",
     "react": "^17.0",
     "react-native": "^0.66",
     "react-native-gesture-handler": "^2.6.0",

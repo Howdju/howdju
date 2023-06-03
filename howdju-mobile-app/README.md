@@ -82,8 +82,10 @@ Remove this following from the monorepo's package:
 
 Basically, follow [these steps](https://reactnative.dev/docs/publishing-to-app-store).
 
-1. Remove `NSExceptionDomains` from HowdjuApp `Info.plist`.
 1. Configure Release scheme
+1. Remove `NSExceptionDomains` from HowdjuApp `Info.plist`.
+1. Update `Bundle version string (short)` and `Bundle version` to be like 1.x (must be an increase
+   from previous release.)
 1. Build, Archive, Distribute
 
 ## Adding a new native dependency

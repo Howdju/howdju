@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useAsyncStorage } from "@react-native-async-storage/async-storage";
 import isUrl from "validator/lib/isURL";
+import { isString } from "lodash";
 
 import logger from "./logger";
 import { DEFAULT_LOCAL_INSTANCE_ADDRESS } from "./contexts";
@@ -83,6 +84,9 @@ function isHowdjuInstance(val: any): val is HowdjuInstanceName {
 }
 
 export function isValidLocalInstanceAddress(val: any): val is string {
+  if (!isString(val)) {
+    return false;
+  }
   return isUrl(val, {
     protocols: ["http", "https"],
     require_tld: false,
