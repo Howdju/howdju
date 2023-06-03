@@ -7,6 +7,10 @@ const debug = require("debug")("premiser-api:addressUtils");
 const emptyMac = "00:00:00:00:00:00";
 const loopbackAddress = "127.0.0.1";
 
+function isDhcpUnreachableAddress(address) {
+  return address.startsWith("169.254.");
+}
+
 exports.apiHostOrHostnameAddress = (dnsLookup = true) => {
   let apiHost = process.env["API_HOST"];
   if (apiHost) {
@@ -30,7 +34,10 @@ function localAddress() {
       if (info.internal || info.mac === emptyMac) {
         return;
       }
-      if (!isIpPrivate(info.address)) {
+      if (
+        !isIpPrivate(info.address) ||
+        isDhcpUnreachableAddress(info.address)
+      ) {
         return;
       }
       if (info.family === "IPv4") {
@@ -41,7 +48,18 @@ function localAddress() {
       }
     });
   });
-  return addresses.length ? addresses[0] : loopbackAddress;
+  if (addresses.length === 0) {
+    debug(`Unable to retrieve local hostname`);
+    return loopbackAddress;
+  }
+  if (addresses.length > 1) {
+    debug(
+      `Multiple local addresses found, using the first one: ${addresses.join(
+        ", "
+      )}`
+    );
+  }
+  return addresses[0];
 }
 
 // Currently unused, but potentialy useful in the future

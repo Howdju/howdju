@@ -26,7 +26,7 @@
     "invalidate:ui:prod": "    cross-env NODE_ENV=production DEBUG='*' ../bin/build-and-run-script.sh bin/create-invalidation.js E3ALDHFXYJRKKJ",
     "lint": "eslint --ignore-path=.gitignore .",
     "start:ui:local": "yarn run build-local && yarn run serve-local",
-    "serve-local": "     cross-env NODE_ENV=development SENTRY_ENV=local HOST_ADDRESS=localhost             DEBUG='premiser-ui:*' webpack serve --config config/webpack.config.ts",
+    "serve-local": "     cross-env NODE_ENV=development SENTRY_ENV=local HOST_ADDRESS=192.168.1.18             DEBUG='premiser-ui:*' webpack serve --config config/webpack.config.ts",
     "serve-prod-local": "cross-env NODE_ENV=production  SENTRY_ENV=local API_ROOT=http://localhost:8082/api DEBUG='premiser-ui:*' webpack serve --config config/webpack.config.ts",
     "upload-pre-prod": "cross-env NODE_ENV=production DEBUG='*' ../bin/build-and-run-script.sh bin/upload-to-s3.js pre-prod-www.howdju.com",
     "upload-prod": "    cross-env NODE_ENV=production DEBUG='*' ../bin/build-and-run-script.sh bin/upload-to-s3.js www.howdju.com",

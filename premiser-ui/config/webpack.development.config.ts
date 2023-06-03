@@ -32,7 +32,7 @@ export const webpackConfig: HtmlWebpackPlugin.Options = {
   // 'cheap-module-source-map' is recommended for React development.  See: https://reactjs.org/docs/cross-origin-errors.html#source-maps
   devtool: "cheap-module-source-map",
   devServer: {
-    host: hostAddress(),
+    host: "0.0.0.0",
   },
   plugins: [
     new CopyPlugin({

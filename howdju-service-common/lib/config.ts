@@ -6,7 +6,8 @@ export const baseConfig = {
       saltRounds: 10,
     },
   },
-  authTokenDuration: { days: 30 },
+  // DO_NOT_MERGE
+  authTokenDuration: { minutes: 5 },
   contentReportNotificationEmails: [] as string[],
   corsAllowOrigin: [] as string[],
   /** Whether to prevent responses that indicate whether an email has been registered with the system */

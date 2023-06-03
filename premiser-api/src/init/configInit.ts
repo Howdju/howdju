@@ -37,14 +37,7 @@ export function makeConfig(provider: LoggerProvider): ConfigProviderConfig {
 function getEnvConfig(): Partial<ApiConfig> {
   switch (process.env.NODE_ENV) {
     case "development": {
-      let corsAllowOrigin = devConfig.corsAllowOrigin;
-      if (process.env.API_HOST) {
-        const localOrigin = `http://${
-          process.env.API_HOST
-        }:${devWebServerPort()}`;
-        corsAllowOrigin = [localOrigin, ...corsAllowOrigin];
-      }
-      return merge({}, devConfig, { corsAllowOrigin });
+      return devConfig;
     }
     case "production":
       return prodConfig;
