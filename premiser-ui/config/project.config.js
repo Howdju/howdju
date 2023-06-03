@@ -12,23 +12,23 @@
  *   - prod
  */
 
-const path = require("path");
-const { merge } = require("webpack-merge");
-const { hostAddress } = require("./util");
+import path, { resolve } from "path";
 
-const basePath = path.resolve(__dirname, "..");
+import { hostAddressOrLocalAddress } from "howdju-ops";
 
-const baseConfig = {
-  hostAddress: hostAddress(),
+const basePath = resolve(__dirname, "..");
+
+export default {
+  hostAddress: hostAddressOrLocalAddress(),
   names: {
     js: "premiser-ui.js",
     indexHtml: "index.html",
   },
   paths: {
-    base: path.resolve.bind(path, basePath),
-    public: path.resolve.bind(path, basePath, "public"),
-    src: path.resolve.bind(path, basePath, "src"),
-    dist: path.resolve.bind(path, basePath, "dist"),
+    base: resolve.bind(path, basePath),
+    public: resolve.bind(path, basePath, "public"),
+    src: resolve.bind(path, basePath, "src"),
+    dist: resolve.bind(path, basePath, "dist"),
   },
   aws: {
     profile: "premiser",
@@ -36,7 +36,3 @@ const baseConfig = {
     cacheDuration: "P10M",
   },
 };
-
-const envConfig = require(`./project.${process.env.NODE_ENV}.config.js`);
-
-module.exports = merge(baseConfig, envConfig);

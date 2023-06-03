@@ -7,10 +7,9 @@ import MiniCssExtractPlugin from "mini-css-extract-plugin";
 import { BundleAnalyzerPlugin } from "webpack-bundle-analyzer";
 import { DuplicatesPlugin } from "inspectpack/plugin";
 import MomentLocalesPlugin from "moment-locales-webpack-plugin";
-import type { Response } from "webpack-dev-server";
 import WarningsToErrorsPlugin from "warnings-to-errors-webpack-plugin";
 
-import { devWebServerPort, gitShaShort } from "howdju-ops";
+import { gitShaShort } from "howdju-ops";
 import packageInfo from "../package.json";
 import projectConfig from "./project.config";
 import { sassLoaderAdditionalData } from "./sass-loader-additional-data";
@@ -86,43 +85,6 @@ const baseWebpackConfig = {
       // Support project-relative imports
       "@": path.resolve(__dirname, "../src/"),
     },
-  },
-  devServer: {
-    bonjour: true,
-    compress: true,
-    // hot: true,
-    // Behave like an SPA, serving index.html for paths that don't match files
-    historyApiFallback: true,
-    open: {
-      app: {
-        name: "Google Chrome",
-      },
-    },
-    port: devWebServerPort(),
-    static: [
-      {
-        directory: "public",
-        staticOptions: {
-          setHeaders: (res: Response, path: string, _stat: unknown) => {
-            console.log(`public path: ${path}`);
-            // In development, the static resources should be accessible from localhost, 127.0.0.1, or any other
-            // local address, even though we bind to 0.0.0.0.
-            res.set("Access-Control-Allow-Origin", "*");
-          },
-        },
-      },
-      {
-        directory: "dist/bookmarklet",
-        staticOptions: {
-          setHeaders: (res: Response, path: string, _stat: unknown) => {
-            console.log(`bookmarklet path: ${path}`);
-            if (path.endsWith(".js")) {
-              res.set("Content-Type", "application/javascript");
-            }
-          },
-        },
-      },
-    ],
   },
   module: {
     rules: [

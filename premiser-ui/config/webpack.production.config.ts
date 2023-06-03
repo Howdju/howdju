@@ -6,7 +6,7 @@ import CssMinimizerPlugin from "css-minimizer-webpack-plugin";
 
 import { utcTimestamp } from "howdju-common";
 
-import { gitSha } from "howdju-ops";
+import { gitSha, localApiRoot } from "howdju-ops";
 import packageInfo from "../package.json";
 import projectConfig from "./project.config";
 import type HtmlWebpackPlugin from "html-webpack-plugin";
@@ -20,7 +20,9 @@ export const htmlWebpackPluginConfig: HtmlWebpackPlugin.Options = {
   // },
 };
 
-const apiRoot = process.env.API_ROOT || "https://api.howdju.com/api/";
+const apiRoot = process.env.USE_PROD_LOCAL_API_ROOT
+  ? localApiRoot()
+  : process.env.API_ROOT || "https://api.howdju.com/api/";
 export const definePluginConfig = {
   "process.env.API_ROOT": JSON.stringify(apiRoot),
   "process.env.DO_ASSERT": JSON.stringify(false),
