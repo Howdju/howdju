@@ -10,7 +10,11 @@ import {
 } from "react-native-paper";
 
 import Text from "@/components/Text";
-import { HowdjuInstance, LocalInstanceAddress } from "@/contexts";
+import {
+  DEFAULT_LOCAL_INSTANCE_ADDRESS,
+  HowdjuInstance,
+  LocalInstanceAddress,
+} from "@/contexts";
 import { HowdjuInstanceName, isValidLocalInstanceAddress } from "@/hooks";
 
 export default function SettingsScreen() {
@@ -24,8 +28,9 @@ export default function SettingsScreen() {
   const { howdjuInstance, setHowdjuInstance } = useContext(HowdjuInstance);
   const { localInstanceAddress, setLocalInstanceAddress } =
     useContext(LocalInstanceAddress);
-  const [localInstanceAddressInput, setLocalInstanceAddressInput] =
-    useState(localInstanceAddress);
+  const [localInstanceAddressInput, setLocalInstanceAddressInput] = useState(
+    localInstanceAddress || DEFAULT_LOCAL_INSTANCE_ADDRESS
+  );
 
   function onPressInstance(instance: HowdjuInstanceName) {
     return function () {

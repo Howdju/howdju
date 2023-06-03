@@ -34,13 +34,13 @@ export function BrowserScreen({ items }: { items: ShareDataItem[] }) {
     webViewRef.current?.goForward();
   }
   function refresh() {
-    if (!webViewRef.current) {
-      logger.warn("Cannot refresh because webViewRef is missing.");
-      return;
-    }
-    webViewRef.current.reload();
+    webViewRef.current?.reload();
   }
   async function shareCurrentUrl() {
+    if (!currentUrl) {
+      logger.warn("Cannot share current URL because it is missing.");
+      return;
+    }
     try {
       const result = await Share.share({
         message: currentUrl,
@@ -139,7 +139,6 @@ export function BrowserScreen({ items }: { items: ShareDataItem[] }) {
         <Appbar.Action
           icon="refresh"
           onPress={() => refresh()}
-          disabled={!webViewRef.current}
           accessibilityLabel="Refresh browser"
         />
         <Appbar.Action icon="share" onPress={() => void shareCurrentUrl()} />
