@@ -15397,7 +15397,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"howdju-common@workspace:howdju-common":
+"howdju-common@workspace:^, howdju-common@workspace:howdju-common":
   version: 0.0.0-use.local
   resolution: "howdju-common@workspace:howdju-common"
   dependencies:
@@ -15480,7 +15480,9 @@ __metadata:
     eslint: ^8.27.0
     eslint-plugin-jest: ^27.1.5
     eslint-plugin-prettier: ^4.2.1
+    howdju-common: "workspace:^"
     jest: 29.3.1
+    lodash: ^4.17.21
     metro-react-native-babel-preset: ^0.66
     prettier: 2.7.1
     react: ^17.0
@@ -15497,6 +15499,7 @@ __metadata:
     terser-webpack-plugin: ^5.3.3
     ts-node: ^10.9.1
     typescript: ^4.9.4
+    validator: ^13.9.0
     webpack: ^5.76.0
   languageName: unknown
   linkType: soft
@@ -27304,6 +27307,13 @@ resolve@^2.0.0-next.3:
   version: 13.7.0
   resolution: "validator@npm:13.7.0"
   checksum: 2b83283de1222ca549a7ef57f46e8d49c6669213348db78b7045bce36a3b5843ff1e9f709ebf74574e06223461ee1f264f8cc9a26a0060a79a27de079d8286ef
+  languageName: node
+  linkType: hard
+
+"validator@npm:^13.9.0":
+  version: 13.9.0
+  resolution: "validator@npm:13.9.0"
+  checksum: e2c936f041f61faa42bafd17c6faddf939498666cd82e88d733621c286893730b008959f4cb12ab3e236148a4f3805c30b85e3dcf5e0efd8b0cbcd36c02bfc0c
   languageName: node
   linkType: hard
 

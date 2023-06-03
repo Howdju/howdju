@@ -4,31 +4,47 @@ import {
   HowdjuSiteAuthority,
   HOWDJU_PROD_AUTHORITY,
   HOWDJU_PREPROD_AUTHORITY,
-  HOWDJU_LOCAL_AUTHORITY,
   HowdjuInstance,
+  LocalInstanceAddress,
 } from "./contexts";
-import { HowdjuInstanceName, useHowdjuInstance } from "./hooks";
+import {
+  HowdjuInstanceName,
+  useHowdjuInstance,
+  useLocalInstanceAddress,
+} from "./hooks";
 
 export default function AppSettings({ children }: PropsWithChildren<{}>) {
   const [howdjuInstance, setHowdjuInstance] = useHowdjuInstance();
+  const [localInstanceAddress, setLocalInstanceAddress] =
+    useLocalInstanceAddress();
   return (
     <HowdjuInstance.Provider value={{ howdjuInstance, setHowdjuInstance }}>
-      <HowdjuSiteAuthority.Provider
-        value={toHowdjuSiteAuthority(howdjuInstance)}
+      <LocalInstanceAddress.Provider
+        value={{ localInstanceAddress, setLocalInstanceAddress }}
       >
-        {children}
-      </HowdjuSiteAuthority.Provider>
+        <HowdjuSiteAuthority.Provider
+          value={toHowdjuSiteAuthority(howdjuInstance, localInstanceAddress)}
+        >
+          {children}
+        </HowdjuSiteAuthority.Provider>
+      </LocalInstanceAddress.Provider>
     </HowdjuInstance.Provider>
   );
 }
 
-function toHowdjuSiteAuthority(instance: HowdjuInstanceName) {
+function toHowdjuSiteAuthority(
+  instance: HowdjuInstanceName | undefined,
+  localInstanceAddress: string
+) {
+  if (!instance) {
+    return undefined;
+  }
   switch (instance) {
     case "PROD":
       return HOWDJU_PROD_AUTHORITY;
     case "PREPROD":
       return HOWDJU_PREPROD_AUTHORITY;
     case "LOCAL":
-      return HOWDJU_LOCAL_AUTHORITY;
+      return localInstanceAddress;
   }
 }

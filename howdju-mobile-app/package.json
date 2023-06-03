@@ -26,6 +26,8 @@
     "@react-navigation/native": "^6.0.11",
     "@react-navigation/native-stack": "^6.7.0",
     "add": "^2.0.6",
+    "howdju-common": "workspace:^",
+    "lodash": "^4.17.21",
     "react": "^17.0",
     "react-native": "^0.66",
     "react-native-gesture-handler": "^2.6.0",
@@ -35,7 +37,8 @@
     "react-native-screens": "^3.15.0",
     "react-native-share-menu": "github:Howdju/react-native-share-menu#ff9c65e456cf80b23b881ed2e1247f14337260ec",
     "react-native-vector-icons": "^9.2.0",
-    "react-native-webview": "^11.15.0"
+    "react-native-webview": "^11.15.0",
+    "validator": "^13.9.0"
   },
   "devDependencies": {
     "@babel/core": "^7.19.0",

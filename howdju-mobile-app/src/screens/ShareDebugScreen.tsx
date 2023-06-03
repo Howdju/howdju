@@ -19,7 +19,7 @@ export default function ShareDebugScreen({
 }) {
   const theme = useTheme();
   const authority = useContext(HowdjuSiteAuthority);
-  const submitUrl = inferSubmitUrl(authority, items);
+  const submitUrl = authority && inferSubmitUrl(authority, items);
   const hasItems = !!items && !!items.length;
   const noItemsMessage = (
     <Text
@@ -28,13 +28,18 @@ export default function ShareDebugScreen({
       No share items.
     </Text>
   );
+  function openSubmitPage() {
+    if (!submitUrl) {
+      console.error("Cannot open submit page because submitUrl is missing.");
+      return;
+    }
+    void logPromiseError(openUrl(submitUrl), `Opening URL ${submitUrl}`);
+  }
   const debugInfo = (
     <>
       <Button
         title="Open Submit Page"
-        onPress={() =>
-          void logPromiseError(openUrl(submitUrl), `Opening URL ${submitUrl}`)
-        }
+        onPress={openSubmitPage}
         disabled={!!submitUrl}
       />
       <Section title="Share data">
