@@ -8,7 +8,7 @@
 
 set -e
 
-echo "Running ${@}"
+echo "Building & running ${@}"
 script_path=$1
 echo "Building script ${script_path}"
 esbuild "${script_path}" --bundle --platform=node\
