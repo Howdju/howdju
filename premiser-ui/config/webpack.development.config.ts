@@ -1,7 +1,12 @@
 import CopyPlugin from "copy-webpack-plugin";
-import { hostAddress } from "./util";
-import { devApiServerPort } from "howdju-ops";
 import HtmlWebpackPlugin from "html-webpack-plugin";
+import type { Response } from "webpack-dev-server";
+
+import {
+  localApiRoot,
+  devWebServerPort,
+  hostAddressOrLocalAddress,
+} from "howdju-ops";
 
 export const htmlWebpackPluginConfig = {
   minify: {
@@ -17,8 +22,9 @@ export const htmlWebpackPluginConfig = {
   // },
 };
 
-const apiRoot =
-  process.env.API_ROOT || `http://${hostAddress()}:${devApiServerPort()}/api/`;
+const hostAddress = hostAddressOrLocalAddress();
+
+const apiRoot = process.env.API_ROOT || localApiRoot();
 export const definePluginConfig = {
   "process.env.API_ROOT": JSON.stringify(apiRoot),
   "process.env.DO_ASSERT": JSON.stringify(true),
@@ -32,7 +38,42 @@ export const webpackConfig: HtmlWebpackPlugin.Options = {
   // 'cheap-module-source-map' is recommended for React development.  See: https://reactjs.org/docs/cross-origin-errors.html#source-maps
   devtool: "cheap-module-source-map",
   devServer: {
-    host: hostAddress(),
+    bonjour: true,
+    compress: true,
+    // hot: true,
+    // Behave like an SPA, serving index.html for paths that don't match files
+    historyApiFallback: true,
+    open: {
+      app: {
+        name: "Google Chrome",
+      },
+    },
+    port: devWebServerPort(),
+    host: hostAddress,
+    static: [
+      {
+        directory: "public",
+        staticOptions: {
+          setHeaders: (res: Response, path: string, _stat: unknown) => {
+            console.log(`public path: ${path}`);
+            // In development, the static resources should be accessible from localhost, 127.0.0.1, or any other
+            // local address.
+            res.set("Access-Control-Allow-Origin", "*");
+          },
+        },
+      },
+      {
+        directory: "dist/bookmarklet",
+        staticOptions: {
+          setHeaders: (res: Response, path: string, _stat: unknown) => {
+            console.log(`bookmarklet path: ${path}`);
+            if (path.endsWith(".js")) {
+              res.set("Content-Type", "application/javascript");
+            }
+          },
+        },
+      },
+    ],
   },
   plugins: [
     new CopyPlugin({

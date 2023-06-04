@@ -1,11 +1,9 @@
 const debug = require("debug")("premiser-api:dev-server");
 const { esbuilder } = require("./esbuilder");
 
-const { devApiServerPort } = require("howdju-ops");
+const { devApiServerPort, apiHostOrLocalAddress } = require("howdju-ops");
 
-const { apiHostOrHostnameAddress } = require("./addressUtils");
-
-const apiHost = apiHostOrHostnameAddress(false);
+const apiHost = apiHostOrLocalAddress(false);
 
 // The handler depends on API_HOST, but can't depend on the native utils to look it up via DNS
 // (or else it isn't bundleable), so set it here if necessary. For local development, this
