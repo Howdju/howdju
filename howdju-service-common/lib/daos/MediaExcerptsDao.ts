@@ -103,7 +103,11 @@ export class MediaExcerptsDao {
   private async readCitationsForMediaExcerptId(mediaExcerptId: EntityId) {
     const { rows } = await this.database.query(
       "readCitationsForMediaExcerptId",
-      `select * from media_excerpt_citations where media_excerpt_id = $1 and deleted is null`,
+      `
+      select *
+      from media_excerpt_citations
+        where media_excerpt_id = $1 and deleted is null
+      order by media_excerpt_id asc, source_id asc, normal_pincite asc`,
       [mediaExcerptId]
     );
     return await Promise.all(
@@ -166,16 +170,16 @@ export class MediaExcerptsDao {
     }));
   }
 
-  // DO_NOT_MERGE technically an equivalent media excerpt has redundant localRep, locators, and
+  // TODO(20) improve equivalence calculation and support MediaExcerpt suggestions
+  //
+  // Technically an equivalent media excerpt has redundant localRep, locators, and
   // citations. And the same localRep could technically be used in multiple media excerpts if
   // the same literal quote was used in different contexts to mean different things.
   // So: 1) return an equivalent MediaExcerpt if the create model
   // is redundant with existing localRep, locators, and citations, and 2) if a user is creating
   // a MediaExcerpt with (a) redundant or (b) significantly overlapping localRep, suggest
   // MediaExcerpts with the redundant localRep (those that are non-equivalent according to both
-  // locators and citations.)
-  //
-  // 1. Trim exact_text (white space and punctuation shouldn't affect the comparison)
+  // locators and citations.) (Overlapping start/end offsets and x % of overlapping exact text?)
   async readEquivalentMediaExcerpt(
     mediaExcerpt: CreateMediaExcerptDataIn
   ): Promise<MediaExcerptOut | undefined> {

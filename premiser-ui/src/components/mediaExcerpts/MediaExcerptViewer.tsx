@@ -10,7 +10,7 @@ interface Props {
   mediaExcerpt: MediaExcerptView;
 }
 
-// DO_NOT_MERGE click URL: if extension installed, navigate to URL and highlight anchor.
+// TODO(20) click URL: if extension installed, navigate to URL and highlight anchor.
 
 export default function MediaExcerptViewer({ mediaExcerpt }: Props) {
   return (

@@ -46,6 +46,12 @@ describe("MediaExcerptsDao", () => {
 
       const readMediaExcerpt = await dao.readMediaExcerptForId(mediaExcerpt.id);
 
+      const expectedSource = merge({}, mediaExcerpt.citations[0].source, {
+        id: expect.any(String),
+        normalDescriptionApa: "the apa description",
+        creatorUserId: user.id,
+        created: expect.any(MomentConstructor),
+      });
       expect(readMediaExcerpt).toEqual(
         expectToBeSameMomentDeep(
           merge({}, mediaExcerpt, {
@@ -66,13 +72,13 @@ describe("MediaExcerptsDao", () => {
             },
             citations: [
               {
-                source: {
-                  id: expect.any(String),
-                  normalDescriptionApa: "the apa description",
-                  creatorUserId: user.id,
-                  created: expect.any(MomentConstructor),
-                },
+                source: expectedSource,
                 normalPincite: "the pincite",
+                creatorUserId: user.id,
+                created: expect.any(MomentConstructor),
+              },
+              {
+                source: expectedSource,
                 creatorUserId: user.id,
                 created: expect.any(MomentConstructor),
               },
