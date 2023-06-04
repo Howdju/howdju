@@ -2,9 +2,8 @@ import { ArgumentParser } from "argparse";
 import { S3 } from "aws-sdk";
 import Debug from "debug";
 import { readFile, readdir, stat as _stat } from "fs";
-import { duration as _duration } from "moment";
+import moment from "moment";
 import { extname, resolve } from "path";
-
 
 import { utcNow, gitCommitMetadataKey } from "howdju-common";
 import { gitSha } from "howdju-ops";
@@ -45,7 +44,7 @@ const upload = (filename) => {
     if (err) throw err;
 
     const extension = extname(filename);
-    const duration = _duration(projectConfig.aws.cacheDuration);
+    const duration = moment.duration(projectConfig.aws.cacheDuration);
     // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#upload-property
     const params = {
       Bucket: args.bucket,
