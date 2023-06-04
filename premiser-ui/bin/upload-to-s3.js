@@ -1,19 +1,19 @@
-const { ArgumentParser } = require("argparse");
-const AWS = require("aws-sdk");
-const debug = require("debug")("premiser-ui:upload-to-s3");
-const fs = require("fs");
-const moment = require("moment");
-const path = require("path");
+import { ArgumentParser } from "argparse";
+import { S3 } from "aws-sdk";
+import Debug from "debug";
+import { readFile, readdir, stat as _stat } from "fs";
+import { duration as _duration } from "moment";
+import { extname, resolve } from "path";
 
-const { utcNow, gitCommitMetadataKey } = require("howdju-common");
-const { gitSha } = require("howdju-ops");
-const packageInfo = require("../package.json");
+
+import { utcNow, gitCommitMetadataKey } from "howdju-common";
+import { gitSha } from "howdju-ops";
+
+import { version } from "../package.json";
+import projectConfig from "../config/project.config";
 
 const versionMetadataKey = "howdju-ui-version";
-const projectConfig = require(path.join(
-  process.cwd(),
-  "config/project.config"
-));
+const debug = Debug("premiser-ui:upload-to-s3");
 
 const argParser = new ArgumentParser({
   description: "Upload the web app to S3",
@@ -25,7 +25,7 @@ const filter = args.filter && new RegExp(args.filter);
 
 debug(`${argParser} ${args}`);
 
-const s3 = new AWS.S3({ apiVersion: "2006-03-01" });
+const s3 = new S3({ apiVersion: "2006-03-01" });
 
 const contentTypes = {
   ".js": "application/javascript",
@@ -41,11 +41,11 @@ const contentTypes = {
 
 const upload = (filename) => {
   debug(`Reading ${filename}`);
-  fs.readFile(projectConfig.paths.dist(filename), (err, data) => {
+  readFile(projectConfig.paths.dist(filename), (err, data) => {
     if (err) throw err;
 
-    const extension = path.extname(filename);
-    const duration = moment.duration(projectConfig.aws.cacheDuration);
+    const extension = extname(filename);
+    const duration = _duration(projectConfig.aws.cacheDuration);
     // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#upload-property
     const params = {
       Bucket: args.bucket,
@@ -53,7 +53,7 @@ const upload = (filename) => {
       Body: data,
       Metadata: {
         [gitCommitMetadataKey]: gitSha(),
-        [versionMetadataKey]: packageInfo.version,
+        [versionMetadataKey]: version,
       },
       ACL: "public-read",
       CacheControl: `public, max-age=${duration.seconds()}`,
@@ -74,15 +74,15 @@ const upload = (filename) => {
 walkRelative(projectConfig.paths.dist(), upload);
 
 function walk(dirPath, action) {
-  fs.readdir(dirPath, function (err, fileNames) {
+  readdir(dirPath, function (err, fileNames) {
     if (err) return debug(err);
 
     fileNames.forEach(function (fileName) {
       if (fileName[0] === ".") {
         return debug(`Skipping ${fileName}`);
       }
-      const filePath = path.resolve(dirPath, fileName);
-      fs.stat(filePath, function (err, stat) {
+      const filePath = resolve(dirPath, fileName);
+      _stat(filePath, function (err, stat) {
         if (stat && stat.isDirectory()) {
           return walk(filePath, action);
         }
@@ -93,7 +93,7 @@ function walk(dirPath, action) {
 }
 
 function walkRelative(dirPath, action) {
-  const absPath = path.resolve(dirPath);
+  const absPath = resolve(dirPath);
   walk(dirPath, function truncatePath(filePath) {
     // +1 to get the directory separator
     const relativePath = filePath.substring(absPath.length + 1);
