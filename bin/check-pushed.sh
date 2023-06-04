@@ -2,6 +2,8 @@
 
 set -e
 
+echo Checking if current branch is pushed to origin...
+
 current_branch=$(git branch --show-current)
 git fetch origin
 output=$(git log origin/${current_branch}..${current_branch})

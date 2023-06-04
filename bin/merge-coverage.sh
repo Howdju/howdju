@@ -2,6 +2,8 @@
 
 set -e
 
+echo Merging coverage reports...
+
 echo Deleting $(pwd)/coverage
 rm -rf $(pwd)/coverage
 echo Creating coverage/workspaces
