@@ -1,3 +1,5 @@
+-- TODO(20,38) delete this file
+
 create table if not exists sentence_appearances (
   sentence_appearance_id serial primary key,
   sentence_type varchar(64) not null, -- PROPOSITION, STATEMENT

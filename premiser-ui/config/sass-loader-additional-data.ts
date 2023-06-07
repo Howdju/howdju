@@ -1,8 +1,8 @@
-import { devWebServerPort, hostAddressOrLocalAddress } from "howdju-ops";
+import { devWebServerPort, getUiHost } from "howdju-ops";
 
 /** Extract out the sass-loader config because webpack.production.config.ts requires it for ExtractTextPlugin */
 
-const host = hostAddressOrLocalAddress();
+const host = getUiHost();
 const port = devWebServerPort();
 
 const devSassLoaderData =

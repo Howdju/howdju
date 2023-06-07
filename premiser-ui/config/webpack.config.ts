@@ -8,6 +8,7 @@ import { BundleAnalyzerPlugin } from "webpack-bundle-analyzer";
 import { DuplicatesPlugin } from "inspectpack/plugin";
 import MomentLocalesPlugin from "moment-locales-webpack-plugin";
 import WarningsToErrorsPlugin from "warnings-to-errors-webpack-plugin";
+import StatoscopeWebpackPlugin from "@statoscope/webpack-plugin";
 
 import { gitShaShort } from "howdju-ops";
 import packageInfo from "../package.json";
@@ -65,6 +66,13 @@ const plugins: WebpackPluginInstance[] = [
 // the analysis. So only add it when requested.
 if (process.env.BUNDLE_ANALYZER) {
   plugins.push(new BundleAnalyzerPlugin() as unknown as WebpackPluginInstance);
+}
+if (process.env.STATOSCOPE) {
+  plugins.push(
+    new StatoscopeWebpackPlugin({
+      saveReportTo: projectConfig.paths.dist("statoscope.html"),
+    })
+  );
 }
 // This plugin adds a full-page overlay over the web app that reappears
 // on every hot refresh, and so is very annoying. Only enable it on purpose.

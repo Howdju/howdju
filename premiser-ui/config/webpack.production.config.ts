@@ -1,12 +1,11 @@
 import CopyPlugin from "copy-webpack-plugin";
 import MiniCssExtractPlugin from "mini-css-extract-plugin";
 import webpack from "webpack";
-// import Visualizer from 'webpack-visualizer-plugin2'
 import CssMinimizerPlugin from "css-minimizer-webpack-plugin";
 
 import { utcTimestamp } from "howdju-common";
 
-import { gitSha, localApiRoot } from "howdju-ops";
+import { gitSha, getApiRoot } from "howdju-ops";
 import packageInfo from "../package.json";
 import projectConfig from "./project.config";
 import type HtmlWebpackPlugin from "html-webpack-plugin";
@@ -21,7 +20,7 @@ export const htmlWebpackPluginConfig: HtmlWebpackPlugin.Options = {
 };
 
 const apiRoot = process.env.USE_PROD_LOCAL_API_ROOT
-  ? localApiRoot()
+  ? getApiRoot()
   : process.env.API_ROOT || "https://api.howdju.com/api/";
 export const definePluginConfig = {
   "process.env.API_ROOT": JSON.stringify(apiRoot),
@@ -76,9 +75,6 @@ export const webpackConfig = {
       ],
     }),
     new MiniCssExtractPlugin(),
-    // new Visualizer({
-    //   filename: './stats.html'
-    // }),
     new webpack.IgnorePlugin({
       resourceRegExp: /^\.\/locale$/,
       contextRegExp: /moment$/,

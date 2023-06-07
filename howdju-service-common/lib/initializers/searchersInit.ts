@@ -3,6 +3,7 @@ import {
   makeWritTitleSearcher,
   makeWritQuoteQuoteTextSearcher,
   makePersorgsNameSearcher,
+  makeSourcesDescriptionSearcher,
 } from "../searchers/searchers";
 import { DaosProvider } from "./daosInit";
 import { DatabaseProvider } from "./databaseInit";
@@ -21,6 +22,9 @@ export function searchersInitializer(provider: DatabaseProvider) {
     provider.database
   );
   const persorgsNameSearcher = makePersorgsNameSearcher(provider.database);
+  const sourcesDescriptionSearcher = makeSourcesDescriptionSearcher(
+    provider.database
+  );
 
   provider.logger.debug("searchersInit complete");
 
@@ -29,5 +33,6 @@ export function searchersInitializer(provider: DatabaseProvider) {
     writsTitleSearcher,
     writQuotesQuoteTextSearcher,
     persorgsNameSearcher,
+    sourcesDescriptionSearcher,
   };
 }

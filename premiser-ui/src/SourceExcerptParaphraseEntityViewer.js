@@ -28,7 +28,7 @@ export default class SourceExcerptParaphraseEntityViewer extends Component {
       <EntityViewer
         className="source-excerpt-paraphrase-entity-viewer"
         component={component}
-        iconName="textsms"
+        icon="textsms"
         iconTitle={`Paraphrase (${sourceExcerptDescription(sourceExcerpt)})`}
         entity={
           <div>

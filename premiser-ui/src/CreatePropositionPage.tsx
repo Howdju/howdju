@@ -352,7 +352,7 @@ export default function CreatePropositionPage({ mode, location }: Props) {
                       {map(speakers, (speaker, index) => (
                         <div key={index}>
                           <EntityViewer
-                            iconName="person"
+                            icon="person"
                             iconTitle="Person/Organization"
                             menu={
                               <Button
@@ -385,9 +385,9 @@ export default function CreatePropositionPage({ mode, location }: Props) {
                                 )}
                                 name={combineNames(speakersName, array(index))}
                                 disabled={isSaving}
-                                onPersorgNameAutocomplete={(persorg: Persorg) =>
-                                  onPersorgAutocomplete(persorg, index)
-                                }
+                                onPersorgNameAutocomplete={(
+                                  persorg: PersorgOut
+                                ) => onPersorgAutocomplete(persorg, index)}
                                 onPropertyChange={onPropertyChange}
                                 errors={errors.speakers?.[index]}
                                 wasSubmitAttempted={wasSubmitAttempted}

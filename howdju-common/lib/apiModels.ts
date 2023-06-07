@@ -18,7 +18,9 @@ import {
   PropositionCompound,
   PropositionCompoundAtom,
   PropositionTagVote,
+  Source,
   SourceExcerpt,
+  MediaExcerpt,
   Statement,
   Tag,
   TagVote,
@@ -27,6 +29,8 @@ import {
   VidSegment,
   Writ,
   WritQuote,
+  UrlLocator,
+  MediaExcerptCitation,
 } from "./zodSchemas";
 import {
   EntityRef,
@@ -34,6 +38,12 @@ import {
   PersistedJustificationWithRootRef,
   PersistRelated,
 } from "./zodSchemaTypes";
+
+export interface MediaExcerptOut extends Persisted<MediaExcerpt> {}
+export interface UrlLocatorOut extends Persisted<UrlLocator> {}
+
+export type SourceOut = Persisted<Source>;
+export type MediaExcerptCitationOut = PersistRelated<MediaExcerptCitation>;
 
 /**
  * An out model representing errors for any CRUD action.
@@ -133,4 +143,4 @@ export interface SortDescription {
   value?: string;
 }
 
-export type PersorgOut = Persorg;
+export type PersorgOut = Persisted<Persorg>;

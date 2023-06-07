@@ -23,6 +23,8 @@ import { cookieConsent, ERROR_REPORTING } from "./cookieConsent";
 import { store } from "./store";
 import sentryInit from "./sentryInit";
 
+import "react-material-symbols/dist/rounded.css";
+
 if (config.sentry.enabled && cookieConsent.isAccepted(ERROR_REPORTING)) {
   sentryInit();
 }

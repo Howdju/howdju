@@ -274,7 +274,7 @@ describe("CreatePropositionPage", () => {
           return res(ctx.delay(1), ctx.json([]));
         })
       );
-      // Use click/keyboard instead of type to trigger autocompletes.
+
       await user.type(
         document.querySelector('textarea[name="proposition.text"]')!,
         proposition.text

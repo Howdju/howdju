@@ -2,12 +2,17 @@ import React, { ComponentType, ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { FontIcon } from "react-md";
 import cn from "classnames";
+import { isString } from "lodash";
 
 import "./EntityViewer.scss";
 
 interface Props {
   entity: ReactNode;
-  iconName: string;
+  /**
+   * The icon to display in the header. If a string, it will be wrapped in a
+   * FontIcon. If a ReactNode, it will be rendered as-is.
+   */
+  icon: string | ReactNode;
   iconTitle: string;
   className?: string;
   iconLink?: string;
@@ -18,7 +23,7 @@ interface Props {
 
 export default function EntityViewer({
   className,
-  iconName,
+  icon,
   iconTitle,
   iconLink,
   entity,
@@ -28,10 +33,12 @@ export default function EntityViewer({
 }: Props) {
   // TODO(304) pass title directly to a component that supports it
   const titleProps = { title: iconTitle } as any;
-  let header = (
+  let header = isString(icon) ? (
     <FontIcon {...titleProps} role="presentation">
-      {iconName}
+      {icon}
     </FontIcon>
+  ) : (
+    icon
   );
   if (iconLink) {
     header = <Link to={iconLink}>{header}</Link>;

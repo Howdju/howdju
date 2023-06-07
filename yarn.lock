@@ -4351,10 +4351,24 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@discoveryjs/json-ext@npm:0.5.7, @discoveryjs/json-ext@npm:^0.5.7":
+  version: 0.5.7
+  resolution: "@discoveryjs/json-ext@npm:0.5.7"
+  checksum: 2176d301cc258ea5c2324402997cf8134ebb212469c0d397591636cea8d3c02f2b3cf9fd58dcb748c7a0dade77ebdc1b10284fa63e608c033a1db52fddc69918
+  languageName: node
+  linkType: hard
+
 "@discoveryjs/json-ext@npm:^0.5.0":
   version: 0.5.2
   resolution: "@discoveryjs/json-ext@npm:0.5.2"
   checksum: cf7ce79a6e25944b6618f3336a4f69191ce9019ee08e47129c4933f03f66aa625c0e7d55075f890cdfc9a7f9b3f6c5465a1e51bd3e7a73aec803753d7d0cec91
+  languageName: node
+  linkType: hard
+
+"@discoveryjs/natural-compare@npm:^1.0.0":
+  version: 1.1.0
+  resolution: "@discoveryjs/natural-compare@npm:1.1.0"
+  checksum: c9a965da2422efc74f6fd6feac5dfb858261a1bf0f54de6b14a3affe80d81d949d475f6959a54ca978fcda965e1933abb78840ddb03e690e59a27e06f77f1f2b
   languageName: node
   linkType: hard
 
@@ -6186,6 +6200,169 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@statoscope/extensions@npm:5.14.1":
+  version: 5.14.1
+  resolution: "@statoscope/extensions@npm:5.14.1"
+  checksum: 110999171ec54fd70d7154aa49500e1051a0ce838b6b00d4116f173c5a41de36c0e9c15254f0db29e68d214e4406332abdd846709dd2053d845b2a71346ed6cc
+  languageName: node
+  linkType: hard
+
+"@statoscope/helpers@npm:5.25.0":
+  version: 5.25.0
+  resolution: "@statoscope/helpers@npm:5.25.0"
+  dependencies:
+    "@types/archy": ^0.0.32
+    "@types/semver": ^7.3.10
+    archy: ~1.0.0
+    jora: ^1.0.0-beta.7
+    semver: ^7.3.7
+  checksum: 72b0e94823cb621893992b8712341d23e5488df72385c3870f8f73d2a31f9a144884f5c4a23d621246d4eac68fbb6c62498fb7376ef4c89f3dff972b104f3396
+  languageName: node
+  linkType: hard
+
+"@statoscope/report-writer@npm:5.25.1":
+  version: 5.25.1
+  resolution: "@statoscope/report-writer@npm:5.25.1"
+  dependencies:
+    "@discoveryjs/json-ext": ^0.5.7
+    "@types/pako": ^2.0.0
+    pako: ^2.0.4
+  checksum: 62fa8c06efb4c4ad15da03ed89faa6eaa6f1ee1c0e61f4a8a7c5f224e8045ec45a4bfbcbdb07c4adee39a6e6946486aac1bd784389c6d92efc3daddf32e51e65
+  languageName: node
+  linkType: hard
+
+"@statoscope/stats-extension-compressed@npm:5.25.0":
+  version: 5.25.0
+  resolution: "@statoscope/stats-extension-compressed@npm:5.25.0"
+  dependencies:
+    "@statoscope/helpers": 5.25.0
+    gzip-size: ^6.0.0
+  checksum: 3a59262a9d5202c8d5d0f8d5ef7949858ca78cb8590e79cd8d5e1156c764b86be07ae0a5eac6124c6cab0b582107f9aa53e1aa773559b3d315938e9f2a68b715
+  languageName: node
+  linkType: hard
+
+"@statoscope/stats-extension-custom-reports@npm:5.25.0":
+  version: 5.25.0
+  resolution: "@statoscope/stats-extension-custom-reports@npm:5.25.0"
+  dependencies:
+    "@statoscope/extensions": 5.14.1
+    "@statoscope/helpers": 5.25.0
+    "@statoscope/stats": 5.14.1
+    "@statoscope/types": 5.22.0
+  checksum: d13a3d701943a4291394c82cb850daeb26d4edf72e4bf3d1e34b54bcfd9336b9d46cd96daf4cebd313932a417ca107285e31610f2c076e4cb34e77cf79e8055b
+  languageName: node
+  linkType: hard
+
+"@statoscope/stats-extension-package-info@npm:5.25.0":
+  version: 5.25.0
+  resolution: "@statoscope/stats-extension-package-info@npm:5.25.0"
+  dependencies:
+    "@statoscope/helpers": 5.25.0
+  checksum: 6a582f4cb1cf22e8b3fcc87c31c3cc000b4aeed1a52d1b701e02176964d6d1fc02340db0648ff4f7b5de2e9f7c394bdeede7ea9509fd711e4d725643c052b6b4
+  languageName: node
+  linkType: hard
+
+"@statoscope/stats-extension-stats-validation-result@npm:5.25.0":
+  version: 5.25.0
+  resolution: "@statoscope/stats-extension-stats-validation-result@npm:5.25.0"
+  dependencies:
+    "@statoscope/extensions": 5.14.1
+    "@statoscope/helpers": 5.25.0
+    "@statoscope/stats": 5.14.1
+    "@statoscope/types": 5.22.0
+  checksum: 4010a2f3fb5eac753ec85136b2f59c34b95d50ca3de407f69c21f3ec4a4cf109704d8f3129f4d720098d5f0ca778c48daa870706a18be3af848d40029dbdb08c
+  languageName: node
+  linkType: hard
+
+"@statoscope/stats@npm:5.14.1":
+  version: 5.14.1
+  resolution: "@statoscope/stats@npm:5.14.1"
+  checksum: 49fba350d15a600c5f709c2b03beb20030def202b39e850d19b4862f380f77e7333735865ab2a5b697e59c76ce81306399c26b3b437c317a3b87f7d98ed5cff4
+  languageName: node
+  linkType: hard
+
+"@statoscope/types@npm:5.22.0":
+  version: 5.22.0
+  resolution: "@statoscope/types@npm:5.22.0"
+  dependencies:
+    "@statoscope/stats": 5.14.1
+  checksum: bee6291952d7c783f1c5379e8c37e95e7e94789a9428e16e8a28d49c7e0873b0ba63801452211ffffa09d9c5dd8393e8120a13f53f2acde822801257260b54ce
+  languageName: node
+  linkType: hard
+
+"@statoscope/webpack-model@npm:5.26.2":
+  version: 5.26.2
+  resolution: "@statoscope/webpack-model@npm:5.26.2"
+  dependencies:
+    "@statoscope/extensions": 5.14.1
+    "@statoscope/helpers": 5.25.0
+    "@statoscope/stats": 5.14.1
+    "@statoscope/stats-extension-compressed": 5.25.0
+    "@statoscope/stats-extension-custom-reports": 5.25.0
+    "@statoscope/stats-extension-package-info": 5.25.0
+    "@statoscope/stats-extension-stats-validation-result": 5.25.0
+    "@statoscope/types": 5.22.0
+    md5: ^2.3.0
+  checksum: 6c9ef92750a07c6c5ef26af7d2cad600612fffe8aad0af4265c3cd1b864e731a1f91f29189dece55283e010bf64705fda7400d0416a23d0e5b48fa6f4937fffe
+  languageName: node
+  linkType: hard
+
+"@statoscope/webpack-plugin@npm:^5.26.2":
+  version: 5.26.2
+  resolution: "@statoscope/webpack-plugin@npm:5.26.2"
+  dependencies:
+    "@discoveryjs/json-ext": ^0.5.7
+    "@statoscope/report-writer": 5.25.1
+    "@statoscope/stats": 5.14.1
+    "@statoscope/stats-extension-compressed": 5.25.0
+    "@statoscope/stats-extension-custom-reports": 5.25.0
+    "@statoscope/types": 5.22.0
+    "@statoscope/webpack-model": 5.26.2
+    "@statoscope/webpack-stats-extension-compressed": 5.26.2
+    "@statoscope/webpack-stats-extension-package-info": 5.26.2
+    "@statoscope/webpack-ui": 5.26.2
+    open: ^8.4.0
+  peerDependencies:
+    webpack: ^4.0.0 || ^5.0.0
+  checksum: 4d3557dd53eec4e35277772d1bf4efa0abd0f05bae03e6e40fc047365b9de45b8823d4249928c5746301e14f9a91525753f8d4a6e66dfedfadcce68ea1bd3f41
+  languageName: node
+  linkType: hard
+
+"@statoscope/webpack-stats-extension-compressed@npm:5.26.2":
+  version: 5.26.2
+  resolution: "@statoscope/webpack-stats-extension-compressed@npm:5.26.2"
+  dependencies:
+    "@statoscope/stats": 5.14.1
+    "@statoscope/stats-extension-compressed": 5.25.0
+    "@statoscope/webpack-model": 5.26.2
+  peerDependencies:
+    webpack: ^4.0.0 || ^5.0.0
+  checksum: 42df05468bd0e3f08079c63f7f6f18732f1c6ebe71b059fbe2870446719527d090c5b01b0cee2e8399199eba25497d8d6772d99e68b32336278974bf7933d0e2
+  languageName: node
+  linkType: hard
+
+"@statoscope/webpack-stats-extension-package-info@npm:5.26.2":
+  version: 5.26.2
+  resolution: "@statoscope/webpack-stats-extension-package-info@npm:5.26.2"
+  dependencies:
+    "@statoscope/stats": 5.14.1
+    "@statoscope/stats-extension-package-info": 5.25.0
+    "@statoscope/webpack-model": 5.26.2
+  peerDependencies:
+    webpack: ^4.0.0 || ^5.0.0
+  checksum: b223011e2673486ef12f3808acce4c7124d3a35ba6efbe0f323f8ba43ee5171fc70ec740c945770aaffe9ca5f46362e36f0544465f2b96111bcb08de96e13393
+  languageName: node
+  linkType: hard
+
+"@statoscope/webpack-ui@npm:5.26.2":
+  version: 5.26.2
+  resolution: "@statoscope/webpack-ui@npm:5.26.2"
+  dependencies:
+    "@statoscope/types": 5.22.0
+  checksum: 4ed7059c1b9d89a6ce3eecf40b6c44bee1f6ab41fc6cef9cefefbea8af23d2b10a4515bb95f374793b6df739f0178b72096abb88d93c2df6f1a0acbdb33624f9
+  languageName: node
+  linkType: hard
+
 "@szmarczak/http-timer@npm:^4.0.5":
   version: 4.0.5
   resolution: "@szmarczak/http-timer@npm:4.0.5"
@@ -6323,6 +6500,13 @@ __metadata:
   version: 1.0.3
   resolution: "@tsconfig/node16@npm:1.0.3"
   checksum: 3a8b657dd047495b7ad23437d6afd20297ce90380ff0bdee93fc7d39a900dbd8d9e26e53ff6b465e7967ce2adf0b218782590ce9013285121e6a5928fbd6819f
+  languageName: node
+  linkType: hard
+
+"@types/archy@npm:^0.0.32":
+  version: 0.0.32
+  resolution: "@types/archy@npm:0.0.32"
+  checksum: 36bca658f40e38821e6b6a7113198bc9a2a9a5e2183a388bd082fc8b85217b9cbac8c1485fdb44da2042e079ef0815a9a5a32f918ff60d74954217d4b82be92a
   languageName: node
   linkType: hard
 
@@ -6817,6 +7001,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/pako@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "@types/pako@npm:2.0.0"
+  checksum: 50240a036b5e6acabbf36ac4dca93ec9e619241f0404da8d401cdb427bec3029833324b8a04c4b1ae2ecbc33422fdec31dbf9f43653d9d07cafb82ace78dfccd
+  languageName: node
+  linkType: hard
+
 "@types/parse-json@npm:^4.0.0":
   version: 4.0.0
   resolution: "@types/parse-json@npm:4.0.0"
@@ -7016,6 +7207,13 @@ __metadata:
   version: 0.16.1
   resolution: "@types/scheduler@npm:0.16.1"
   checksum: 2ff8034df029a6cbb3623b05fa895cac4fc504806a8e948ebe29675a1edfa5ac04faac7611016076b3ffefc2037bbe344ad1978304059b2d4c78e513ec43c7bf
+  languageName: node
+  linkType: hard
+
+"@types/semver@npm:^7.3.10":
+  version: 7.5.0
+  resolution: "@types/semver@npm:7.5.0"
+  checksum: 0a64b9b9c7424d9a467658b18dd70d1d781c2d6f033096a6e05762d20ebbad23c1b69b0083b0484722aabf35640b78ccc3de26368bcae1129c87e9df028a22e2
   languageName: node
   linkType: hard
 
@@ -8204,7 +8402,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"archy@npm:^1.0.0":
+"archy@npm:^1.0.0, archy@npm:~1.0.0":
   version: 1.0.0
   resolution: "archy@npm:1.0.0"
   checksum: 504ae7af655130bab9f471343cfdb054feaec7d8e300e13348bc9fe9e660f83d422e473069584f73233c701ae37d1c8452ff2522f2a20c38849e0f406f1732ac
@@ -10192,6 +10390,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"charenc@npm:0.0.2":
+  version: 0.0.2
+  resolution: "charenc@npm:0.0.2"
+  checksum: 81dcadbe57e861d527faf6dd3855dc857395a1c4d6781f4847288ab23cffb7b3ee80d57c15bba7252ffe3e5e8019db767757ee7975663ad2ca0939bb8fcaf2e5
+  languageName: node
+  linkType: hard
+
 "cheerio-select@npm:^1.4.0":
   version: 1.4.0
   resolution: "cheerio-select@npm:1.4.0"
@@ -10720,13 +10925,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"commander@npm:^6.2.0":
-  version: 6.2.1
-  resolution: "commander@npm:6.2.1"
-  checksum: d7090410c0de6bc5c67d3ca41c41760d6d268f3c799e530aafb73b7437d1826bbf0d2a3edac33f8b57cc9887b4a986dce307fa5557e109be40eadb7c43b21742
-  languageName: node
-  linkType: hard
-
 "commander@npm:^7.0.0, commander@npm:^7.2.0":
   version: 7.2.0
   resolution: "commander@npm:7.2.0"
@@ -11146,6 +11344,13 @@ __metadata:
     shebang-command: ^2.0.0
     which: ^2.0.1
   checksum: 671cc7c7288c3a8406f3c69a3ae2fc85555c04169e9d611def9a675635472614f1c0ed0ef80955d5b6d4e724f6ced67f0ad1bb006c2ea643488fcfef994d7f52
+  languageName: node
+  linkType: hard
+
+"crypt@npm:0.0.2":
+  version: 0.0.2
+  resolution: "crypt@npm:0.0.2"
+  checksum: baf4c7bbe05df656ec230018af8cf7dbe8c14b36b98726939cef008d473f6fe7a4fad906cfea4062c93af516f1550a3f43ceb4d6615329612c6511378ed9fe34
   languageName: node
   linkType: hard
 
@@ -15620,6 +15825,7 @@ __metadata:
     eslint: ^8.27.0
     eslint-config-howdju: "workspace:eslint-config-howdju"
     jest: ^29.3.1
+    jest-extended: ^3.2.4
     prettier: 2.7.1
     sinon: ^10.0.0
     ts-node: ^10.9.1
@@ -16430,7 +16636,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"is-buffer@npm:^1.1.5":
+"is-buffer@npm:^1.1.5, is-buffer@npm:~1.1.6":
   version: 1.1.6
   resolution: "is-buffer@npm:1.1.6"
   checksum: 4a186d995d8bbf9153b4bd9ff9fd04ae75068fe695d29025d25e592d9488911eeece84eefbd8fa41b8ddcc0711058a71d4c466dcf6f1f6e1d83830052d8ca707
@@ -17364,21 +17570,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jest-extended@npm:^3.2.0":
-  version: 3.2.0
-  resolution: "jest-extended@npm:3.2.0"
-  dependencies:
-    jest-diff: ^29.0.0
-    jest-get-type: ^29.0.0
-  peerDependencies:
-    jest: ">=27.2.5"
-  peerDependenciesMeta:
-    jest:
-      optional: true
-  checksum: 9b6299a4304b4833edbfdc716de8e0d22dc75df353b552f077ac4d46eaa310f4883821a203e95c619963e457307ecc38725a99a7136a0171552c80ccbfd3cb6e
-  languageName: node
-  linkType: hard
-
 "jest-extended@npm:^3.2.1":
   version: 3.2.1
   resolution: "jest-extended@npm:3.2.1"
@@ -17391,6 +17582,21 @@ __metadata:
     jest:
       optional: true
   checksum: fbcbeace957b5789c4998bdf460d997fd2266b98ca6b23f8af560f7e46357f76fc50acfa56e410191f7755b1c83995623554105620e24517673d21ca7de2f67b
+  languageName: node
+  linkType: hard
+
+"jest-extended@npm:^3.2.4":
+  version: 3.2.4
+  resolution: "jest-extended@npm:3.2.4"
+  dependencies:
+    jest-diff: ^29.0.0
+    jest-get-type: ^29.0.0
+  peerDependencies:
+    jest: ">=27.2.5"
+  peerDependenciesMeta:
+    jest:
+      optional: true
+  checksum: 16e4f300d9c5bf110f7f3422e49e06c968a99a44cede2b2821ddd480c33b3d9cd4dc58035b2f022e6018247da8f887295d6c2499647675dedb6e305142604e7d
   languageName: node
   linkType: hard
 
@@ -17969,6 +18175,15 @@ __metadata:
     "@sideway/formula": ^3.0.0
     "@sideway/pinpoint": ^2.0.0
   checksum: c293bb7f1218b446cbed96a2cd7fbcb0c6d0ab98b9896e1ae683b1b66603718af52b100d8b5032647127bace29f50fabeaa7e0bc16c7167f2df7491d5c4827d0
+  languageName: node
+  linkType: hard
+
+"jora@npm:^1.0.0-beta.7":
+  version: 1.0.0-beta.7
+  resolution: "jora@npm:1.0.0-beta.7"
+  dependencies:
+    "@discoveryjs/natural-compare": ^1.0.0
+  checksum: a3bf5385658d287eee7ee0da3d4ee288ab64f5f656d95a6611f435b6bdc674923faa57dbed7ffe75ce9cb5d1202968b21658625d423362429a801b02b717f7a6
   languageName: node
   linkType: hard
 
@@ -19098,6 +19313,17 @@ __metadata:
   bin:
     marked: ./bin/marked
   checksum: 5965e990ee0497aceae1b63c479ad614773331e255c7c9feb00120813574370d03e104d062f3c52ca4d96e7c4ff726ad8ca7ef2debe53728fb73975677b6878e
+  languageName: node
+  linkType: hard
+
+"md5@npm:^2.3.0":
+  version: 2.3.0
+  resolution: "md5@npm:2.3.0"
+  dependencies:
+    charenc: 0.0.2
+    crypt: 0.0.2
+    is-buffer: ~1.1.6
+  checksum: a63cacf4018dc9dee08c36e6f924a64ced735b37826116c905717c41cebeb41a522f7a526ba6ad578f9c80f02cb365033ccd67fe186ffbcc1a1faeb75daa9b6e
   languageName: node
   linkType: hard
 
@@ -20942,6 +21168,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"open@npm:^8.4.0":
+  version: 8.4.2
+  resolution: "open@npm:8.4.2"
+  dependencies:
+    define-lazy-prop: ^2.0.0
+    is-docker: ^2.1.1
+    is-wsl: ^2.2.0
+  checksum: 6388bfff21b40cb9bd8f913f9130d107f2ed4724ea81a8fd29798ee322b361ca31fa2cdfb491a5c31e43a3996cfe9566741238c7a741ada8d7af1cb78d85cf26
+  languageName: node
+  linkType: hard
+
 "opener@npm:^1.5.2":
   version: 1.5.2
   resolution: "opener@npm:1.5.2"
@@ -21220,6 +21457,13 @@ __metadata:
   version: 1.0.0
   resolution: "packet-reader@npm:1.0.0"
   checksum: 0b7516f0cbf3e322aad591bed29ba544220088c53943145c0d9121a6f59182ad811f7fd6785a8979a34356aca69d97653689029964c5998dc02645633d88ffd7
+  languageName: node
+  linkType: hard
+
+"pako@npm:^2.0.4":
+  version: 2.1.0
+  resolution: "pako@npm:2.1.0"
+  checksum: 71666548644c9a4d056bcaba849ca6fd7242c6cf1af0646d3346f3079a1c7f4a66ffec6f7369ee0dc88f61926c10d6ab05da3e1fca44b83551839e89edd75a3e
   languageName: node
   linkType: hard
 
@@ -22306,6 +22550,7 @@ __metadata:
     "@reduxjs/toolkit": ^1.8.6
     "@sentry/browser": ^6.2.5
     "@sentry/tracing": ^6.2.5
+    "@statoscope/webpack-plugin": ^5.26.2
     "@testing-library/jest-dom": ^5.16.5
     "@testing-library/react": ^12
     "@testing-library/user-event": ^14.4.3
@@ -22358,7 +22603,6 @@ __metadata:
     is-valid-domain: ^0.0.19
     jest: ^29.3.1
     jest-environment-jsdom: ^29.3.1
-    jest-extended: ^3.2.0
     lodash: ^4.17.21
     markdown-loader: ^6.0.0
     mini-css-extract-plugin: ^2.6.1
@@ -22377,6 +22621,7 @@ __metadata:
     react-flip-move: ^3.0.1
     react-helmet: ^6.1.0
     react-hot-loader: ^4.13.0
+    react-material-symbols: ^4.1.1
     react-md: ^1.2.11
     react-redux: ^7.2.4
     react-router: ^5.2.0
@@ -22401,7 +22646,7 @@ __metadata:
     valid-url: ^1.0.9
     warnings-to-errors-webpack-plugin: ^2.3.0
     webpack: ^5.76.0
-    webpack-bundle-analyzer: ^4.4.0
+    webpack-bundle-analyzer: ^4.8.0
     webpack-bundle-size-analyzer: ^3.1.0
     webpack-cli: ^4.9.1
     webpack-dev-server: ^4.7.2
@@ -22955,6 +23200,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-dom@npm:^18.2.0":
+  version: 18.2.0
+  resolution: "react-dom@npm:18.2.0"
+  dependencies:
+    loose-envify: ^1.1.0
+    scheduler: ^0.23.0
+  peerDependencies:
+    react: ^18.2.0
+  checksum: 7d323310bea3a91be2965f9468d552f201b1c27891e45ddc2d6b8f717680c95a75ae0bc1e3f5cf41472446a2589a75aed4483aee8169287909fcd59ad149e8cc
+  languageName: node
+  linkType: hard
+
 "react-event-listener@npm:^0.6.0":
   version: 0.6.6
   resolution: "react-event-listener@npm:0.6.6"
@@ -23056,6 +23313,26 @@ __metadata:
   version: 3.0.4
   resolution: "react-lifecycles-compat@npm:3.0.4"
   checksum: a904b0fc0a8eeb15a148c9feb7bc17cec7ef96e71188280061fc340043fd6d8ee3ff233381f0e8f95c1cf926210b2c4a31f38182c8f35ac55057e453d6df204f
+  languageName: node
+  linkType: hard
+
+"react-material-symbols@npm:4.1.1":
+  version: 4.1.1
+  resolution: "react-material-symbols@npm:4.1.1"
+  dependencies:
+    react: ^18.2.0
+    react-dom: ^18.2.0
+  checksum: 07b7592aacf60fb461c72dd8fe23757197e4445614e35ba11cd5ace49f94645615a374b731f247debee20f96d17beb4b473f8b442f631158ac4a6d00468adfdf
+  languageName: node
+  linkType: hard
+
+"react-material-symbols@patch:react-material-symbols@npm%3A4.1.1#./.yarn/patches/react-material-symbols-npm-4.1.1-d06ca7bff7.patch::locator=howdju-monorepo%40workspace%3A.":
+  version: 4.1.1
+  resolution: "react-material-symbols@patch:react-material-symbols@npm%3A4.1.1#./.yarn/patches/react-material-symbols-npm-4.1.1-d06ca7bff7.patch::version=4.1.1&hash=e1c918&locator=howdju-monorepo%40workspace%3A."
+  dependencies:
+    react: ^18.2.0
+    react-dom: ^18.2.0
+  checksum: 2463025384998e3a06d62f178b293560cf41e2450278bb466981a0be1fa63104043235d2a1565c6b5d0da9c9f1bef061c347e5a818694328d28f40c0870ae783
   languageName: node
   linkType: hard
 
@@ -23497,6 +23774,15 @@ __metadata:
     loose-envify: ^1.1.0
     object-assign: ^4.1.1
   checksum: b254cc17ce3011788330f7bbf383ab653c6848902d7936a87b09d835d091e3f295f7e9dd1597c6daac5dc80f90e778c8230218ba8ad599f74adcc11e33b9d61b
+  languageName: node
+  linkType: hard
+
+"react@npm:^18.2.0":
+  version: 18.2.0
+  resolution: "react@npm:18.2.0"
+  dependencies:
+    loose-envify: ^1.1.0
+  checksum: 88e38092da8839b830cda6feef2e8505dec8ace60579e46aa5490fc3dc9bba0bd50336507dc166f43e3afc1c42939c09fe33b25fae889d6f402721dcd78fca1b
   languageName: node
   linkType: hard
 
@@ -24567,6 +24853,15 @@ resolve@^2.0.0-next.3:
     loose-envify: ^1.1.0
     object-assign: ^4.1.1
   checksum: c4b35cf967c8f0d3e65753252d0f260271f81a81e427241295c5a7b783abf4ea9e905f22f815ab66676f5313be0a25f47be582254db8f9241b259213e999b8fc
+  languageName: node
+  linkType: hard
+
+"scheduler@npm:^0.23.0":
+  version: 0.23.0
+  resolution: "scheduler@npm:0.23.0"
+  dependencies:
+    loose-envify: ^1.1.0
+  checksum: d79192eeaa12abef860c195ea45d37cbf2bbf5f66e3c4dcd16f54a7da53b17788a70d109ee3d3dde1a0fd50e6a8fc171f4300356c5aee4fc0171de526bf35f8a
   languageName: node
   linkType: hard
 
@@ -27505,14 +27800,15 @@ resolve@^2.0.0-next.3:
   languageName: node
   linkType: hard
 
-"webpack-bundle-analyzer@npm:^4.4.0":
-  version: 4.4.1
-  resolution: "webpack-bundle-analyzer@npm:4.4.1"
+"webpack-bundle-analyzer@npm:^4.8.0":
+  version: 4.8.0
+  resolution: "webpack-bundle-analyzer@npm:4.8.0"
   dependencies:
+    "@discoveryjs/json-ext": 0.5.7
     acorn: ^8.0.4
     acorn-walk: ^8.0.0
     chalk: ^4.1.0
-    commander: ^6.2.0
+    commander: ^7.2.0
     gzip-size: ^6.0.0
     lodash: ^4.17.20
     opener: ^1.5.2
@@ -27520,7 +27816,7 @@ resolve@^2.0.0-next.3:
     ws: ^7.3.1
   bin:
     webpack-bundle-analyzer: lib/bin/analyzer.js
-  checksum: 6803a706ebcc2fadc85f490046b875ca1fe99d2dfd7dbf072920f47ac7549216900ab70d13156c6ca846b245fd9e484e5fbcdf85a015753099f3f687fb1fc27e
+  checksum: acd86f68abb2bcb1a240043c6e2d8e53079499363afed94b96c0ec1abcc4fca2b7a7cbeeb5e13027d02a993c6ea8153194c69e7697faf47528bdaff1e2ce297e
   languageName: node
   linkType: hard
 

@@ -18,8 +18,10 @@ function cleanup {
 trap cleanup EXIT
 
 if [[ $1 == "inspect" ]]; then
-  echo "Running: node --inspect-brk ../node_modules/.bin/jest --runInBand --watch ${@:2}"
-  node --inspect-brk ../node_modules/.bin/jest --runInBand --watch ${@:2}
+  # Assume that $2 is either a file filter (which must come immediately after the jest command to
+  # count as a positional argument) or a flag which can go anywhere.)
+  echo "Running: node --inspect-brk ../node_modules/.bin/jest $2 --runInBand --watch ${@:3}"
+  node --inspect-brk ../node_modules/.bin/jest "${2}" --runInBand --watch "${@:3}"
   jest_status=$?
 else
   echo "Running: jest ${@:1}"

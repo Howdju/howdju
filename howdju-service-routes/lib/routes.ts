@@ -38,6 +38,7 @@ import {
   CreateRegistrationConfirmation,
   parseContextTrail,
   toJson,
+  CreateMediaExcerpt,
 } from "howdju-common";
 import {
   EntityNotFoundError,
@@ -125,6 +126,25 @@ export const serviceRoutes = {
           searchText
         );
         return { body: { persorgs } };
+      }
+    ),
+  },
+  searchSources: {
+    path: "search-sources",
+    method: httpMethods.GET,
+    request: handler(
+      QueryStringParams("searchText"),
+      async (
+        appProvider: ServicesProvider,
+        { queryStringParams: { searchText } }
+      ) => {
+        if (!searchText) {
+          throw new InvalidRequestError("searchText is required.");
+        }
+        const sources = await appProvider.sourcesDescriptionSearcher.search(
+          searchText
+        );
+        return { body: { sources } };
       }
     ),
   },
@@ -784,6 +804,54 @@ export const serviceRoutes = {
       }
     ),
   },
+
+  /*
+   * MediaExcerpts
+   */
+  createMediaExcerpt: {
+    path: "media-excerpts",
+    method: "POST",
+    request: handler(
+      Authed.merge(Body({ mediaExcerpt: CreateMediaExcerpt })),
+      async (
+        appProvider: ServicesProvider,
+        { authToken, body: { mediaExcerpt: createMediaExcerpt } }
+      ) => {
+        const { isExtant, mediaExcerpt } =
+          await appProvider.mediaExcerptsService.readOrCreateMediaExcerpt(
+            authToken,
+            createMediaExcerpt
+          );
+        return {
+          body: {
+            isExtant,
+            mediaExcerpt,
+          },
+        };
+      }
+    ),
+  },
+  readMediaExcerpt: {
+    path: "media-excerpts/:mediaExcerptId",
+    method: "GET",
+    request: handler(
+      PathParams("mediaExcerptId"),
+      async (
+        appProvider: ServicesProvider,
+        { pathParams: { mediaExcerptId } }
+      ) => {
+        const mediaExcerpt =
+          await appProvider.mediaExcerptsService.readMediaExcerptForId(
+            mediaExcerptId
+          );
+        if (!mediaExcerpt) {
+          throw new EntityNotFoundError("MEDIA_EXCERPT", mediaExcerptId);
+        }
+        return { body: { mediaExcerpt } };
+      }
+    ),
+  },
+
   /*
    * Auth
    */

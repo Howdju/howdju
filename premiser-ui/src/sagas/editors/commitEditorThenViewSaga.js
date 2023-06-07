@@ -1,4 +1,4 @@
-import { take, put, takeEvery } from "redux-saga/effects";
+import { take, put, takeEvery, race, call, delay } from "redux-saga/effects";
 
 import {
   assert,
@@ -6,10 +6,13 @@ import {
   JustificationRootTargetTypes,
   JustificationTargetTypes,
   newImpossibleError,
+  toJson,
 } from "howdju-common";
 
 import { EditorTypes } from "../../reducers/editors";
 import { editors, goto, flows, str } from "../../actions";
+import config from "@/config";
+import { logger } from "@/logger";
 
 const editorCommitResultGotoActionCreators = {
   [EditorTypes.PROPOSITION]: ({ proposition }) => goto.proposition(proposition),
@@ -53,10 +56,16 @@ const editorCommitResultGotoActionCreators = {
       `A justification must either target or be rooted in a JustificationRootTargetTypes`
     );
   },
+  MEDIA_EXCERPT: ({ mediaExcerpt }) => goto.mediaExcerpt(mediaExcerpt),
 };
 
 const gotoEditorCommitResultAction = (editorType, resultAction) => {
   const gotoActionCreator = editorCommitResultGotoActionCreators[editorType];
+  if (!gotoActionCreator) {
+    throw new Error(
+      `No goto action creator for editor type ${editorType} in editorCommitResultGotoActionCreators`
+    );
+  }
   const gotoAction = gotoActionCreator(resultAction.payload.result);
   return gotoAction;
 };
@@ -67,19 +76,35 @@ export function* commitEditorThenView() {
     function* commitEditThenViewWorker(action) {
       const { editorType, editorId } = action.payload;
       yield put(editors.commitEdit(editorType, editorId));
-      let resultAction = null;
-      while (!resultAction) {
-        const currResultAction = yield take(str(editors.commitEdit.result));
-        if (
-          currResultAction.payload.editorType === editorType &&
-          currResultAction.payload.editorId === editorId
-        ) {
-          resultAction = currResultAction;
+      const { resultAction, timeout } = yield race({
+        resultAction: call(getResultAction, editorType, editorId),
+        timeout: delay(config.commitEditThenViewResponseTimeoutMs),
+      });
+      if (resultAction) {
+        if (!resultAction.error) {
+          yield put(gotoEditorCommitResultAction(editorType, resultAction));
+        } else {
+          logger.info(`Error commiting editor: ${toJson(resultAction.error)}`);
         }
-      }
-      if (!resultAction.error) {
-        yield put(gotoEditorCommitResultAction(editorType, resultAction));
+      } else if (timeout) {
+        logger.error("Timed out waiting for commitEdit result action");
+      } else {
+        logger.error(
+          "Unexpected condition in commitEditorThenView: resultAction and timeout are both falsy"
+        );
       }
     }
   );
+}
+
+function* getResultAction(editorType, editorId) {
+  while (true) {
+    const resultAction = yield take(str(editors.commitEdit.result));
+    if (
+      resultAction.payload.editorType === editorType &&
+      resultAction.payload.editorId === editorId
+    ) {
+      return resultAction;
+    }
+  }
 }

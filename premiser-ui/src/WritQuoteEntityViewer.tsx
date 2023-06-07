@@ -28,7 +28,7 @@ export default function WritQuoteEntityViewer({
 }: Props) {
   return (
     <EntityViewer
-      iconName="format_quote"
+      icon="format_quote"
       iconTitle="Writ quote"
       menu={menu}
       entity={

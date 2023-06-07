@@ -1,5 +1,6 @@
 import { toNumber } from "lodash";
-import { Database, makePool } from "..";
+import { PoolConfig } from "pg";
+import { Database, makePool } from "../database";
 
 import { ConfigProvider } from "./BaseProvider";
 
@@ -8,7 +9,7 @@ export type DatabaseProvider = ReturnType<typeof databaseInit> & ConfigProvider;
 
 /** Initializes the database. */
 export function databaseInit(provider: ConfigProvider) {
-  const config = {
+  const config: PoolConfig = {
     user: provider.getConfigVal("DB_USER"),
     database: provider.getConfigVal("DB_NAME"),
     password: provider.getConfigVal("DB_PASSWORD"),

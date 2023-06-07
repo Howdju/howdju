@@ -3,7 +3,7 @@
 
 $list-item-left-padding: 1.5em;
 
-@mixin material-icon-list-item($icon-name) {
+@mixin material-icon-list-item($icon-name, $font-family: "Material Icons") {
   &:before {
     content: $icon-name;
     vertical-align: middle;
@@ -12,7 +12,7 @@ $list-item-left-padding: 1.5em;
     margin-left: -1 * $list-item-left-padding;
     width: $list-item-left-padding;
 
-    font-family: "Material Icons";
+    font-family: $font-family;
     font-weight: normal;
     font-style: normal;
     display: inline-block;

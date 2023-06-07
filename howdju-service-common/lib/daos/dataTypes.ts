@@ -95,6 +95,14 @@ export type PersorgData = Persisted<Persorg> & {
   creator?: CreatorBlurbData;
 };
 
+export interface SourceRow {
+  source_id: EntityRowId;
+  description_apa: string;
+  normal_description_apa: string;
+  creator_user_id: EntityRowId;
+  created: Moment;
+}
+
 export type SpeakerBlurbRow = Pick<
   PersorgRow,
   "persorg_id" | "is_organization" | "name"

@@ -28,7 +28,7 @@ import PropositionUsagesPage from "./pages/propositionUsages/PropositionUsagesPa
 import RecentActivityPage from "./RecentActivityPage";
 import RegistrationConfirmationPage from "./pages/registration/RegistrationConfirmationPage";
 import RegistrationRequestPage from "./pages/registration/RegistrationRequestPage";
-import SubmitSourceExcerptPage from "./pages/SubmitSourceExcerptPage";
+import SubmitMediaExcerptPage from "./pages/SubmitMediaExcerptPage";
 import TagPage from "./pages/tag/TagPage";
 import TestErrorPage from "./TestErrorPage";
 import ToolsPage from "./ToolsPage";
@@ -45,6 +45,7 @@ import { map } from "lodash";
 import { CreatePropositionPageMode } from "./types";
 import { Location, LocationState } from "history";
 import { PrimaryContextTrailProvider } from "./components/contextTrail/PrimaryContextTrailProvider";
+import MediaExcerptPage from "./pages/MediaExcerptPage";
 
 const renderHomePath = (props: RouteProps) => {
   const mainSearchText =
@@ -138,13 +139,21 @@ const routesById = {
     <Route exact path="/proposition-usages" component={PropositionUsagesPage} />
   ),
 
-  submitSourceExcerpt: (
+  submitMediaExcerpt: (
     <Route
       exact
-      path="/source-excerpts/new"
-      render={() => <SubmitSourceExcerptPage />}
+      path="/media-excerpts/new"
+      component={SubmitMediaExcerptPage}
     />
   ),
+  mediaExcerpt: (
+    <Route
+      exact
+      path="/media-excerpts/:mediaExcerptId/:slug?"
+      component={MediaExcerptPage}
+    />
+  ),
+
   createProposition: (
     <Route
       exact

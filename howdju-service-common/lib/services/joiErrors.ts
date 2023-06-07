@@ -1,6 +1,10 @@
 import { ValidationError } from "joi";
 import { z } from "zod";
-import { ModelErrors, zodIssueFormatter } from "howdju-common";
+import {
+  ZodFormattedError,
+  ModelErrors,
+  zodIssueFormatter,
+} from "howdju-common";
 
 /**
  * Converts a Joi error to Zod's error format.
@@ -14,5 +18,7 @@ export function translateJoiToZodFormattedError<T>(
     path,
     message,
   }));
-  return new z.ZodError<T>(issues).format(zodIssueFormatter);
+  return new z.ZodError<T>(issues).format(
+    zodIssueFormatter
+  ) as ZodFormattedError<T, z.ZodIssue>;
 }

@@ -5,10 +5,12 @@ import withEditor from "./withEditor";
 import { CreateJustificationConfig } from "../sagas/editors/editorCommitEditSaga";
 
 /** A new Justification editor. */
-export default withEditor(
+const JustificationEditor = withEditor(
   EditorTypes.NEW_JUSTIFICATION,
   JustificationEditorFields,
   "justification",
   CreateJustificationInput,
   CreateJustificationConfig
 );
+
+export default JustificationEditor;

@@ -62,6 +62,7 @@ export default function WritQuoteViewer({
     ? moment(writQuote.created).format(config.humanDateTimeFormat)
     : "";
 
+  // TODO(38) use CollapsibleTextViewer or delete this component?
   const _isQuoteTextLong = isTextLong(writQuote.quoteText);
   const hasQuote = !!writQuote.quoteText;
   const quoteText =

@@ -8,7 +8,7 @@ import {
   toString,
   uniqWith,
 } from "lodash";
-import { z, ZodFormattedError } from "zod";
+import { z } from "zod";
 
 import { assert, mapValuesDeep } from "./general";
 import { logger } from "./logger";
@@ -157,7 +157,7 @@ function makeCallableProxy<T>(): Callable<T, IssueDescriptorArg> {
  * a client (they result in the same error message), we should remove them.
  */
 export function removeZodErrorDupes<T, U>(
-  error: ZodFormattedError<T, U>
+  error: z.ZodFormattedError<T, U>
 ): ZodFormattedError<T, U> {
   return mapValuesDeep(
     error,
@@ -179,4 +179,31 @@ export function removeZodErrorDupes<T, U>(
  *
  * This type is an alias for a ZodFormattedError having our custom issue format.
  */
-export type ModelErrors<T> = z.ZodFormattedError<T, ZodCustomIssueFormat>;
+export type ModelErrors<T> = ZodFormattedError<T, ZodCustomIssueFormat>;
+
+/**
+ * A ZodFormattedError that supports optional arrays
+ *
+ * TODO(349) try to contribut this to zod
+ */
+export type ZodFormattedError<T, U = string> = {
+  _errors: U[];
+} & (T extends [any, ...any[]]
+  ? {
+      [K in keyof T]?: ZodFormattedError<T[K], U>;
+    }
+  : T extends any[]
+  ? {
+      [k: number]: ZodFormattedError<T[number], U>;
+    }
+  : T extends (infer V)[] | undefined
+  ?
+      | {
+          [k: number]: ZodFormattedError<V, U>;
+        }
+      | undefined
+  : T extends object
+  ? {
+      [K in keyof T]?: ZodFormattedError<T[K], U>;
+    }
+  : unknown);

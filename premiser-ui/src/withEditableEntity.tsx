@@ -29,7 +29,7 @@ interface EditorProps extends WithEditorProps {
   /** Identifies the editor's state */
   editorId?: EditorId;
   /** If omitted, no autocomplete */
-  suggestionsKey: SuggestionsKey;
+  suggestionsKey?: SuggestionsKey;
 }
 interface ViewerProps {
   id: ComponentId;

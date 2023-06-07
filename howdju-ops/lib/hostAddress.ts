@@ -16,24 +16,29 @@ export function devApiServerPort() {
   return process.env["DEV_API_SERVER_PORT"] || 8082;
 }
 
-export function apiHostOrLocalAddress() {
-  const apiHost = process.env["API_HOST"];
-  if (apiHost) {
-    return apiHost;
+export function getApiHost() {
+  const envHost = process.env["API_HOST"];
+  if (envHost) {
+    return envHost;
   }
-  return localAddress();
+  return doEnableLocalNetworkAccess() ? localAddress() : "localhost";
 }
 
-export function localApiRoot() {
-  return `http://${apiHostOrLocalAddress()}:${devApiServerPort()}/api/`;
+export function getApiRoot() {
+  return `http://${getApiHost()}:${devApiServerPort()}/api/`;
 }
 
-export function hostAddressOrLocalAddress() {
-  const apiHost = process.env["HOST_ADDRESS"];
-  if (apiHost) {
-    return apiHost;
+export function getUiHost() {
+  const envHost = process.env["UI_HOST"];
+  if (envHost) {
+    return envHost;
   }
-  return localAddress();
+  return doEnableLocalNetworkAccess() ? localAddress() : "localhost";
+}
+
+export function doEnableLocalNetworkAccess() {
+  // Whether the dev server should be accessible from other devices on the local network.
+  return !!process.env.ENABLE_LOCAL_NETWORK_ACCESS;
 }
 
 function isDhcpUnreachableAddress(address: string) {

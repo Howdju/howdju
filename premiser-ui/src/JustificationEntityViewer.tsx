@@ -78,7 +78,7 @@ export default function JustificationEntityViewer({
   return (
     <EntityViewer
       component={component}
-      iconName="merge_type"
+      icon="merge_type"
       iconTitle="Justification"
       entity={
         <div>

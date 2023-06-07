@@ -12,7 +12,6 @@ const {
   PropositionTagVotePolarities,
   schemaSettings,
   SentenceTypes,
-  UrlTargetAnchorTypes,
 } = require("howdju-common");
 
 const idSchema = Joi.string().empty(null);
@@ -124,7 +123,7 @@ const urlSchema = Joi.object()
         .min(1)
         .items(
           Joi.object().when("type", {
-            is: UrlTargetAnchorTypes.TEXT_QUOTE,
+            is: "TEXT_QUOTE",
             then: Joi.object({
               exactText: Joi.string(),
               prefixText: Joi.string(),

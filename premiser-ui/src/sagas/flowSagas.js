@@ -137,6 +137,21 @@ export function* goTo() {
     const { writQuote } = action.payload;
     yield put(push(paths.writQuote(writQuote)));
   });
+
+  yield takeEvery(
+    str(goto.newMediaExcerpt),
+    function* goToSubmitMediaExcerptWorker(action) {
+      yield put(push(paths.submitMediaExcerpt()));
+    }
+  );
+
+  yield takeEvery(
+    str(goto.mediaExcerpt),
+    function* goToMediaExcerptWorker(action) {
+      const { mediaExcerpt } = action.payload;
+      yield put(push(paths.mediaExcerpt(mediaExcerpt)));
+    }
+  );
 }
 
 export function* redirectHomeFromMissingRootTarget() {
@@ -193,7 +208,7 @@ export function* redirectUnauthenticatedUserToLoginOnPagesNeedingAuthentication(
       // TODO(247) infer auth requirement from routes
       const doesPathRequireAuthentication = some(
         [
-          "submitSourceExcerpt",
+          "submitMediaExcerpt",
           "createProposition",
           "createJustification",
           "submitJustificationViaQueryString",

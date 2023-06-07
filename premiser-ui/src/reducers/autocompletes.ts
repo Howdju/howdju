@@ -20,7 +20,8 @@ export default handleActions<
       api.fetchPersorgNameSuggestions.response,
       api.fetchPropositionTextSuggestions.response,
       api.fetchTagNameSuggestions.response,
-      api.fetchWritTitleSuggestions.response
+      api.fetchWritTitleSuggestions.response,
+      api.fetchSourceDescriptionSuggestions.response
     )]: {
       next: (state, action) => {
         const { result } = normalize(

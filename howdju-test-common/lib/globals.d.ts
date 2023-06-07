@@ -1,4 +1,5 @@
 import { Moment } from "moment";
+import "jest-extended";
 
 declare module "expect" {
   interface AsymmetricMatchers {

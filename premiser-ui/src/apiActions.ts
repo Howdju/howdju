@@ -40,6 +40,7 @@ import {
   UpdatePersorg,
   serializeContextTrail,
   JustificationOut,
+  CreateMediaExcerpt,
 } from "howdju-common";
 import {
   InferPathParams,
@@ -58,6 +59,7 @@ import {
   justificationsSchema,
   justificationVoteSchema,
   mainSearchResultsSchema,
+  mediaExcerptSchema,
   persorgSchema,
   persorgsSchema,
   propositionCompoundSchema,
@@ -65,6 +67,7 @@ import {
   propositionsSchema,
   propositionTagVoteSchema,
   sourceExcerptParaphraseSchema,
+  sourcesSchema,
   statementSchema,
   statementsSchema,
   tagSchema,
@@ -459,6 +462,23 @@ export const api = {
       body: { writQuote },
       pathParams: { writQuoteId: writQuote.id },
       normalizationSchema: { writQuote: writQuoteSchema },
+    })
+  ),
+
+  createMediaExcerpt: apiActionCreator(
+    "CREATE_MEDIA_EXCERPT",
+    serviceRoutes.createMediaExcerpt,
+    (mediaExcerpt: CreateMediaExcerpt) => ({
+      body: { mediaExcerpt },
+      normalizationSchema: { mediaExcerpt: mediaExcerptSchema },
+    })
+  ),
+  fetchMediaExcerpt: apiActionCreator(
+    "FETCH_MEDIA_EXCERPT",
+    serviceRoutes.readMediaExcerpt,
+    (mediaExcerptId: EntityId) => ({
+      pathParams: { mediaExcerptId },
+      normalizationSchema: { mediaExcerpt: mediaExcerptSchema },
     })
   ),
 
@@ -1105,6 +1125,23 @@ export const api = {
     })
   ),
 
+  fetchSourceDescriptionSuggestions: apiActionCreator(
+    "FETCH_SOURCE_DESCRIPTION_SUGGESTIONS",
+    serviceRoutes.searchSources,
+    (searchText, suggestionsKey) => ({
+      config: {
+        queryStringParams: {
+          searchText,
+        },
+        cancelKey: `${
+          makeApiActionTypes("FETCH_SOURCE_DESCRIPTION_SUGGESTIONS")[0]
+        }.${suggestionsKey}`,
+        normalizationSchema: { sources: sourcesSchema },
+      },
+      meta: { suggestionsKey, suggestionsResponseKey: "sources" },
+    })
+  ),
+
   createJustification: apiActionCreator(
     "CREATE_JUSTIFICATION",
     serviceRoutes.createJustification,
@@ -1218,6 +1255,14 @@ export const cancelPropositionTextSuggestions = createAction(
   "CANCEL_PROPOSITION_TEXT_SUGGESTIONS",
   (suggestionsKey: SuggestionsKey) => ({
     cancelTarget: makeApiActionTypes("FETCH_PROPOSITION_TEXT_SUGGESTIONS")[0],
+    cancelTargetArgs: ["", suggestionsKey],
+    suggestionsKey,
+  })
+);
+export const cancelSourceDescriptionSuggestions = createAction(
+  "CANCEL_SOURCE_DESCRIPTION_SUGGESTIONS",
+  (suggestionsKey: SuggestionsKey) => ({
+    cancelTarget: makeApiActionTypes("FETCH_SOURCE_DESCRIPTION_SUGGESTIONS")[0],
     cancelTargetArgs: ["", suggestionsKey],
     suggestionsKey,
   })

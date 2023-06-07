@@ -15,8 +15,9 @@ import {
   Justification,
   JustificationBasisSourceType,
   PersistedJustificationWithRootRef,
-  CreateWritQuoteInput,
+  MediaExcerptOut,
 } from "howdju-common";
+import { AnchorInfo } from "howdju-client-common";
 
 import { EditorEntity, EditorType } from "./reducers/editors";
 import {
@@ -331,6 +332,11 @@ export const goto = {
   writQuote: createAction("GOTO/WRIT_QUOTE", (writQuote: WritQuote) => ({
     writQuote,
   })),
+  newMediaExcerpt: createAction("GOTO/NEW_MEDIA_EXCERPT"),
+  mediaExcerpt: createAction(
+    "GOTO/MEDIA_EXCERPT",
+    (mediaExcerpt: MediaExcerptOut) => ({ mediaExcerpt })
+  ),
 };
 
 /** Actions that represent multi-step flows */
@@ -344,11 +350,9 @@ export const flows = {
       basisSourceId: EntityId
     ) => ({ editorType, editorId, basisSourceType, basisSourceId })
   ),
-  beginEditOfNewJustificationFromWritQuote: createAction(
-    "FLOWS/BEGIN_EDIT_OF_NEW_JUSTIFICATION_FROM_WRIT_QUOTE",
-    (writQuote: CreateWritQuoteInput) => ({
-      writQuote,
-    })
+  beginEditOfMediaExcerptFromAnchorInfo: createAction(
+    "FLOWS/SUBMIT_MEDIA_EXCERPT_FROM_ANCHOR_INFO",
+    (anchorInfo: AnchorInfo) => anchorInfo
   ),
   commitEditThenView: createAction(
     "FLOWS/COMMIT_PROPOSITION_THEN_VIEW",

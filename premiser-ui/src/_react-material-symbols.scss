@@ -1,0 +1,9 @@
+@import "./colors";
+
+// html for priority over built-in styles
+html {
+  .material-symbols {
+    color: $icon-color;
+    font-size: 20px;
+  }
+}

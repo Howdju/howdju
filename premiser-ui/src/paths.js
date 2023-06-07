@@ -107,6 +107,10 @@ class Paths {
   statementUsages = (statementId) =>
     `/statement-usages?propositionId=${statementId}`;
 
+  mediaExcerpt = (mediaExcerpt) => `/media-excerpts/${mediaExcerpt.id}`;
+  source = (source) => `/sources/${source.id}/${toSlug(source.descriptionApa)}`;
+  submitMediaExcerpt = () => "/media-excerpts/new";
+
   tools = () => "/tools";
 
   settings = () => "/settings";

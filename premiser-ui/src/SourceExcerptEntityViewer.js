@@ -20,7 +20,7 @@ export default class SourceExcerptEntityViewer extends Component {
     } = this.props;
     return (
       <EntityViewer
-        iconName={sourceExcerptIconName(sourceExcerpt)}
+        icon={sourceExcerptIconName(sourceExcerpt)}
         iconTitle={upperFirst(sourceExcerptDescription(sourceExcerpt))}
         component={component}
         entity={

@@ -63,6 +63,7 @@ import {
   assert,
   UpdateWritQuoteInput,
   UpdateWritInput,
+  CreateMediaExcerptInput,
 } from "howdju-common";
 
 import {
@@ -111,6 +112,7 @@ export const EditorTypes = {
   PERSORG: "PERSORG",
   ACCOUNT_SETTINGS: "ACCOUNT_SETTINGS",
   CONTENT_REPORT: "CONTENT_REPORT",
+  MEDIA_EXCERPT: "MEDIA_EXCERPT",
 } as const;
 export type EditorType = typeof EditorTypes[keyof typeof EditorTypes];
 
@@ -135,7 +137,8 @@ export type EditorEntity =
   | UpdateAccountSettingsInput
   | CreateRegistrationRequestInput
   | CreateContentReportInput
-  | CreateRegistrationConfirmationInput;
+  | CreateRegistrationConfirmationInput
+  | CreateMediaExcerptInput;
 /**
  * @typeparam T the editor model type.
  * @typeparam U the request model type.

@@ -1,4 +1,4 @@
-import { CreateWritQuoteInput } from "howdju-common";
+import { AnchorInfo } from "howdju-client-common";
 
 import { setNodeData } from "./node-data";
 import {
@@ -13,9 +13,9 @@ import { arrayInsertAfter, arrayInsertBefore } from "./util";
 export const annotationMouseOverClass = "howdju-annotation-mouse-over";
 export const annotationIndexClassPrefix = "howdju-annotation-index-";
 
-export interface AnnotationExcerpt {
-  writQuote: CreateWritQuoteInput;
+export interface AnnotationAnchors {
   annotation: Annotation;
+  anchorInfo: AnchorInfo;
 }
 
 export class Annotation {

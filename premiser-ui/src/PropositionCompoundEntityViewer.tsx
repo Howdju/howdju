@@ -30,7 +30,7 @@ export default function PropositionCompoundEntityViewer({
 }: Props) {
   return (
     <EntityViewer
-      iconName="short_text"
+      icon="short_text"
       className={className}
       iconTitle="Proposition compound"
       entity={

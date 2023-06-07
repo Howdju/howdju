@@ -8,8 +8,8 @@ export type EntityComponentProps<
   Entity extends object
 > = {
   id: ComponentId;
-  editorId: EditorId;
-  suggestionsKey: SuggestionsKey;
+  editorId?: EditorId;
+  suggestionsKey?: SuggestionsKey;
   showStatusText?: boolean;
 } & { [key in EntityPropName]: Entity };
 
@@ -20,7 +20,6 @@ export type EntityComponentProps<
  * @param iconName {string} The icon name to use
  * @param iconTitle {string} The title to use for hte icon
  * @param entityLinkFn {function<object,string>} creates a link to an entity. Only called when the entity is truthy.
- * @returns {Component}
  */
 export default function withEntityViewer<
   EntityPropName extends string,
@@ -28,7 +27,7 @@ export default function withEntityViewer<
 >(
   EntityComponent: ComponentType<EntityComponentProps<EntityPropName, Entity>>,
   entityPropName: EntityPropName,
-  iconName: string,
+  iconName: string | ReactNode,
   iconTitle: string,
   entityLinkFn: (entity: object) => string
 ) {
@@ -36,8 +35,8 @@ export default function withEntityViewer<
     component?: ComponentType;
     id: ComponentId;
     className?: string;
-    editorId: EditorId;
-    suggestionsKey: SuggestionsKey;
+    editorId?: EditorId;
+    suggestionsKey?: SuggestionsKey;
     menu?: ReactNode;
     showStatusText?: boolean;
   } & { [key in typeof entityPropName]: object };
@@ -61,7 +60,7 @@ export default function withEntityViewer<
     } as EntityComponentProps<EntityPropName, Entity>;
     return (
       <EntityViewer
-        iconName={iconName}
+        icon={iconName}
         iconTitle={iconTitle}
         iconLink={entity && entityLinkFn(entity)}
         className={className}

@@ -10,6 +10,7 @@ import {
   JustificationsDao,
   JustificationBasisCompoundsDao,
   JustificationVotesDao,
+  MediaExcerptsDao,
   PermissionsDao,
   PersorgsDao,
   PerspectivesDao,
@@ -22,6 +23,7 @@ import {
   PropositionTagVotesDao,
   RegistrationRequestsDao,
   StatementsDao,
+  SourcesDao,
   TagsDao,
   UserExternalIdsDao,
   UserGroupsDao,
@@ -102,6 +104,14 @@ export function daosInitializer(provider: DatabaseProvider) {
   const propositionTagVotesDao = new PropositionTagVotesDao(logger, database);
   const propositionTagsDao = new PropositionTagsDao(logger, database);
   const tagsDao = new TagsDao(logger, database);
+  const sourcesDao = new SourcesDao(database);
+  const mediaExcerptsDao = new MediaExcerptsDao(
+    logger,
+    database,
+    urlsDao,
+    sourcesDao,
+    persorgsDao
+  );
 
   logger.debug("daosInit complete");
 
@@ -115,6 +125,7 @@ export function daosInitializer(provider: DatabaseProvider) {
     justificationVotesDao,
     justificationBasisCompoundsDao,
     justificationsDao,
+    mediaExcerptsDao,
     permissionsDao,
     persorgsDao,
     perspectivesDao,
@@ -127,6 +138,7 @@ export function daosInitializer(provider: DatabaseProvider) {
     propositionTagVotesDao,
     registrationRequestsDao,
     statementsDao,
+    sourcesDao,
     tagsDao,
     urlsDao,
     userExternalIdsDao,

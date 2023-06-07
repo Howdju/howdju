@@ -14,7 +14,8 @@ import {
 } from "./types";
 import { toTextFieldOnChangeCallback } from "./util";
 
-export interface SingleLineTextProps extends Omit<TextFieldProps, "onBlur"> {
+export interface SingleLineTextProps
+  extends Omit<TextFieldProps, "onBlur" | "maxLength"> {
   name: string;
   type?: TextFieldTypes;
   // ignored if type=password
@@ -31,6 +32,7 @@ export interface SingleLineTextProps extends Omit<TextFieldProps, "onBlur"> {
   // TODO(17) autocomplete should be supported by react-md's TextFieldProps
   // https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/autocomplete#values
   autocomplete?: string;
+  maxLength?: number | null;
   // TODO(17) minLength should be supported by react-md's TextFieldProps
   // https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/minlength
   minLength?: number;
@@ -49,6 +51,7 @@ export default function SingleLineTextField({
   onSubmit,
   onPropertyChange,
   rightControls,
+  maxLength,
   ...rest
 }: SingleLineTextProps) {
   const _onKeyDown = (event: KeyboardEvent<HTMLElement>) => {
@@ -87,6 +90,7 @@ export default function SingleLineTextField({
         value={textareaValue}
         {...rowProps}
         disabled={disabled}
+        maxLength={maxLength ?? undefined}
         onBlur={toReactMdOnBlur(onBlur)}
         onKeyDown={_onKeyDown}
         onChange={_onChange}

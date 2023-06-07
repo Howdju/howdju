@@ -119,7 +119,7 @@ export default class StatementEntityViewer extends Component {
     return (
       <div>
         <EntityViewer
-          iconName="message"
+          icon="message"
           iconLink={statement && paths.statement(statement)}
           className={className}
           iconTitle="Statement"

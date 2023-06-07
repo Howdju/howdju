@@ -12,6 +12,7 @@ export * from "./httpMethods";
 export * from "./httpStatusCodes";
 export * from "./logger";
 export * from "./models";
+export * from "./moment";
 export * from "./schemas";
 export * from "./schemaValidation";
 export * from "./standaloneValidation";

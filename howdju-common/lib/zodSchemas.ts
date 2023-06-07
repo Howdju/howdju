@@ -7,10 +7,11 @@
  * may benefit from defining them using Zod schemas.
  */
 
-import { omit } from "lodash";
+import { keys, omit } from "lodash";
 import { Moment } from "moment";
 import { Simplify } from "type-fest";
 import { z } from "zod";
+
 import { momentObject, urlString } from "./zodRefinements";
 import { EntityName, EntityOrRef } from "./zodSchemaTypes";
 
@@ -23,6 +24,32 @@ export type Entity = z.infer<typeof Entity>;
 
 const PersistedEntity = Entity.required();
 export type PersistedEntity = z.infer<typeof PersistedEntity>;
+
+export const UserExternalIds = z.object({
+  googleAnalyticsId: z.string(),
+  heapAnalyticsId: z.string(),
+  mixpanelId: z.string(),
+  sentryId: z.string(),
+});
+export type UserExternalIds = z.infer<typeof UserExternalIds>;
+
+/** A user of the system */
+export const User = Entity.extend({
+  email: z.string().email().max(128),
+  username: z
+    .string()
+    .regex(/[A-Za-z0-9_]+/)
+    .min(3)
+    .max(64),
+  shortName: z.string().min(1).max(32).optional(),
+  longName: z.string().min(1).max(64),
+  // We currently don't request phone number
+  phoneNumber: z.string().optional(),
+  created: momentObject,
+  isActive: z.boolean(),
+  externalIds: UserExternalIds.optional(),
+});
+export type User = z.infer<typeof User>;
 
 /**
  * A declarative statement of fact that the system tracks.
@@ -142,7 +169,7 @@ export type CreatePersorg = z.infer<typeof CreatePersorg>;
 export const CreatePersorgInput = Persorg;
 export type CreatePersorgInput = z.infer<typeof CreatePersorgInput>;
 
-export const UpdatePersorg = Persorg;
+export const UpdatePersorg = Persorg.merge(PersistedEntity);
 export type UpdatePersorg = z.infer<typeof UpdatePersorg>;
 
 export const UpdatePersorgInput = Persorg;
@@ -241,7 +268,7 @@ export const CreateStatement: z.ZodType<CreateStatement> = z.lazy(() =>
 );
 // Statement has no Update models; users can edit the proposition/statement or the speaker.
 
-/** A textual media. */
+/** Textual media. */
 export const Writ = Entity.extend({
   title: z.string().min(1).max(512),
   created: momentObject,
@@ -261,13 +288,10 @@ export type UpdateWrit = z.infer<typeof UpdateWrit>;
 export const UpdateWritInput = UpdateWrit;
 export type UpdateWritInput = z.infer<typeof UpdateWritInput>;
 
-const urlTargetAnchorTypes = z.enum(["TEXT_QUOTE"]);
 /**
  * A reference to a portion of a URL document.
  */
-export const UrlTargetAnchor = z.object({
-  // later this can be a discriminatedUnion on type.
-  type: z.literal(urlTargetAnchorTypes.Enum.TEXT_QUOTE),
+export const DomAnchor = z.object({
   /**
    * The text this anchor targets
    *
@@ -298,57 +322,73 @@ export const UrlTargetAnchor = z.object({
    * See dom-anchor-text-position.
    */
   endOffset: z.number(),
+  urlLocatorId: z.string(),
+  created: momentObject,
+  creatorUserId: z.string(),
 });
-export type UrlTargetAnchor = z.infer<typeof UrlTargetAnchor>;
-export type UrlTargetAnchorType = UrlTargetAnchor["type"];
-export const UrlTargetAnchorTypes = urlTargetAnchorTypes.Enum;
+export type DomAnchor = z.infer<typeof DomAnchor>;
 
-export const UrlTarget = Entity.extend({
-  anchors: z.array(UrlTargetAnchor),
+export const CreateDomAnchor = DomAnchor.omit({
+  created: true,
+  creatorUserId: true,
+  urlLocatorId: true,
 });
+export type CreateDomAnchor = z.output<typeof CreateDomAnchor>;
+
+/** @deprecated */
+export const UrlTarget = Entity.extend({
+  anchors: z.array(DomAnchor),
+});
+/** @deprecated */
 export type UrlTarget = z.infer<typeof UrlTarget>;
 
 export const Url = Entity.extend({
   url: urlString(),
-  // TODO(38) I don't think target should be part of URL. Targets should be related to URLs.
+  canonicalUrl: urlString(),
+  /** @deprecated TODO(38) replace with UrlLocator.anchors */
   target: UrlTarget.optional(),
 });
 export type Url = z.infer<typeof Url>;
 
-export const CreateUrl = Url;
+export const CreateUrl = Url.extend({ canonicalUrl: urlString().optional() });
 export type CreateUrl = z.infer<typeof CreateUrl>;
 export const CreateUrlInput = CreateUrl;
 export type CreateUrlInput = z.infer<typeof CreateUrlInput>;
 
-/** A SourceExcerpt of a quote from a written Source. */
+export const UrlLocator = Entity.extend({
+  url: Url,
+  anchors: z.array(DomAnchor).optional(),
+});
+export type UrlLocator = z.output<typeof UrlLocator>;
+
+/** A reference to a part of a textual media. */
 export const WritQuote = Entity.extend({
-  quoteText: z.string(),
+  quoteText: z.string().min(1).max(4096),
   writ: Writ,
   urls: z.array(Url),
   created: momentObject,
 });
 export type WritQuote = z.infer<typeof WritQuote>;
 
-/** A fixed visual media. */
-export const Pic = Entity.extend({});
-export type Pic = z.infer<typeof Pic>;
-/** A reference to a part of a Pic. */
-export const PicRegion = Entity.extend({
-  pic: Pic,
-});
+/** A reference to a part of a fixed visual media. */
+export const PicRegion = Entity;
 export type PicRegion = z.infer<typeof PicRegion>;
 
-/** A video media. */
-export const Vid = Entity.extend({});
-export type Vid = z.infer<typeof Vid>;
-/** A reference to a part of a Vid. */
-export const VidSegment = Entity.extend({
-  vid: Vid,
-});
+/** A reference to a part of a video medium */
+export const VidSegment = Entity;
 export type VidSegment = z.infer<typeof VidSegment>;
 
+/** A reference to a part of an audio medium */
+export const AudSegment = Entity;
+export type AudSegment = z.infer<typeof AudSegment>;
+
 const sourceExcerptTypes = z.enum(["WRIT_QUOTE", "PIC_REGION", "VID_SEGMENT"]);
-/** An excerpt of some fixed media. */
+/**
+ * An excerpt of some fixed media.
+ *
+ * @deprecated use MediaExcerpt. SourceExcerpt was a bad name since it has no property
+ * relating it to a source.
+ */
 export const SourceExcerpt = z.discriminatedUnion("type", [
   Entity.extend({
     type: z.literal(sourceExcerptTypes.Enum.WRIT_QUOTE),
@@ -363,9 +403,139 @@ export const SourceExcerpt = z.discriminatedUnion("type", [
     entity: VidSegment,
   }),
 ]);
+/** @deprecated TODO(38) replace with MediaExcerpt */
 export type SourceExcerpt = z.infer<typeof SourceExcerpt>;
+/** @deprecated TODO(38) replace with MediaExcerpt */
 export type SourceExcerptType = SourceExcerpt["type"];
+/** @deprecated See SourceExcerpt */
 export const SourceExcerptTypes = sourceExcerptTypes.Enum;
+
+export const CreateUrlLocator = UrlLocator.omit({ id: true }).extend({
+  url: CreateUrl,
+  anchors: z.array(CreateDomAnchor).optional(),
+});
+export type CreateUrlLocator = z.output<typeof CreateUrlLocator>;
+
+/** A source of information */
+export const Source = Entity.extend({
+  /** A description of the source that must match the APA bibliographic style. */
+  descriptionApa: z.string().min(1).max(1024),
+  normalDescriptionApa: z.string().max(1024),
+  created: momentObject,
+  deleted: momentObject.optional(),
+  creator: User,
+});
+export type Source = z.output<typeof Source>;
+
+export const CreateSource = Source.omit({
+  normalDescriptionApa: true,
+  created: true,
+  creator: true,
+});
+export type CreateSource = z.output<typeof CreateSource>;
+
+export const CreateSourceInput = CreateSource;
+export type CreateSourceInput = z.output<typeof CreateSourceInput>;
+
+/**
+ * A description of how to find a particular part of a source.
+ *
+ * A SourcePincite can be associated with a Source in the context of an excerpt.
+ * The pincite locates where in the source the appearance occurs. Examples are:
+ * page number, minute/second offset (for temporal sources like audio/video.)
+ */
+export const MediaExcerptCitation = z.object({
+  mediaExcerptId: z.string(),
+  source: Source,
+  pincite: z.string().min(1).max(64).optional(),
+  normalPincite: z.string().min(1).max(64).optional(),
+});
+export type MediaExcerptCitation = z.output<typeof MediaExcerptCitation>;
+
+export const CreateMediaExcerptCitation = MediaExcerptCitation.extend({
+  source: CreateSource,
+}).omit({
+  // A CreateMediaExcerptCitation must be associated with a CreateMediaExcerpt, the ID of which
+  // will be substituted for the mediaExcerptId.
+  mediaExcerptId: true,
+  normalPincite: true,
+});
+export type CreateMediaExcerptCitation = z.output<
+  typeof CreateMediaExcerptCitation
+>;
+
+export const CreateMediaExcerptCitationInput =
+  CreateMediaExcerptCitation.extend({
+    // An empty pincite translates to null upon creation.
+    pincite: z.string().max(64).optional(),
+  });
+export type CreateMediaExcerptCitationInput = z.output<
+  typeof CreateMediaExcerptCitationInput
+>;
+
+/** A representation of an excerpt of some fixed media conveying speech. */
+export const MediaExcerpt = Entity.extend({
+  /**
+   * One or more local representations of the excerpt.
+   *
+   * If there is more than one representation, they must all represent the same
+   * part of the source and the same speech. (What do we do if they don't?)
+   *
+   * Potential additional fields:
+   *
+   * Text-based:
+   *  - focusText: a part of quotation that is the substance of the excerpt, while the rest of
+   *    quotation provides additional context. The focusText must appear within the quotation.
+   *  - description: a textual description of non-textual content. Like an img alt text. (How do
+   *    users provite signal for an inaccurate description? The more literal the localRep, the less
+   *    possibility for interpretation.)
+   *  - transcription: text that appears in an image or as speech in audio/video. (Should we just
+   *    reuse quotation for this?)
+   * Image-based:
+   *  - screenshot: a screenshot of the text in situ.
+   *  - copied low-res image with optional highlighted focused region
+   *  - copied image cropped to focused region
+   *  - embedded picture with optional focused region
+   * Video-based:
+   *  - copied low-res video cropped to focused segment
+   *  - embedded video (with offset if possible)
+   * Audio-based:
+   *  - embedded audio (with offset if possible)
+   */
+  localRep: z.object({
+    /**
+     * Text or speech that literally appears in the media.
+     *
+     * For textual media, this text must appear in the media. For audio and video media, this
+     * text must be a transcription of the speech that appears in the media.
+     */
+    quotation: z.string().min(1).max(4096),
+    normalQuotation: z.string().min(1).max(4096),
+  }),
+  /**
+   * Provides a procedure for locating the local representation in situ remotely.
+   *
+   * Currently only urlLocators, but possibly in the future: ThirdPartyContentId
+   * (YouTube Video ID, Tweet ID, Facebook Post ID.), scripted web browser actions
+   * (e.g. navigate to URL, click on expander, highlight DomAnchor to reveal excerpt.)
+   */
+  locators: z.object({
+    /** A way to locate a source excerpt at a part of a URL resource. */
+    urlLocators: z.array(UrlLocator),
+  }),
+  /**
+   * Sources users have identified as represented (at least in part) by the source excerpt.
+   *
+   * The locators may point to online copies or excerpts of other sources, such as books or journal
+   * articles, such as when a news article quotes a journal article or a blog post quotes a book.
+   * The source field allows associating that source with the in situ appearance of the
+   * mediaExcerpt at the locators.
+   */
+  citations: z.array(MediaExcerptCitation),
+  /** Persorgs to whom users have attributed the speech in the source excerpt. */
+  speakers: z.array(Persorg),
+});
+export type MediaExcerpt = z.output<typeof MediaExcerpt>;
 
 export const PropositionCompoundAtom = z.object({
   /** A reference to this atom's parent compound. */
@@ -489,6 +659,7 @@ export type Justification = Entity & {
         type: "PROPOSITION_COMPOUND";
         entity: PropositionCompound;
       }
+    /* @deprecated TODO(38) Replace with MediaExcerpt */
     | {
         type: "SOURCE_EXCERPT";
         entity: SourceExcerpt;
@@ -496,7 +667,7 @@ export type Justification = Entity & {
     /**
      * A quote from a written source
      *
-     * @deprecated Use SOURCE_EXCERPT's WRIT_QUOTE type instead.
+     * @deprecated TODO(38) Replace with MediaExcerpt
      */
     | {
         type: "WRIT_QUOTE";
@@ -669,12 +840,22 @@ export const ContentReportRef =
   Entity.required().brand<EntityName<ContentReport>>();
 export type ContentReportRef = z.infer<typeof ContentReportRef>;
 
+export const UrlLocatorRef = Entity.required().brand<EntityName<UrlLocator>>();
+export type UrlLocatorRef = z.infer<typeof UrlLocatorRef>;
+
+export const MediaExcerptRef =
+  Entity.required().brand<EntityName<MediaExcerpt>>();
+export type MediaExcerptRef = z.output<typeof MediaExcerptRef>;
+
+export const SourceRef = Entity.required().brand<EntityName<Source>>();
+export type SourceRef = z.infer<typeof SourceRef>;
+
 /*
  * Entities lacking alternatives don't require special Create/Update models
  */
 
 export const CreateWritQuoteInput = Entity.extend({
-  quoteText: z.string(),
+  quoteText: WritQuote.shape.quoteText,
   writ: CreateWritInput,
   urls: z.array(CreateUrlInput),
 });
@@ -692,6 +873,11 @@ export type CreateVidSegmentInput = z.infer<typeof CreateVidSegmentInput>;
 export const CreateVidSegment = VidSegment;
 export type CreateVidSegment = z.infer<typeof CreateVidSegment>;
 
+export const CreateAudSegmentInput = AudSegment;
+export type CreateAudSegmentInput = z.infer<typeof CreateAudSegmentInput>;
+export const CreateAudSegment = AudSegment;
+export type CreateAudSegment = z.infer<typeof CreateAudSegment>;
+
 export const UpdateVidSegmentInput = VidSegment;
 export type UpdateVidSegmentInput = z.infer<typeof UpdateVidSegmentInput>;
 export const UpdateVidSegment = VidSegment;
@@ -707,6 +893,7 @@ export type UpdatePicRegionInput = z.infer<typeof UpdatePicRegionInput>;
 export const UpdatePicRegion = PicRegion;
 export type UpdatePicRegion = z.infer<typeof UpdatePicRegion>;
 
+/** @deprecated */
 export const CreateSourceExcerptInput = Entity.extend({
   type: z.enum(["WRIT_QUOTE", "PIC_REGION", "VID_SEGMENT"]),
   writQuote: CreateWritQuoteInput,
@@ -728,7 +915,55 @@ export const CreateSourceExcerpt = z.discriminatedUnion("type", [
     entity: CreateVidSegment,
   }),
 ]);
+/** @deprecated */
 export type CreateSourceExcerpt = z.infer<typeof CreateSourceExcerpt>;
+
+export const CreateMediaExcerpt = MediaExcerpt.omit({ id: true })
+  .extend({
+    localRep: MediaExcerpt.shape.localRep.omit({ normalQuotation: true }),
+    locators: z
+      .object({
+        // urlLocators can become optional if we add other locator types.
+        urlLocators: z.array(CreateUrlLocator),
+      })
+      .optional(),
+    citations: z.array(CreateMediaExcerptCitation).optional(),
+    speakers: z.array(CreatePersorg).optional(),
+  })
+  .superRefine((val, ctx) => {
+    if (keys(val.localRep).length < 1) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: `At least one of ${keys(
+          MediaExcerpt.shape.localRep.shape
+        )} is required.`,
+      });
+    }
+    if (!val.locators && (!val.citations || val.citations.length < 1)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: `At least one of locators or citations is required.`,
+      });
+    }
+    if (val.locators && keys(val.locators).length < 1) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: `Locators must contain at least one of ${keys(
+          MediaExcerpt.shape.locators.shape
+        )} is required.`,
+      });
+    }
+  });
+export type CreateMediaExcerpt = z.infer<typeof CreateMediaExcerpt>;
+
+export const CreateMediaExcerptInput = CreateMediaExcerpt;
+export type CreateMediaExcerptInput = z.output<typeof CreateMediaExcerptInput>;
+
+export const UpdateMediaExcerpt = CreateMediaExcerpt;
+export type UpdateMediaExcerpt = z.infer<typeof UpdateMediaExcerpt>;
+
+export const UpdateMediaExcerptInput = UpdateMediaExcerpt;
+export type UpdateMediaExcerptInput = z.output<typeof UpdateMediaExcerptInput>;
 
 export type CreateJustificationInput = Entity & {
   // A justification can target anything that can be a root target.
@@ -981,8 +1216,10 @@ export type CreateTagVote = z.infer<typeof CreateTagVote>;
 const EntityType = z.enum([
   "JUSTIFICATION",
   "JUSTIFICATION_VOTE",
+  "MEDIA_EXCERPT",
   "PASSWORD_HASH",
   "PASSWORD_RESET_REQUEST",
+  "PERSORG",
   "PROPOSITION",
   "PROPOSITION_TAG_VOTE",
   "REGISTRATION_REQUEST",
@@ -1036,32 +1273,6 @@ export const CreateContentReportInput = ContentReport.extend({
   checkedByType: z.map(ContentReportType, z.boolean()),
 });
 export type CreateContentReportInput = z.infer<typeof CreateContentReportInput>;
-
-export const UserExternalIds = z.object({
-  googleAnalyticsId: z.string(),
-  heapAnalyticsId: z.string(),
-  mixpanelId: z.string(),
-  sentryId: z.string(),
-});
-export type UserExternalIds = z.infer<typeof UserExternalIds>;
-
-/** A user of the system */
-export const User = Entity.extend({
-  email: z.string().email().max(128),
-  username: z
-    .string()
-    .regex(/[A-Za-z0-9_]+/)
-    .min(3)
-    .max(64),
-  shortName: z.string().min(1).max(32).optional(),
-  longName: z.string().min(1).max(64),
-  // We currently don't request phone number
-  phoneNumber: z.string().optional(),
-  created: momentObject,
-  isActive: z.boolean(),
-  externalIds: UserExternalIds.optional(),
-});
-export type User = z.infer<typeof User>;
 
 /** Additional properties that we collect upon user creation, but that we don't expose later. */
 export const CreateUser = User.omit({

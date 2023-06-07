@@ -3,7 +3,7 @@ import { Button, Switch } from "react-md";
 
 import {
   CreatePersorgInput,
-  Persorg,
+  PersorgOut,
   schemaSettings,
   UpdatePersorgInput,
 } from "howdju-common";
@@ -36,7 +36,7 @@ export interface Props
   /** If present, overrides the default label for the proposition text input */
   nameLabel?: string;
   /** Will be called with the persorg upon an autocomplete */
-  onPersorgNameAutocomplete?: (persorg: Persorg) => void;
+  onPersorgNameAutocomplete?: (persorg: PersorgOut) => void;
   onSubmit?: FormEventHandler;
   editorDispatch: EditorFieldsDispatch;
 }
@@ -66,7 +66,7 @@ export default function PersorgEditorFields(props: Props) {
 
   const onChange = toCheckboxOnChangeCallback(onPropertyChange);
 
-  const onNameAutocomplete = (persorg: Persorg) => {
+  const onNameAutocomplete = (persorg: PersorgOut) => {
     if (onPersorgNameAutocomplete) {
       onPersorgNameAutocomplete(persorg);
     }

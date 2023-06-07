@@ -1,19 +1,18 @@
 import * as textPosition from "dom-anchor-text-position";
 import * as textQuote from "dom-anchor-text-quote";
 
-import {
-  CreateWritQuoteInput,
-  logger,
-  UrlTarget,
-  UrlTargetAnchor,
-} from "howdju-common";
+import { CreateDomAnchor, logger, UrlTarget } from "howdju-common";
 
 import { nodeIsBefore, getPreviousLeafNode } from "./dom";
-import { getCurrentCanonicalUrl } from "./location";
+import { getCanonicalOrCurrentUrl } from "./location";
 
-export function selectionToWritQuote(
-  selection: Selection
-): CreateWritQuoteInput {
+export interface AnchorInfo {
+  anchors: CreateDomAnchor[];
+  documentTitle: string;
+  url: string;
+}
+
+export function selectionToAnchorInfo(selection: Selection): AnchorInfo {
   const anchors = [];
 
   for (let i = 0; i < selection.rangeCount; i++) {
@@ -23,23 +22,17 @@ export function selectionToWritQuote(
   }
 
   return {
-    quoteText: anchors.map((a) => a.exactText.trim()).join("\n\n"),
-    writ: {
-      title: document.title,
-    },
-    // TODO(38) replace `urls` with `locators: [{anchors, url}]`?
-    // (no need for intermediate `target` prop, and name `locators` better reflects the purpose of
-    // 'a thing to help you locate remotely the authority that is represented locally.')
-    urls: [{ target: { anchors }, url: getCurrentCanonicalUrl() }],
+    anchors,
+    documentTitle: document.title,
+    url: getCanonicalOrCurrentUrl(),
   };
 }
 
-export function makeTextAnchor(
+export function makeDomAnchor(
   { exact, prefix, suffix }: textQuote.TextQuoteAnchor,
   { start, end }: textPosition.TextPositionAnchor
-): UrlTargetAnchor {
+): CreateDomAnchor {
   return {
-    type: "TEXT_QUOTE",
     exactText: exact,
     prefixText: prefix,
     suffixText: suffix,
@@ -48,13 +41,13 @@ export function makeTextAnchor(
   };
 }
 
-function rangeToAnchor(range: Range): UrlTargetAnchor {
+function rangeToAnchor(range: Range): CreateDomAnchor {
   const positionAnchor = textPosition.fromRange(document.body, range);
   const textQuoteAnchor = textQuote.fromTextPosition(
     document.body,
     positionAnchor
   );
-  return makeTextAnchor(textQuoteAnchor, positionAnchor);
+  return makeDomAnchor(textQuoteAnchor, positionAnchor);
 }
 
 export function targetToRanges(target: UrlTarget) {

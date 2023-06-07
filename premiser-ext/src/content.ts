@@ -18,11 +18,13 @@ import {
   extension as ext,
   actions,
   urlEquivalent,
-  getCurrentCanonicalUrl,
   ExtensionMessage,
   PayloadOf,
   runCommandsWhenTabReloaded,
   ContentScriptCommand,
+  getCanonicalUrl,
+  getCurrentUrl,
+  WindowMessageSource,
 } from "howdju-client-common";
 
 import { annotateSelection, annotateTarget } from "./annotate";
@@ -124,7 +126,10 @@ function highlightTarget({
   if (target) {
     commands.push({ annotateTarget: [target] });
   }
-  if (urlEquivalent(url.url, getCurrentCanonicalUrl())) {
+  if (
+    urlEquivalent(url.url, getCanonicalUrl()) ||
+    urlEquivalent(url.url, getCurrentUrl())
+  ) {
     runCommands(commands);
   } else {
     ext.sendRuntimeMessage(runCommandsWhenTabReloaded(commands), () => {
@@ -200,13 +205,15 @@ function routeRuntimeMessage(
 }
 
 function annotateSelectionAndEdit() {
-  const annotationExcerpt = annotateSelection();
-  if (!annotationExcerpt) {
+  const annotationAnchors = annotateSelection();
+  if (!annotationAnchors) {
     logger.warn("Unable to annotate selection");
     return;
   }
   postActionMessageToFrame(
-    actions.extensionFrame.createJustification(annotationExcerpt.writQuote)
+    actions.extensionFrame.beginEditOfMediaExcerptFromAnchorInfo(
+      annotationAnchors.anchorInfo
+    )
   );
 }
 
@@ -218,7 +225,7 @@ function postActionMessageToFrame(action: actions.ExtensionFrameAction) {
     doWhenFrameMessageHandlerReady((frameApi: FramePanelApi) => {
       frameApi.postMessage(
         {
-          source: "extension",
+          source: WindowMessageSource,
           action,
         },
         baseUrl

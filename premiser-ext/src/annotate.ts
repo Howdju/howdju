@@ -11,12 +11,12 @@ import {
   isCoextensive,
   insertNodeAfter,
   insertNodeBefore,
-  selectionToWritQuote,
+  selectionToAnchorInfo,
   targetToRanges,
 } from "howdju-client-common";
 
 import { getNodeData } from "./node-data";
-import { Annotation, AnnotationExcerpt } from "./annotation";
+import { Annotation, AnnotationAnchors } from "./annotation";
 
 export const annotationClass = "howdju-annotation";
 export const annotationLevelClassPrefix = "howdju-annotation-level-";
@@ -27,7 +27,7 @@ export const annotationLevelStyleElementId = "howdju-annotation-level-styles";
 let maxAnnotationLevel = 0;
 export const annotations: Annotation[] = [];
 
-export function annotateSelection(): AnnotationExcerpt | undefined {
+export function annotateSelection(): AnnotationAnchors | undefined {
   const selection = getSelection();
   if (!selection) {
     logger.warn("Selection was null, can't annotate it.");
@@ -39,7 +39,7 @@ export function annotateSelection(): AnnotationExcerpt | undefined {
   }
 
   // Get target before selection may change
-  const writQuote = selectionToWritQuote(selection);
+  const anchorInfo = selectionToAnchorInfo(selection);
 
   const nodes = getNodesForSelection(selection);
 
@@ -49,7 +49,7 @@ export function annotateSelection(): AnnotationExcerpt | undefined {
   //  a reasonable UX choice, since the selection in a sense has been replaced with the annotation.
   clearSelection();
 
-  return { annotation, writQuote };
+  return { annotation, anchorInfo };
 }
 
 export function annotateTarget(target: UrlTarget) {

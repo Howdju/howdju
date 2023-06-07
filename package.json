@@ -14,6 +14,7 @@
     "check:do-not-merge": "echo check:do-not-merge && bin/check-do-not-merge.sh && echo check:do-not-merge succeeded || {echo check:do-not-merge failed; exit 1}",
     "check:todo-format": "echo check:todo-format && bin/check-todo-format.sh && echo check:todo-format succeeded || {echo check:todo-format failed; exit 1}",
     "check:pre-deploy": "bin/pre-deploy-check.sh",
+    "check:test-db-dump-updated": "bin/check-test-db-dump-updated.sh",
     "check:yarn-install": "echo check:yarn-install && yarn install --immutable && echo check:yarn-install succeeded || {echo check:yarn-install failed; exit 1}",
     "check-build:all": "echo check-build:all && yarn workspaces foreach -Apv run check-build && echo check-build:all succeeded || {echo check-build:all faied; exit 1}",
     "check-format": "yarn run prettier --check --ignore-path .gitignore jest lambdas/bin",
@@ -85,6 +86,7 @@
   },
   "packageManager": "yarn@3.3.1",
   "resolutions": {
-    "react-native@^0.66": "patch:react-native@npm%3A0.66.5#./.yarn/patches/react-native-npm-0.66.5-22e5dd8ec5.patch"
+    "react-native@^0.66": "patch:react-native@npm%3A0.66.5#./.yarn/patches/react-native-npm-0.66.5-22e5dd8ec5.patch",
+    "react-material-symbols@^4.1.1": "patch:react-material-symbols@npm%3A4.1.1#./.yarn/patches/react-material-symbols-npm-4.1.1-d06ca7bff7.patch"
   }
 }

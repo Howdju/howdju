@@ -20,6 +20,7 @@
     "eslint": "^8.27.0",
     "eslint-config-howdju": "workspace:eslint-config-howdju",
     "jest": "^29.3.1",
+    "jest-extended": "^3.2.4",
     "prettier": "2.7.1",
     "ts-node": "^10.9.1"
   }
