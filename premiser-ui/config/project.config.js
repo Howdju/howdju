@@ -14,12 +14,9 @@
 
 import path, { resolve } from "path";
 
-import { hostAddressOrLocalAddress } from "howdju-ops";
-
 const basePath = resolve(__dirname, "..");
 
 export default {
-  hostAddress: hostAddressOrLocalAddress(),
   names: {
     js: "premiser-ui.js",
     indexHtml: "index.html",

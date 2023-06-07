@@ -73,7 +73,7 @@ export interface Props<T>
   maxLength?: number | null;
 }
 
-export default function ApiAutoComplete({
+export default function ApiAutoComplete<T>({
   id,
   name,
   autocompleteDebounceMs = 250,
@@ -93,8 +93,9 @@ export default function ApiAutoComplete({
   maxRows = -1,
   maxLength,
   onKeyDown,
+  value,
   ...rest
-}: Props<any>) {
+}: Props<T>) {
   const dispatch = useAppDispatch();
   const debouncedFetchSuggestions = useDebouncedCallback((value: string) => {
     dispatch(fetchSuggestions(value, suggestionsKey));
@@ -175,6 +176,7 @@ export default function ApiAutoComplete({
           {...rest}
           id={id}
           name={name}
+          value={value}
           className="api-autocomplete"
           listboxClassName="api-autocomplete-listbox"
           data={suggestionsData}
@@ -190,7 +192,7 @@ export default function ApiAutoComplete({
           filter="none"
           rows={rows}
           maxRows={maxRows}
-          maxLength={maxLength || undefined}
+          maxLength={maxLength ?? undefined}
           messageProps={messageProps}
         />
         {rightControls}

@@ -5,9 +5,9 @@ import {
   CreateMediaExcerptInput,
   UpdateMediaExcerptInput,
   PersorgOut,
-  CreatePersorgInput,
   MediaExcerptCitation,
   MediaExcerpt,
+  makePersorg,
 } from "howdju-common";
 
 import { combineNames, combineIds, combineSuggestionsKeys } from "@/viewModels";
@@ -29,6 +29,7 @@ import { editors } from "@/actions";
 import { toCreatePersorgInput } from "howdju-client-common";
 import { EditorId } from "@/types";
 import SourceDescriptionAutocomplete from "@/SourceDescriptionAutocomplete";
+import { MaterialSymbol } from "react-material-symbols";
 
 interface Props
   extends EntityEditorFieldsProps<
@@ -71,9 +72,14 @@ export default function MediaExcerptEditorFields(props: Props) {
       )
     );
 
-  function onRemoveSpeakerClick(speaker: CreatePersorgInput, index: number) {
+  function onRemoveSpeakerClick(index: number) {
     editorDispatch((editorType: EditorType, editorId: EditorId) =>
-      editors.removeSpeaker(editorType, editorId, speaker, index)
+      editors.removeListItem(
+        editorType,
+        editorId,
+        index,
+        combineNames(name, "speakers")
+      )
     );
   }
   function onPersorgAutocomplete(persorg: PersorgOut, index: number) {
@@ -103,9 +109,9 @@ export default function MediaExcerptEditorFields(props: Props) {
         disabled={disabled}
       />
 
-      {mediaExcerpt?.locators.urlLocators.map(({ url, anchors }, index) => (
+      {mediaExcerpt?.locators?.urlLocators.map(({ url, anchors }, index) => (
         <SingleLineTextField
-          {...errorProps((me) => me.locators.urlLocators[index].url)}
+          {...errorProps((me) => me.locators?.urlLocators[index].url)}
           id={combineIds(id, `remoteProcs.urlLocators[${index}].url`)}
           key={combineIds(id, `remoteProcs.urlLocators[${index}].url`)}
           name={combineNames(name, `remoteProcs.urlLocators[${index}].url`)}
@@ -128,18 +134,18 @@ export default function MediaExcerptEditorFields(props: Props) {
       ))}
 
       {mediaExcerpt?.citations?.map(({ source, pincite }, index) => (
-        <React.Fragment key={combineIds(id, `sources[${index}])`)}>
+        <React.Fragment key={combineIds(id, `citations[${index}]`)}>
           <SourceDescriptionAutocomplete
             {...errorProps((me) => me.citations?.[index].source.descriptionApa)}
-            id={combineIds(id, `sources[${index}].source.descriptionApa)`)}
+            id={combineIds(id, `citations[${index}].source.descriptionApa`)}
             name={combineNames(
               name,
-              `sources[${index}].source.descriptionApa)`
+              `citations[${index}].source.descriptionApa`
             )}
-            key={combineIds(id, `sources[${index}].source.descriptionApa)`)}
+            key={combineIds(id, `citations[${index}].source.descriptionApa`)}
             suggestionsKey={combineSuggestionsKeys(
               suggestionsKey,
-              `sources[${index}].source.descriptionApa)`
+              `citations[${index}].source.descriptionApa`
             )}
             label="Description (APA)"
             required
@@ -153,11 +159,11 @@ export default function MediaExcerptEditorFields(props: Props) {
             onPropertyChange={onPropertyChange}
             disabled={disabled}
           />
-          <TextField
+          <SingleLineTextField
             {...errorProps((me) => me.citations?.[index].pincite)}
-            id={combineIds(id, `sources[${index}].pincite)`)}
-            name={combineNames(name, `sources[${index}].pincite)`)}
-            key={combineIds(id, `sources[${index}].pincite)`)}
+            id={combineIds(id, `citations[${index}].pincite`)}
+            name={combineNames(name, `citations[${index}].pincite`)}
+            key={combineIds(id, `citations[${index}].pincite`)}
             label="Pincite"
             rows={1}
             maxRows={2}
@@ -172,13 +178,13 @@ export default function MediaExcerptEditorFields(props: Props) {
       {mediaExcerpt?.speakers?.map((speaker, index) => {
         return (
           <EntityViewer
-            iconName="person"
+            icon="person"
             iconTitle="Person/Organization"
             key={index}
             menu={
               <Button
                 icon
-                onClick={() => onRemoveSpeakerClick(speaker, index)}
+                onClick={() => onRemoveSpeakerClick(index)}
                 title="Delete speaker"
               >
                 delete
@@ -210,6 +216,25 @@ export default function MediaExcerptEditorFields(props: Props) {
           />
         );
       })}
+      <Button
+        iconEl={<MaterialSymbol icon="person_add" />}
+        raised
+        onClick={() =>
+          editorDispatch((editorType: EditorType, editorId: EditorId) =>
+            editors.addListItem(
+              editorType,
+              editorId,
+              mediaExcerpt?.speakers?.length ?? 0,
+              combineNames(name, "speakers"),
+              makePersorg
+            )
+          )
+        }
+        title="Add speaker"
+        disabled={disabled}
+      >
+        Add Speaker
+      </Button>
     </div>
   );
 }

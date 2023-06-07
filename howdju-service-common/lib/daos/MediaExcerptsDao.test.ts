@@ -106,9 +106,6 @@ describe("MediaExcerptsDao", () => {
       expect(readMediaExcerpt).toBeUndefined();
     });
     test.todo("doesn't read a deleted media excerpt");
-    test.todo(
-      "doesn't allow creating multiple media excerpts for the same local rep."
-    );
     test.todo("allows recreating a deleted media excerpt");
   });
 

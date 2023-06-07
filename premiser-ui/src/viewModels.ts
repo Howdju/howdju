@@ -250,4 +250,8 @@ export interface MediaExcerptView extends MediaExcerptOut {
       key: string;
     })[];
   };
+  speakers: (MediaExcerptOut["speakers"][number] & {
+    /** A key uniquely identifying a persorg relative to others. */
+    key: string;
+  })[];
 }

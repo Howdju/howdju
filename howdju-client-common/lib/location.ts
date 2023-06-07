@@ -28,9 +28,10 @@ const canonicalUrlSelectorAttributes = [
 
 export function getCanonicalUrl() {
   for (const selectorAttribute of canonicalUrlSelectorAttributes) {
-    const node = window.document.querySelector(selectorAttribute["selector"]);
+    const { selector, attribute } = selectorAttribute;
+    const node = window.document.querySelector(selector);
     if (node) {
-      const url = node.getAttribute(selectorAttribute["attribute"]);
+      const url = node.getAttribute(attribute);
       if (url) {
         return url;
       }

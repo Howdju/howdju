@@ -25,6 +25,7 @@ import {
   CreateRegistrationConfirmationInput,
   CreateRegistrationRequest,
   CreateRegistrationRequestInput,
+  CreateMediaExcerptInput,
 } from "howdju-common";
 
 import { selectEditorState } from "../../selectors";
@@ -42,6 +43,7 @@ import {
 } from "@/apiActions";
 import { ServiceRoute } from "howdju-service-routes";
 import { logger } from "@/logger";
+import produce from "immer";
 
 /**
  * A redux saga handling editor commits.
@@ -339,7 +341,15 @@ export const CreateRegistrationRequestConfig: EditorCommitCrudActionConfig<
 
 export const MediaExcerptConfig = {
   requestActionCreator: api.createMediaExcerpt,
-  inputTransformer: identity,
+  inputTransformer: produce((model: CreateMediaExcerptInput) => {
+    if (model.citations) {
+      for (const citation of model.citations) {
+        if (citation.pincite === "") {
+          citation.pincite = undefined;
+        }
+      }
+    }
+  }),
 };
 
 export const editorCommitConfigs: Partial<

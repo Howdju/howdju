@@ -3,9 +3,10 @@ import HtmlWebpackPlugin from "html-webpack-plugin";
 import type { Response } from "webpack-dev-server";
 
 import {
-  localApiRoot,
+  getApiRoot,
   devWebServerPort,
-  hostAddressOrLocalAddress,
+  getUiHost,
+  doEnableLocalNetworkAccess,
 } from "howdju-ops";
 
 export const htmlWebpackPluginConfig = {
@@ -22,9 +23,13 @@ export const htmlWebpackPluginConfig = {
   // },
 };
 
-const hostAddress = hostAddressOrLocalAddress();
+const port = devWebServerPort();
+const devServerBindHost = doEnableLocalNetworkAccess()
+  ? "0.0.0.0"
+  : "localhost";
+const uiHost = getUiHost();
 
-const apiRoot = process.env.API_ROOT || localApiRoot();
+const apiRoot = process.env.API_ROOT || getApiRoot();
 export const definePluginConfig = {
   "process.env.API_ROOT": JSON.stringify(apiRoot),
   "process.env.DO_ASSERT": JSON.stringify(true),
@@ -44,12 +49,14 @@ export const webpackConfig: HtmlWebpackPlugin.Options = {
     // Behave like an SPA, serving index.html for paths that don't match files
     historyApiFallback: true,
     open: {
+      target: [`http://${uiHost}:${port}`],
       app: {
+        // TODO(423) google-chrome' on Linux, and 'chrome' on Windows.
         name: "Google Chrome",
       },
     },
-    port: devWebServerPort(),
-    host: hostAddress,
+    port,
+    host: devServerBindHost,
     static: [
       {
         directory: "public",

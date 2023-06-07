@@ -18,7 +18,7 @@ export default function WritEntityViewer({
 }: WritEntityViewerProps) {
   return (
     <EntityViewer
-      iconName="book"
+      icon="book"
       iconTitle="Writ"
       entity={<EditableWrit id={id} writ={writ} />}
       menu={menu}

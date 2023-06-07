@@ -39,12 +39,13 @@ create table dom_anchors (
   start_offset integer check (start_offset >= 0),
   end_offset integer check (end_offset >= start_offset),
 
-  constraint unique_anchor unique (url_locator_id, exact_text, prefix_text, suffix_text, start_offset, end_offset, deleted),
-
   creator_user_id bigint not null references users(user_id),
   created timestamp not null,
   deleted timestamp
 );
+create unique index dom_anchors_unique_idx
+  on dom_anchors (url_locator_id, exact_text, prefix_text, suffix_text, start_offset, end_offset)
+  where deleted is null;
 
 create table sources (
   source_id bigserial primary key,
@@ -92,6 +93,3 @@ create table media_excerpt_speakers(
   created timestamp not null,
   deleted timestamp
 );
-
-create table test (the_value varchar(128), deleted timestamp);
-create unique index test_unq_idx on test (the_value) where deleted is null;

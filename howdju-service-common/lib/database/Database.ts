@@ -54,24 +54,14 @@ export class Database {
           text: sql,
           values: utcArgs,
         };
-    try {
-      const result = await this.pool.query<R>(config);
-      result.rows = mapValuesDeep(result.rows, (v) =>
-        v === null ? undefined : v
-      );
-      if (process.env.DEBUG_PRINT_DB_QUERIES) {
-        this.logger.silly(`Database result: ${toJson(result)}`);
-      }
-      return result;
-    } catch (err) {
-      this.logger.error("Database.query error", {
-        err,
-        queryName,
-        sql,
-        utcArgs,
-      });
-      throw err;
+    const result = await this.pool.query<R>(config);
+    result.rows = mapValuesDeep(result.rows, (v) =>
+      v === null ? undefined : v
+    );
+    if (process.env.DEBUG_PRINT_DB_QUERIES) {
+      this.logger.silly(`Database result: ${toJson(result)}`);
     }
+    return result;
   }
 
   queries(queryAndArgs: { queryName: string; sql: string; args: any[] }[]) {

@@ -7,17 +7,17 @@ import { editorType, editorId } from "@/pages/SubmitMediaExcerptPage";
 import { PayloadAction } from "@reduxjs/toolkit";
 import { PayloadType } from "@/actionHelpers";
 
-type Payload = PayloadType<typeof flows.submitMediaExcerptFromAnchorInfo>;
+type Payload = PayloadType<typeof flows.beginEditOfMediaExcerptFromAnchorInfo>;
 
-export function* submitMediaExcerptFromAnchorInfo() {
+export function* beginEditOfMediaExcerptFromAnchorInfo() {
   yield* takeEvery(
-    str(flows.submitMediaExcerptFromAnchorInfo),
-    function* beginEditOfNewJustificationFromTargetWorker(
+    str(flows.beginEditOfMediaExcerptFromAnchorInfo),
+    function* beginEditOfMediaExcerptFromAnchorInfoWorker(
       action: PayloadAction<Payload>
     ) {
       const input = toCreateMediaExcerptInput(action.payload);
       yield* put(editors.beginEdit(editorType, editorId, input));
-      yield* put(goto.submitMediaExcerpt());
+      yield* put(goto.newMediaExcerpt());
     }
   );
 }

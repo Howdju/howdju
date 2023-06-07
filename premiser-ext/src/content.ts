@@ -211,7 +211,7 @@ function annotateSelectionAndEdit() {
     return;
   }
   postActionMessageToFrame(
-    actions.extensionFrame.createJustificationFromAnchorInfo(
+    actions.extensionFrame.beginEditOfMediaExcerptFromAnchorInfo(
       annotationAnchors.anchorInfo
     )
   );

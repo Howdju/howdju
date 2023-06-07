@@ -419,7 +419,7 @@ export type CreateUrlLocator = z.output<typeof CreateUrlLocator>;
 /** A source of information */
 export const Source = Entity.extend({
   /** A description of the source that must match the APA bibliographic style. */
-  descriptionApa: z.string().max(1024),
+  descriptionApa: z.string().min(1).max(1024),
   normalDescriptionApa: z.string().max(1024),
   created: momentObject,
   deleted: momentObject.optional(),
@@ -434,8 +434,8 @@ export const CreateSource = Source.omit({
 });
 export type CreateSource = z.output<typeof CreateSource>;
 
-export const SourceInput = Source;
-export type SourceInput = z.output<typeof SourceInput>;
+export const CreateSourceInput = CreateSource;
+export type CreateSourceInput = z.output<typeof CreateSourceInput>;
 
 /**
  * A description of how to find a particular part of a source.
@@ -455,6 +455,8 @@ export type MediaExcerptCitation = z.output<typeof MediaExcerptCitation>;
 export const CreateMediaExcerptCitation = MediaExcerptCitation.extend({
   source: CreateSource,
 }).omit({
+  // A CreateMediaExcerptCitation must be associated with a CreateMediaExcerpt, the ID of which
+  // will be substituted for the mediaExcerptId.
   mediaExcerptId: true,
   normalPincite: true,
 });
@@ -462,7 +464,11 @@ export type CreateMediaExcerptCitation = z.output<
   typeof CreateMediaExcerptCitation
 >;
 
-export const CreateMediaExcerptCitationInput = MediaExcerptCitation;
+export const CreateMediaExcerptCitationInput =
+  CreateMediaExcerptCitation.extend({
+    // An empty pincite translates to null upon creation.
+    pincite: z.string().max(64).optional(),
+  });
 export type CreateMediaExcerptCitationInput = z.output<
   typeof CreateMediaExcerptCitationInput
 >;
@@ -915,10 +921,12 @@ export type CreateSourceExcerpt = z.infer<typeof CreateSourceExcerpt>;
 export const CreateMediaExcerpt = MediaExcerpt.omit({ id: true })
   .extend({
     localRep: MediaExcerpt.shape.localRep.omit({ normalQuotation: true }),
-    locators: z.object({
-      // urlLocators can become optional if we add other locator types.
-      urlLocators: z.array(CreateUrlLocator),
-    }),
+    locators: z
+      .object({
+        // urlLocators can become optional if we add other locator types.
+        urlLocators: z.array(CreateUrlLocator),
+      })
+      .optional(),
     citations: z.array(CreateMediaExcerptCitation).optional(),
     speakers: z.array(CreatePersorg).optional(),
   })
@@ -931,7 +939,7 @@ export const CreateMediaExcerpt = MediaExcerpt.omit({ id: true })
         )} is required.`,
       });
     }
-    if (!val.locators && !val.citations) {
+    if (!val.locators && (!val.citations || val.citations.length < 1)) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         message: `At least one of locators or citations is required.`,

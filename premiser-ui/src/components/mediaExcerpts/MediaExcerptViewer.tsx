@@ -35,6 +35,13 @@ export default function MediaExcerptViewer({ mediaExcerpt }: Props) {
           </li>
         ))}
       </ul>
+      <ul className="speakers">
+        {mediaExcerpt.speakers.map((speaker) => (
+          <li key={speaker.key} className="speaker">
+            {speaker.name}
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }

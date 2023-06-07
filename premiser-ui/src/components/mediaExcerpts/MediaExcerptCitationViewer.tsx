@@ -11,7 +11,7 @@ export default function MediaExcerptCitationViewer({ citation }: Props) {
   return (
     <>
       <span>{source.descriptionApa}</span>
-      {pincite && `(${pincite})`}
+      {pincite && ` (${pincite})`}
     </>
   );
 }

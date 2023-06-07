@@ -61,7 +61,7 @@ export class MediaExcerptsService {
     const createCitations = createMediaExcerpt.citations ?? [];
 
     // Create entities that don't depend on the media excerpt's ID
-    const createUrls = createMediaExcerpt.locators.urlLocators.map(
+    const createUrls = createMediaExcerpt.locators?.urlLocators.map(
       (u) => u.url
     );
     const [
@@ -83,7 +83,9 @@ export class MediaExcerptsService {
             now
           )
         : { persorgs: [], isExtant: true },
-      this.urlsService.readOrCreateUrlsAsUser(createUrls, userId, now),
+      createUrls
+        ? this.urlsService.readOrCreateUrlsAsUser(createUrls, userId, now)
+        : [],
     ]);
 
     // Create the media excerpt
@@ -92,7 +94,7 @@ export class MediaExcerptsService {
 
     // Create entities that depend on the media excerpt's ID
     const createUrlLocatorsWithUrl = zip(
-      createMediaExcerpt.locators.urlLocators,
+      createMediaExcerpt.locators?.urlLocators,
       urls
     ).map(([urlLocator, url]) => ({
       ...urlLocator,
@@ -109,7 +111,7 @@ export class MediaExcerptsService {
       { citations, isExtant: isExtantCitations },
       { isExtant: isExtantSpeakers },
     ] = await Promise.all([
-      createMediaExcerpt.locators.urlLocators
+      createMediaExcerpt.locators?.urlLocators
         ? this.readOrCreateUrlLocators(
             userId,
             mediaExcerpt,

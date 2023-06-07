@@ -30,7 +30,7 @@ export default function PropositionEntityViewer({
 }: Props) {
   return (
     <EntityViewer
-      iconName="short_text"
+      icon="short_text"
       iconLink={proposition && paths.proposition(proposition)}
       className={className}
       iconTitle="Proposition"

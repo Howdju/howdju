@@ -55,3 +55,16 @@ ul.citations {
     );
   }
 }
+
+ul.speakers {
+  margin-top: 0.8em;
+
+  > li.speaker {
+    margin: 0.2em $list-item-left-padding;
+
+    @include material-icon-list-item(
+      "record_voice_over",
+      "Material Symbols Rounded"
+    );
+  }
+}

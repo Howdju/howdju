@@ -70,6 +70,7 @@ export default handleActions(
       api.fetchRecentWritQuotes.response,
       api.fetchRootPropositionStatements.response,
       api.fetchSentenceStatements.response,
+      api.fetchSourceDescriptionSuggestions.response,
       api.fetchSpeakerStatements.response,
       api.fetchStatementRootJustificationTarget.response,
       api.fetchTag.response,
@@ -93,7 +94,7 @@ export default handleActions(
             ["justifications"],
             ["justificationVotes"],
             ["mediaExcerpts", mediaExcerptCustomizer],
-            ["persorgs"],
+            ["persorgs", persorgCustomizer],
             ["propositionCompounds"],
             ["propositions", entityAssignWithCustomizer],
             ["propositionTagVotes"],
@@ -510,6 +511,12 @@ function urlLocatorCustomizer(
 ) {
   return merge({}, oldUrlLocator, newUrlLocator, {
     key: newUrlLocator.id,
+  });
+}
+
+function persorgCustomizer(oldPersorg, newPersorg, key, object, source) {
+  return merge({}, oldPersorg, newPersorg, {
+    key: newPersorg.id,
   });
 }
 

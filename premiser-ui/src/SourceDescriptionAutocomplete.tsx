@@ -3,7 +3,7 @@ import React from "react";
 import { Source, SourceOut } from "howdju-common";
 
 import { api } from "./actions";
-import { tagSchema } from "./normalizationSchemas";
+import { sourceSchema } from "./normalizationSchemas";
 import { cancelSourceDescriptionSuggestions } from "./apiActions";
 import ApiAutoComplete, {
   Props as ApiAutocompleteProps,
@@ -32,9 +32,9 @@ export default function SourceDescriptionAutocomplete({
       fetchSuggestions={api.fetchSourceDescriptionSuggestions}
       cancelSuggestions={cancelSourceDescriptionSuggestions}
       suggestionsKey={suggestionsKey}
-      suggestionSchema={tagSchema}
+      suggestionSchema={sourceSchema}
       name={name}
-      labelKey="name"
+      labelKey="descriptionApa"
       onAutoComplete={onAutoComplete}
       onPropertyChange={onPropertyChange}
     />

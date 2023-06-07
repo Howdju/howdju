@@ -29,7 +29,7 @@ import { commitEditorThenView } from "./editors/commitEditorThenViewSaga";
 import { commitEditThenPutActionOnSuccess } from "./editors/commitEditThenPutActionOnSuccessSaga";
 import { fetchAndBeginEditOfNewJustificationFromBasisSource } from "./editors/fetchAndBeginEditOfNewJustificationFromBasisSourceSaga";
 import { editorCommitEdit } from "./editors/editorCommitEditSaga";
-import { submitMediaExcerptFromAnchorInfo } from "./editors/submitMediaExcerptFromAnchorInfoSaga";
+import { beginEditOfMediaExcerptFromAnchorInfo } from "./editors/submitMediaExcerptFromAnchorInfoSaga";
 import { deleteJustificationRootTargetTranslator } from "./apiLikeSagas";
 import { postExtensionMessages } from "./extensionSagas";
 import * as appSagas from "../app/appSagas";
@@ -66,7 +66,7 @@ export default () =>
     commitEditThenPutActionOnSuccess(),
     fetchAndBeginEditOfNewJustificationFromBasisSource(),
     redirectUnauthenticatedUserToLoginOnPagesNeedingAuthentication(),
-    submitMediaExcerptFromAnchorInfo(),
+    beginEditOfMediaExcerptFromAnchorInfo(),
 
     deleteJustificationRootTargetTranslator(),
 

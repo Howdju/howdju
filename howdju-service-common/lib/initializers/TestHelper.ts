@@ -1,4 +1,4 @@
-import moment from "moment";
+import moment, { Moment } from "moment";
 
 import {
   AuthToken,
@@ -22,13 +22,20 @@ export default class TestHelper {
 
   async makeSource(
     creatorUserId: EntityId,
-    createSource: Partial<CreateSource>
+    overrides: Partial<CreateSource> = {},
+    created: Moment = utcNow()
   ) {
-    const created = utcNow();
+    const createSource: CreateSource = merge(
+      {},
+      {
+        descriptionApa: "The source description (APA)",
+      },
+      overrides
+    );
     const { source } =
       await this.servicesProvider.sourcesService.readOrCreateSource(
         creatorUserId,
-        { descriptionApa: "The source description (APA)", ...createSource },
+        createSource,
         created
       );
     return source;

@@ -366,6 +366,12 @@ cd premiser-api
 yarn run start:local:inspect
 ```
 
+#### With VS Code debugger
+
+In the "Run and Debug" activity, run "Attach".
+
+#### With Chrome debugger
+
 Open Chrome to `chrome://inspect`. Click "Open dedicated DevTools for Node". The Chrome debugger should automatically
 connect to the node process. The Chrome debugger should automatically reconnect whenever the API restarts.
 

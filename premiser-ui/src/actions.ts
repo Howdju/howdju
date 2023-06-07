@@ -332,7 +332,7 @@ export const goto = {
   writQuote: createAction("GOTO/WRIT_QUOTE", (writQuote: WritQuote) => ({
     writQuote,
   })),
-  submitMediaExcerpt: createAction("GOTO/SUBMIT_MEDIA_EXCERPT"),
+  newMediaExcerpt: createAction("GOTO/NEW_MEDIA_EXCERPT"),
   mediaExcerpt: createAction(
     "GOTO/MEDIA_EXCERPT",
     (mediaExcerpt: MediaExcerptOut) => ({ mediaExcerpt })
@@ -350,7 +350,7 @@ export const flows = {
       basisSourceId: EntityId
     ) => ({ editorType, editorId, basisSourceType, basisSourceId })
   ),
-  submitMediaExcerptFromAnchorInfo: createAction(
+  beginEditOfMediaExcerptFromAnchorInfo: createAction(
     "FLOWS/SUBMIT_MEDIA_EXCERPT_FROM_ANCHOR_INFO",
     (anchorInfo: AnchorInfo) => anchorInfo
   ),

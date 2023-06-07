@@ -60,7 +60,7 @@ export default function withEntityViewer<
     } as EntityComponentProps<EntityPropName, Entity>;
     return (
       <EntityViewer
-        iconName={iconName}
+        icon={iconName}
         iconTitle={iconTitle}
         iconLink={entity && entityLinkFn(entity)}
         className={className}

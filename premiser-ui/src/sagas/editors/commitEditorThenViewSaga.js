@@ -6,6 +6,7 @@ import {
   JustificationRootTargetTypes,
   JustificationTargetTypes,
   newImpossibleError,
+  toJson,
 } from "howdju-common";
 
 import { EditorTypes } from "../../reducers/editors";
@@ -82,8 +83,12 @@ export function* commitEditorThenView() {
       if (resultAction) {
         if (!resultAction.error) {
           yield put(gotoEditorCommitResultAction(editorType, resultAction));
+        } else {
+          logger.info(`Error commiting editor: ${toJson(resultAction.error)}`);
         }
-      } else if (!timeout) {
+      } else if (timeout) {
+        logger.error("Timed out waiting for commitEdit result action");
+      } else {
         logger.error(
           "Unexpected condition in commitEditorThenView: resultAction and timeout are both falsy"
         );

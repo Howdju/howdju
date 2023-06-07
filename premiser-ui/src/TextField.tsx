@@ -30,7 +30,7 @@ export default function TextField({
   return (
     <ReactMdTextField
       {...rest}
-      maxLength={maxLength || undefined}
+      maxLength={maxLength ?? undefined}
       onChange={onChange}
       value={value || ""}
       onBlur={toReactMdOnBlur(onBlur)}

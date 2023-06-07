@@ -352,7 +352,7 @@ export default function CreatePropositionPage({ mode, location }: Props) {
                       {map(speakers, (speaker, index) => (
                         <div key={index}>
                           <EntityViewer
-                            iconName="person"
+                            icon="person"
                             iconTitle="Person/Organization"
                             menu={
                               <Button
