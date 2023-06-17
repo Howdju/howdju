@@ -185,8 +185,9 @@ export function areValidTargetAndConnectingEntity(
                 prev.entity.basis.entity.atoms,
                 (a) => a.entity.id === id
               );
-            case "SOURCE_EXCERPT":
             case "WRIT_QUOTE":
+            // TODO(20): when we add Appearances, connect them to MediaExcerpts here.
+            case "MEDIA_EXCERPT":
               return false;
           }
       }

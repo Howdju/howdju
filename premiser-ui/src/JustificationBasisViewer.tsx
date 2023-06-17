@@ -3,22 +3,22 @@ import React from "react";
 import {
   ContextTrailItem,
   JustificationBasisTypes,
-  JustificationOut,
+  JustificationView,
   newExhaustedEnumError,
 } from "howdju-common";
 
 import PropositionCompoundViewer from "./PropositionCompoundViewer";
 import WritQuoteEntityViewer from "./WritQuoteEntityViewer";
 import { ComponentId } from "./types";
-import SourceExcerptEntityViewer from "./SourceExcerptEntityViewer";
 import { OnClickWritQuoteUrl } from "./WritQuoteViewer";
 import { combineEditorIds } from "./viewModels";
+import MediaExcerptViewer from "./components/mediaExcerpts/MediaExcerptViewer";
 
 import "./JustificationBasisViewer.scss";
 
 interface Props {
   id: ComponentId;
-  justification: JustificationOut;
+  justification: JustificationView;
   showStatusText: boolean;
   showUrls: boolean;
   contextTrailItems?: ContextTrailItem[];
@@ -50,6 +50,8 @@ function makeBasisViewer({
           contextTrailItems={contextTrailItems}
         />
       );
+    case "MEDIA_EXCERPT":
+      return <MediaExcerptViewer mediaExcerpt={basis.entity} />;
     case JustificationBasisTypes.WRIT_QUOTE:
       return (
         <WritQuoteEntityViewer
@@ -61,8 +63,6 @@ function makeBasisViewer({
           onClickUrl={onClickWritQuoteUrl}
         />
       );
-    case "SOURCE_EXCERPT":
-      return <SourceExcerptEntityViewer />;
     default:
       throw newExhaustedEnumError(basis);
   }

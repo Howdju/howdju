@@ -1,16 +1,22 @@
 import React from "react";
 
+import { MediaExcerptView } from "howdju-common";
+
 import CollapsibleTextViewer from "@/components/collapsableText/CollapsableTextViewer";
 import MediaExcerptCitationViewer from "./MediaExcerptCitationViewer";
-import { MediaExcerptView } from "@/viewModels";
 
 import "./MediaExcerptViewer.scss";
+import { MaterialSymbol } from "react-material-symbols";
 
 interface Props {
   mediaExcerpt: MediaExcerptView;
 }
 
-// TODO(20) click URL: if extension installed, navigate to URL and highlight anchor.
+// TODO(38) group the urlLocators by URL and show a count of the number next to the anchor icon.
+// If the user has the extension installed, then clicking on the anchor icon should open the
+// extension and show the user the anchors for that URL. The user should be able to iterate through
+// each distinct UrlLocator.
+// Otherwise construct a text anchor URL and open it in a new tab.
 
 export default function MediaExcerptViewer({ mediaExcerpt }: Props) {
   return (
@@ -23,7 +29,12 @@ export default function MediaExcerptViewer({ mediaExcerpt }: Props) {
         {mediaExcerpt.locators.urlLocators.map(
           (urlLocator: MediaExcerptView["locators"]["urlLocators"][number]) => (
             <li key={urlLocator.key} className="url">
-              <a href={urlLocator.url.url}>{urlLocator.url.url}</a>
+              <a href={urlLocator.url.url}>
+                {urlLocator.url.url}{" "}
+                {urlLocator.anchors?.length && (
+                  <MaterialSymbol icon="anchor" size={13} />
+                )}
+              </a>
             </li>
           )
         )}

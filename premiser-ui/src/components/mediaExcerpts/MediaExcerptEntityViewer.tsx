@@ -1,10 +1,11 @@
 import React from "react";
 import { MaterialSymbol } from "react-material-symbols";
 
+import { MediaExcerptView } from "howdju-common";
+
 import withEntityViewer from "@/withEntityViewer";
 import paths from "@/paths";
 import MediaExcerptViewer from "./MediaExcerptViewer";
-import { MediaExcerptView } from "@/viewModels";
 
 export default withEntityViewer<"mediaExcerpt", MediaExcerptView>(
   MediaExcerptViewer,

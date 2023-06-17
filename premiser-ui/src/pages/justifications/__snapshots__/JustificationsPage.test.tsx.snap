@@ -31,7 +31,7 @@ exports[`JustificationsPage Can add a compound-based justification 1`] = `
                     class="entity-viewer--header"
                   >
                     <a
-                      href="/p/1"
+                      href="/p/1/thepropositiontext"
                     >
                       <i
                         class="md-icon material-icons"
@@ -56,7 +56,7 @@ exports[`JustificationsPage Can add a compound-based justification 1`] = `
                           class="proposition-text"
                         >
                           <a
-                            href="/p/1"
+                            href="/p/1/thepropositiontext"
                           >
                             the-proposition-text
                              
@@ -439,7 +439,7 @@ exports[`JustificationsPage Shows a justified proposition 1`] = `
                     class="entity-viewer--header"
                   >
                     <a
-                      href="/p/1"
+                      href="/p/1/thepropositiontext"
                     >
                       <i
                         class="md-icon material-icons"
@@ -464,7 +464,7 @@ exports[`JustificationsPage Shows a justified proposition 1`] = `
                           class="proposition-text"
                         >
                           <a
-                            href="/p/1"
+                            href="/p/1/thepropositiontext"
                           >
                             the-proposition-text
                              

@@ -11,7 +11,7 @@ import {
   negateRootPolarity,
   SortDescription,
 } from "howdju-common";
-import { mockLogger } from "howdju-test-common";
+import { mockLogger, expectToBeSameMomentDeep } from "howdju-test-common";
 
 import { endPoolAndDropDb, initDb, makeTestDbConfig } from "@/util/testUtil";
 import {
@@ -27,6 +27,7 @@ import {
   WritQuotesService,
 } from "..";
 import { makeTestProvider } from "@/initializers/TestProvider";
+import TestHelper from "@/initializers/TestHelper";
 
 const dbConfig = makeTestDbConfig();
 
@@ -39,6 +40,7 @@ describe("JustificationsService", () => {
   let authService: AuthService;
   let propositionCompoundsService: PropositionCompoundsService;
   let writQuotesService: WritQuotesService;
+  let testHelper: TestHelper;
   beforeEach(async () => {
     dbName = await initDb(dbConfig);
 
@@ -52,6 +54,7 @@ describe("JustificationsService", () => {
     authService = provider.authService;
     propositionCompoundsService = provider.propositionCompoundsService;
     writQuotesService = provider.writQuotesService;
+    testHelper = provider.testHelper;
   });
   afterEach(async () => {
     await endPoolAndDropDb(pool, dbConfig, dbName);
@@ -535,6 +538,53 @@ describe("JustificationsService", () => {
         },
         id: expect.any(String),
       });
+    });
+
+    test("can read a media excerpt based justification for a proposition root target", async () => {
+      const { user, authToken } = await makeUser();
+
+      const proposition = await testHelper.makeProposition(authToken);
+      const mediaExcerpt = await testHelper.makeMediaExcerpt(authToken);
+      const createJustification: CreateJustification = {
+        target: {
+          type: "PROPOSITION",
+          entity: proposition,
+        },
+        basis: {
+          type: "MEDIA_EXCERPT",
+          entity: mediaExcerpt,
+        },
+        polarity: "POSITIVE",
+      };
+
+      const { justification } = await service.readOrCreate(
+        createJustification,
+        authToken
+      );
+
+      // Act
+      const justifications = await service.readJustificationsForRootTarget(
+        "PROPOSITION",
+        proposition.id,
+        user.id
+      );
+
+      // Assert
+      const expectedJustification = {
+        ...justification,
+        rootTarget: {
+          id: proposition.id,
+        },
+        target: {
+          type: "PROPOSITION",
+          entity: {
+            id: proposition.id,
+          },
+        },
+      };
+      expect(justifications).toEqual(
+        expectToBeSameMomentDeep([expectedJustification])
+      );
     });
   });
   describe("deleteJustification", () => {

@@ -83,17 +83,26 @@ export function daosInitializer(provider: DatabaseProvider) {
     sourceExcerptParaphrasesDao
   );
   const statementsDao = new StatementsDao(logger, database, propositionsDao);
+  const persorgsDao = new PersorgsDao(logger, database);
+  const sourcesDao = new SourcesDao(database);
+  const mediaExcerptsDao = new MediaExcerptsDao(
+    logger,
+    database,
+    urlsDao,
+    sourcesDao,
+    persorgsDao
+  );
   const justificationsDao = new JustificationsDao(
     logger,
     database,
     statementsDao,
     propositionCompoundsDao,
+    mediaExcerptsDao,
     writQuotesDao,
     justificationBasisCompoundsDao,
     writQuoteUrlTargetsDao
   );
   const permissionsDao = new PermissionsDao(logger, database);
-  const persorgsDao = new PersorgsDao(logger, database);
   const perspectivesDao = new PerspectivesDao(logger, database);
   const userExternalIdsDao = new UserExternalIdsDao(database);
   const userGroupsDao = new UserGroupsDao(database);
@@ -104,14 +113,6 @@ export function daosInitializer(provider: DatabaseProvider) {
   const propositionTagVotesDao = new PropositionTagVotesDao(logger, database);
   const propositionTagsDao = new PropositionTagsDao(logger, database);
   const tagsDao = new TagsDao(logger, database);
-  const sourcesDao = new SourcesDao(database);
-  const mediaExcerptsDao = new MediaExcerptsDao(
-    logger,
-    database,
-    urlsDao,
-    sourcesDao,
-    persorgsDao
-  );
 
   logger.debug("daosInit complete");
 

@@ -23,9 +23,8 @@ import {
   JustificationSearchFilters,
   newExhaustedEnumError,
   makeCreateCounterJustificationInput,
-  JustificationOut,
   ContextTrailItem,
-  newUnimplementedError,
+  JustificationView,
 } from "howdju-common";
 import { isVerified, isDisverified } from "howdju-client-common";
 
@@ -49,7 +48,7 @@ import { OnClickJustificationWritQuoteUrl } from "./types";
 import { logger } from "./logger";
 
 interface OwnProps {
-  justification: JustificationOut;
+  justification: JustificationView;
   doShowControls?: boolean;
   doShowBasisJustifications: boolean;
   isCondensed?: boolean;
@@ -124,13 +123,6 @@ function JustificationBranch({
     const justificationBasis = justification.basis;
     const basisEditorType = justificationBasis.type;
     switch (basisEditorType) {
-      case "PROPOSITION_COMPOUND":
-        logger.error("Unable to edit proposition compound justification basis");
-        break;
-      case "SOURCE_EXCERPT":
-        throw newUnimplementedError(
-          "Cannot edit SourceExcerpt justification basis."
-        );
       case "WRIT_QUOTE":
         dispatch(
           editors.beginEdit(
@@ -139,6 +131,10 @@ function JustificationBranch({
             justificationBasis.entity
           )
         );
+        break;
+      case "PROPOSITION_COMPOUND":
+      case "MEDIA_EXCERPT":
+        logger.error(`Unable to edit ${basisEditorType} justification basis`);
         break;
     }
   }
@@ -162,10 +158,9 @@ function JustificationBranch({
       case "PROPOSITION_COMPOUND":
         params.propositionCompoundId = justificationBasis.entity.id;
         break;
-      case "SOURCE_EXCERPT":
-        throw newUnimplementedError(
-          "Cannot filter justification by basis SourceExcerpt."
-        );
+      case "MEDIA_EXCERPT":
+        params.mediaExcerptId = justificationBasis.entity.id;
+        break;
       default:
         throw newExhaustedEnumError(justificationBasis);
     }

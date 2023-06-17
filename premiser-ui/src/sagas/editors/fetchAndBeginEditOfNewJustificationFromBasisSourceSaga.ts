@@ -20,6 +20,7 @@ import {
   PropositionOut,
   WritQuoteOut,
   PropositionCompoundOut,
+  MediaExcerptOut,
 } from "howdju-common";
 
 import { api, editors, flows, str } from "@/actions";
@@ -59,11 +60,16 @@ export function* fetchAndBeginEditOfNewJustificationFromBasisSource() {
       let propositionCompound: CreatePropositionCompoundInput | undefined;
       let writQuote: CreateWritQuoteInput | undefined;
       let sourceExcerpt: CreateSourceExcerptInput | undefined;
+      let mediaExcerpt: MediaExcerptOut | undefined;
 
       switch (alternatives.basisType) {
         case JustificationBasisSourceTypes.PROPOSITION_COMPOUND:
           type = "PROPOSITION_COMPOUND";
           propositionCompound = alternatives.propositionCompound;
+          break;
+        case "MEDIA_EXCERPT":
+          type = "MEDIA_EXCERPT";
+          mediaExcerpt = alternatives.mediaExcerpt;
           break;
         case JustificationBasisSourceTypes.PROPOSITION: {
           type = "PROPOSITION_COMPOUND";
@@ -87,6 +93,7 @@ export function* fetchAndBeginEditOfNewJustificationFromBasisSource() {
           propositionCompound || makeCreatePropositionCompoundInput(),
         writQuote: writQuote || makeCreateWritQuoteInput(),
         sourceExcerpt: sourceExcerpt || makeCreateSourceExcerptInput(),
+        mediaExcerpt: mediaExcerpt || undefined,
       };
 
       const model = makeCreateJustifiedSentenceInput({}, { basis });
@@ -106,6 +113,8 @@ function fetchActionCreatorForBasisSourceType(
     case JustificationBasisSourceTypes.PROPOSITION:
       return api.fetchProposition;
     case JustificationBasisSourceTypes.JUSTIFICATION_BASIS_COMPOUND:
+    case "MEDIA_EXCERPT":
+      return api.fetchMediaExcerpt;
     case JustificationBasisSourceTypes.SOURCE_EXCERPT_PARAPHRASE:
       throw newUnimplementedError(`Unsupported basis type: ${basisType}`);
     default:
@@ -113,24 +122,34 @@ function fetchActionCreatorForBasisSourceType(
   }
 }
 
-type PropositionSourceAlternatives =
+type JustificationBasisAlternatives =
   | {
       basisType: "PROPOSITION_COMPOUND";
       propositionCompound: PropositionCompoundOut;
       writQuote: undefined;
       proposition: undefined;
+      mediaExcerpt: undefined;
     }
   | {
       basisType: "WRIT_QUOTE";
       propositionCompound: undefined;
       writQuote: WritQuoteOut;
       proposition: undefined;
+      mediaExcerpt: undefined;
     }
   | {
       basisType: "PROPOSITION";
       propositionCompound: undefined;
       writQuote: undefined;
       proposition: PropositionOut;
+      mediaExcerpt: undefined;
+    }
+  | {
+      basisType: "MEDIA_EXCERPT";
+      propositionCompound: undefined;
+      writQuote: undefined;
+      proposition: undefined;
+      mediaExcerpt: MediaExcerptOut;
     };
 
 function extractBasisSourceFromFetchResponseAction(
@@ -139,14 +158,16 @@ function extractBasisSourceFromFetchResponseAction(
     propositionCompound: PropositionCompoundOut;
     writQuote: WritQuoteOut;
     proposition: PropositionOut;
+    mediaExcerpt: MediaExcerptOut;
   }>
-): PropositionSourceAlternatives {
-  const { propositionCompound, writQuote, proposition } =
+): JustificationBasisAlternatives {
+  const { propositionCompound, writQuote, proposition, mediaExcerpt } =
     fetchResponseAction.payload;
   const alternatives = {
     propositionCompound: undefined,
     writQuote: undefined,
     proposition: undefined,
+    mediaExcerpt: undefined,
   };
   switch (basisType) {
     case "PROPOSITION_COMPOUND":
@@ -163,6 +184,8 @@ function extractBasisSourceFromFetchResponseAction(
       };
     case "PROPOSITION":
       return { ...alternatives, basisType, proposition };
+    case "MEDIA_EXCERPT":
+      return { ...alternatives, basisType, mediaExcerpt };
     case "JUSTIFICATION_BASIS_COMPOUND":
     case "SOURCE_EXCERPT_PARAPHRASE":
       throw newUnimplementedError(`Unsupported basis type: ${basisType}`);

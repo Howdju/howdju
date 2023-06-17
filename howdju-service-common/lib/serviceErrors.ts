@@ -52,10 +52,10 @@ export class InvalidLoginError extends HowdjuApiError {}
 
 export class EntityNotFoundError extends HowdjuApiError {
   entityType: EntityType;
-  identifier: EntityId | undefined;
-  constructor(entityType: EntityType, identifier?: EntityId) {
+  identifier: EntityId | EntityId[] | undefined;
+  constructor(entityType: EntityType, identifier?: EntityId | EntityId[]) {
     super(
-      `(EntityNotFoundError) entityType: ${entityType}; identifier: ${identifier}`
+      `(EntityNotFoundError) entityType: ${entityType}; identifier(s): ${identifier}`
     );
 
     this.entityType = entityType;

@@ -54,6 +54,18 @@ export default class TestHelper {
     return mediaExcerpt;
   }
 
+  async makeProposition(authToken: AuthToken) {
+    const createProposition = {
+      text: "The proposition text",
+    };
+    const { proposition } =
+      await this.servicesProvider.propositionsService.readOrCreateProposition(
+        authToken,
+        createProposition
+      );
+    return proposition;
+  }
+
   async makeUser() {
     const now = moment();
     const creatorUserId = null;

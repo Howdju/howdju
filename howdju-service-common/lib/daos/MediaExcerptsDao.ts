@@ -52,6 +52,10 @@ export class MediaExcerptsDao {
     this.persorgsDao = persorgsDao;
   }
 
+  async readMediaExcerptsForIds(ids: EntityId[]) {
+    return await Promise.all(ids.map((id) => this.readMediaExcerptForId(id)));
+  }
+
   async readMediaExcerptForId(
     mediaExcerptId: EntityId
   ): Promise<MediaExcerptOut | undefined> {

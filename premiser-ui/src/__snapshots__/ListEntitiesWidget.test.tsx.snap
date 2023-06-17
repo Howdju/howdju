@@ -26,7 +26,7 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows initial recent propos
             class="entity-viewer--header"
           >
             <a
-              href="/p/proposition0"
+              href="/p/proposition0/the-proposition-text-0"
             >
               <i
                 class="md-icon material-icons"
@@ -51,7 +51,7 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows initial recent propos
                   class="proposition-text"
                 >
                   <a
-                    href="/p/proposition0"
+                    href="/p/proposition0/the-proposition-text-0"
                   >
                     The proposition text 0
                      
@@ -111,7 +111,7 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows initial recent propos
             class="entity-viewer--header"
           >
             <a
-              href="/p/proposition1"
+              href="/p/proposition1/the-proposition-text-1"
             >
               <i
                 class="md-icon material-icons"
@@ -136,7 +136,7 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows initial recent propos
                   class="proposition-text"
                 >
                   <a
-                    href="/p/proposition1"
+                    href="/p/proposition1/the-proposition-text-1"
                   >
                     The proposition text 1
                      
@@ -176,7 +176,7 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows initial recent propos
             class="entity-viewer--header"
           >
             <a
-              href="/p/proposition2"
+              href="/p/proposition2/the-proposition-text-2"
             >
               <i
                 class="md-icon material-icons"
@@ -201,7 +201,7 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows initial recent propos
                   class="proposition-text"
                 >
                   <a
-                    href="/p/proposition2"
+                    href="/p/proposition2/the-proposition-text-2"
                   >
                     The proposition text 2
                      
@@ -241,7 +241,7 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows initial recent propos
             class="entity-viewer--header"
           >
             <a
-              href="/p/proposition3"
+              href="/p/proposition3/the-proposition-text-3"
             >
               <i
                 class="md-icon material-icons"
@@ -266,7 +266,7 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows initial recent propos
                   class="proposition-text"
                 >
                   <a
-                    href="/p/proposition3"
+                    href="/p/proposition3/the-proposition-text-3"
                   >
                     The proposition text 3
                      
@@ -306,7 +306,7 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows initial recent propos
             class="entity-viewer--header"
           >
             <a
-              href="/p/proposition4"
+              href="/p/proposition4/the-proposition-text-4"
             >
               <i
                 class="md-icon material-icons"
@@ -331,7 +331,7 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows initial recent propos
                   class="proposition-text"
                 >
                   <a
-                    href="/p/proposition4"
+                    href="/p/proposition4/the-proposition-text-4"
                   >
                     The proposition text 4
                      
@@ -371,7 +371,7 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows initial recent propos
             class="entity-viewer--header"
           >
             <a
-              href="/p/proposition5"
+              href="/p/proposition5/the-proposition-text-5"
             >
               <i
                 class="md-icon material-icons"
@@ -396,7 +396,7 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows initial recent propos
                   class="proposition-text"
                 >
                   <a
-                    href="/p/proposition5"
+                    href="/p/proposition5/the-proposition-text-5"
                   >
                     The proposition text 5
                      
@@ -436,7 +436,7 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows initial recent propos
             class="entity-viewer--header"
           >
             <a
-              href="/p/proposition6"
+              href="/p/proposition6/the-proposition-text-6"
             >
               <i
                 class="md-icon material-icons"
@@ -461,7 +461,7 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows initial recent propos
                   class="proposition-text"
                 >
                   <a
-                    href="/p/proposition6"
+                    href="/p/proposition6/the-proposition-text-6"
                   >
                     The proposition text 6
                      
@@ -527,7 +527,7 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows more propositions whe
             class="entity-viewer--header"
           >
             <a
-              href="/p/proposition0"
+              href="/p/proposition0/the-proposition-text-0"
             >
               <i
                 class="md-icon material-icons"
@@ -552,7 +552,7 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows more propositions whe
                   class="proposition-text"
                 >
                   <a
-                    href="/p/proposition0"
+                    href="/p/proposition0/the-proposition-text-0"
                   >
                     The proposition text 0
                      
@@ -592,7 +592,7 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows more propositions whe
             class="entity-viewer--header"
           >
             <a
-              href="/p/proposition1"
+              href="/p/proposition1/the-proposition-text-1"
             >
               <i
                 class="md-icon material-icons"
@@ -617,7 +617,7 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows more propositions whe
                   class="proposition-text"
                 >
                   <a
-                    href="/p/proposition1"
+                    href="/p/proposition1/the-proposition-text-1"
                   >
                     The proposition text 1
                      
@@ -657,7 +657,7 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows more propositions whe
             class="entity-viewer--header"
           >
             <a
-              href="/p/proposition2"
+              href="/p/proposition2/the-proposition-text-2"
             >
               <i
                 class="md-icon material-icons"
@@ -682,7 +682,7 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows more propositions whe
                   class="proposition-text"
                 >
                   <a
-                    href="/p/proposition2"
+                    href="/p/proposition2/the-proposition-text-2"
                   >
                     The proposition text 2
                      
@@ -722,7 +722,7 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows more propositions whe
             class="entity-viewer--header"
           >
             <a
-              href="/p/proposition3"
+              href="/p/proposition3/the-proposition-text-3"
             >
               <i
                 class="md-icon material-icons"
@@ -747,7 +747,7 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows more propositions whe
                   class="proposition-text"
                 >
                   <a
-                    href="/p/proposition3"
+                    href="/p/proposition3/the-proposition-text-3"
                   >
                     The proposition text 3
                      
@@ -807,7 +807,7 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows more propositions whe
             class="entity-viewer--header"
           >
             <a
-              href="/p/proposition4"
+              href="/p/proposition4/the-proposition-text-4"
             >
               <i
                 class="md-icon material-icons"
@@ -832,7 +832,7 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows more propositions whe
                   class="proposition-text"
                 >
                   <a
-                    href="/p/proposition4"
+                    href="/p/proposition4/the-proposition-text-4"
                   >
                     The proposition text 4
                      
@@ -872,7 +872,7 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows more propositions whe
             class="entity-viewer--header"
           >
             <a
-              href="/p/proposition5"
+              href="/p/proposition5/the-proposition-text-5"
             >
               <i
                 class="md-icon material-icons"
@@ -897,7 +897,7 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows more propositions whe
                   class="proposition-text"
                 >
                   <a
-                    href="/p/proposition5"
+                    href="/p/proposition5/the-proposition-text-5"
                   >
                     The proposition text 5
                      
@@ -937,7 +937,7 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows more propositions whe
             class="entity-viewer--header"
           >
             <a
-              href="/p/proposition6"
+              href="/p/proposition6/the-proposition-text-6"
             >
               <i
                 class="md-icon material-icons"
@@ -962,7 +962,7 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows more propositions whe
                   class="proposition-text"
                 >
                   <a
-                    href="/p/proposition6"
+                    href="/p/proposition6/the-proposition-text-6"
                   >
                     The proposition text 6
                      
@@ -1002,7 +1002,7 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows more propositions whe
             class="entity-viewer--header"
           >
             <a
-              href="/p/proposition7"
+              href="/p/proposition7/the-proposition-text-7"
             >
               <i
                 class="md-icon material-icons"
@@ -1027,7 +1027,7 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows more propositions whe
                   class="proposition-text"
                 >
                   <a
-                    href="/p/proposition7"
+                    href="/p/proposition7/the-proposition-text-7"
                   >
                     The proposition text 7
                      
@@ -1067,7 +1067,7 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows more propositions whe
             class="entity-viewer--header"
           >
             <a
-              href="/p/proposition8"
+              href="/p/proposition8/the-proposition-text-8"
             >
               <i
                 class="md-icon material-icons"
@@ -1092,7 +1092,7 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows more propositions whe
                   class="proposition-text"
                 >
                   <a
-                    href="/p/proposition8"
+                    href="/p/proposition8/the-proposition-text-8"
                   >
                     The proposition text 8
                      
@@ -1132,7 +1132,7 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows more propositions whe
             class="entity-viewer--header"
           >
             <a
-              href="/p/proposition9"
+              href="/p/proposition9/the-proposition-text-9"
             >
               <i
                 class="md-icon material-icons"
@@ -1157,7 +1157,7 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows more propositions whe
                   class="proposition-text"
                 >
                   <a
-                    href="/p/proposition9"
+                    href="/p/proposition9/the-proposition-text-9"
                   >
                     The proposition text 9
                      
@@ -1197,7 +1197,7 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows more propositions whe
             class="entity-viewer--header"
           >
             <a
-              href="/p/proposition10"
+              href="/p/proposition10/the-proposition-text-10"
             >
               <i
                 class="md-icon material-icons"
@@ -1222,7 +1222,7 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows more propositions whe
                   class="proposition-text"
                 >
                   <a
-                    href="/p/proposition10"
+                    href="/p/proposition10/the-proposition-text-10"
                   >
                     The proposition text 10
                      
@@ -1262,7 +1262,7 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows more propositions whe
             class="entity-viewer--header"
           >
             <a
-              href="/p/proposition11"
+              href="/p/proposition11/the-proposition-text-11"
             >
               <i
                 class="md-icon material-icons"
@@ -1287,7 +1287,7 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows more propositions whe
                   class="proposition-text"
                 >
                   <a
-                    href="/p/proposition11"
+                    href="/p/proposition11/the-proposition-text-11"
                   >
                     The proposition text 11
                      
@@ -1327,7 +1327,7 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows more propositions whe
             class="entity-viewer--header"
           >
             <a
-              href="/p/proposition12"
+              href="/p/proposition12/the-proposition-text-12"
             >
               <i
                 class="md-icon material-icons"
@@ -1352,7 +1352,7 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows more propositions whe
                   class="proposition-text"
                 >
                   <a
-                    href="/p/proposition12"
+                    href="/p/proposition12/the-proposition-text-12"
                   >
                     The proposition text 12
                      
@@ -1392,7 +1392,7 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows more propositions whe
             class="entity-viewer--header"
           >
             <a
-              href="/p/proposition13"
+              href="/p/proposition13/the-proposition-text-13"
             >
               <i
                 class="md-icon material-icons"
@@ -1417,7 +1417,7 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows more propositions whe
                   class="proposition-text"
                 >
                   <a
-                    href="/p/proposition13"
+                    href="/p/proposition13/the-proposition-text-13"
                   >
                     The proposition text 13
                      
@@ -1457,7 +1457,7 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows more propositions whe
             class="entity-viewer--header"
           >
             <a
-              href="/p/proposition14"
+              href="/p/proposition14/the-proposition-text-14"
             >
               <i
                 class="md-icon material-icons"
@@ -1482,7 +1482,7 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows more propositions whe
                   class="proposition-text"
                 >
                   <a
-                    href="/p/proposition14"
+                    href="/p/proposition14/the-proposition-text-14"
                   >
                     The proposition text 14
                      

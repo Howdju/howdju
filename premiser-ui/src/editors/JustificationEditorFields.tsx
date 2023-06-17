@@ -8,6 +8,7 @@ import {
   JustificationBasisTypes,
   CreateJustificationInput,
   isRef,
+  isMediaExcerptBased,
 } from "howdju-common";
 
 import t, {
@@ -31,6 +32,7 @@ import { makeErrorPropCreator } from "@/modelErrorMessages";
 import { logger } from "@/logger";
 
 import "./JustificationEditorFields.scss";
+import MediaExcerptViewer from "@/components/mediaExcerpts/MediaExcerptViewer";
 
 const polarityName = "polarity";
 const propositionCompoundName = "basis.propositionCompound";
@@ -103,9 +105,12 @@ export default function JustificationEditorFields(props: Props) {
   const onChange = toOnChangeCallback(onPropertyChange);
 
   const basisPropositionCompound = justification?.basis.propositionCompound;
+  const mediaExcerpt = justification?.basis.mediaExcerpt;
   const basisWritQuote = justification?.basis.writQuote;
   const _isPropositionCompoundBased =
     justification && isPropositionCompoundBased(justification);
+  const _isMediaExcerptBased =
+    justification && isMediaExcerptBased(justification);
   const _isWritQuoteBased = justification && isWritQuoteBased(justification);
   const commonFieldsProps = {
     onBlur,
@@ -145,6 +150,9 @@ export default function JustificationEditorFields(props: Props) {
         editorDispatch={editorDispatch}
       />
     );
+  const mediaExcerptViewer = mediaExcerpt && !isRef(mediaExcerpt) && (
+    <MediaExcerptViewer mediaExcerpt={mediaExcerpt} />
+  );
   const writQuoteEditorFields = basisWritQuote && !isRef(basisWritQuote) && (
     <WritQuoteEditorFields
       {...commonFieldsProps}
@@ -162,6 +170,8 @@ export default function JustificationEditorFields(props: Props) {
   );
   const editorFields = _isPropositionCompoundBased ? (
     propositionCompoundEditorFields
+  ) : _isMediaExcerptBased ? (
+    mediaExcerptViewer
   ) : _isWritQuoteBased ? (
     writQuoteEditorFields
   ) : (
