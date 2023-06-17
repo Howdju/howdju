@@ -119,8 +119,8 @@ export class JustificationsDao {
     filters: JustificationFilters | undefined,
     sorts: SortDescription[] = [],
     count: number = MAX_COUNT,
-    isContinuation: boolean = false,
-    includeUrls: boolean = true
+    isContinuation = false,
+    includeUrls = true
   ): Promise<ReadJustificationDataOut[]> {
     const { sql: limitedJustificationsSql, args: limitedJustificationsArgs } =
       this.makeLimitedJustificationsClause(
@@ -996,70 +996,54 @@ export class JustificationsDao {
 
     let filterName: keyof typeof filters;
     for (filterName in filters) {
-      if (!filters[filterName]) {
+      const filter = filters[filterName];
+      if (!filter) {
         this.logger.warn(
           `skipping filter ${filterName} because it has no value`
         );
         continue;
       }
+
       switch (filterName) {
         case "justificationId": {
           clauses.push(
-            makeJustificationIdJustificationClause(
-              filters[filterName]!,
-              columnNames
-            )
+            makeJustificationIdJustificationClause(filter, columnNames)
           );
           break;
         }
         case "propositionId": {
           pushAll(
             clauses,
-            makePropositionJustificationClause(
-              filters[filterName]!,
-              columnNames
-            )
+            makePropositionJustificationClause(filter, columnNames)
           );
           break;
         }
         case "propositionCompoundId": {
           clauses.push(
-            makePropositionCompoundJustificationClause(
-              filters[filterName]!,
-              columnNames
-            )
+            makePropositionCompoundJustificationClause(filter, columnNames)
           );
           break;
         }
         case "sourceExcerptParaphraseId": {
           clauses.push(
-            makeSourceExcerptParaphraseJustificationClause(
-              filters[filterName]!,
-              columnNames
-            )
+            makeSourceExcerptParaphraseJustificationClause(filter, columnNames)
           );
           break;
         }
         case "writQuoteId": {
           pushAll(
             clauses,
-            makeWritQuoteJustificationClause(filters[filterName]!, columnNames)
+            makeWritQuoteJustificationClause(filter, columnNames)
           );
           break;
         }
         case "writId": {
-          pushAll(
-            clauses,
-            makeWritJustificationClause(filters[filterName]!, columnNames)
-          );
+          pushAll(clauses, makeWritJustificationClause(filter, columnNames));
           break;
         }
         case "url": {
           clauses.push(
-            makeWritQuoteUrlJustificationClause(
-              filters[filterName]!,
-              columnNames
-            )
+            makeWritQuoteUrlJustificationClause(filter, columnNames)
           );
           break;
         }
@@ -1462,7 +1446,7 @@ function makeDefaultJustificationSql(justificationColumns: string[]) {
 }
 
 function makeWritQuoteJustificationClause(
-  writQuoteId: EntityId,
+  writQuoteId: EntityId | EntityId[],
   justificationColumns: string[]
 ) {
   const justificationTableAlias = "j";
@@ -1481,9 +1465,9 @@ function makeWritQuoteJustificationClause(
           where
                 ${justificationTableAlias}.deleted is null
             and wq.deleted is null
-            and wq.writ_quote_id = $2
+            and wq.writ_quote_id in ($2)
       `,
-      args: [JustificationBasisTypes.WRIT_QUOTE, writQuoteId],
+      args: [JustificationBasisTypes.WRIT_QUOTE, toInArgString(writQuoteId)],
     },
     // paraphrased writ-quotes
     {
@@ -1520,7 +1504,7 @@ function makeWritQuoteJustificationClause(
 }
 
 function makeWritJustificationClause(
-  writId: EntityId,
+  writId: EntityId | EntityId[],
   justificationColumns: string[]
 ) {
   const justificationTableAlias = "j";
@@ -1540,9 +1524,9 @@ function makeWritJustificationClause(
                 ${justificationTableAlias}.deleted is null
             and wq.deleted is null
             and w.deleted is null
-            and w.writ_id = $2
+            and w.writ_id in ($2)
       `,
-      args: [JustificationBasisTypes.WRIT_QUOTE, writId],
+      args: [JustificationBasisTypes.WRIT_QUOTE, toInArgString(writId)],
     },
     // paraphrased writ-quote writs
     {
@@ -1581,7 +1565,7 @@ function makeWritJustificationClause(
 }
 
 function makePropositionCompoundJustificationClause(
-  propositionCompoundId: EntityId,
+  propositionCompoundId: EntityId | EntityId[],
   justificationColumns: string[]
 ) {
   const select = toSelect(justificationColumns, "j");
@@ -1596,11 +1580,11 @@ function makePropositionCompoundJustificationClause(
       where
             j.deleted is null
         and sc.deleted is null
-        and sc.proposition_compound_id = $2
+        and sc.proposition_compound_id in ($2)
   `;
   const args = [
     JustificationBasisTypes.PROPOSITION_COMPOUND,
-    propositionCompoundId,
+    toInArgString(propositionCompoundId),
   ];
   return {
     sql,
@@ -1622,9 +1606,7 @@ function makeJustificationIdJustificationClause(
             j.deleted is null
         and j.justification_id in ($1)
   `;
-  const justificationIdsString = isArray(justificationId)
-    ? justificationId.join(",")
-    : justificationId;
+  const justificationIdsString = toInArgString(justificationId);
   const args = [justificationIdsString];
   return {
     sql,
@@ -1632,8 +1614,12 @@ function makeJustificationIdJustificationClause(
   };
 }
 
+function toInArgString(entityIds: EntityId | EntityId[]) {
+  return isArray(entityIds) ? entityIds.join(",") : entityIds;
+}
+
 function makeSourceExcerptParaphraseJustificationClause(
-  sourceExcerptParaphraseId: EntityId,
+  sourceExcerptParaphraseId: EntityId | EntityId[],
   justificationColumns: string[]
 ) {
   const select = toSelect(justificationColumns, "j");
@@ -1652,12 +1638,12 @@ function makeSourceExcerptParaphraseJustificationClause(
       where
             j.deleted is null
         and sep.deleted is null
-        and sep.source_excerpt_paraphrase_id = $3
+        and sep.source_excerpt_paraphrase_id in ($3)
   `;
   const args = [
     JustificationBasisTypes.JUSTIFICATION_BASIS_COMPOUND,
     JustificationBasisCompoundAtomTypes.SOURCE_EXCERPT_PARAPHRASE,
-    sourceExcerptParaphraseId,
+    toInArgString(sourceExcerptParaphraseId),
   ];
   return {
     sql,
@@ -1666,7 +1652,7 @@ function makeSourceExcerptParaphraseJustificationClause(
 }
 
 function makeWritQuoteUrlJustificationClause(
-  url: string,
+  url: string | string[],
   justificationColumns: string[]
 ) {
   const justificationTableAlias = "j";
@@ -1703,14 +1689,14 @@ function makeWritQuoteUrlJustificationClause(
                 ${justificationTableAlias}.deleted is null
             and wq.deleted is null
             and wqu.deleted is null
-            and u.url = $2
+            and u.url in ($2)
       `,
-    args: [JustificationBasisTypes.WRIT_QUOTE, url],
+    args: [JustificationBasisTypes.WRIT_QUOTE, toInArgString(url)],
   };
 }
 
 function makePropositionJustificationClause(
-  propositionId: EntityId,
+  propositionId: EntityId | EntityId[],
   justificationColumns: string[]
 ): SqlClause[] {
   const justificationTableAlias = "j";
@@ -1730,9 +1716,12 @@ function makePropositionJustificationClause(
           where
                 ${justificationTableAlias}.deleted is null
             and sc.deleted is null
-            and sca.proposition_id = $2
+            and sca.proposition_id in ($2)
       `,
-      args: [JustificationBasisTypes.PROPOSITION_COMPOUND, propositionId],
+      args: [
+        JustificationBasisTypes.PROPOSITION_COMPOUND,
+        toInArgString(propositionId),
+      ],
     },
     // compound justification propositions
     {

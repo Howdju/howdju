@@ -18,7 +18,7 @@ differentiate between some contexts: a `.ts` file may require a `node` or `dom` 
 the project and/or path, and a root `.eslintrc.js` has no way to differentiate (without being
 configured with paths from packages, which violates encapsulation.)
 
-https://prettier.io/docs/en/integrating-with-linters.html
+We use eslint-config-prettier to disable rules that conflict with prettier per https://prettier.io/docs/en/integrating-with-linters.html
 
 If a package uses `howdju/node`, then it can use the same ESLint config for both its primary and
 build contents:
@@ -59,3 +59,7 @@ module.exports = {
   },
 };
 ```
+
+## Typescript linting for monorepos
+
+https://typescript-eslint.io/linting/typed-linting/monorepos/

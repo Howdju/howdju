@@ -23,7 +23,7 @@ export class Annotation {
   nodes: HTMLElement[];
   level: number;
 
-  _isMouseOver: boolean = false;
+  _isMouseOver = false;
   onMouseEnterBound;
   onMouseOutBound;
 

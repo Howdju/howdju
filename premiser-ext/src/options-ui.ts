@@ -57,8 +57,14 @@ function isDevelopmentInput() {
 
 function flashStatus(message: string, durationMs = 1500) {
   const status = document.getElementById("status");
-  status!.textContent = message;
+  if (!status) {
+    console.error(
+      "Unable to flash status because element having id=status is missing."
+    );
+    return;
+  }
+  status.textContent = message;
   setTimeout(function () {
-    status!.textContent = "";
+    status.textContent = "";
   }, durationMs);
 }

@@ -200,3 +200,22 @@ export function progressToBeGone(progress: HTMLElement | null) {
     expect(progress).toHaveStyle({ opacity: 0 });
   }
 }
+
+export function getTextContent(element: Element | null) {
+  if (!element) {
+    throw new Error("Element is null");
+  }
+  const textContent = element.textContent;
+  if (textContent === null) {
+    throw new Error("textContent is null");
+  }
+  return textContent;
+}
+
+export function getElementByQuerySelector(selector: string) {
+  const element = document.querySelector(selector);
+  if (!element) {
+    throw new Error(`No element found for selector: ${selector}`);
+  }
+  return element;
+}

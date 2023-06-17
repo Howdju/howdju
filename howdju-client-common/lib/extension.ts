@@ -29,7 +29,7 @@ export class Extension {
   }
 
   async createTab(details: chrome.tabs.CreateProperties) {
-    return await this.extension.tabs.create(details);
+    return this.extension.tabs.create(details);
   }
 
   queryTabs(
@@ -94,8 +94,9 @@ export class Extension {
     await this.extension.tabs.insertCSS(tabId, details);
   }
 
-  hasLastError() {
-    return !!this.extension && this.extension.extension.lastError;
+  hasLastError(): chrome.extension.LastError | undefined {
+    // The type definition contradicts the docstring. The docstring says that it returns undefined if there is no last error.
+    return this.extension.extension.lastError;
   }
 
   getLastErrorMessage() {
@@ -180,7 +181,9 @@ function makeExtension() {
 }
 
 // A singleton function to pass to the proxy so that the proxy supports the `apply` trap.
-// Other than the fact that it is a function, it's value has no effect on the behavior of makeCallableProxy.
+// Other than the fact that it is a function, it's value has no effect on the behavior of
+// makeCallableProxy.
+// eslint-disable-next-line @typescript-eslint/no-empty-function -- value is irrelevant
 function callableProxyTarget() {}
 
 function makeCallableProxy<T>(): T {

@@ -8,5 +8,6 @@ export * from "./extensionMessages";
 export * from "./location";
 export * from "./models";
 export * from "./target";
+export * from "./testUtil";
 export * from "./types";
 export * from "./util";

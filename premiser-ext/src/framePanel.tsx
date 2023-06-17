@@ -44,8 +44,8 @@ interface Props {
   children?: ReactNode;
   containerChildren?: ReactNode;
   initialContainerWidth?: number;
-  onMount: (api: FramePanelApi) => void;
-  onLoad: (val: { frame: HTMLIFrameElement | undefined }) => void;
+  onMount?: (api: FramePanelApi) => void;
+  onLoad?: (val: { frame: HTMLIFrameElement | undefined }) => void;
 }
 
 export class FramePanel extends Component<Props> {
@@ -140,8 +140,6 @@ export class FramePanel extends Component<Props> {
     containerStyle: {},
     iframeClassName: "",
     iframeStyle: {},
-    onMount: () => {},
-    onLoad: () => {},
   };
 
   state = {
@@ -159,13 +157,15 @@ export class FramePanel extends Component<Props> {
     window.howdjuFramePanelShow = this.show;
 
     // Expose an API of methods
-    onMount({
-      toggle: this.toggle,
-      show: this.show,
-      postMessage: (message: IframedAppMessage, origin: string) => {
-        this.postMessage(message, origin);
-      },
-    });
+    if (onMount) {
+      onMount({
+        toggle: this.toggle,
+        show: this.show,
+        postMessage: (message: IframedAppMessage, origin: string) => {
+          this.postMessage(message, origin);
+        },
+      });
+    }
 
     this._visibleRenderTimeout = setTimeout(() => {
       this.setState({

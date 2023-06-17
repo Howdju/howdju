@@ -1,3 +1,5 @@
+import { getElementById } from "howdju-client-common";
+
 import {
   getNodesFor,
   annotateNodes,
@@ -69,7 +71,7 @@ describe("annotateNodes/getNodesFor", () => {
     const wrapper = getElementById("wrapper");
     const textNode = wrapper.childNodes[0];
     const text = "this will be";
-    const textOffset = textNode.textContent!.indexOf(text);
+    const textOffset = getTextOffsetInTextContent(textNode, text);
 
     const nodes = getNodesFor(
       textNode,
@@ -99,11 +101,11 @@ describe("annotateNodes/getNodesFor", () => {
     const wrapper = getElementById("wrapper");
     const textNode = wrapper.childNodes[0];
     const textNodeText = "this will be annotated";
-    const textOffset = textNode.textContent!.indexOf(textNodeText);
+    const textOffset = getTextOffsetInTextContent(textNode, textNodeText);
     const spanTextNode = wrapper.childNodes[1].childNodes[0];
     const spanText = "part of this";
     const spanTextOffset =
-      spanTextNode.textContent!.indexOf(spanText) + spanText.length;
+      getTextOffsetInTextContent(spanTextNode, spanText) + spanText.length;
 
     const nodes = getNodesFor(
       textNode,
@@ -177,10 +179,11 @@ describe("annotateNodes/getNodesFor", () => {
     const annotationNode = wrapper.childNodes[1] as HTMLElement;
     const annotationTextNode = annotationNode.childNodes[0];
     const startText = "annotated";
-    const startOffset = annotationTextNode.nodeValue!.indexOf(startText);
+    const startOffset = getTextOffsetInNodeValue(annotationTextNode, startText);
     const textNode = wrapper.childNodes[2];
     const endText = "part of this";
-    const endOffset = textNode.nodeValue!.indexOf(endText) + endText.length;
+    const endOffset =
+      getTextOffsetInNodeValue(textNode, endText) + endText.length;
     createAnnotation(annotationNode, 1);
 
     const nodes = getNodesFor(
@@ -225,7 +228,7 @@ describe("annotateNodes/getNodesFor", () => {
       beforeTextNode,
       0,
       afterTextNode,
-      afterTextNode.textContent!.length
+      getTextContentLength(afterTextNode)
     );
     annotateNodes(nodes);
 
@@ -271,7 +274,7 @@ describe("annotateNodes/getNodesFor", () => {
       beforeTextNode,
       0,
       afterTextNode,
-      afterTextNode.textContent!.length
+      getTextContentLength(afterTextNode)
     );
     annotateNodes(nodes);
 
@@ -304,7 +307,7 @@ describe("annotateNodes/getNodesFor", () => {
     const annotationNode = wrapper.childNodes[0] as HTMLElement;
     const textNode = annotationNode.childNodes[0];
     const newAnnotationText = "this is 2";
-    const startOffset = textNode.nodeValue!.indexOf(newAnnotationText);
+    const startOffset = getTextOffsetInNodeValue(textNode, newAnnotationText);
     const endOffset = startOffset + newAnnotationText.length;
     createAnnotation(annotationNode, 1);
 
@@ -343,7 +346,7 @@ describe("annotateNodes/getNodesFor", () => {
     const annotation1Node = annotation0Node1.childNodes[0] as HTMLElement;
     const textNode1 = annotation0Node0.childNodes[0];
     const text = "Then a new annotation";
-    const startOffset = textNode1.nodeValue!.indexOf(text);
+    const startOffset = getTextOffsetInNodeValue(textNode1, text);
     const textNode2 = wrapper.childNodes[2].childNodes[0];
     createAnnotation([annotation0Node0, annotation0Node1, annotation0Node2], 1);
     createAnnotation(annotation1Node, 2);
@@ -352,7 +355,7 @@ describe("annotateNodes/getNodesFor", () => {
       textNode1,
       startOffset,
       textNode2,
-      textNode2.nodeValue!.indexOf("this is back")
+      getTextOffsetInNodeValue(textNode2, "this is back")
     );
     annotateNodes(nodes);
 
@@ -465,6 +468,26 @@ function createElementFromHTML(htmlString: string) {
   return div.childElementCount > 1 ? div.childNodes : div.firstChild;
 }
 
-function getElementById(id: string) {
-  return document.getElementById(id)!;
+function getTextOffsetInTextContent(node: Node, text: string) {
+  const textContent = node.textContent;
+  if (textContent === null) {
+    throw new Error("textContent must not be null");
+  }
+  return textContent.indexOf(text);
+}
+
+function getTextOffsetInNodeValue(node: Node, text: string) {
+  const nodeValue = node.nodeValue;
+  if (nodeValue === null) {
+    throw new Error("nodeValue must not be null");
+  }
+  return nodeValue.indexOf(text);
+}
+
+function getTextContentLength(node: Node) {
+  const textContent = node.textContent;
+  if (textContent === null) {
+    throw new Error("textContent must not be null");
+  }
+  return textContent.length;
 }

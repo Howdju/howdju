@@ -75,6 +75,7 @@ export type EditorFieldsDispatch = (
  *
  * TODO(341) remove this.
  */
+// eslint-disable-next-line @typescript-eslint/no-empty-function -- TODO(341) remove this.
 export function noopEditorDispatch(_actionCreator: EditorFieldsActionCreator) {}
 
 /**

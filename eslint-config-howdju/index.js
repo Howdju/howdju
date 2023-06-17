@@ -82,6 +82,7 @@ module.exports = {
       parser: "@typescript-eslint/parser",
       extends: [
         "eslint:recommended",
+        "plugin:@typescript-eslint/recommended",
         "plugin:@typescript-eslint/recommended-requiring-type-checking",
         "prettier",
       ],
@@ -113,6 +114,14 @@ module.exports = {
         "@typescript-eslint/no-unsafe-member-access": "off",
         "@typescript-eslint/no-unsafe-call": "off",
         "@typescript-eslint/restrict-template-expressions": "off",
+        "@typescript-eslint/switch-exhaustiveness-check": "error",
+        "@typescript-eslint/no-empty-interface": [
+          "error",
+          { allowSingleExtends: true },
+        ],
+        // I don't see any problem with triple-slash references. Also I don't understand how to
+        // replace them with imports that only import types.
+        "@typescript-eslint/triple-slash-reference": "off",
       },
     },
   ],

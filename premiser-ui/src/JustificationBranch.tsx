@@ -139,6 +139,7 @@ function JustificationBranch({
             justificationBasis.entity
           )
         );
+        break;
     }
   }
 

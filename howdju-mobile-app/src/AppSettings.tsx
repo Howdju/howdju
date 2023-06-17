@@ -1,5 +1,7 @@
 import React, { PropsWithChildren } from "react";
 
+import { EmptyObject } from "howdju-common";
+
 import {
   HowdjuSiteAuthority,
   HOWDJU_PROD_AUTHORITY,
@@ -13,7 +15,9 @@ import {
   useLocalInstanceAddress,
 } from "./hooks";
 
-export default function AppSettings({ children }: PropsWithChildren<{}>) {
+export default function AppSettings({
+  children,
+}: PropsWithChildren<EmptyObject>) {
   const [howdjuInstance, setHowdjuInstance] = useHowdjuInstance();
   const [localInstanceAddress, setLocalInstanceAddress] =
     useLocalInstanceAddress();

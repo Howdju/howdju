@@ -29,6 +29,8 @@ const inferSafariShareInfo = (items: ShareDataItem[]): SafariShareInfo => {
           const valueObject = JSON.parse(item.value);
           return valueObject as SafariShareInfo;
         }
+        default:
+        // fallthrough
       }
 
       // Otherwise try to infer the share info from other items.

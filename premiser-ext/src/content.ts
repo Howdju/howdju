@@ -68,7 +68,7 @@ function onWindowMessage(event: MessageEvent) {
 function onRuntimeMessage(
   message: ExtensionMessage,
   sender: chrome.runtime.MessageSender,
-  sendResponse: (response?: any) => void
+  sendResponse?: (response?: any) => void
 ) {
   try {
     routeRuntimeMessage(message, sender);
