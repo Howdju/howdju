@@ -60,18 +60,14 @@ function createContextMenus() {
 function onRuntimeMessage(
   message: ExtensionMessage,
   sender: chrome.runtime.MessageSender,
-  sendResponse: (response?: any) => void
+  sendResponse?: (response?: any) => void
 ): void {
   const { type } = message;
-  switch (type) {
-    case "RUN_COMMANDS_WHEN_TAB_RELOADED":
-      if (ensureTabId(sender.tab)) {
-        tabReloadCommands = {
-          tabId: sender.tab.id,
-          commands: message.payload.commands,
-        };
-      }
-      break;
+  if (type === "RUN_COMMANDS_WHEN_TAB_RELOADED" && ensureTabId(sender.tab)) {
+    tabReloadCommands = {
+      tabId: sender.tab.id,
+      commands: message.payload.commands,
+    };
   }
 
   if (sendResponse) sendResponse();
@@ -82,8 +78,7 @@ function onDOMContentLoaded(
 ) {
   const { tabId } = details;
   if (tabReloadCommands && tabId === tabReloadCommands.tabId) {
-    // sendShowSidebarMessage(tabId)
-    void sendRunCommandsMessage(tabId, tabReloadCommands.commands, () => {
+    sendRunCommandsMessage(tabId, tabReloadCommands.commands, () => {
       tabReloadCommands = undefined;
     });
   }
@@ -100,7 +95,7 @@ function ensureTabId(tab?: chrome.tabs.Tab): tab is TabWithId {
 
 function onBrowserActionClicked(tab: chrome.tabs.Tab) {
   if (ensureTabId(tab)) {
-    void sendToggleSidebarMessage(tab.id);
+    sendToggleSidebarMessage(tab.id);
   }
 }
 
@@ -116,12 +111,14 @@ function sendRunCommandsMessage(
   sendMessage(tabId, runCommands(commands), responseCallback);
 }
 
-// chrome.contextMenus.onClicked.addListener(onContextMenuClicked)
+// responseCallback is required but sometimes we don't want to do anything.
+// eslint-disable-next-line @typescript-eslint/no-empty-function
+const noopResponseCallback = () => {};
 
 function sendMessage(
   tabId: number,
   message: ExtensionMessage,
-  responseCallback: (response: any) => void = () => {}
+  responseCallback: (response: any) => void = noopResponseCallback
 ) {
   // TODO(401) can we avoid loading the script and css on every message?
   ext.executeScript(

@@ -1,4 +1,5 @@
 import { getCommonAncestor, isCoextensive, nodePositionCompare } from "./dom";
+import { getElementById } from "./testUtil";
 
 describe("getCommonAncestor", () => {
   test("gets an ancestor", () => {
@@ -55,7 +56,3 @@ describe("isCoextensive", () => {
     expect(isCoextensive(outer, inner)).toBe(false);
   });
 });
-
-function getElementById(id: string) {
-  return document.getElementById(id)!;
-}

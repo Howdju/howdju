@@ -10,6 +10,7 @@ import {
   MediaExcerpt,
   MediaExcerptOut,
   MediaExcerptRef,
+  newImpossibleError,
   PartialPersist,
   PersorgOut,
   utcNow,
@@ -49,7 +50,7 @@ export class MediaExcerptsService {
   async readMediaExcerptForId(
     id: EntityId
   ): Promise<MediaExcerptOut | undefined> {
-    return await this.mediaExcerptsDao.readMediaExcerptForId(id);
+    return this.mediaExcerptsDao.readMediaExcerptForId(id);
   }
 
   async readOrCreateMediaExcerpt(
@@ -69,13 +70,11 @@ export class MediaExcerptsService {
       { persorgs: speakers, isExtant: isExtantPersorgs },
       urls,
     ] = await Promise.all([
-      createCitations
-        ? this.sourcesService.readOrCreateSources(
-            userId,
-            createCitations.map((c) => c.source),
-            now
-          )
-        : { sources: [], isExtant: true },
+      this.sourcesService.readOrCreateSources(
+        userId,
+        createCitations.map((c) => c.source),
+        now
+      ),
       createMediaExcerpt.speakers
         ? this.persorgsService.readOrCreatePersorgs(
             userId,
@@ -101,10 +100,22 @@ export class MediaExcerptsService {
       url: url,
     }));
     const createCitationsWithSource = zip(createCitations, sources).map(
-      ([citation, source]) => ({
-        ...citation,
-        source: source!,
-      })
+      ([createCitation, source]) => {
+        if (!createCitation) {
+          throw newImpossibleError(
+            `createCitation was undefined while zipping with sources even though they should have the same length.`
+          );
+        }
+        if (!source) {
+          throw newImpossibleError(
+            `source was undefined while zipping with createCitations even though they should have the same length.`
+          );
+        }
+        return {
+          ...createCitation,
+          source,
+        };
+      }
     );
     const [
       { urlLocators, isExtant: isExtantUrlLocators },

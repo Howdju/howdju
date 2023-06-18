@@ -33,7 +33,9 @@ export default function MediaExcerptPage(props: Props) {
     dispatch(api.fetchMediaExcerpt(mediaExcerptId));
   }, [dispatch, mediaExcerptId]);
 
+  // eslint-disable-next-line @typescript-eslint/no-empty-function -- TODO(38) remove this.
   function useInJustification() {}
+  // eslint-disable-next-line @typescript-eslint/no-empty-function -- TODO(20) remove this.
   function useInAppearance() {}
 
   // TODO(17): pass props directly after upgrading react-md to a version with correct types

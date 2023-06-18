@@ -27,3 +27,6 @@ export type RecursiveObject<T, P extends string = "_value", U = string> = {
   : NonNullable<T> extends object
   ? { [K in keyof NonNullable<T>]?: RecursiveObject<NonNullable<T>[K], P, U> }
   : unknown);
+
+/** Use this type instead of `{}` to address @typescript-eslint/ban-types. */
+export type EmptyObject = Record<never, any>;

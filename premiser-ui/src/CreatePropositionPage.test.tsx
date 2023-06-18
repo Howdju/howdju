@@ -25,6 +25,8 @@ import { expectToBeSameMomentDeep } from "howdju-test-common";
 
 import {
   ariaVisibleOne,
+  getElementByQuerySelector,
+  getTextContent,
   makeRouteComponentProps,
   progressToBeGone,
   renderWithProviders,
@@ -276,13 +278,14 @@ describe("CreatePropositionPage", () => {
       );
 
       await user.type(
-        document.querySelector('textarea[name="proposition.text"]')!,
+        getElementByQuerySelector('textarea[name="proposition.text"]'),
         proposition.text
       );
-      const writQuoteRadio = Array.from(
-        document.querySelectorAll('input[name="justification.basis.type"]')
-      ).find((el) => /Quote/i.test(el.parentElement?.textContent!));
-      await user.click(writQuoteRadio!);
+      const writQuoteRadio = getElementMatching(
+        'input[name="justification.basis.type"]',
+        (el) => /Quote/i.test(getTextContent(el.parentElement))
+      );
+      await user.click(writQuoteRadio);
       await user.type(
         document.querySelectorAll(".writ-quote-editor-fields textarea")[0],
         quoteText
@@ -490,3 +493,13 @@ describe("CreatePropositionPage", () => {
     });
   });
 });
+
+function getElementMatching(selector: string, test: (el: Element) => boolean) {
+  const el = Array.from(document.querySelectorAll(selector)).find(test);
+  if (!el) {
+    throw new Error(
+      `No element matching ${selector} and passing ${test} found.`
+    );
+  }
+  return el;
+}

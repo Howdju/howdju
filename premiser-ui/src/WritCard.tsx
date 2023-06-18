@@ -2,8 +2,9 @@ import React, { Component } from "react";
 import { Card, CardText } from "react-md";
 import cn from "classnames";
 
+import { EmptyObject, WritOut } from "howdju-common";
+
 import WritEntityViewer from "./WritEntityViewer";
-import { WritOut } from "howdju-common";
 import { ComponentId } from "./types";
 
 interface WritCardProps {
@@ -13,7 +14,7 @@ interface WritCardProps {
 }
 
 // TODO(221) convert to functional component
-export default class WritCard extends Component<WritCardProps, {}> {
+export default class WritCard extends Component<WritCardProps, EmptyObject> {
   render() {
     const { id, writ, className, ...rest } = this.props;
     return (
