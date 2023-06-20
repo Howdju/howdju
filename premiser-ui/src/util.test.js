@@ -20,9 +20,18 @@ test("isWikipediaUrl", () => {
     true
   );
   expect(isWikipediaUrl("https://google.com/wiki/Epistemology")).toBe(false);
+  expect(isWikipediaUrl("https://fakewikipedia.org/wiki/Epistemology")).toBe(
+    false
+  );
+  expect(isWikipediaUrl("https://fake-wikipedia.org/wiki/Epistemology")).toBe(
+    false
+  );
 });
 
 test("isTwitterUrl", () => {
   expect(isTwitterUrl("https://twitter.com/elonmusk")).toBe(true);
+  expect(isTwitterUrl("https://www.twitter.com/elonmusk")).toBe(true);
   expect(isTwitterUrl("https://google.com/elonmusk")).toBe(false);
+  expect(isTwitterUrl("https://faketwitter.com/elonmusk")).toBe(false);
+  expect(isTwitterUrl("https://fake-twitter.com/elonmusk")).toBe(false);
 });
