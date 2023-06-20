@@ -105,12 +105,12 @@ export function hasValidDomain(url: string) {
 
 export function isWikipediaUrl(url: string) {
   const domain = extractDomain(url);
-  return domain.endsWith("wikipedia.org");
+  return !!domain && domain.endsWith("wikipedia.org");
 }
 
 export function isTwitterUrl(url: string) {
   const domain = extractDomain(url);
-  return domain.endsWith("twitter.com");
+  return !!domain && domain.endsWith("twitter.com");
 }
 
 /** Inserts a <Divider> between the groups of components. */

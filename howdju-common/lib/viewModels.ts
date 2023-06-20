@@ -51,16 +51,18 @@ export type JustificationView = Omit<
         };
   };
 
+export type UrlLocatorView =
+  MediaExcerptOut["locators"]["urlLocators"][number] & {
+    /** A key uniquely identifying a url locator relative to others. */
+    key: string;
+  };
 export interface MediaExcerptView extends MediaExcerptOut {
   citations: (MediaExcerptOut["citations"][number] & {
     /** A key uniquely identifying a citation relative to others. */
     key: string;
   })[];
   locators: MediaExcerptOut["locators"] & {
-    urlLocators: (MediaExcerptOut["locators"]["urlLocators"][number] & {
-      /** A key uniquely identifying a url locator relative to others. */
-      key: string;
-    })[];
+    urlLocators: UrlLocatorView[];
   };
   speakers: (MediaExcerptOut["speakers"][number] & {
     /** A key uniquely identifying a persorg relative to others. */

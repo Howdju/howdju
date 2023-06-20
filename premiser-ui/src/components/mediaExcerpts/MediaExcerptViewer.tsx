@@ -1,22 +1,17 @@
 import React from "react";
 
-import { MediaExcerptView } from "howdju-common";
+import { extractDomain, MediaExcerptView, UrlLocatorView } from "howdju-common";
 
 import CollapsibleTextViewer from "@/components/collapsableText/CollapsableTextViewer";
 import MediaExcerptCitationViewer from "./MediaExcerptCitationViewer";
 
 import "./MediaExcerptViewer.scss";
 import { MaterialSymbol } from "react-material-symbols";
+import { toUrlWithFragment } from "howdju-client-common";
 
 interface Props {
   mediaExcerpt: MediaExcerptView;
 }
-
-// TODO(38) group the urlLocators by URL and show a count of the number next to the anchor icon.
-// If the user has the extension installed, then clicking on the anchor icon should open the
-// extension and show the user the anchors for that URL. The user should be able to iterate through
-// each distinct UrlLocator.
-// Otherwise construct a text anchor URL and open it in a new tab.
 
 export default function MediaExcerptViewer({ mediaExcerpt }: Props) {
   return (
@@ -26,18 +21,11 @@ export default function MediaExcerptViewer({ mediaExcerpt }: Props) {
         text={mediaExcerpt.localRep.quotation}
       />
       <ul className="url-locators">
-        {mediaExcerpt.locators.urlLocators.map(
-          (urlLocator: MediaExcerptView["locators"]["urlLocators"][number]) => (
-            <li key={urlLocator.key} className="url">
-              <a href={urlLocator.url.url}>
-                {urlLocator.url.url}{" "}
-                {urlLocator.anchors?.length && (
-                  <MaterialSymbol icon="anchor" size={13} />
-                )}
-              </a>
-            </li>
-          )
-        )}
+        {mediaExcerpt.locators.urlLocators.map((urlLocator: UrlLocatorView) => (
+          <li key={urlLocator.key} className="url">
+            {toAnchorElement(urlLocator)}
+          </li>
+        ))}
       </ul>
       <ul className="citations">
         {mediaExcerpt.citations.map((citation) => (
@@ -54,5 +42,24 @@ export default function MediaExcerptViewer({ mediaExcerpt }: Props) {
         ))}
       </ul>
     </div>
+  );
+}
+
+function toAnchorElement(urlLocator: UrlLocatorView) {
+  const url = toUrlWithFragment(urlLocator);
+  const domain = extractDomain(urlLocator.url.url);
+  const urlLocatorCount = urlLocator.anchors?.length ?? 0;
+  return (
+    <a href={url}>
+      {domain}{" "}
+      {urlLocator.anchors?.length && (
+        <MaterialSymbol
+          icon="my_location"
+          size={13}
+          title="Has a fragment taking you directly to the excerpt"
+        />
+      )}
+      {urlLocatorCount > 1 && { urlLocatorCount }}
+    </a>
   );
 }

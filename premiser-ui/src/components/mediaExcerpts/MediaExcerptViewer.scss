@@ -34,7 +34,8 @@ ul.url-locators {
     @include material-icon-list-item("link");
 
     > a {
-      .md-icon {
+      .md-icon,
+      .material-symbols {
         vertical-align: middle;
         font-size: 12px;
         margin-left: 2px;
