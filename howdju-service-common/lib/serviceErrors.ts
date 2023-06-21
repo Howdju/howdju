@@ -3,6 +3,7 @@ import {
   EntityId,
   EntityType,
   ModelErrors,
+  toJson,
 } from "howdju-common";
 import { Duration } from "moment";
 
@@ -55,7 +56,9 @@ export class EntityNotFoundError extends HowdjuApiError {
   identifier: EntityId | EntityId[] | undefined;
   constructor(entityType: EntityType, identifier?: EntityId | EntityId[]) {
     super(
-      `(EntityNotFoundError) entityType: ${entityType}; identifier(s): ${identifier}`
+      `(EntityNotFoundError) entityType: ${entityType}; identifier(s): ${toJson(
+        identifier
+      )}`
     );
 
     this.entityType = entityType;

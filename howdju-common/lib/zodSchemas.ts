@@ -721,7 +721,7 @@ export const JustificationBasisType = z.enum([
   "PROPOSITION_COMPOUND",
   "MEDIA_EXCERPT",
   "SOURCE_EXCERPT",
-  // deprecated
+  /** @deprecated */
   "WRIT_QUOTE",
   /**
    * A mixture of Propositions and WritQuotes.
@@ -1014,9 +1014,9 @@ export type CreateJustificationInput = Entity & {
     propositionCompound: EntityOrRef<CreatePropositionCompoundInput>;
     mediaExcerpt?: MediaExcerptRef;
     sourceExcerpt: EntityOrRef<CreateSourceExcerptInput>;
-    // deprecated
+    /** @deprecated */
     writQuote: EntityOrRef<CreateWritQuoteInput>;
-    // Don't validate JBCs since they are deprecated.
+    /** @deprecated Don't validate JBCs since they are deprecated. */
     justificationBasisCompound?: Entity;
   };
   rootPolarity: JustificationRootPolarity;
