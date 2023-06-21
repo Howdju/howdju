@@ -33,7 +33,7 @@ const urlRefinement =
 
     if (domainPattern) {
       const domain = extractDomain(val);
-      if (!domainPattern.test(domain)) {
+      if (!domain || !domainPattern.test(domain)) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           message: `URL domain must match: ${domainPattern}.`,

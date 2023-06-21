@@ -19,10 +19,13 @@ class MainSearcher {
       }
     }
 
-    return null;
+    return undefined;
   };
   isSearch = (location: Location<LocationState>) => {
     const searchText = this.mainSearchText(location);
+    if (!searchText) {
+      return false;
+    }
     const searchPath = paths.mainSearch(searchText);
     const actualPath = createPath(location);
     return searchText && searchPath === actualPath;

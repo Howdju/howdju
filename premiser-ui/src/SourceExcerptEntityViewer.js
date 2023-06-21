@@ -6,6 +6,7 @@ import { sourceExcerptDescription, sourceExcerptIconName } from "./viewModels";
 import EntityViewer from "./EntityViewer";
 import SourceExcerptViewer from "./SourceExcerptViewer";
 
+/** @deprecated TODO(38) remove in favor of MediaExcerpts */
 export default class SourceExcerptEntityViewer extends Component {
   render() {
     const {

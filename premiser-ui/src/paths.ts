@@ -1,15 +1,30 @@
-import { createPath } from "history";
+import { createPath, LocationDescriptorObject } from "history";
 import isEmpty from "lodash/isEmpty";
 import queryString from "query-string";
 
 import {
+  ContextTrailItem,
+  CreatePersorgInput,
+  EntityId,
+  JustificationBasisSourceType,
+  JustificationOut,
   JustificationRootTargetTypes,
+  JustificationSearchFilters,
+  MediaExcerptRef,
   newExhaustedEnumError,
+  PersorgOut,
   serializeContextTrail,
+  SourceOut,
+  StatementRef,
+  TagOut,
   toSlug,
+  UpdatePersorgInput,
+  WritQuoteOut,
+  WritRef,
 } from "howdju-common";
 
 import { logger } from "./logger";
+import { PropositionRefView } from "./viewModels";
 
 export const mainSearchPathName = "/";
 
@@ -29,56 +44,65 @@ class Paths {
   requestPasswordReset = () => "/request-password-reset";
 
   proposition = (
-    proposition,
-    contextTrailItems,
+    proposition: PropositionRefView,
+    contextTrailItems?: ContextTrailItem[],
     noSlug = false,
-    focusJustificationId = null
+    focusJustificationId: EntityId | null = null
   ) => {
     const { id, slug } = proposition;
     if (!id) {
       return "#";
     }
     const slugPath = !noSlug && slug ? "/" + slug : "";
-    const query = !isEmpty(contextTrailItems)
-      ? "?context-trail=" + serializeContextTrail(contextTrailItems)
-      : "";
+    const query =
+      contextTrailItems && !isEmpty(contextTrailItems)
+        ? "?context-trail=" + serializeContextTrail(contextTrailItems)
+        : "";
     const anchor = focusJustificationId
       ? `#justification-${focusJustificationId}`
       : "";
     return `/p/${id}${slugPath}${anchor}${query}`;
   };
-  statement = (statement, focusJustificationId = null) => {
+  statement = (
+    statement: StatementRef,
+    focusJustificationId: EntityId | null = null
+  ) => {
     const anchor = focusJustificationId
       ? `#justification-${focusJustificationId}`
       : "";
     return `/s/${statement.id}${anchor}`;
   };
-  justification = (j) => {
+  justification = (j: JustificationOut) => {
     switch (j.rootTargetType) {
       case JustificationRootTargetTypes.PROPOSITION:
-        return this.proposition(j.rootTarget, null, false, j.id);
+        return this.proposition(j.rootTarget, [], false, j.id);
       case JustificationRootTargetTypes.STATEMENT:
         return this.statement(j.rootTarget, j.id);
       default:
-        throw newExhaustedEnumError(j.rootTargetType);
+        throw newExhaustedEnumError(j);
     }
   };
 
-  persorg = (persorg) => `/persorgs/${persorg.id}/${toSlug(persorg.name)}`;
+  persorg = (persorg: CreatePersorgInput | UpdatePersorgInput | PersorgOut) =>
+    `/persorgs/${persorg.id}/${toSlug(persorg.name)}`;
 
-  writQuote = (writQuote) =>
+  writQuote = (writQuote: WritQuoteOut) =>
     `/writ-quotes/${writQuote.id}/${toSlug(writQuote.writ.title)}`;
 
-  writUsages = (writ) => this.searchJustifications({ writId: writ.id });
-  writQuoteUsages = (writQuote) => {
+  writUsages = (writ: WritRef) =>
+    this.searchJustifications({ writId: writ.id });
+  writQuoteUsages = (writQuote: WritQuoteOut) => {
     if (!writQuote.id) {
       return "#";
     }
     return this.searchJustifications({ writQuoteId: writQuote.id });
   };
 
-  createJustification = (basisSourceType, basisSourceId) => {
-    const location = {
+  createJustification = (
+    basisSourceType: JustificationBasisSourceType,
+    basisSourceId: EntityId
+  ) => {
+    const location: LocationDescriptorObject = {
       pathname: createJustificationPath,
     };
     if (basisSourceType || basisSourceId) {
@@ -92,23 +116,25 @@ class Paths {
     }
     return createPath(location);
   };
-  searchJustifications = (params) =>
+  searchJustifications = (params: JustificationSearchFilters) =>
     createPath({
       pathname: "/search-justifications",
       search: "?" + queryString.stringify(params),
     });
-  mainSearch = (mainSearchText) =>
+  mainSearch = (mainSearchText: string) =>
     createPath({
       pathname: mainSearchPathName,
       search: "?" + window.encodeURIComponent(mainSearchText),
     });
-  propositionUsages = (propositionId) =>
+  propositionUsages = (propositionId: EntityId) =>
     `/proposition-usages?propositionId=${propositionId}`;
-  statementUsages = (statementId) =>
+  statementUsages = (statementId: EntityId) =>
     `/statement-usages?propositionId=${statementId}`;
 
-  mediaExcerpt = (mediaExcerpt) => `/media-excerpts/${mediaExcerpt.id}`;
-  source = (source) => `/sources/${source.id}/${toSlug(source.descriptionApa)}`;
+  mediaExcerpt = (mediaExcerpt: MediaExcerptRef) =>
+    `/media-excerpts/${mediaExcerpt.id}`;
+  source = (source: SourceOut) =>
+    `/sources/${source.id}/${toSlug(source.descriptionApa)}`;
   submitMediaExcerpt = () => "/media-excerpts/new";
 
   tools = () => "/tools";
@@ -124,7 +150,7 @@ class Paths {
   cookieNotice = () => "/policies/cookie-notice";
   faq = () => "/faq";
 
-  tag = (tag) => `/tags/${tag.id}/${toSlug(tag.name)}`;
+  tag = (tag: TagOut) => `/tags/${tag.id}/${toSlug(tag.name)}`;
 }
 
 export default new Paths();

@@ -7,7 +7,7 @@ import map from "lodash/map";
 import mapValues from "lodash/mapValues";
 import snakeCase from "lodash/snakeCase";
 import { Moment } from "moment";
-import { fromPairs, isArray, sortBy, toString } from "lodash";
+import { difference, fromPairs, isArray, sortBy, toString } from "lodash";
 
 import {
   assert,
@@ -55,6 +55,7 @@ import {
 } from "./daosUtil";
 import { DatabaseSortDirection } from "./daoModels";
 import { StatementsDao } from "./StatementsDao";
+import { MediaExcerptsDao } from "./MediaExcerptsDao";
 import { PropositionCompoundsDao } from "./PropositionCompoundsDao";
 import { WritQuotesDao } from "./WritQuotesDao";
 import { JustificationBasisCompoundsDao } from "./JustificationBasisCompoundsDao";
@@ -84,6 +85,7 @@ export class JustificationsDao {
   database: Database;
   statementsDao: StatementsDao;
   propositionCompoundsDao: PropositionCompoundsDao;
+  mediaExcerptsDao: MediaExcerptsDao;
   writQuotesDao: WritQuotesDao;
   justificationBasisCompoundsDao: JustificationBasisCompoundsDao;
   writQuoteUrlTargetsDao: WritQuoteUrlTargetsDao;
@@ -93,6 +95,7 @@ export class JustificationsDao {
     database: Database,
     statementsDao: StatementsDao,
     propositionCompoundsDao: PropositionCompoundsDao,
+    mediaExcerptsDao: MediaExcerptsDao,
     writQuotesDao: WritQuotesDao,
     justificationBasisCompoundsDao: JustificationBasisCompoundsDao,
     writQuoteUrlTargetsDao: WritQuoteUrlTargetsDao
@@ -102,6 +105,7 @@ export class JustificationsDao {
       database,
       statementsDao,
       propositionCompoundsDao,
+      mediaExcerptsDao,
       writQuotesDao,
       justificationBasisCompoundsDao,
       writQuoteUrlTargetsDao,
@@ -110,6 +114,7 @@ export class JustificationsDao {
     this.database = database;
     this.statementsDao = statementsDao;
     this.propositionCompoundsDao = propositionCompoundsDao;
+    this.mediaExcerptsDao = mediaExcerptsDao;
     this.writQuotesDao = writQuotesDao;
     this.justificationBasisCompoundsDao = justificationBasisCompoundsDao;
     this.writQuoteUrlTargetsDao = writQuoteUrlTargetsDao;
@@ -511,6 +516,7 @@ export class JustificationsDao {
       // TODO(228) add statement targets similarly to how we handle justifications and propositions above
       // (add targetStatementsById)
       await this.addStatements(justifications);
+      await this.addMediaExcerpts(justifications);
       if (includeUrls) {
         await this.addUrls(justifications);
         await this.addUrlTargets(justifications);
@@ -601,6 +607,7 @@ export class JustificationsDao {
       )
     );
     await this.addStatements(justifications);
+    await this.addMediaExcerpts(justifications);
     return justifications;
   }
 
@@ -877,6 +884,35 @@ export class JustificationsDao {
     }
   }
 
+  private async addMediaExcerpts(justifications: BasedJustificationDataOut[]) {
+    const mediaExcerptIds = new Set<EntityId>();
+    const justificationsByBasisMediaExcerptId = new Map();
+    for (const justification of justifications) {
+      if (justification.basis.type !== "MEDIA_EXCERPT") {
+        continue;
+      }
+      const mediaExcerptId = justification.basis.entity.id;
+      justificationsByBasisMediaExcerptId.set(mediaExcerptId, justification);
+      mediaExcerptIds.add(mediaExcerptId);
+    }
+    const mediaExcerpts = await this.mediaExcerptsDao.readMediaExcerptsForIds(
+      Array.from(mediaExcerptIds)
+    );
+    if (!mediaExcerpts.every(isDefined)) {
+      const missingMediaExcerptIds = difference(
+        [...mediaExcerptIds],
+        mediaExcerpts.filter(isDefined).map((me) => me.id)
+      );
+      throw new EntityNotFoundError("MEDIA_EXCERPT", missingMediaExcerptIds);
+    }
+    for (const mediaExcerpt of mediaExcerpts) {
+      const justification = justificationsByBasisMediaExcerptId.get(
+        mediaExcerpt.id
+      );
+      justification.basis.entity = mediaExcerpt;
+    }
+  }
+
   private async addUrls(justifications: BasedJustificationDataOut[]) {
     for (const justification of justifications) {
       if (
@@ -1021,6 +1057,12 @@ export class JustificationsDao {
         case "propositionCompoundId": {
           clauses.push(
             makePropositionCompoundJustificationClause(filter, columnNames)
+          );
+          break;
+        }
+        case "mediaExcerptId": {
+          clauses.push(
+            makeMediaExcerptJustificationClause(filter, columnNames)
           );
           break;
         }
@@ -1586,6 +1628,31 @@ function makePropositionCompoundJustificationClause(
     JustificationBasisTypes.PROPOSITION_COMPOUND,
     toInArgString(propositionCompoundId),
   ];
+  return {
+    sql,
+    args,
+  };
+}
+
+function makeMediaExcerptJustificationClause(
+  mediaExcerptId: EntityId | EntityId[],
+  justificationColumns: string[]
+) {
+  const select = toSelect(justificationColumns, "j");
+  const sql = `
+    select
+      ${select}
+    from
+      justifications j
+        join media_excerpts me on
+              j.basis_type = $1
+          and j.basis_id = me.media_excerpt_id
+      where
+            j.deleted is null
+        and me.deleted is null
+        and me.media_excerpt_id in ($2)
+  `;
+  const args = ["MEDIA_EXCERPT", toInArgString(mediaExcerptId)];
   return {
     sql,
     args,

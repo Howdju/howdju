@@ -29,7 +29,7 @@ export default function withEntityViewer<
   entityPropName: EntityPropName,
   iconName: string | ReactNode,
   iconTitle: string,
-  entityLinkFn: (entity: object) => string
+  entityLinkFn: (entity: Entity) => string
 ) {
   type EntityViewerWrapperProps = {
     component?: ComponentType;
@@ -62,7 +62,7 @@ export default function withEntityViewer<
       <EntityViewer
         icon={iconName}
         iconTitle={iconTitle}
-        iconLink={entity && entityLinkFn(entity)}
+        iconLink={entity && entityLinkFn(entity as unknown as Entity)}
         className={className}
         component={component}
         entity={<EntityComponent {...entityProps} />}

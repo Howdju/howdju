@@ -18,6 +18,7 @@ import {
   JustificationRef,
   JustificationVoteRef,
   logger,
+  MediaExcerptRef,
   newExhaustedEnumError,
   newImpossibleError,
   newProgrammingError,
@@ -507,6 +508,14 @@ function extractJustificationBasis(
         creator_user_id: row.basis_proposition_compound_creator_user_id,
       });
       return { type, entity };
+    }
+
+    case "MEDIA_EXCERPT": {
+      // MediaExcerpt is queried separately, not as part of a join.
+      return {
+        type,
+        entity: brandedParse(MediaExcerptRef, { id: toIdString(row.basis_id) }),
+      };
     }
 
     case "SOURCE_EXCERPT":

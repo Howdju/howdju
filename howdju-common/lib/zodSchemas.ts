@@ -473,7 +473,25 @@ export type CreateMediaExcerptCitationInput = z.output<
   typeof CreateMediaExcerptCitationInput
 >;
 
-/** A representation of an excerpt of some fixed media conveying speech. */
+/**
+ * A representation of an excerpt of some fixed media conveying speech. *
+ *
+ * Two MediaExcerpts are equivalent if they represent the same 'speech act'. A 'speech act' is a
+ * single event of a particular speaker saying a particular thing at a particular time. The
+ * MediaExcerpts are only equivalent if the media represents the same direct speech. For example,
+ * if two translators translate the same speech into different languages, MediaExcerpts of those
+ * translations are not necessarily equivalent because the translators may have introduced their own
+ * interpretation on top of the original speech.
+ *
+ * The same speaker saying the same thing at a different time is a different speech act.
+ *
+ * Two MediaExcerpts are equivalent if they represent the same speech in the same part of the same
+ * source. For example, two MediaExcerpts are equivalent if they represent the same speech in the
+ * same part of the same video, even if they are different resolutions or cropped differently.
+ * However, two MediaExcerpts are not equivalent if they represent the same speech in different
+ * parts of the same video.
+ *
+ */
 export const MediaExcerpt = Entity.extend({
   /**
    * One or more local representations of the excerpt.
@@ -486,6 +504,8 @@ export const MediaExcerpt = Entity.extend({
    * Text-based:
    *  - focusText: a part of quotation that is the substance of the excerpt, while the rest of
    *    quotation provides additional context. The focusText must appear within the quotation.
+   *  - contextText: text that encompasses the focusText to provie additional context, but which
+   *    does not convey the substance of the excerpt.
    *  - description: a textual description of non-textual content. Like an img alt text. (How do
    *    users provite signal for an inaccurate description? The more literal the localRep, the less
    *    possibility for interpretation.)
@@ -504,7 +524,11 @@ export const MediaExcerpt = Entity.extend({
    */
   localRep: z.object({
     /**
-     * Text or speech that literally appears in the media.
+     * Text or speech that literally appears in the media and conveys the substance of the speech.
+     *
+     * Users may use this field either for focusText or for contextText (as described above.) It's
+     * an open question how we would migrate this field to a focusText/contextText split if we
+     * decided to do that.
      *
      * For textual media, this text must appear in the media. For audio and video media, this
      * text must be a transcription of the speech that appears in the media.
@@ -659,6 +683,10 @@ export type Justification = Entity & {
         type: "PROPOSITION_COMPOUND";
         entity: PropositionCompound;
       }
+    | {
+        type: "MEDIA_EXCERPT";
+        entity: MediaExcerpt;
+      }
     /* @deprecated TODO(38) Replace with MediaExcerpt */
     | {
         type: "SOURCE_EXCERPT";
@@ -691,8 +719,9 @@ export type CounterJustification = Justification & {
 };
 export const JustificationBasisType = z.enum([
   "PROPOSITION_COMPOUND",
+  "MEDIA_EXCERPT",
   "SOURCE_EXCERPT",
-  // deprecated
+  /** @deprecated */
   "WRIT_QUOTE",
   /**
    * A mixture of Propositions and WritQuotes.
@@ -710,6 +739,10 @@ const justificationBaseShape = {
     z.object({
       type: z.literal(JustificationBasisTypes.PROPOSITION_COMPOUND),
       entity: PropositionCompound,
+    }),
+    z.object({
+      type: z.literal("MEDIA_EXCERPT"),
+      entity: MediaExcerpt,
     }),
     z.object({
       type: z.literal(JustificationBasisTypes.SOURCE_EXCERPT),
@@ -979,10 +1012,11 @@ export type CreateJustificationInput = Entity & {
   basis: {
     type: JustificationBasisType;
     propositionCompound: EntityOrRef<CreatePropositionCompoundInput>;
+    mediaExcerpt?: MediaExcerptRef;
     sourceExcerpt: EntityOrRef<CreateSourceExcerptInput>;
-    // deprecated
+    /** @deprecated */
     writQuote: EntityOrRef<CreateWritQuoteInput>;
-    // Don't validate JBCs since they are deprecated.
+    /** @deprecated Don't validate JBCs since they are deprecated. */
     justificationBasisCompound?: Entity;
   };
   rootPolarity: JustificationRootPolarity;
@@ -994,14 +1028,17 @@ export type CreateJustificationInput = Entity & {
 const createJustificationBaseShape = {
   ...omit(justificationBaseShape, ["created"]),
   basis: z.object({
-    type: z.enum(["PROPOSITION_COMPOUND", "SOURCE_EXCERPT", "WRIT_QUOTE"] as [
-      JustificationBasisType,
-      ...JustificationBasisType[]
-    ]),
+    type: z.enum([
+      "PROPOSITION_COMPOUND",
+      "MEDIA_EXCERPT",
+      "SOURCE_EXCERPT",
+      "WRIT_QUOTE",
+    ] as [JustificationBasisType, ...JustificationBasisType[]]),
     propositionCompound: z.union([
       CreatePropositionCompound,
       PropositionCompoundRef,
     ]),
+    mediaExcerpt: MediaExcerptRef.optional(),
     sourceExcerpt: z.union([CreateSourceExcerpt, SourceExcerptRef]),
     writQuote: z.union([CreateWritQuote, WritQuoteRef]),
     justificationBasisCompound: Entity.optional(),
@@ -1010,14 +1047,17 @@ const createJustificationBaseShape = {
 const createJustificationInputBaseShape = {
   ...omit(createJustificationBaseShape, ["basis"]),
   basis: z.object({
-    type: z.enum(["PROPOSITION_COMPOUND", "SOURCE_EXCERPT", "WRIT_QUOTE"] as [
-      JustificationBasisType,
-      ...JustificationBasisType[]
-    ]),
+    type: z.enum([
+      "PROPOSITION_COMPOUND",
+      "MEDIA_EXCERPT",
+      "SOURCE_EXCERPT",
+      "WRIT_QUOTE",
+    ] as [JustificationBasisType, ...JustificationBasisType[]]),
     propositionCompound: z.union([
       CreatePropositionCompoundInput,
       PropositionCompoundRef,
     ]),
+    mediaExcerpt: MediaExcerptRef.optional(),
     sourceExcerpt: z.union([CreateSourceExcerptInput, SourceExcerptRef]),
     writQuote: z.union([CreateWritQuoteInput, WritQuoteRef]),
     justificationBasisCompound: Entity.optional(),
@@ -1074,6 +1114,10 @@ export type CreateJustification = Simplify<
           entity: EntityOrRef<CreatePropositionCompound>;
         }
       | {
+          type: "MEDIA_EXCERPT";
+          entity: MediaExcerptRef;
+        }
+      | {
           type: "SOURCE_EXCERPT";
           entity: EntityOrRef<CreateSourceExcerpt>;
         }
@@ -1103,6 +1147,10 @@ export const CreateJustification: z.ZodType<CreateJustification> = z.lazy(() =>
       z.object({
         type: z.literal("PROPOSITION_COMPOUND"),
         entity: z.union([CreatePropositionCompound, PropositionCompoundRef]),
+      }),
+      z.object({
+        type: z.literal("MEDIA_EXCERPT"),
+        entity: MediaExcerptRef,
       }),
       z.object({
         type: z.literal("SOURCE_EXCERPT"),

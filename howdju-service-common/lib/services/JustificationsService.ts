@@ -71,6 +71,7 @@ import {
   AuthService,
   JustificationBasisCompoundsService,
   JustificationsDao,
+  MediaExcerptsService,
   PermissionsDao,
   PropositionCompoundsService,
   PropositionsService,
@@ -99,6 +100,7 @@ export class JustificationsService extends EntityService<
   statementsService: StatementsService;
   writQuotesService: WritQuotesService;
   propositionCompoundsService: PropositionCompoundsService;
+  mediaExcerptsService: MediaExcerptsService;
   justificationBasisCompoundsService: JustificationBasisCompoundsService;
   justificationsDao: JustificationsDao;
   permissionsDao: PermissionsDao;
@@ -112,6 +114,7 @@ export class JustificationsService extends EntityService<
     statementsService: StatementsService,
     writQuotesService: WritQuotesService,
     propositionCompoundsService: PropositionCompoundsService,
+    mediaExcerptsService: MediaExcerptsService,
     justificationBasisCompoundsService: JustificationBasisCompoundsService,
     justificationsDao: JustificationsDao,
     permissionsDao: PermissionsDao
@@ -126,6 +129,7 @@ export class JustificationsService extends EntityService<
       statementsService,
       writQuotesService,
       propositionCompoundsService,
+      mediaExcerptsService,
       justificationBasisCompoundsService,
       justificationsDao,
       permissionsDao,
@@ -138,6 +142,7 @@ export class JustificationsService extends EntityService<
     this.statementsService = statementsService;
     this.writQuotesService = writQuotesService;
     this.propositionCompoundsService = propositionCompoundsService;
+    this.mediaExcerptsService = mediaExcerptsService;
     this.justificationBasisCompoundsService =
       justificationBasisCompoundsService;
     this.justificationsDao = justificationsDao;
@@ -507,6 +512,10 @@ export class JustificationsService extends EntityService<
         return await this.propositionCompoundsService.readPropositionCompoundForId(
           justificationBasis.entity.id
         );
+      case "MEDIA_EXCERPT":
+        return await this.mediaExcerptsService.readMediaExcerptForId(
+          justificationBasis.entity.id
+        );
       case "SOURCE_EXCERPT":
         // TODO(201): implement
         throw newUnimplementedError(
@@ -679,6 +688,25 @@ export class JustificationsService extends EntityService<
         return {
           isExtant,
           basis: { type, entity: propositionCompound },
+        };
+      }
+
+      case "MEDIA_EXCERPT": {
+        const mediaExcerpt = await prefixErrorPath(
+          this.mediaExcerptsService.readMediaExcerptForId(
+            justificationBasis.entity.id
+          ),
+          "entity"
+        );
+        if (!mediaExcerpt) {
+          throw new EntityNotFoundError(
+            "MEDIA_EXCERPT",
+            justificationBasis.entity.id
+          );
+        }
+        return {
+          isExtant: true,
+          basis: { type, entity: mediaExcerpt },
         };
       }
 

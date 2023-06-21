@@ -90,6 +90,13 @@ export const hasQuote = (j: Justification) =>
 export const isPropositionCompoundBased = (
   j: Justification | CreateJustification | CreateJustificationInput
 ) => (j ? j.basis.type === "PROPOSITION_COMPOUND" : false);
+
+export function isMediaExcerptBased(
+  j: Justification | CreateJustification | CreateJustificationInput
+) {
+  return j.basis.type === "MEDIA_EXCERPT";
+}
+
 export const isWritQuoteBased = (
   j: Justification | CreateJustification | CreateJustificationInput
 ) => (j ? j.basis.type === "WRIT_QUOTE" : false);
@@ -483,6 +490,11 @@ const muxCreateJustificationBasisErrors = (
         _errors: errors._errors,
         propositionCompound: errors.entity,
       };
+    case "MEDIA_EXCERPT":
+      return {
+        _errors: errors._errors,
+        mediaExcerpt: errors.entity,
+      };
     case "WRIT_QUOTE":
       return {
         _errors: errors._errors,
@@ -532,6 +544,14 @@ const demuxCreateJustificationInputBasis = (
       return {
         type: "PROPOSITION_COMPOUND",
         entity: basis.propositionCompound,
+      };
+    case "MEDIA_EXCERPT":
+      if (!basis.mediaExcerpt) {
+        throw newImpossibleError("Media excerpt must be defined.");
+      }
+      return {
+        type: "MEDIA_EXCERPT",
+        entity: basis.mediaExcerpt,
       };
     case "WRIT_QUOTE":
       // TODO(201) WritQuote bases are temporarily supported until we support SourceExcerpt bases.

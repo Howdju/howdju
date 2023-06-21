@@ -25,9 +25,20 @@ import {
   isTruthy,
   JustificationTargetTypes,
   newExhaustedEnumError,
+  toSlug,
 } from "howdju-common";
 
 import { api } from "../actions";
+
+function composeCustomizers(...customizers) {
+  return (oldEntity, newEntity, key, object, source) => {
+    let result = oldEntity;
+    forEach(customizers, (customizer) => {
+      result = customizer(result, newEntity, key, object, source);
+    });
+    return result;
+  };
+}
 
 const defaultState = {
   contextTrailItems: {},
@@ -96,7 +107,13 @@ export default handleActions(
             ["mediaExcerpts", mediaExcerptCustomizer],
             ["persorgs", persorgCustomizer],
             ["propositionCompounds"],
-            ["propositions", entityAssignWithCustomizer],
+            [
+              "propositions",
+              composeCustomizers(
+                entityAssignWithCustomizer,
+                propositionCustomizer
+              ),
+            ],
             ["propositionTagVotes"],
             ["sources"],
             ["sourceExcerptParaphrases"],
@@ -527,6 +544,19 @@ function mediaExcerptCustomizer(oldExcerpt, newExcerpt, key, object, source) {
       ...citation,
       key: `${citation.source.id}-${citation.normalPincite}`,
     })),
+  });
+}
+
+function propositionCustomizer(
+  oldProposition,
+  newProposition,
+  key,
+  object,
+  source
+) {
+  return merge({}, oldProposition, newProposition, {
+    key: newProposition.id,
+    slug: toSlug(newProposition.text),
   });
 }
 

@@ -30,7 +30,7 @@ import {
   ConnectingEntityType,
   ContextTrailItem,
   nextContextTrailItem,
-  MediaExcerptOut,
+  PropositionRef,
 } from "howdju-common";
 
 import * as characters from "./characters";
@@ -239,19 +239,8 @@ export function extendContextTrailItems(
   return concat(contextTrailItems, [trailItem]);
 }
 
-export interface MediaExcerptView extends MediaExcerptOut {
-  citations: (MediaExcerptOut["citations"][number] & {
-    /** A key uniquely identifying a citation relative to others. */
-    key: string;
-  })[];
-  locators: MediaExcerptOut["locators"] & {
-    urlLocators: (MediaExcerptOut["locators"]["urlLocators"][number] & {
-      /** A key uniquely identifying a url locator relative to others. */
-      key: string;
-    })[];
-  };
-  speakers: (MediaExcerptOut["speakers"][number] & {
-    /** A key uniquely identifying a persorg relative to others. */
-    key: string;
-  })[];
+/** Information sufficient to reference a proposition in the UI. */
+export interface PropositionRefView extends PropositionRef {
+  /** A slugified version of the proposition text. */
+  slug?: string;
 }

@@ -4,18 +4,19 @@ import {
   ContextTrailItem,
   isRootNegative,
   isRootPositive,
-  JustificationOut,
+  JustificationView,
 } from "howdju-common";
+
 import JustificationBasisViewer from "./JustificationBasisViewer";
 import ChatBubble from "./ChatBubble";
-
-import "./JustificationChatBubble.scss";
 import { ComponentId, OnClickJustificationWritQuoteUrl } from "./types";
 import { OnClickWritQuoteUrl } from "./WritQuoteViewer";
 
+import "./JustificationChatBubble.scss";
+
 interface Props extends HTMLAttributes<HTMLDivElement> {
   id?: ComponentId;
-  justification: JustificationOut;
+  justification: JustificationView;
   doShowControls: boolean;
   showStatusText: boolean;
   showBasisUrls: boolean;

@@ -127,6 +127,7 @@ export const ExternalJustificationSearchFilters = [
   "writId",
   // Justifications based on this PropositionCompound
   "propositionCompoundId",
+  "mediaExcerptId",
   "sourceExcerptParaphraseId",
   // Justifications based on this proposition in a PropositionCompound
   "propositionId",
@@ -144,3 +145,5 @@ export interface SortDescription {
 }
 
 export type PersorgOut = Persisted<Persorg>;
+
+export type TagOut = Persisted<Tag>;

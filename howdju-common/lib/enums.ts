@@ -65,6 +65,7 @@ export const JustificationBasisSourceTypes = {
   PROPOSITION: "PROPOSITION",
   /** @deprecated TODO(215) */
   SOURCE_EXCERPT_PARAPHRASE: "SOURCE_EXCERPT_PARAPHRASE",
+  MEDIA_EXCERPT: "MEDIA_EXCERPT",
 } as const;
 export type JustificationBasisSourceType =
   typeof JustificationBasisSourceTypes[keyof typeof JustificationBasisSourceTypes];

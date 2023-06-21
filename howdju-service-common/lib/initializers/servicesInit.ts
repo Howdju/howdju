@@ -141,6 +141,17 @@ export function servicesInitializer(provider: AwsProvider) {
       provider.justificationBasisCompoundsDao
     );
 
+  const sourcesService = new SourcesService(provider.sourcesDao);
+
+  const mediaExcerptsService = new MediaExcerptsService(
+    authService,
+    provider.mediaExcerptsDao,
+    writQuotesService,
+    sourcesService,
+    persorgsService,
+    urlsService
+  );
+
   const justificationsService = new JustificationsService(
     provider.appConfig,
     provider.logger,
@@ -150,6 +161,7 @@ export function servicesInitializer(provider: AwsProvider) {
     statementsService,
     writQuotesService,
     propositionCompoundsService,
+    mediaExcerptsService,
     justificationBasisCompoundsService,
     provider.justificationsDao,
     provider.permissionsDao
@@ -227,17 +239,6 @@ export function servicesInitializer(provider: AwsProvider) {
     provider.logger,
     authService,
     justificationsService
-  );
-
-  const sourcesService = new SourcesService(provider.sourcesDao);
-
-  const mediaExcerptsService = new MediaExcerptsService(
-    authService,
-    provider.mediaExcerptsDao,
-    writQuotesService,
-    sourcesService,
-    persorgsService,
-    urlsService
   );
 
   provider.logger.debug("servicesInit complete");

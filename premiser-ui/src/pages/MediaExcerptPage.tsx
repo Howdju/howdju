@@ -10,14 +10,16 @@ import {
 } from "react-md";
 import { MaterialSymbol } from "react-material-symbols";
 
-import { EntityId } from "howdju-common";
+import { EntityId, MediaExcerptView } from "howdju-common";
 
 import { useAppDispatch, useAppSelector } from "@/hooks";
 import { api } from "@/apiActions";
 import { mediaExcerptSchema } from "@/normalizationSchemas";
-import { combineIds, MediaExcerptView } from "@/viewModels";
+import { combineIds } from "@/viewModels";
 import MediaExcerptCard from "@/components/mediaExcerpts/MediaExcerptCard";
 import HowdjuHelmet from "@/Helmet";
+import paths from "@/paths";
+import { Link } from "react-router-dom";
 
 interface MatchParams {
   mediaExcerptId: EntityId;
@@ -33,10 +35,10 @@ export default function MediaExcerptPage(props: Props) {
     dispatch(api.fetchMediaExcerpt(mediaExcerptId));
   }, [dispatch, mediaExcerptId]);
 
-  // eslint-disable-next-line @typescript-eslint/no-empty-function -- TODO(38) remove this.
-  function useInJustification() {}
   // eslint-disable-next-line @typescript-eslint/no-empty-function -- TODO(20) remove this.
   function useInAppearance() {}
+  // eslint-disable-next-line @typescript-eslint/no-empty-function -- TODO(38) remove this.
+  function deleteMediaExcerpt() {}
 
   // TODO(17): pass props directly after upgrading react-md to a version with correct types
   const menuClassNameProps = { menuClassName: "context-menu" } as any;
@@ -51,8 +53,10 @@ export default function MediaExcerptPage(props: Props) {
         <ListItem
           primaryText="Use in Justification"
           key="use-in-justification"
+          title="Create a new justification based on this media excerpt."
           leftIcon={<MaterialSymbol icon="vertical_align_top" />}
-          onClick={useInJustification}
+          component={Link}
+          to={paths.createJustification("MEDIA_EXCERPT", mediaExcerptId)}
         />,
         <ListItem
           primaryText="Use in Appearance"
@@ -65,7 +69,7 @@ export default function MediaExcerptPage(props: Props) {
           primaryText="Delete"
           key="delete"
           leftIcon={<MaterialSymbol icon="delete" />}
-          onClick={useInJustification}
+          onClick={deleteMediaExcerpt}
         />,
       ]}
     />

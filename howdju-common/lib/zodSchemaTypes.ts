@@ -90,7 +90,10 @@ export type PersistedJustificationWithRootRef = Omit<
           type: "PROPOSITION_COMPOUND";
           entity: Persisted<PropositionCompound>;
         }
-      | { type: "SOURCE_EXCERPT"; entity: Persisted<SourceExcerpt> }
+      | {
+          type: "MEDIA_EXCERPT";
+          entity: Persisted<MediaExcerpt>;
+        }
       | { type: "WRIT_QUOTE"; entity: Persisted<WritQuote> };
   };
 
@@ -120,6 +123,10 @@ export type BasedJustificationWithRootRef = Omit<
     | {
         type: "PROPOSITION_COMPOUND";
         entity: Persisted<PropositionCompound>;
+      }
+    | {
+        type: "MEDIA_EXCERPT";
+        entity: Persisted<MediaExcerpt>;
       }
     | { type: "SOURCE_EXCERPT"; entity: Persisted<SourceExcerpt> }
     | { type: "WRIT_QUOTE"; entity: Persisted<WritQuote> };
