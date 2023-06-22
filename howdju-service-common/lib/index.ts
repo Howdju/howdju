@@ -15,6 +15,7 @@ export * from "./database";
 export * from "./initializers";
 export * from "./jobEnums";
 export * from "./logging";
+export * from "./metascraper";
 export * from "./permissions";
 export * from "./searchers";
 export * from "./services";
