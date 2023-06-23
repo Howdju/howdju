@@ -46,10 +46,15 @@ function onInstalled() {
 }
 
 function createContextMenus() {
+  const id =
+    "howdju-context-menu-annotate" +
+    (process.env.NODE_ENV === "development" ? "-dev" : "");
+  const title =
+    "+ Howdju" + (process.env.NODE_ENV === "development" ? " (dev)" : "");
   ext.createContextMenus(
     {
-      id: "howdju-context-menu-annotate",
-      title: "+ Howdju",
+      id,
+      title,
       contexts: ["selection"],
       onclick: sendAnnotateSelectionMessage,
     },

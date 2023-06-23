@@ -69,7 +69,7 @@ export const makeSourcesDescriptionSearcher = (database: Database) =>
   new TextSearcher<SourceRow, SourceOut>(
     database,
     "sources",
-    "description_apa",
+    "description",
     toSource,
     "source_id"
   );

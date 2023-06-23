@@ -61,7 +61,7 @@ describe("MediaExcerptsService", () => {
         citations: [
           {
             source: {
-              descriptionApa: "the APA description",
+              description: "the source description",
             },
             pincite: "the pincite",
           },
@@ -109,7 +109,7 @@ describe("MediaExcerptsService", () => {
                 mediaExcerptId: mediaExcerpt.id,
                 source: {
                   id: expect.any(String),
-                  normalDescriptionApa: "the apa description",
+                  normalDescription: "the source description",
                   ...creatorInfo,
                 },
                 normalPincite: "the pincite",
@@ -156,11 +156,11 @@ describe("MediaExcerptsService", () => {
         },
         citations: [
           {
-            source: { descriptionApa: "the APA description" },
+            source: { description: "the source description" },
             pincite: "the pincite",
           },
           {
-            source: { descriptionApa: "the APA description" },
+            source: { description: "the source description" },
           },
         ],
         speakers: [{ name: "the speaker", isOrganization: false }],

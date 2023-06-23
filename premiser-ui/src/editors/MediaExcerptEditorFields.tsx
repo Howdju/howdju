@@ -136,25 +136,22 @@ export default function MediaExcerptEditorFields(props: Props) {
       {mediaExcerpt?.citations?.map(({ source, pincite }, index) => (
         <React.Fragment key={combineIds(id, `citations[${index}]`)}>
           <SourceDescriptionAutocomplete
-            {...errorProps((me) => me.citations?.[index].source.descriptionApa)}
-            id={combineIds(id, `citations[${index}].source.descriptionApa`)}
-            name={combineNames(
-              name,
-              `citations[${index}].source.descriptionApa`
-            )}
-            key={combineIds(id, `citations[${index}].source.descriptionApa`)}
+            {...errorProps((me) => me.citations?.[index].source.description)}
+            id={combineIds(id, `citations[${index}].source.description`)}
+            name={combineNames(name, `citations[${index}].source.description`)}
+            key={combineIds(id, `citations[${index}].source.description`)}
             suggestionsKey={combineSuggestionsKeys(
               suggestionsKey,
-              `citations[${index}].source.descriptionApa`
+              `citations[${index}].source.description`
             )}
-            label="Description (APA)"
+            label="Description (MLA-like)"
             required
             rows={1}
             maxRows={2}
             maxLength={
-              MediaExcerptCitation.shape.source.shape.descriptionApa.maxLength
+              MediaExcerptCitation.shape.source.shape.description.maxLength
             }
-            value={source.descriptionApa}
+            value={source.description}
             onBlur={onBlur}
             onPropertyChange={onPropertyChange}
             disabled={disabled}

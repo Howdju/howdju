@@ -1,14 +1,21 @@
 import * as textPosition from "dom-anchor-text-position";
 import * as textQuote from "dom-anchor-text-quote";
 
-import { CreateDomAnchor, logger, UrlTarget } from "howdju-common";
+import {
+  CreateDomAnchor,
+  getMediaExcerptInfo,
+  logger,
+  UrlTarget,
+} from "howdju-common";
 
 import { nodeIsBefore, getPreviousLeafNode } from "./dom";
 import { getCanonicalOrCurrentUrl } from "./location";
 
 export interface AnchorInfo {
   anchors: CreateDomAnchor[];
-  documentTitle: string;
+  authors?: string[];
+  sourceDescription: string;
+  pincite?: string;
   url: string;
 }
 
@@ -21,10 +28,15 @@ export function selectionToAnchorInfo(selection: Selection): AnchorInfo {
     anchors.push(anchor);
   }
 
+  const { authors, sourceDescription, pincite } = getMediaExcerptInfo(document);
+  const url = getCanonicalOrCurrentUrl();
+
   return {
     anchors,
-    documentTitle: document.title,
-    url: getCanonicalOrCurrentUrl(),
+    authors,
+    sourceDescription,
+    pincite,
+    url,
   };
 }
 

@@ -134,7 +134,7 @@ class Paths {
   mediaExcerpt = (mediaExcerpt: MediaExcerptRef) =>
     `/media-excerpts/${mediaExcerpt.id}`;
   source = (source: SourceOut) =>
-    `/sources/${source.id}/${toSlug(source.descriptionApa)}`;
+    `/sources/${source.id}/${toSlug(source.description)}`;
   submitMediaExcerpt = () => "/media-excerpts/new";
 
   tools = () => "/tools";

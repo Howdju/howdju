@@ -875,8 +875,8 @@ ALTER SEQUENCE public.source_excerpt_paraphrases_source_excerpt_paraphrase_id_se
 
 CREATE TABLE public.sources (
     source_id bigint NOT NULL,
-    description_apa character varying(2048) NOT NULL,
-    normal_description_apa character varying(2048) NOT NULL,
+    description character varying(2048) NOT NULL,
+    normal_description character varying(2048) NOT NULL,
     identifier_doi character varying(128),
     identifier_isbn character varying(128),
     identifier_pmid character varying(128),
@@ -887,7 +887,7 @@ CREATE TABLE public.sources (
     creator_user_id bigint,
     created timestamp without time zone NOT NULL,
     deleted timestamp without time zone,
-    CONSTRAINT sources_description_apa_check CHECK (((description_apa)::text <> ''::text)),
+    CONSTRAINT sources_description_apa_check CHECK (((description)::text <> ''::text)),
     CONSTRAINT sources_identifier_bibcode_check CHECK (((identifier_bibcode)::text <> ''::text)),
     CONSTRAINT sources_identifier_doi_check CHECK (((identifier_doi)::text <> ''::text)),
     CONSTRAINT sources_identifier_isbn_check CHECK (((identifier_isbn)::text <> ''::text)),
@@ -895,7 +895,7 @@ CREATE TABLE public.sources (
     CONSTRAINT sources_identifier_oclc_check CHECK (((identifier_oclc)::text <> ''::text)),
     CONSTRAINT sources_identifier_pmc_check CHECK (((identifier_pmc)::text <> ''::text)),
     CONSTRAINT sources_identifier_pmid_check CHECK (((identifier_pmid)::text <> ''::text)),
-    CONSTRAINT sources_normal_description_apa_check CHECK (((normal_description_apa)::text <> ''::text))
+    CONSTRAINT sources_normal_description_apa_check CHECK (((normal_description)::text <> ''::text))
 );
 
 
@@ -1838,7 +1838,7 @@ CREATE UNIQUE INDEX media_excerpt_citations_unq_idx ON public.media_excerpt_cita
 -- Name: sources_description_apa_english_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX sources_description_apa_english_idx ON public.sources USING gin (to_tsvector('english'::regconfig, (description_apa)::text));
+CREATE INDEX sources_description_apa_english_idx ON public.sources USING gin (to_tsvector('english'::regconfig, (description)::text));
 
 
 --

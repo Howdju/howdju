@@ -4,7 +4,7 @@ module.exports = {
     "@babel/preset-typescript",
   ],
   ignore: [
-    new RegExp("/node_modules/(?!(@grrr/cookie-consent|@grrr/utils|nanoid))"),
+    new RegExp("/node_modules/(?!(@grrr/cookie-consent|@grrr/utils|nanoid|jsdom))"),
   ],
   plugins: [
     // Stage 1

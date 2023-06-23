@@ -28,7 +28,7 @@ export default class TestHelper {
     const createSource: CreateSource = merge(
       {},
       {
-        descriptionApa: "The source description (APA)",
+        description: "The source description",
       },
       overrides
     );
@@ -140,13 +140,13 @@ const defaultMediaExcerpt: CreateMediaExcerpt = {
   citations: [
     {
       source: {
-        descriptionApa: "the APA description",
+        description: "the source description",
       },
       pincite: "the pincite",
     },
     {
       source: {
-        descriptionApa: "the APA description",
+        description: "the source description",
       },
       // no pincite
     },
