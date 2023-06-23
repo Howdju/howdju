@@ -1,7 +1,7 @@
 {
   "name": "howdju-browser-extension",
   "private": true,
-  "version": "0.2.0",
+  "version": "0.2.1",
   "main": "dist/background.js",
   "license": "AGPL-3.0-or-later",
   "scripts": {

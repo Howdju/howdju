@@ -1,6 +1,6 @@
 {
   "name": "Howdju Extension",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Add evidence to Howdju from your web browser",
   "background": {
     "scripts": ["background.js"]
