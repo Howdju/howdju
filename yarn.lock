@@ -15797,6 +15797,7 @@ __metadata:
     moment: ^2.29.4
     prettier: 2.7.1
     random-seed: ^0.3.0
+    schema-dts: ^1.1.2
     ts-node: ^10.9.1
     type-fest: ^3.2.0
     typescript: ^4.9.4
@@ -25107,6 +25108,15 @@ resolve@^2.0.0-next.3:
   dependencies:
     loose-envify: ^1.1.0
   checksum: d79192eeaa12abef860c195ea45d37cbf2bbf5f66e3c4dcd16f54a7da53b17788a70d109ee3d3dde1a0fd50e6a8fc171f4300356c5aee4fc0171de526bf35f8a
+  languageName: node
+  linkType: hard
+
+"schema-dts@npm:^1.1.2":
+  version: 1.1.2
+  resolution: "schema-dts@npm:1.1.2"
+  peerDependencies:
+    typescript: ">=4.1.0"
+  checksum: 29703363b26215174268bf205a12ea78f1d264c8e696316de36ed8be2ab23e691ccea251899ba9245d89a45af5978c8a1ee162b7a4d07db999fd3300d842b4b6
   languageName: node
   linkType: hard
 

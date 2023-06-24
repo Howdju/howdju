@@ -57,6 +57,10 @@ export const webpackConfig: HtmlWebpackPlugin.Options = {
     },
     port,
     host: devServerBindHost,
+    headers: {
+      // Substack was caching
+      "Cache-Control": "no-store",
+    },
     static: [
       {
         directory: "public",

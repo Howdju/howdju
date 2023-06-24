@@ -3,6 +3,7 @@ import * as textQuote from "dom-anchor-text-quote";
 
 import {
   CreateDomAnchor,
+  CreatePersorgInput,
   getMediaExcerptInfo,
   logger,
   UrlTarget,
@@ -13,7 +14,7 @@ import { getCanonicalOrCurrentUrl } from "./location";
 
 export interface AnchorInfo {
   anchors: CreateDomAnchor[];
-  authors?: string[];
+  authors?: CreatePersorgInput[];
   sourceDescription: string;
   pincite?: string;
   url: string;
