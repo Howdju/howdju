@@ -87,7 +87,7 @@ export function extractDate(doc: Document) {
   // "This page was last edited on 16 June 2023, at 01:19 (UTC)."
   // TODO(429) this should apply regardless of the strategy used to extract the source description.
   const editedDatetimeMatch = doc.body.textContent?.match(
-    /This page was last edited on (.+), at (.+)\s\(UTC\)\./
+    /This page was last edited on (\d{1,2} \w+ \d{4}), at (\d{2}:\d{2})\s\(UTC\)\./
   );
   if (editedDatetimeMatch) {
     const dateRaw = editedDatetimeMatch[1];
