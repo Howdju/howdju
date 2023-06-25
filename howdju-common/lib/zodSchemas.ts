@@ -423,8 +423,12 @@ export const Source = Entity.extend({
    *
    * The preferred style is MLA-like, but omitting the Authors:
    *
-   * - The title of the source should be in quotes unless it is the only field.
-   * - The date format should be ISO 8601 (YYYY-MM-DD)
+   * - The title of the source comes first and should be in quotes unless it is the only field.
+   * - The date format should be ISO 8601 (YYYY-MM-DD) unless the source is updated frequently, in
+   *   which case including the time is recommended.
+   *
+   * Because we can't guarantee that users will follow this style, we will later need a means
+   * to vote on preferred manifestations of Sources.
    *
    * Examples:
    *

@@ -1,14 +1,14 @@
 import { readFileSync } from "fs";
 import { JSDOM } from "jsdom";
 
-import { extractDate, getMediaExcerptInfo } from "./domMetadata";
+import { extractDate, inferBibliographicInfo } from "./domBibliographicInfo";
 
-describe("getMediaExcerptInfo", () => {
+describe("domBibliographicInfo", () => {
   it("should handle NYT", () => {
     const html = readFileSync("lib/domMetadataTestData/nytimes.html", "utf8");
     const dom = new JSDOM(html);
 
-    const info = getMediaExcerptInfo(dom.window.document);
+    const info = inferBibliographicInfo(dom.window.document);
 
     expect(info).toStrictEqual({
       authors: [
@@ -24,7 +24,7 @@ describe("getMediaExcerptInfo", () => {
     const html = readFileSync("lib/domMetadataTestData/pubmed.html", "utf8");
     const dom = new JSDOM(html);
 
-    const info = getMediaExcerptInfo(dom.window.document);
+    const info = inferBibliographicInfo(dom.window.document);
 
     expect(info).toStrictEqual({
       authors: [
@@ -46,50 +46,50 @@ describe("getMediaExcerptInfo", () => {
     const html = readFileSync("lib/domMetadataTestData/wikipedia.html", "utf8");
     const dom = new JSDOM(html);
 
-    const info = getMediaExcerptInfo(dom.window.document);
+    const info = inferBibliographicInfo(dom.window.document);
 
     expect(info).toStrictEqual({
       authors: undefined,
       sourceDescription: "“Richard Feynman” Wikipedia (2023-06-16 01:19 UTC)",
     });
   });
-});
 
-it("should handle Aeon", () => {
-  const html = readFileSync("lib/domMetadataTestData/aeon.html", "utf8");
-  const dom = new JSDOM(html);
+  it("should handle Aeon", () => {
+    const html = readFileSync("lib/domMetadataTestData/aeon.html", "utf8");
+    const dom = new JSDOM(html);
 
-  const info = getMediaExcerptInfo(dom.window.document);
+    const info = inferBibliographicInfo(dom.window.document);
 
-  expect(info).toStrictEqual({
-    authors: [
-      {
-        name: "William Chester Jordan",
-        isOrganization: false,
-        knownFor: undefined,
-      },
-    ],
-    sourceDescription:
-      "“What crusaders’ daggers reveal about medieval love and violence” Aeon Magazine (2023-06-23)",
+    expect(info).toStrictEqual({
+      authors: [
+        {
+          name: "William Chester Jordan",
+          isOrganization: false,
+          knownFor: undefined,
+        },
+      ],
+      sourceDescription:
+        "“What crusaders’ daggers reveal about medieval love and violence” Aeon Magazine (2023-06-23)",
+    });
   });
-});
 
-it("should handle Substack", () => {
-  const html = readFileSync("lib/domMetadataTestData/substack.html", "utf8");
-  const dom = new JSDOM(html);
+  it("should handle Substack", () => {
+    const html = readFileSync("lib/domMetadataTestData/substack.html", "utf8");
+    const dom = new JSDOM(html);
 
-  const info = getMediaExcerptInfo(dom.window.document);
+    const info = inferBibliographicInfo(dom.window.document);
 
-  expect(info).toStrictEqual({
-    authors: [
-      {
-        name: "Bari Weiss",
-        isOrganization: false,
-        knownFor: `Writer, editor and author of "How to Fight Anti-Semitism."`,
-      },
-    ],
-    sourceDescription:
-      "“RFK Jr. Is Striking a Nerve. He Tells Me Why.” The Free Press (2023-06-21)",
+    expect(info).toStrictEqual({
+      authors: [
+        {
+          name: "Bari Weiss",
+          isOrganization: false,
+          knownFor: `Writer, editor and author of "How to Fight Anti-Semitism."`,
+        },
+      ],
+      sourceDescription:
+        "“RFK Jr. Is Striking a Nerve. He Tells Me Why.” The Free Press (2023-06-21)",
+    });
   });
 });
 

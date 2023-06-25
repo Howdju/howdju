@@ -90,7 +90,7 @@ function inferMediaExcerptFromQueryParams(queryParams: ParsedQuery<string>) {
         },
       })),
     },
-    citations: [{ source: { description: description } }],
+    citations: [{ source: { description } }],
     speakers: [],
   };
   return { model, errors };

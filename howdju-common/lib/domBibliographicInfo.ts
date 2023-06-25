@@ -2,18 +2,27 @@ import { isString } from "lodash";
 import moment from "moment";
 import type { Article, NewsArticle } from "schema-dts";
 import { isDefined } from "./general";
+import { logger } from "./logger";
 
 import { CreatePersorgInput } from "./zodSchemas";
 
+interface BibliographicInfo {
+  sourceDescription: string;
+  pincite?: string;
+  authors?: CreatePersorgInput[];
+}
+
 type NewsArticleAuthor = NonNullable<NewsArticle["author"]>;
 
-export function getMediaExcerptInfo(doc: Document): MediaExcerptInfo {
+/** Infer bibliographic information for the web document. */
+export function inferBibliographicInfo(doc: Document): BibliographicInfo {
   const sourceDescription = getSourceDescription(doc);
   const authors = getAuthors(doc);
   return { sourceDescription, authors };
 }
 
-function getSourceDescription(doc: Document) {
+/** Return a string describing the source represented by the web document. */
+function getSourceDescription(doc: Document): string {
   for (const { test, transform } of sourceDescriptionFinders) {
     if (!test(doc)) {
       continue;
@@ -23,32 +32,50 @@ function getSourceDescription(doc: Document) {
       return sourceDescription;
     }
   }
-  return descriptionizeTitle(doc);
+  return inferDescriptionBasedOnTitle(doc);
 }
 
-function descriptionizeTitle(doc: Document) {
-  let lastSeparator;
-  // It's a common pattern to have a title like "The Title - The Publication"
-  const lastHypen = doc.title.lastIndexOf(" - ");
+const HYPHEN_TITLE_SEPARATOR = " - ";
+const BAR_TITLE_SEPARATOR = " | ";
+const LAST_RESORT_SOURCE_DESCRIPTION = "Untitled";
+
+/**
+ * Infer a source description from the document's title.
+ *
+ * It's a common pattern to have a title like "The Title - The Publication" or
+ * "The Title | The Publication". This function tries to extract the title and publication
+ * from the title and return a source description like "“The Title” The Publication (Date)".
+ *
+ * Also tries to extract a date when the source was published, created, or last updated from the document.
+ *
+ * As a last resort, returns the document's title so that there is always a source description.
+ */
+function inferDescriptionBasedOnTitle(doc: Document) {
+  let separatorOffset;
+  const lastHypen = doc.title.lastIndexOf(HYPHEN_TITLE_SEPARATOR);
   if (lastHypen !== -1) {
-    lastSeparator = lastHypen;
+    separatorOffset = { separator: HYPHEN_TITLE_SEPARATOR, offset: lastHypen };
   }
   const lastVerticalBar = doc.title.lastIndexOf(" | ");
   if (lastVerticalBar !== -1) {
-    lastSeparator = lastVerticalBar;
+    separatorOffset = {
+      separator: BAR_TITLE_SEPARATOR,
+      offset: lastVerticalBar,
+    };
   }
-  if (lastSeparator) {
-    const { sourceTitle, sourcePublication } = extractFromSeparator(
+  if (separatorOffset) {
+    const { sourceTitle, sourcePublication } = separateTitleAndPublication(
       doc.title,
-      lastSeparator
+      separatorOffset
     );
     const date = extractDate(doc);
     const datePart = date ? ` (${date})` : "";
     return `“${sourceTitle}” ${sourcePublication}${datePart}`;
   }
-  return doc.title;
+  return doc.title || LAST_RESORT_SOURCE_DESCRIPTION;
 }
 
+/** Applies rough heuristics to try and infer a date. */
 export function extractDate(doc: Document) {
   const publishedRaw = doc.querySelector('[class*="published" i]')?.textContent;
   const publishedMoment = publishedRaw ? moment.utc(publishedRaw) : undefined;
@@ -58,6 +85,7 @@ export function extractDate(doc: Document) {
 
   // Wikipedia
   // "This page was last edited on 16 June 2023, at 01:19 (UTC)."
+  // TODO(429) this should apply regardless of the strategy used to extract the source description.
   const editedDatetimeMatch = doc.body.textContent?.match(
     /This page was last edited on (.+), at (.+)\s\(UTC\)\./
   );
@@ -74,13 +102,17 @@ export function extractDate(doc: Document) {
   return undefined;
 }
 
-function extractFromSeparator(title: string, separatorIndex: number) {
-  const sourceTitle = title.slice(0, separatorIndex);
-  const sourcePublication = title.slice(separatorIndex + 3);
+function separateTitleAndPublication(
+  title: string,
+  { separator, offset }: { separator: string; offset: number }
+) {
+  const sourceTitle = title.slice(0, offset);
+  const sourcePublication = title.slice(offset + separator.length);
   return { sourceTitle, sourcePublication };
 }
 
-function getAuthors(doc: Document) {
+/** Infer the Persorg's that are authors of the web document's source. */
+function getAuthors(doc: Document): CreatePersorgInput[] | undefined {
   for (const { test, transform } of authorFinders) {
     if (!test(doc)) {
       continue;
@@ -93,12 +125,6 @@ function getAuthors(doc: Document) {
   return undefined;
 }
 
-interface MediaExcerptInfo {
-  sourceDescription: string;
-  pincite?: string;
-  authors?: CreatePersorgInput[];
-}
-
 interface DescriptionTestTransform {
   test: (doc: Document) => boolean;
   transform: (doc: Document) => string | undefined;
@@ -106,11 +132,13 @@ interface DescriptionTestTransform {
 
 interface AuthorTestTransform {
   test: (doc: Document) => boolean;
+  // Allowed to return undefined for convenience; the caller must filter those out.
   transform: (doc: Document) => (CreatePersorgInput | undefined)[];
 }
 
 const sourceDescriptionFinders: DescriptionTestTransform[] = [
   {
+    // Google Scholar Indexing: https://www.google.com/intl/en/scholar/inclusion.html#indexing
     // https://www.ncbi.nlm.nih.gov/pmc/articles/PMC1280342/
     test: (doc) => !!doc.querySelector('meta[name="citation_title"]'),
     transform: (doc) => {
@@ -147,6 +175,7 @@ const sourceDescriptionFinders: DescriptionTestTransform[] = [
     },
   },
   {
+    // NewsArticle JSON-LD: https://json-ld.org/, https://schema.org/NewsArticle
     // https://www.nytimes.com/live/2023/06/24/world/russia-ukraine-news
     test: (doc) =>
       Array.from(
@@ -192,6 +221,7 @@ const sourceDescriptionFinders: DescriptionTestTransform[] = [
     },
   },
   {
+    // Article JSON-LD: https://json-ld.org/, https://schema.org/Article
     // https://aeon.co/essays/what-crusaders-daggers-reveal-about-medieval-love-and-violence
     test: (doc) =>
       // Wikipedia's JSON-LD results in poor source descriptions:
@@ -218,6 +248,7 @@ const sourceDescriptionFinders: DescriptionTestTransform[] = [
           .querySelector('meta[property="og:title"]')
           ?.getAttribute("content") ||
         doc.title;
+      // TODO(429) this transformation should apply regardless of the strategy used to extract the source description.
       if (doc.title.match(/aeon/i)) {
         // Aeon has an og:title that includes the publication name.
         title = title.replace(/ \| Aeon Essays$/, "");
@@ -238,6 +269,7 @@ const sourceDescriptionFinders: DescriptionTestTransform[] = [
     },
   },
   {
+    // Open Graph Article: https://ogp.me/#type_article
     test: (doc: Document) =>
       !!doc.querySelector('meta[property="og:type"][content="article"]'),
     transform: (doc: Document) => {
@@ -245,14 +277,10 @@ const sourceDescriptionFinders: DescriptionTestTransform[] = [
         .querySelector('meta[property="og:site_name"]')
         ?.getAttribute("content");
 
-      let title =
+      const title =
         doc
           .querySelector('meta[property="og:title"]')
           ?.getAttribute("content") || doc.title;
-      if (doc.title.match(/aeon/i)) {
-        // Aeon has an og:title that includes the publication name.
-        title = title.replace(/ \| Aeon Essays$/, "");
-      }
 
       const rawDate =
         doc
@@ -269,6 +297,8 @@ const sourceDescriptionFinders: DescriptionTestTransform[] = [
 ];
 
 function formatDate(rawDate: string) {
+  // TODO(429) how do we know the date is UTC? Probably need per-source rules of whether they format
+  // their dates always in UTC, in the client' timezone, or in their 'home' timezone.
   const date = moment.utc(rawDate);
   if (date.isValid()) {
     return date.format("YYYY-MM-DD");
@@ -280,6 +310,7 @@ const ARTICLE_TYPES = new Set(["NewsArticle", "Article"]);
 
 const authorFinders: AuthorTestTransform[] = [
   {
+    // Article or NewsArticle JSON-LD
     test: (doc) =>
       // Wikipedia's JSON-LD lists "Contributors to Wikimedia projects" as the author, which is not
       // something we would include in a citation-like source description.
@@ -303,7 +334,7 @@ const authorFinders: AuthorTestTransform[] = [
         return [];
       }
       if (lds.length > 1) {
-        console.warn(
+        logger.warn(
           `Found ${lds.length} Articles/NewsArticle LDs, using the first one.`
         );
       }
@@ -318,7 +349,7 @@ const authorFinders: AuthorTestTransform[] = [
     },
   },
   {
-    // https://html.spec.whatwg.org/multipage/links.html#link-type-author
+    // HTML 'author' link type: https://html.spec.whatwg.org/multipage/links.html#link-type-author
     // NPR: https://www.npr.org/2023/06/22/1183653543/titan-submersible-missing-adventure-tourism-rescue-risk-cost
     test: (doc) => doc.querySelectorAll('a[rel="author"]').length > 0,
     transform: (doc) =>
@@ -332,7 +363,7 @@ const authorFinders: AuthorTestTransform[] = [
       ),
   },
   {
-    // https://html.spec.whatwg.org/multipage/semantics.html#the-author-element
+    // Google Scholar Indexing: https://www.google.com/intl/en/scholar/inclusion.html#indexing
     // Pubmed: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC1280342/
     test: (doc) =>
       doc.querySelectorAll('meta[name="citation_author"]').length > 0,
@@ -351,6 +382,7 @@ const authorFinders: AuthorTestTransform[] = [
       ),
   },
   {
+    // An NYT custom format?
     // https://www.nytimes.com/live/2023/06/24/world/russia-ukraine-news
     test: (doc) => doc.querySelectorAll('meta[name="byl"]').length > 0,
     transform: (doc) =>

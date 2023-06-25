@@ -4,7 +4,7 @@ import * as textQuote from "dom-anchor-text-quote";
 import {
   CreateDomAnchor,
   CreatePersorgInput,
-  getMediaExcerptInfo,
+  inferBibliographicInfo,
   logger,
   UrlTarget,
 } from "howdju-common";
@@ -29,7 +29,8 @@ export function selectionToAnchorInfo(selection: Selection): AnchorInfo {
     anchors.push(anchor);
   }
 
-  const { authors, sourceDescription, pincite } = getMediaExcerptInfo(document);
+  const { authors, sourceDescription, pincite } =
+    inferBibliographicInfo(document);
   const url = getCanonicalOrCurrentUrl();
 
   return {
