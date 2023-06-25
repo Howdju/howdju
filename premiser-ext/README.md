@@ -39,14 +39,16 @@ Hitting enter in the console will allow the tests to re-run any changes since th
 
 ## Deploying
 
-Update the version in `package.json` and `manifest.json`. Then:
-
 ```sh
 yarn run build-prod
 yarn run package
 ```
 
-Upload `dist/howdju.zip` to the [Chrome Developer Dashboard](https://chrome.google.com/webstore/developer/dashboard).
+Upload `dist/howdju.zip` to the [Chrome Developer
+Dashboard](https://chrome.google.com/webstore/developer/dashboard). (Ensure the version has already
+been incremented.)
+
+Increment the version in `package.json`.
 
 ## Better loading
 

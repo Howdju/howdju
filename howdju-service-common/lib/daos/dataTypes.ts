@@ -97,8 +97,8 @@ export type PersorgData = Persisted<Persorg> & {
 
 export interface SourceRow {
   source_id: EntityRowId;
-  description_apa: string;
-  normal_description_apa: string;
+  description: string;
+  normal_description: string;
   creator_user_id: EntityRowId;
   created: Moment;
 }

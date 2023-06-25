@@ -418,9 +418,25 @@ export type CreateUrlLocator = z.output<typeof CreateUrlLocator>;
 
 /** A source of information */
 export const Source = Entity.extend({
-  /** A description of the source that must match the APA bibliographic style. */
-  descriptionApa: z.string().min(1).max(1024),
-  normalDescriptionApa: z.string().max(1024),
+  /**
+   * A description of the source.
+   *
+   * The preferred style is MLA-like, but omitting the Authors:
+   *
+   * - The title of the source comes first and should be in quotes unless it is the only field.
+   * - The date format should be ISO 8601 (YYYY-MM-DD) unless the source is updated frequently, in
+   *   which case including the time is recommended.
+   *
+   * Because we can't guarantee that users will follow this style, we will later need a means
+   * to vote on preferred manifestations of Sources.
+   *
+   * Examples:
+   *
+   * - “Russia Accuses Prigozhin of Trying to Mount a Coup: Live Updates” The New York Times (2023-06-23)
+   * - “Comparison of Blood and Brain Mercury Levels in Infant Monkeys Exposed to Methylmercury or Vaccines Containing Thimerosal” Environmental Health Perspectives vol. 113,8 (2005): 1015. doi:10.1289/ehp.7712
+   */
+  description: z.string().min(1).max(1024),
+  normalDescription: z.string().max(1024),
   created: momentObject,
   deleted: momentObject.optional(),
   creator: User,
@@ -428,7 +444,7 @@ export const Source = Entity.extend({
 export type Source = z.output<typeof Source>;
 
 export const CreateSource = Source.omit({
-  normalDescriptionApa: true,
+  normalDescription: true,
   created: true,
   creator: true,
 });

@@ -48,7 +48,7 @@ describe("MediaExcerptsDao", () => {
 
       const expectedSource = merge({}, mediaExcerpt.citations[0].source, {
         id: expect.any(String),
-        normalDescriptionApa: "the apa description",
+        normalDescription: "the source description",
         creatorUserId: user.id,
         created: expect.any(MomentConstructor),
       });
@@ -326,7 +326,7 @@ describe("MediaExcerptsDao", () => {
         localRep: { quotation: "the text quote" },
       });
       const source = await testHelper.makeSource(creator.id, {
-        descriptionApa: "the APA description",
+        description: "the description",
       });
       const createCitation: CreateMediaExcerptCitation = {
         source,
@@ -356,7 +356,7 @@ describe("MediaExcerptsDao", () => {
         localRep: { quotation: "the text quote" },
       });
       const source = await testHelper.makeSource(creator.id, {
-        descriptionApa: "the APA description",
+        description: "the description",
       });
       const createCitation: CreateMediaExcerptCitation = {
         source,
@@ -394,7 +394,7 @@ describe("MediaExcerptsDao", () => {
         localRep: { quotation: "the text quote" },
       });
       const source = await testHelper.makeSource(creator.id, {
-        descriptionApa: "the APA description",
+        description: "the description",
       });
       const createCitation: CreateMediaExcerptCitation = {
         source,

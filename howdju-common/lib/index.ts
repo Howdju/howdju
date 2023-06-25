@@ -4,6 +4,7 @@ export * from "./codes";
 export * from "./consts";
 export * from "./contextTrails";
 export * from "./commonPaths";
+export * from "./domBibliographicInfo";
 export * from "./entities";
 export * from "./enums";
 export * from "./commonErrors";

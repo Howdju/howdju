@@ -39,8 +39,8 @@ export class SourcesDao {
       rows: [row],
     } = await this.db.query<SourceRow>(
       "readEquivalentSource",
-      `SELECT * FROM sources WHERE normal_description_apa = $1`,
-      [normalizeText(source.descriptionApa)]
+      `SELECT * FROM sources WHERE normal_description = $1`,
+      [normalizeText(source.description)]
     );
     if (!row) {
       return undefined;
@@ -53,21 +53,21 @@ export class SourcesDao {
     source: CreateSource,
     created: Moment
   ) {
-    const normalDescriptionApa = normalizeText(source.descriptionApa);
+    const normalDescription = normalizeText(source.description);
     const {
       rows: [row],
     } = await this.db.query(
       "createSource",
       `
-      insert into sources (description_apa, normal_description_apa, creator_user_id, created)
+      insert into sources (description, normal_description, creator_user_id, created)
       values ($1, $2, $3, $4)
       returning source_id
       `,
-      [source.descriptionApa, normalDescriptionApa, creatorUserId, created]
+      [source.description, normalDescription, creatorUserId, created]
     );
     return merge({}, source, {
       id: row.source_id,
-      normalDescriptionApa,
+      normalDescription,
       creatorUserId,
       created,
     });

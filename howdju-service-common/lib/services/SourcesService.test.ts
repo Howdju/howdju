@@ -1,20 +1,21 @@
 import { Pool } from "pg";
 
+import { CreateSource, utcNow } from "howdju-common";
 import { expectToBeSameMomentDeep, mockLogger } from "howdju-test-common";
 
 import { endPoolAndDropDb, initDb, makeTestDbConfig } from "@/util/testUtil";
 import { Database, makePool } from "../database";
 import { makeTestProvider } from "@/initializers/TestProvider";
 import TestHelper from "@/initializers/TestHelper";
-import { SourcesDescriptionSearcher } from "./searchers";
+import { SourcesService } from "./SourcesService";
 
 const dbConfig = makeTestDbConfig();
 
-describe("sourcesDescriptionSearcher", () => {
+describe("SourcesService", () => {
   let dbName: string;
   let pool: Pool;
 
-  let searcher: SourcesDescriptionSearcher;
+  let service: SourcesService;
   let testHelper: TestHelper;
   beforeEach(async () => {
     dbName = await initDb(dbConfig);
@@ -24,37 +25,32 @@ describe("sourcesDescriptionSearcher", () => {
 
     const provider = makeTestProvider(database);
 
-    searcher = provider.sourcesDescriptionSearcher;
+    service = provider.sourcesService;
     testHelper = provider.testHelper;
   });
   afterEach(async () => {
     await endPoolAndDropDb(pool, dbConfig, dbName);
   });
 
-  describe("search", () => {
-    test("returns sources by description", async () => {
+  describe("readOrCreateSource", () => {
+    test("returns an equivalent source", async () => {
+      // Arrange
       const { user } = await testHelper.makeUser();
-      const fooSources = await Promise.all(
-        new Array(3)
-          .fill(0)
-          .map(async (_x, i) =>
-            testHelper.makeSource(user.id, { description: `foo ${i}` })
-          )
-      );
-      await Promise.all(
-        new Array(3).fill(0).map(
-          async (_x, i) =>
-            await testHelper.makeSource(user.id, {
-              description: `bar ${i}`,
-            })
-        )
-      );
+      const createSource: CreateSource = {
+        description: "the source description",
+      };
+      const created = utcNow();
+      const { isExtant: isExtantInitial, source } =
+        await service.readOrCreateSource(user.id, createSource, created);
 
-      const sources = await searcher.search("foo");
+      // Act
+      const { isExtant, source: sourceSecond } =
+        await service.readOrCreateSource(user.id, createSource, created);
 
-      expect(sources).toIncludeSameMembers(
-        expectToBeSameMomentDeep(fooSources)
-      );
+      // Assert
+      expect(isExtantInitial).toBe(false);
+      expect(isExtant).toBe(true);
+      expect(source).toEqual(expectToBeSameMomentDeep(sourceSecond));
     });
   });
 });

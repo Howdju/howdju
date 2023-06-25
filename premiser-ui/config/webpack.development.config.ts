@@ -57,6 +57,12 @@ export const webpackConfig: HtmlWebpackPlugin.Options = {
     },
     port,
     host: devServerBindHost,
+    headers: {
+      // Using the extension with the local web app was resulting in Substack caching.
+      // The page sends a If-None-Match header and dev server returns a matching ETag, a 304, and an
+      //empty response resulting in an empty iframe was empty.
+      "Cache-Control": "no-store",
+    },
     static: [
       {
         directory: "public",

@@ -57,7 +57,7 @@ describe("SubmitMediaExcerptPage", () => {
       citations: [
         {
           source: {
-            descriptionApa: description,
+            description: description,
           },
         },
       ],
@@ -111,7 +111,7 @@ describe("SubmitMediaExcerptPage", () => {
     const user = setupUserEvent();
 
     const quotation = "An important conclusion.";
-    const descriptionApa = "A credible source";
+    const description = "A credible source";
     const pincite = "page 123";
 
     const { location } = makeRouteComponentProps("media-excerpts/new");
@@ -128,7 +128,7 @@ describe("SubmitMediaExcerptPage", () => {
       citations: [
         {
           source: {
-            descriptionApa,
+            description,
           },
           pincite,
         },
@@ -160,7 +160,7 @@ describe("SubmitMediaExcerptPage", () => {
     );
 
     await user.type(screen.getByLabelText(/Quote/i), quotation);
-    await user.type(screen.getByLabelText(/Description/i), descriptionApa);
+    await user.type(screen.getByLabelText(/Description/i), description);
     await user.type(screen.getByLabelText(/Pincite/i), pincite);
 
     // Act

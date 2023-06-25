@@ -1,5 +1,7 @@
 const path = require("path");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
+const webpack = require("webpack");
+const project = require("./package.json");
 
 module.exports = (env, argv) => ({
   mode: env.production ? "production" : "development",
@@ -16,12 +18,32 @@ module.exports = (env, argv) => ({
   plugins: [
     new CopyWebpackPlugin({
       patterns: [
-        { from: "src/manifest.json" },
+        {
+          from: "src/manifest.json",
+          transform(content) {
+            return content
+              .toString()
+              .replace("$EXTENSION_VERSION", project.version)
+              .replace(
+                "$EXTENSION_NAME",
+                env.production ? "Howdju Extension" : "Howdju Extension (dev)"
+              )
+              .replace(
+                "$BROWSER_ACTION_DEFAULT_TITLE",
+                env.production ? "Howdju" : "Howdju (dev)"
+              );
+          },
+        },
         { from: "icons/**/*" },
         // `to: "[name][ext]"` flattens the files
         { from: "src/*.css", to: "[name][ext]" },
         { from: "src/*.html", to: "[name][ext]" },
       ],
+    }),
+    new webpack.DefinePlugin({
+      "process.env.NODE_ENV": JSON.stringify(
+        env.production ? "production" : "development"
+      ),
     }),
   ],
   resolve: {

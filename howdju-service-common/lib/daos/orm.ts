@@ -978,8 +978,8 @@ export const toContentReport = wrapMapper(function toContentReportMapper(
 export function toSource(row: SourceRow): SourceOut {
   return brandedParse(SourceRef, {
     id: row.source_id,
-    descriptionApa: row.description_apa,
-    normalDescriptionApa: row.normal_description_apa,
+    description: row.description,
+    normalDescription: row.normal_description,
     created: row.created,
     creatorUserId: row.creator_user_id,
   });

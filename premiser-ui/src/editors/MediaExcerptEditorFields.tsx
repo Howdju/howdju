@@ -1,5 +1,7 @@
-import React from "react";
-import { Button } from "react-md";
+import React, { useState } from "react";
+import { Button, DialogContainer } from "react-md";
+import { MaterialSymbol } from "react-material-symbols";
+import { isEmpty } from "lodash";
 
 import {
   CreateMediaExcerptInput,
@@ -9,27 +11,24 @@ import {
   MediaExcerpt,
   makePersorg,
 } from "howdju-common";
+import { toCreatePersorgInput } from "howdju-client-common";
 
 import { combineNames, combineIds, combineSuggestionsKeys } from "@/viewModels";
-
 import {
   EditorFieldsDispatch,
   EntityEditorFieldsProps,
 } from "@/editors/withEditor";
 import { makeErrorPropCreator } from "@/modelErrorMessages";
-
-import "./JustificationEditorFields.scss";
 import TextField from "@/TextField";
 import SingleLineTextField from "@/SingleLineTextField";
-import { isEmpty } from "lodash";
 import { EditorType } from "@/reducers/editors";
 import EntityViewer from "@/EntityViewer";
 import PersorgEditorFields from "@/PersorgEditorFields";
 import { editors } from "@/actions";
-import { toCreatePersorgInput } from "howdju-client-common";
 import { EditorId } from "@/types";
 import SourceDescriptionAutocomplete from "@/SourceDescriptionAutocomplete";
-import { MaterialSymbol } from "react-material-symbols";
+
+import "./MediaExcerptEditorFields.scss";
 
 interface Props
   extends EntityEditorFieldsProps<
@@ -93,6 +92,17 @@ export default function MediaExcerptEditorFields(props: Props) {
     );
   }
 
+  const [
+    isSourceDescriptionHelpDialogVisible,
+    setIsSourceDescriptionHelpDialogVisible,
+  ] = useState(false);
+  function showSourceDescriptionHelpDialog() {
+    setIsSourceDescriptionHelpDialogVisible(true);
+  }
+  function hideSourceDescriptionHelpDialog() {
+    setIsSourceDescriptionHelpDialogVisible(false);
+  }
+
   return (
     <div>
       <TextField
@@ -132,49 +142,99 @@ export default function MediaExcerptEditorFields(props: Props) {
           onSubmit={onSubmit}
         />
       ))}
-
-      {mediaExcerpt?.citations?.map(({ source, pincite }, index) => (
-        <React.Fragment key={combineIds(id, `citations[${index}]`)}>
-          <SourceDescriptionAutocomplete
-            {...errorProps((me) => me.citations?.[index].source.descriptionApa)}
-            id={combineIds(id, `citations[${index}].source.descriptionApa`)}
-            name={combineNames(
-              name,
-              `citations[${index}].source.descriptionApa`
-            )}
-            key={combineIds(id, `citations[${index}].source.descriptionApa`)}
-            suggestionsKey={combineSuggestionsKeys(
-              suggestionsKey,
-              `citations[${index}].source.descriptionApa`
-            )}
-            label="Description (APA)"
-            required
-            rows={1}
-            maxRows={2}
-            maxLength={
-              MediaExcerptCitation.shape.source.shape.descriptionApa.maxLength
-            }
-            value={source.descriptionApa}
-            onBlur={onBlur}
-            onPropertyChange={onPropertyChange}
-            disabled={disabled}
-          />
-          <SingleLineTextField
-            {...errorProps((me) => me.citations?.[index].pincite)}
-            id={combineIds(id, `citations[${index}].pincite`)}
-            name={combineNames(name, `citations[${index}].pincite`)}
-            key={combineIds(id, `citations[${index}].pincite`)}
-            label="Pincite"
-            rows={1}
-            maxRows={2}
-            maxLength={MediaExcerptCitation.shape.pincite.unwrap().maxLength}
-            value={pincite}
-            onBlur={onBlur}
-            onPropertyChange={onPropertyChange}
-            disabled={disabled}
-          />
-        </React.Fragment>
-      ))}
+      <fieldset>
+        <legend>Citations</legend>
+        {mediaExcerpt?.citations?.map(({ source, pincite }, index) => (
+          <React.Fragment key={combineIds(id, `citations[${index}]`)}>
+            <SourceDescriptionAutocomplete
+              {...errorProps((me) => me.citations?.[index].source.description)}
+              id={combineIds(id, `citations[${index}].source.description`)}
+              name={combineNames(
+                name,
+                `citations[${index}].source.description`
+              )}
+              key={combineIds(id, `citations[${index}].source.description`)}
+              suggestionsKey={combineSuggestionsKeys(
+                suggestionsKey,
+                `citations[${index}].source.description`
+              )}
+              label="Description"
+              required
+              rows={1}
+              maxRows={2}
+              maxLength={
+                MediaExcerptCitation.shape.source.shape.description.maxLength
+              }
+              value={source.description}
+              onBlur={onBlur}
+              onPropertyChange={onPropertyChange}
+              disabled={disabled}
+              helpText={
+                <span>
+                  MLA-like, omitting the authors{" "}
+                  <Button onClick={showSourceDescriptionHelpDialog}>
+                    <MaterialSymbol icon="help" />
+                  </Button>
+                </span>
+              }
+            />
+            <DialogContainer
+              id="source-description-help-dialog"
+              visible={isSourceDescriptionHelpDialogVisible}
+              title="About Source Description"
+              onHide={hideSourceDescriptionHelpDialog}
+              className="source-description-help-dialog"
+            >
+              <p>
+                The preferred style is MLA-like, but omitting the Authors:
+                <ul>
+                  <li>
+                    The title of the source comes first and should be in quotes
+                    unless it is the only field.
+                  </li>
+                  <li>
+                    The date format should be ISO 8601 (YYYY-MM-DD) unless the
+                    source is updated frequently, in which case including the
+                    time is recommended.
+                  </li>
+                </ul>
+              </p>
+              <p>
+                Examples:
+                <ul>
+                  <li>
+                    “Russia Accuses Prigozhin of Trying to Mount a Coup: Live
+                    Updates” The New York Times (2023-06-23)
+                  </li>
+                  <li>
+                    “Comparison of Blood and Brain Mercury Levels in Infant
+                    Monkeys Exposed to Methylmercury or Vaccines Containing
+                    Thimerosal” Environmental Health Perspectives vol. 113,8
+                    (2005): 1015. doi:10.1289/ehp.7712
+                  </li>
+                </ul>
+              </p>
+              <Button raised primary onClick={hideSourceDescriptionHelpDialog}>
+                Close
+              </Button>
+            </DialogContainer>
+            <SingleLineTextField
+              {...errorProps((me) => me.citations?.[index].pincite)}
+              id={combineIds(id, `citations[${index}].pincite`)}
+              name={combineNames(name, `citations[${index}].pincite`)}
+              key={combineIds(id, `citations[${index}].pincite`)}
+              label="Pincite"
+              rows={1}
+              maxRows={2}
+              maxLength={MediaExcerptCitation.shape.pincite.unwrap().maxLength}
+              value={pincite}
+              onBlur={onBlur}
+              onPropertyChange={onPropertyChange}
+              disabled={disabled}
+            />
+          </React.Fragment>
+        ))}
+      </fieldset>
       {mediaExcerpt?.speakers?.map((speaker, index) => {
         return (
           <EntityViewer

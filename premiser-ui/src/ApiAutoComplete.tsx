@@ -71,6 +71,7 @@ export interface Props<T>
    */
   maxRows?: number;
   maxLength?: number | null;
+  helpText?: ReactNode;
 }
 
 export default function ApiAutoComplete<T>({
@@ -94,6 +95,7 @@ export default function ApiAutoComplete<T>({
   maxLength,
   onKeyDown,
   value,
+  helpText,
   ...rest
 }: Props<T>) {
   const dispatch = useAppDispatch();
@@ -204,6 +206,7 @@ export default function ApiAutoComplete<T>({
           style={{ display: "none" }}
         />
       </div>
+      {helpText}
     </>
   );
 }

@@ -23,7 +23,13 @@ export function* beginEditOfMediaExcerptFromAnchorInfo() {
 }
 
 function toCreateMediaExcerptInput(payload: Payload): CreateMediaExcerptInput {
-  const { anchors, documentTitle, url } = payload;
+  const {
+    anchors,
+    sourceDescription,
+    authors: speakers,
+    pincite,
+    url,
+  } = payload;
   const quotation = anchors.map((a) => a.exactText.trim()).join("\n\n");
   return {
     localRep: {
@@ -35,9 +41,10 @@ function toCreateMediaExcerptInput(payload: Payload): CreateMediaExcerptInput {
     },
     citations: [
       {
-        source: { descriptionApa: documentTitle },
+        source: { description: sourceDescription },
+        pincite,
       },
     ],
-    speakers: [],
+    speakers,
   };
 }

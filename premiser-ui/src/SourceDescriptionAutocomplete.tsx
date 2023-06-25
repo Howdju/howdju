@@ -25,7 +25,7 @@ export default function SourceDescriptionAutocomplete({
 }: Props) {
   return (
     <ApiAutoComplete
-      maxLength={Source.shape.descriptionApa.maxLength}
+      maxLength={Source.shape.description.maxLength}
       label="Description"
       {...rest}
       id={id}
@@ -34,7 +34,7 @@ export default function SourceDescriptionAutocomplete({
       suggestionsKey={suggestionsKey}
       suggestionSchema={sourceSchema}
       name={name}
-      labelKey="descriptionApa"
+      labelKey="description"
       onAutoComplete={onAutoComplete}
       onPropertyChange={onPropertyChange}
     />
