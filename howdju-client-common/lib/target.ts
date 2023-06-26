@@ -2,23 +2,16 @@ import * as textPosition from "dom-anchor-text-position";
 import * as textQuote from "dom-anchor-text-quote";
 
 import {
+  AnchorInfo,
   CreateDomAnchor,
-  CreatePersorgInput,
   inferBibliographicInfo,
   logger,
   UrlTarget,
+  makeDomAnchor,
 } from "howdju-common";
 
 import { nodeIsBefore, getPreviousLeafNode } from "./dom";
 import { getCanonicalOrCurrentUrl } from "./location";
-
-export interface AnchorInfo {
-  anchors: CreateDomAnchor[];
-  authors?: CreatePersorgInput[];
-  sourceDescription: string;
-  pincite?: string;
-  url: string;
-}
 
 export function selectionToAnchorInfo(selection: Selection): AnchorInfo {
   const anchors = [];
@@ -39,19 +32,6 @@ export function selectionToAnchorInfo(selection: Selection): AnchorInfo {
     sourceDescription,
     pincite,
     url,
-  };
-}
-
-export function makeDomAnchor(
-  { exact, prefix, suffix }: textQuote.TextQuoteAnchor,
-  { start, end }: textPosition.TextPositionAnchor
-): CreateDomAnchor {
-  return {
-    exactText: exact,
-    prefixText: prefix,
-    suffixText: suffix,
-    startOffset: start,
-    endOffset: end,
   };
 }
 

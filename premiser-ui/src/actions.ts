@@ -3,6 +3,7 @@ import { Location, LocationState } from "history";
 import { Action } from "redux";
 
 import {
+  AnchorInfo,
   EntityId,
   WritQuote,
   JustificationRootTargetType,
@@ -17,7 +18,6 @@ import {
   PersistedJustificationWithRootRef,
   MediaExcerptOut,
 } from "howdju-common";
-import { AnchorInfo } from "howdju-client-common";
 
 import { EditorEntity, EditorType } from "./reducers/editors";
 import {

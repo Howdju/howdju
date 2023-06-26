@@ -12,4 +12,12 @@ declare module "dom-anchor-text-position" {
   }
 
   function toRange(root: Node, selector: Selector = {});
+
+  function toTextPosition(
+    root: Node,
+    selector: Selector,
+    options?: {
+      hint?: number;
+    }
+  ): TextPositionAnchor;
 }

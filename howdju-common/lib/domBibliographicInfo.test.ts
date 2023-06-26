@@ -5,7 +5,10 @@ import { extractDate, inferBibliographicInfo } from "./domBibliographicInfo";
 
 describe("domBibliographicInfo", () => {
   it("should handle NYT", () => {
-    const html = readFileSync("lib/domMetadataTestData/nytimes.html", "utf8");
+    const html = readFileSync(
+      "lib/domBibliographicInfoTestData/nytimes.html",
+      "utf8"
+    );
     const dom = new JSDOM(html);
 
     const info = inferBibliographicInfo(dom.window.document);
@@ -21,7 +24,10 @@ describe("domBibliographicInfo", () => {
   });
 
   it("should handle PubMed", () => {
-    const html = readFileSync("lib/domMetadataTestData/pubmed.html", "utf8");
+    const html = readFileSync(
+      "lib/domBibliographicInfoTestData/pubmed.html",
+      "utf8"
+    );
     const dom = new JSDOM(html);
 
     const info = inferBibliographicInfo(dom.window.document);
@@ -43,7 +49,10 @@ describe("domBibliographicInfo", () => {
   });
 
   it("should handle Wikipedia", () => {
-    const html = readFileSync("lib/domMetadataTestData/wikipedia.html", "utf8");
+    const html = readFileSync(
+      "lib/domBibliographicInfoTestData/wikipedia.html",
+      "utf8"
+    );
     const dom = new JSDOM(html);
 
     const info = inferBibliographicInfo(dom.window.document);
@@ -55,7 +64,10 @@ describe("domBibliographicInfo", () => {
   });
 
   it("should handle Aeon", () => {
-    const html = readFileSync("lib/domMetadataTestData/aeon.html", "utf8");
+    const html = readFileSync(
+      "lib/domBibliographicInfoTestData/aeon.html",
+      "utf8"
+    );
     const dom = new JSDOM(html);
 
     const info = inferBibliographicInfo(dom.window.document);
@@ -74,7 +86,10 @@ describe("domBibliographicInfo", () => {
   });
 
   it("should handle Substack", () => {
-    const html = readFileSync("lib/domMetadataTestData/substack.html", "utf8");
+    const html = readFileSync(
+      "lib/domBibliographicInfoTestData/substack.html",
+      "utf8"
+    );
     const dom = new JSDOM(html);
 
     const info = inferBibliographicInfo(dom.window.document);

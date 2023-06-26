@@ -9072,6 +9072,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"axios@npm:^1.4.0":
+  version: 1.4.0
+  resolution: "axios@npm:1.4.0"
+  dependencies:
+    follow-redirects: ^1.15.0
+    form-data: ^4.0.0
+    proxy-from-env: ^1.1.0
+  checksum: 7fb6a4313bae7f45e89d62c70a800913c303df653f19eafec88e56cea2e3821066b8409bc68be1930ecca80e861c52aa787659df0ffec6ad4d451c7816b9386b
+  languageName: node
+  linkType: hard
+
 "babel-code-frame@npm:^6.26.0":
   version: 6.26.0
   resolution: "babel-code-frame@npm:6.26.0"
@@ -15788,6 +15799,8 @@ __metadata:
     ajv: ^8.1.0
     ajv-formats: ^2.0.2
     bases: ^0.2.1
+    dom-anchor-text-position: ^5.0.0
+    dom-anchor-text-quote: ^4.0.2
     eslint: ^8.27.0
     eslint-config-howdju: "workspace:eslint-config-howdju"
     howdju-test-common: "workspace:howdju-test-common"
@@ -15953,6 +15966,7 @@ __metadata:
     "@types/pg-pool": ^2.0.3
     any-promise: ^1.3.0
     aws-sdk: ^2.918.0
+    axios: ^1.4.0
     bcryptjs: ^2.4.3
     bluebird: ^3.5.0
     cryptohat: ^1.0.1
@@ -15963,6 +15977,7 @@ __metadata:
     jest: ^29.3.1
     jest-extended: ^3.2.1
     joi: ^17.4.0
+    jsdom: ~21.1.2
     lodash: ^4.17.21
     moment: ^2.29.4
     moment-duration-format: ^2.2.2

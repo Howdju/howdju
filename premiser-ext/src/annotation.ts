@@ -1,4 +1,4 @@
-import { AnchorInfo } from "howdju-client-common";
+import { AnchorInfo } from "howdju-common";
 
 import { setNodeData } from "./node-data";
 import {

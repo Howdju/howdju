@@ -2,12 +2,12 @@ import { ActionCreator } from "redux";
 import { createAction } from "@reduxjs/toolkit";
 
 import {
+  AnchorInfo,
   decircularizeJustification,
   JustificationOut,
   PersistedJustificationWithRootRef,
   UrlOut,
 } from "howdju-common";
-import { AnchorInfo } from "./target";
 
 /**
  * redux-actions and @reduxjs/toolkit have a convention that action creators get a .toString method

@@ -4,12 +4,20 @@ import type { Article, NewsArticle } from "schema-dts";
 import { isDefined } from "./general";
 import { logger } from "./logger";
 
-import { CreatePersorgInput } from "./zodSchemas";
+import { CreateDomAnchor, CreatePersorgInput } from "./zodSchemas";
 
-interface BibliographicInfo {
+export interface BibliographicInfo {
   sourceDescription: string;
   pincite?: string;
   authors?: CreatePersorgInput[];
+}
+
+export interface AnchorInfo {
+  anchors: CreateDomAnchor[];
+  authors?: CreatePersorgInput[];
+  sourceDescription: string;
+  pincite?: string;
+  url: string;
 }
 
 type NewsArticleAuthor = NonNullable<NewsArticle["author"]>;
