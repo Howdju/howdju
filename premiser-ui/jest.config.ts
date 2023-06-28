@@ -8,6 +8,7 @@ const config: Config = {
   setupFilesAfterEnv: [
     ...(baseConfig.setupFilesAfterEnv ?? []),
     "../jest/setup-after-env-testing-library-jest-dom.ts",
+    "./jest/jsDomWhatWgTextEncoder.js",
   ],
 };
 

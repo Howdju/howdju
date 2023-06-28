@@ -25,7 +25,7 @@
     "cryptohat": "^1.0.1",
     "howdju-common": "workspace:howdju-common",
     "joi": "^17.4.0",
-    "jsdom": "~21.1.2",
+    "jsdom": "^21.1.2",
     "lodash": "^4.17.21",
     "moment": "^2.29.4",
     "moment-duration-format": "^2.2.2",

@@ -7,7 +7,7 @@ const pathModule = require("path");
  * Supports 1) project-relative imports in dependencies of the test package, and 2) resolving
  * dependencies of linked local dependencies.
  */
-module.exports = (path, options) => {
+module.exports = function customJestResolver(path, options) {
   // If path begins with `@` (which is how we indicate a project-relative import) then
   // replace the @ with the subdirectory of the closest package to the importing file that contains
   // the source. (The subdirectory will be `src` or `lib`, but so long as we can assume that it's in

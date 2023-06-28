@@ -3,7 +3,7 @@ const assign = require("lodash/assign");
 
 const defaultOptions = {
   bundle: true,
-  external: ["pg-native"],
+  external: ["pg-native", "canvas"],
   platform: "node",
   sourcemap: true,
 };
