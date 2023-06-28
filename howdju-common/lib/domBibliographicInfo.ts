@@ -1,9 +1,11 @@
 import { isString } from "lodash";
 import moment from "moment";
 import type { Article, NewsArticle } from "schema-dts";
+import * as textQuote from "dom-anchor-text-quote";
+
 import { isDefined } from "./general";
 import { logger } from "./logger";
-
+import { makeDomAnchor } from "./anchors";
 import { CreateDomAnchor, CreatePersorgInput } from "./zodSchemas";
 
 export interface BibliographicInfo {
@@ -12,11 +14,8 @@ export interface BibliographicInfo {
   authors?: CreatePersorgInput[];
 }
 
-export interface AnchorInfo {
+export interface MediaExcerptInfo extends BibliographicInfo {
   anchors: CreateDomAnchor[];
-  authors?: CreatePersorgInput[];
-  sourceDescription: string;
-  pincite?: string;
   url: string;
 }
 
@@ -466,4 +465,30 @@ function getKnownForFromAuthor(author: NewsArticleAuthor): string | undefined {
     return author.description.textValue;
   }
   return undefined;
+}
+
+export type AnchoredBibliographicInfo = BibliographicInfo & {
+  anchors: CreateDomAnchor[];
+};
+
+/** Given a URL and quotation from it, return anchor info for it */
+export function inferAnchoredBibliographicInfo(
+  doc: Document,
+  quotation: string
+): AnchoredBibliographicInfo {
+  const bibliographicInfo = inferBibliographicInfo(doc);
+
+  const textPositionAnchor = textQuote.toTextPosition(doc.body, {
+    exact: quotation,
+  });
+  const textQuoteAnchor = textQuote.fromTextPosition(
+    doc.body,
+    textPositionAnchor
+  );
+  const domAnchor = makeDomAnchor(textQuoteAnchor, textPositionAnchor);
+
+  return {
+    ...bibliographicInfo,
+    anchors: [domAnchor],
+  };
 }

@@ -12,6 +12,7 @@ export * from "./JustificationScoresService";
 export * from "./JustificationVotesService";
 export * from "./MainSearchService";
 export * from "./MediaExcerptsService";
+export * from "./MediaExcerptInfosService";
 export * from "./PermissionsService";
 export * from "./PersorgsService";
 export * from "./PerspectivesService";

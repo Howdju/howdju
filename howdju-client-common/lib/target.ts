@@ -2,7 +2,7 @@ import * as textPosition from "dom-anchor-text-position";
 import * as textQuote from "dom-anchor-text-quote";
 
 import {
-  AnchorInfo,
+  MediaExcerptInfo,
   CreateDomAnchor,
   inferBibliographicInfo,
   logger,
@@ -13,7 +13,7 @@ import {
 import { nodeIsBefore, getPreviousLeafNode } from "./dom";
 import { getCanonicalOrCurrentUrl } from "./location";
 
-export function selectionToAnchorInfo(selection: Selection): AnchorInfo {
+export function selectionToAnchorInfo(selection: Selection): MediaExcerptInfo {
   const anchors = [];
 
   for (let i = 0; i < selection.rangeCount; i++) {

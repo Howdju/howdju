@@ -3,7 +3,7 @@ import { Location, LocationState } from "history";
 import { Action } from "redux";
 
 import {
-  AnchorInfo,
+  MediaExcerptInfo,
   EntityId,
   WritQuote,
   JustificationRootTargetType,
@@ -352,7 +352,7 @@ export const flows = {
   ),
   beginEditOfMediaExcerptFromAnchorInfo: createAction(
     "FLOWS/SUBMIT_MEDIA_EXCERPT_FROM_ANCHOR_INFO",
-    (anchorInfo: AnchorInfo) => anchorInfo
+    (anchorInfo: MediaExcerptInfo) => anchorInfo
   ),
   commitEditThenView: createAction(
     "FLOWS/COMMIT_PROPOSITION_THEN_VIEW",

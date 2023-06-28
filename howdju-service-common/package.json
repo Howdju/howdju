@@ -7,9 +7,9 @@
   "author": "Carl Gieringer <carl@howdju.com>",
   "license": "AGPL-3.0-or-later",
   "scripts": {
-    "check-format": "yarn run prettier --check --ignore-path .gitignore .",
+    "check-format": "yarn run prettier --check --ignore-path .prettierignore .",
     "create:test-db-dump": "pg_dump --schema-only --no-owner --no-acl --host=127.0.0.1 --port=5432 --dbname=premiser --user=postgres --file=test-data/premiser_test_schema_dump.sql",
-    "fix-format": "yarn run lint --fix && yarn run prettier --write --ignore-path .gitignore .",
+    "fix-format": "yarn run lint --fix && yarn run prettier --write --ignore-path .prettierignore .",
     "lint": "eslint --ignore-path=.gitignore .",
     "test": "yarn run check:test-db-dump-updated && bin/test.sh",
     "test-inspect": "yarn run check:test-db-dump-updated && bin/test.sh inspect",

@@ -2,7 +2,7 @@ import { ActionCreator } from "redux";
 import { createAction } from "@reduxjs/toolkit";
 
 import {
-  AnchorInfo,
+  MediaExcerptInfo,
   decircularizeJustification,
   JustificationOut,
   PersistedJustificationWithRootRef,
@@ -46,7 +46,7 @@ export type ExtensionAction = ReturnType<
 export const extensionFrame = {
   beginEditOfMediaExcerptFromAnchorInfo: createAction(
     "EXTENSION_FRAME/BEGIN_EDIT_OF_MEDIA_EXCERPT_FROM_ANCHOR_INFO",
-    (anchorInfo: AnchorInfo) => ({
+    (anchorInfo: MediaExcerptInfo) => ({
       payload: anchorInfo,
     })
   ),

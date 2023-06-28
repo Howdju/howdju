@@ -1,18 +1,18 @@
 import axios from "axios";
 import { readFileSync } from "fs";
 
-import { requestAnchorInfo } from "./requestBibliographicInfo";
+import { requestMediaExcerptInfo } from "./requestMediaExcerptInfo";
 
-describe("requestBibliographicInfo", () => {
-  it("returns anchor info", async () => {
+describe("requestMediaExcerptInfo", () => {
+  it("returns MediaExcerptInfo", async () => {
     const html = readFileSync(
-      "lib/domBibliographicInfoTestData/pubmed.html",
+      "lib/requestMediaExcerptInfoTestData/pubmed.html",
       "utf8"
     );
     const get = jest.spyOn(axios, "get");
     get.mockImplementation(() => Promise.resolve({ data: html }));
 
-    const info = await requestAnchorInfo(
+    const info = await requestMediaExcerptInfo(
       "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC1280342/",
       "The results indicate that MeHg is not a suitable reference for risk assessment from exposure to thimerosal-derived Hg. Knowledge of the toxicokinetics and developmental toxicity of thimerosal is needed to afford a meaningful assessment of the developmental effects of thimerosal-containing vaccines."
     );

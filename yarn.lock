@@ -15805,7 +15805,6 @@ __metadata:
     eslint-config-howdju: "workspace:eslint-config-howdju"
     howdju-test-common: "workspace:howdju-test-common"
     jest: ^29.3.1
-    jsdom: ~21.1.2
     lodash: ^4.17.21
     moment: ^2.29.4
     prettier: 2.7.1
