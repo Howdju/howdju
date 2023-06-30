@@ -1835,6 +1835,13 @@ CREATE UNIQUE INDEX media_excerpt_citations_unq_idx ON public.media_excerpt_cita
 
 
 --
+-- Name: source_normal_description_unique_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX source_normal_description_unique_idx ON public.sources USING btree (normal_description) WHERE (deleted IS NULL);
+
+
+--
 -- Name: sources_description_apa_english_idx; Type: INDEX; Schema: public; Owner: -
 --
 
