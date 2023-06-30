@@ -29,9 +29,10 @@ import { commitEditorThenView } from "./editors/commitEditorThenViewSaga";
 import { commitEditThenPutActionOnSuccess } from "./editors/commitEditThenPutActionOnSuccessSaga";
 import { fetchAndBeginEditOfNewJustificationFromBasisSource } from "./editors/fetchAndBeginEditOfNewJustificationFromBasisSourceSaga";
 import { editorCommitEdit } from "./editors/editorCommitEditSaga";
-import { beginEditOfMediaExcerptFromAnchorInfo } from "./editors/submitMediaExcerptFromAnchorInfoSaga";
+import { beginEditOfMediaExcerptFromInfo } from "./editors/beginEditOfMediaExcerptFromInfoSaga";
 import { deleteJustificationRootTargetTranslator } from "./apiLikeSagas";
 import { postExtensionMessages } from "./extensionSagas";
+import { inferMediaExcerptInfo } from "./editors/inferMediaExcerptInfoSaga";
 import * as appSagas from "../app/appSagas";
 import * as justificationsSearchPageSagas from "../pages/justificationsSearch/justificationsSearchPageSagas";
 import * as justificationsPageSagas from "../pages/justifications/justificationPageSagas";
@@ -66,7 +67,7 @@ export default () =>
     commitEditThenPutActionOnSuccess(),
     fetchAndBeginEditOfNewJustificationFromBasisSource(),
     redirectUnauthenticatedUserToLoginOnPagesNeedingAuthentication(),
-    beginEditOfMediaExcerptFromAnchorInfo(),
+    beginEditOfMediaExcerptFromInfo(),
 
     deleteJustificationRootTargetTranslator(),
 
@@ -77,4 +78,6 @@ export default () =>
     sendPageView(),
 
     postExtensionMessages(),
+
+    inferMediaExcerptInfo(),
   ]);

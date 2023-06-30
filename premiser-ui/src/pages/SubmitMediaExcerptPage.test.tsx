@@ -111,6 +111,7 @@ describe("SubmitMediaExcerptPage", () => {
     const user = setupUserEvent();
 
     const quotation = "An important conclusion.";
+    const url = "https://www.info.com";
     const description = "A credible source";
     const pincite = "page 123";
 
@@ -124,6 +125,9 @@ describe("SubmitMediaExcerptPage", () => {
     const mediaExcerpt: CreateMediaExcerpt = {
       localRep: {
         quotation,
+      },
+      locators: {
+        urlLocators: [{ url: { url } }],
       },
       citations: [
         {
@@ -160,6 +164,7 @@ describe("SubmitMediaExcerptPage", () => {
     );
 
     await user.type(screen.getByLabelText(/Quote/i), quotation);
+    await user.type(screen.getByLabelText(/URL/i), url);
     await user.type(screen.getByLabelText(/Description/i), description);
     await user.type(screen.getByLabelText(/Pincite/i), pincite);
 

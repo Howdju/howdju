@@ -15,7 +15,7 @@ export interface BibliographicInfo {
 }
 
 export interface MediaExcerptInfo extends BibliographicInfo {
-  anchors: CreateDomAnchor[];
+  anchors?: CreateDomAnchor[];
   url: string;
 }
 
@@ -468,15 +468,19 @@ function getKnownForFromAuthor(author: NewsArticleAuthor): string | undefined {
 }
 
 export type AnchoredBibliographicInfo = BibliographicInfo & {
-  anchors: CreateDomAnchor[];
+  anchors?: CreateDomAnchor[];
 };
 
 /** Given a URL and quotation from it, return anchor info for it */
 export function inferAnchoredBibliographicInfo(
   doc: Document,
-  quotation: string
+  quotation: string | undefined
 ): AnchoredBibliographicInfo {
   const bibliographicInfo = inferBibliographicInfo(doc);
+
+  if (!quotation) {
+    return bibliographicInfo;
+  }
 
   const textPositionAnchor = textQuote.toTextPosition(doc.body, {
     exact: quotation,

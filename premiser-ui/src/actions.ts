@@ -236,10 +236,12 @@ export const editors = {
     })
   ),
 
+  /** @deprecated use addListItem instead */
   addUrl: createAction(
     "EDITORS/ADD_URL",
     (editorType: EditorType, editorId: EditorId) => ({ editorType, editorId })
   ),
+  /** @deprecated use removeListItem instead */
   removeUrl: createAction(
     "EDITORS/REMOVE_URL",
     (editorType: EditorType, editorId: EditorId, url: Url, index: number) => ({
@@ -250,6 +252,7 @@ export const editors = {
     })
   ),
 
+  /** @deprecated use addListItem instead */
   addPropositionCompoundAtom: createAction(
     "EDITORS/ADD_PROPOSITION_COMPOUND_ATOM",
     (editorType: EditorType, editorId: EditorId, index: number) => ({
@@ -258,6 +261,7 @@ export const editors = {
       index,
     })
   ),
+  /** @deprecated use removeListItem instead */
   removePropositionCompoundAtom: createAction(
     "EDITORS/REMOVE_PROPOSITION_COMPOUND_ATOM",
     (
@@ -301,6 +305,41 @@ export const editors = {
   resetSubmission: createAction(
     "EDITORS/RESET_SUBMISSION",
     (editorType: EditorType, editorId: EditorId) => ({ editorType, editorId })
+  ),
+
+  inferMediaExcerptInfo: createAction(
+    "EDITORS/INFER_MEDIA_EXCERPT_INFO",
+    (
+      editorType: EditorType,
+      editorId: EditorId,
+      url: string,
+      quotation?: string
+    ) => ({
+      editorType,
+      editorId,
+      url,
+      quotation,
+    })
+  ),
+  inferMediaExcerptInfoSucceeded: createAction(
+    "EDITORS/INFER_MEDIA_EXCERPT_INFO/SUCCEEDED",
+    (
+      editorType: EditorType,
+      editorId: EditorId,
+      mediaExcerptInfo: MediaExcerptInfo
+    ) => ({
+      editorType,
+      editorId,
+      mediaExcerptInfo,
+    })
+  ),
+  inferMediaExcerptInfoFailed: createAction(
+    "EDITORS/INFER_MEDIA_EXCERPT_INFO/FAILED",
+    (editorType: EditorType, editorId: EditorId, error: Error) => ({
+      editorType,
+      editorId,
+      error,
+    })
   ),
 };
 
@@ -350,7 +389,7 @@ export const flows = {
       basisSourceId: EntityId
     ) => ({ editorType, editorId, basisSourceType, basisSourceId })
   ),
-  beginEditOfMediaExcerptFromAnchorInfo: createAction(
+  beginEditOfMediaExcerptFromInfo: createAction(
     "FLOWS/SUBMIT_MEDIA_EXCERPT_FROM_ANCHOR_INFO",
     (anchorInfo: MediaExcerptInfo) => anchorInfo
   ),

@@ -44,6 +44,7 @@ import {
   CreateSourceExcerptInput,
   CreateStatementInput,
   CreateUrlInput,
+  CreateUrlLocatorInput,
   CreateVidSegmentInput,
   CreateWritInput,
   CreateWritQuoteInput,
@@ -193,6 +194,10 @@ export const makeCreatePropositionCompoundAtomInput =
 
 export const makeUrl = (props?: Partial<Url>): Url =>
   merge({ url: "", canonicalUrl: "" }, props);
+
+export const makeCreateUrlLocatorInput = (
+  props?: Partial<CreateUrlLocatorInput>
+): CreateUrlLocatorInput => merge({ url: makeUrl() }, props);
 
 export const makePersorg = (): Persorg => ({
   isOrganization: false,

@@ -1188,20 +1188,17 @@ export const serviceRoutes = {
     path: "media-excerpt-info",
     method: httpMethods.GET,
     request: handler(
+      // Require auth to prevent abuse
       Authed.merge(QueryStringParams("url", "quotation")),
       async (
         appProvider: ServicesProvider,
-        { authToken, queryStringParams: { url, quotation } }
+        { queryStringParams: { url, quotation } }
       ) => {
         if (!url) {
           throw new InvalidRequestError("url is required.");
         }
-        if (!quotation) {
-          throw new InvalidRequestError("quotation is required.");
-        }
         const mediaExcerptInfo =
           await appProvider.mediaExcerptInfosService.inferMediaExcerptInfo(
-            authToken,
             url,
             quotation
           );

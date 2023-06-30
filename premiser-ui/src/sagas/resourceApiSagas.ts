@@ -30,7 +30,7 @@ export function* resourceApiCalls() {
 
 const cancelableResourceCallTasks: Record<string, FixedTask<any>> = {};
 
-export function* callApiForResource(action: AnyApiAction) {
+export function* callApiForResource<A extends AnyApiAction>(action: A) {
   const responseActionCreator =
     apiActionCreatorsByActionType[action.type].response;
 

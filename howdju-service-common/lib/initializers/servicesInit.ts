@@ -242,7 +242,7 @@ export function servicesInitializer(provider: AwsProvider) {
     justificationsService
   );
 
-  const mediaExcerptInfosService = new MediaExcerptInfosService(authService);
+  const mediaExcerptInfosService = new MediaExcerptInfosService();
 
   provider.logger.debug("servicesInit complete");
 

@@ -416,6 +416,9 @@ export const CreateUrlLocator = UrlLocator.omit({ id: true }).extend({
 });
 export type CreateUrlLocator = z.output<typeof CreateUrlLocator>;
 
+export const CreateUrlLocatorInput = CreateUrlLocator;
+export type CreateUrlLocatorInput = z.output<typeof CreateUrlLocatorInput>;
+
 /** A source of information */
 export const Source = Entity.extend({
   /**
@@ -482,6 +485,7 @@ export type CreateMediaExcerptCitation = z.output<
 
 export const CreateMediaExcerptCitationInput =
   CreateMediaExcerptCitation.extend({
+    source: CreateSourceInput,
     // An empty pincite translates to null upon creation.
     pincite: z.string().max(64).optional(),
   });
@@ -967,19 +971,19 @@ export const CreateSourceExcerpt = z.discriminatedUnion("type", [
 /** @deprecated */
 export type CreateSourceExcerpt = z.infer<typeof CreateSourceExcerpt>;
 
-export const CreateMediaExcerpt = MediaExcerpt.omit({ id: true })
-  .extend({
-    localRep: MediaExcerpt.shape.localRep.omit({ normalQuotation: true }),
-    locators: z
-      .object({
-        // urlLocators can become optional if we add other locator types.
-        urlLocators: z.array(CreateUrlLocator),
-      })
-      .optional(),
-    citations: z.array(CreateMediaExcerptCitation).optional(),
-    speakers: z.array(CreatePersorg).optional(),
-  })
-  .superRefine((val, ctx) => {
+const CreateMediaExcerptBase = MediaExcerpt.omit({ id: true }).extend({
+  localRep: MediaExcerpt.shape.localRep.omit({ normalQuotation: true }),
+  locators: z
+    .object({
+      // urlLocators can become optional if we add other locator types.
+      urlLocators: z.array(CreateUrlLocator),
+    })
+    .optional(),
+  citations: z.array(CreateMediaExcerptCitation).optional(),
+  speakers: z.array(CreatePersorg).optional(),
+});
+export const CreateMediaExcerpt = CreateMediaExcerptBase.superRefine(
+  (val, ctx) => {
     if (keys(val.localRep).length < 1) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
@@ -1002,10 +1006,13 @@ export const CreateMediaExcerpt = MediaExcerpt.omit({ id: true })
         )} is required.`,
       });
     }
-  });
+  }
+);
 export type CreateMediaExcerpt = z.infer<typeof CreateMediaExcerpt>;
 
-export const CreateMediaExcerptInput = CreateMediaExcerpt;
+export const CreateMediaExcerptInput = CreateMediaExcerptBase.extend({
+  citations: z.array(CreateMediaExcerptCitationInput).optional(),
+});
 export type CreateMediaExcerptInput = z.output<typeof CreateMediaExcerptInput>;
 
 export const UpdateMediaExcerpt = CreateMediaExcerpt;

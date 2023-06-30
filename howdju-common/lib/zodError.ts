@@ -58,7 +58,7 @@ export function formatZodError<T>(error: z.ZodError<T>): ModelErrors<T> {
  * Helper for constructing a Zod error based upon the fields of a type.
  *
  * ```
- * const error = newValidationError<User>([
+ * const error = makeZodCustomIssuesError<User>([
  *   (r) => r.user.name("Email is already in use."),
  * ]);
  * ```

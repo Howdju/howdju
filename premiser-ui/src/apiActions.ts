@@ -1217,6 +1217,18 @@ export const api = {
       normalizationSchema: { contextTrailItems: contextTrailItemsSchema },
     })
   ),
+  inferMediaExcerptInfo: apiActionCreator(
+    "INFER_MEDIA_EXCERPT_INFO",
+    serviceRoutes.inferMediaExcerptInfo,
+    (url: string, quotation: string | undefined) => ({
+      queryStringParams: {
+        url,
+        quotation,
+      },
+      // MediaExcerptInfos are not normalized
+      normalizationSchema: {},
+    })
+  ),
 };
 
 export const cancelPersorgNameSuggestions = createAction(

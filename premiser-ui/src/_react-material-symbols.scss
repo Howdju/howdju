@@ -6,4 +6,9 @@ html {
     color: $icon-color;
     font-size: 20px;
   }
+  button:disabled {
+    .material-icons {
+      color: $disabled-icon-color;
+    }
+  }
 }

@@ -64,7 +64,10 @@ import {
   UpdateWritQuoteInput,
   UpdateWritInput,
   CreateMediaExcerptInput,
+  CreateMediaExcerpt,
+  makeModelErrors,
 } from "howdju-common";
+import { serviceRoutes, InferResponseBody } from "howdju-service-routes";
 
 import {
   api,
@@ -122,6 +125,9 @@ export type BlurredFields<T> = RecursiveObject<T, typeof blurredProp, boolean>;
 const dirtyProp = "_dirty";
 // Whether the user has changed the value of a control
 export type DirtyFields<T> = RecursiveObject<T, typeof dirtyProp, boolean>;
+
+const UNABLE_TO_INFER_MEDIA_EXCERPT_INFO_MESSAGE =
+  "Unable to infer media excerpt info";
 
 /**
  * Something we have an editor for.
@@ -676,6 +682,80 @@ const editorReducerByType: {
           isSaved: true,
         }),
       },
+    },
+    defaultEditorState()
+  ),
+
+  [EditorTypes.MEDIA_EXCERPT]: handleActions<
+    EditorState<CreateMediaExcerptInput, CreateMediaExcerpt>,
+    any
+  >(
+    {
+      [str(editors.inferMediaExcerptInfo)]: produce((state) => {
+        state.isFetching = true;
+      }),
+      [str(editors.inferMediaExcerptInfoSucceeded)]: produce(
+        (
+          state,
+          action: Action<
+            InferResponseBody<typeof serviceRoutes.inferMediaExcerptInfo>
+          >
+        ) => {
+          state.isFetching = false;
+
+          const editEntity = state.editEntity;
+          if (!editEntity) {
+            logger.error("Cannot infer media excerpt info for absent entity.");
+            return;
+          }
+
+          const { mediaExcerptInfo } = action.payload;
+          const { sourceDescription, anchors, authors } = mediaExcerptInfo;
+
+          if (
+            editEntity.citations &&
+            editEntity.citations.length > 0 &&
+            !editEntity.citations[0].source.description
+          ) {
+            editEntity.citations[0].source.description = sourceDescription;
+          }
+          if (
+            anchors &&
+            editEntity.locators &&
+            editEntity.locators.urlLocators.length > 0
+          ) {
+            editEntity.locators.urlLocators[0].anchors = anchors;
+          }
+          if (authors && (editEntity.speakers?.length ?? 0) < 1) {
+            editEntity.speakers = authors;
+          }
+
+          // Remove the error if it exists
+          if (
+            state.errors?.locators &&
+            "urlLocators" in state.errors.locators &&
+            state.errors.locators.urlLocators?.[0].url?.url?._errors
+          ) {
+            state.errors.locators.urlLocators[0].url.url._errors =
+              state.errors.locators.urlLocators[0].url.url._errors.filter(
+                (err) =>
+                  err.message !== UNABLE_TO_INFER_MEDIA_EXCERPT_INFO_MESSAGE
+              );
+          }
+        }
+      ),
+      [str(editors.inferMediaExcerptInfoFailed)]: produce((state) => {
+        state.isFetching = false;
+
+        state.errors = merge(
+          state.errors,
+          makeModelErrors<CreateMediaExcerptInput>((me) =>
+            me.locators?.urlLocators[0].url.url(
+              UNABLE_TO_INFER_MEDIA_EXCERPT_INFO_MESSAGE
+            )
+          )
+        );
+      }),
     },
     defaultEditorState()
   ),

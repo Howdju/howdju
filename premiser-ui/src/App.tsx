@@ -118,7 +118,7 @@ class App extends Component<Props> {
 
     this.windowMessageHandler = new WindowMessageHandler({
       beginEditOfMediaExcerptFromAnchorInfo:
-        this.props.flows.beginEditOfMediaExcerptFromAnchorInfo,
+        this.props.flows.beginEditOfMediaExcerptFromInfo,
       gotoJustification: this.props.goto.justification,
       extensionFrameAckMessage: this.props.extensionFrame.ackMessage,
     });
@@ -362,6 +362,13 @@ class App extends Component<Props> {
         leftIcon={<FontIcon>add</FontIcon>}
         component={Link}
         to="/create-proposition"
+      />,
+      <ListItem
+        key="createMediaExcerpt"
+        primaryText="Make an excerpt"
+        leftIcon={<FontIcon>format_quote</FontIcon>}
+        component={Link}
+        to="/media-excerpts/new"
       />,
       <ListItem
         key="tools"

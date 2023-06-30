@@ -1,13 +1,17 @@
 import React from "react";
+import { MaterialSymbol } from "react-material-symbols";
 
-import { extractDomain, MediaExcerptView, UrlLocatorView } from "howdju-common";
+import {
+  extractDomain,
+  MediaExcerptView,
+  toUrlWithFragment,
+  UrlLocatorView,
+} from "howdju-common";
 
 import CollapsibleTextViewer from "@/components/collapsableText/CollapsableTextViewer";
 import MediaExcerptCitationViewer from "./MediaExcerptCitationViewer";
 
 import "./MediaExcerptViewer.scss";
-import { MaterialSymbol } from "react-material-symbols";
-import { toUrlWithFragment } from "howdju-client-common";
 
 interface Props {
   mediaExcerpt: MediaExcerptView;

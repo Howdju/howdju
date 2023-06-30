@@ -77,7 +77,7 @@ function inferMediaExcerptFromQueryParams(queryParams: ParsedQuery<string>) {
 
   quotation = quotation || "";
   description = description || "";
-  const urls = !url ? [] : !isArray(url) ? [url] : url;
+  const urls = !url ? [""] : !isArray(url) ? [url] : url;
 
   const model: CreateMediaExcerptInput = {
     localRep: {
