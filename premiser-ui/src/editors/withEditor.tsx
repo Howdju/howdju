@@ -199,6 +199,7 @@ export default function withEditor<
       errors: apiValidationErrors,
       editEntity,
       isSaving,
+      isFetching,
       blurredFields,
       dirtyFields,
       wasSubmitAttempted,
@@ -271,12 +272,13 @@ export default function withEditor<
       }
     }
 
+    const disabled = isSaving || isFetching;
     const editorFieldsProps = {
       ...rest,
       id,
       ...(name ? { name } : {}),
       ...{ [entityPropName]: editEntity },
-      disabled: isSaving,
+      disabled,
       suggestionsKey: combineSuggestionsKeys(editorType, editorId),
       onBlur,
       onPropertyChange,
@@ -296,7 +298,7 @@ export default function withEditor<
           <EntityEditorFields {...editorFieldsProps} />
         </CardText>
         <CardActions>
-          {isSaving && (
+          {(isSaving || isFetching) && (
             <CircularProgress key="progress" id={combineIds(id, "progress")} />
           )}
           {showButtons && [
@@ -309,7 +311,7 @@ export default function withEditor<
             />,
             <SubmitButton
               key="submitButton"
-              disabled={isSaving}
+              disabled={disabled}
               appearDisabled={!isValidRequest}
               title={submitButtonTitle(isValidRequest, wasSubmitAttempted)}
               children={t(submitButtonText || EDIT_ENTITY_SUBMIT_BUTTON_LABEL)}

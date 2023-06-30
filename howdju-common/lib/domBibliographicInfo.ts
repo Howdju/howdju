@@ -485,6 +485,10 @@ export function inferAnchoredBibliographicInfo(
   const textPositionAnchor = textQuote.toTextPosition(doc.body, {
     exact: quotation,
   });
+  if (!textPositionAnchor) {
+    return bibliographicInfo;
+  }
+
   const textQuoteAnchor = textQuote.fromTextPosition(
     doc.body,
     textPositionAnchor

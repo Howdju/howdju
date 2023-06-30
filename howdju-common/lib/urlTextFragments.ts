@@ -84,11 +84,13 @@ export function extractQuotationFromTextFragment(
       return undefined;
     }
     const textParameters = directive.replace(/^text=/, "").split(",");
+
+    if (textParameters.length < 1 || textParameters.length > 4) {
+      logger.error(`Text directive must have 1–4 parameters: ${directive}`);
+      return undefined;
+    }
     if (textParameters.length === 1) {
       return textParameters[0];
-    }
-    if (textParameters.length === 3) {
-      return textParameters[1];
     }
     if (textParameters.length === 4) {
       return (
@@ -97,20 +99,24 @@ export function extractQuotationFromTextFragment(
         textParameters[2]
       );
     }
-    if (textParameters.length !== 2) {
-      logger.error(`Text directive must have 1–4 parameters: ${directive}`);
+
+    let start = 0;
+    let end = textParameters.length - 1;
+    if (textParameters[0].endsWith("-")) {
+      start += 1;
+    }
+    if (textParameters[textParameters.length - 1].startsWith("-")) {
+      end -= 1;
+    }
+    if (end - start > 1) {
+      logger.error(
+        `Text directive with three parameters must have a prefix or suffix: ${directive}`
+      );
       return undefined;
     }
-    if (textParameters[0].endsWith("-")) {
-      return textParameters[1];
-    }
-    if (textParameters[1].startsWith("-")) {
-      return textParameters[0];
-    }
-    logger.error(
-      `Text directive with two parameters must have a prefix or suffix: ${directive}`
-    );
-    return undefined;
+    return textParameters
+      .slice(start, end + 1)
+      .join(options.textDirectiveDelimiter);
   });
   return quoteParts
     .filter(isDefined)

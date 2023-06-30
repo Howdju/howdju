@@ -52,18 +52,16 @@ export default function MediaExcerptViewer({ mediaExcerpt }: Props) {
 function toAnchorElement(urlLocator: UrlLocatorView) {
   const url = toUrlWithFragment(urlLocator);
   const domain = extractDomain(urlLocator.url.url);
-  const urlLocatorCount = urlLocator.anchors?.length ?? 0;
   return (
     <a href={url}>
       {domain}{" "}
-      {urlLocator.anchors?.length && (
+      {urlLocator.anchors?.length ? (
         <MaterialSymbol
           icon="my_location"
           size={13}
           title="Has a fragment taking you directly to the excerpt"
         />
-      )}
-      {urlLocatorCount > 1 && { urlLocatorCount }}
+      ) : null}
     </a>
   );
 }

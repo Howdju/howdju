@@ -176,7 +176,17 @@ export default function MediaExcerptEditorFields(props: Props) {
             value={url.url}
             rightIcon={
               <>
+                {!isEmpty(anchors) && (
+                  <MaterialSymbol
+                    key="anchor-icon"
+                    className="url-anchor-icon"
+                    icon="my_location"
+                    size={16}
+                    title="Has a fragment taking you directly to the excerpt"
+                  />
+                )}
                 <Button
+                  key="infer-media-excerpt-info-button"
                   icon
                   onClick={() => onInferMediaExcerptInfo(url.url)}
                   disabled={disabled || !url.url}
@@ -188,6 +198,7 @@ export default function MediaExcerptEditorFields(props: Props) {
                   />
                 </Button>
                 <Button
+                  key="delete-url-locator-button"
                   icon
                   onClick={() => onRemoveUrlLocator(index)}
                   disabled={disabled}

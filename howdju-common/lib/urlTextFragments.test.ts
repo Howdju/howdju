@@ -200,6 +200,13 @@ describe("extractQuotationFromTextFragment", () => {
   it("extracts the quotation from the text fragment with a text end", () => {
     expect(
       extractQuotationFromTextFragment(
+        "https://example.com#:~:text=the%20exact%20text%20start,the%20exact%20text%20end"
+      )
+    ).toBe("the exact text start…the exact text end");
+  });
+  it("extracts the quotation from the text fragment with a text end, prefix, and suffix", () => {
+    expect(
+      extractQuotationFromTextFragment(
         "https://example.com#:~:text=the%20prefix%20text-,the%20exact%20text%20start,the%20exact%20text%20end,-the%20suffix%20text"
       )
     ).toBe("the exact text start…the exact text end");
