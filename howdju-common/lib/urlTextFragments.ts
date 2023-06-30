@@ -1,19 +1,35 @@
 import { isDefined, logger, UrlLocator } from "howdju-common";
 
+const FRAGMENT_DIRECTIVE = ":~:";
+
+/**
+ * Returns a URL having a text fragment.
+ *
+ * Text fragments are like: https://example.com#:~:text=[prefix-,]textStart[,textEnd][,-suffix]&text=...
+ * @param urlLocator
+ * @param useContext
+ * @returns
+ */
 export function toUrlWithFragment(
   urlLocator: UrlLocator,
   // TODO(427) fix prefix/suffix to be Chrome-compatible.
   useContext = false
 ) {
-  // https://example.com#:~:text=[prefix-,]textStart[,textEnd][,-suffix]&...
   const urlObj = new URL(urlLocator.url.url);
   // TODO(38) what to do if the hash already contains a fragment? Overwrite it? We should probably
   // remove fragments from the URL before saving it to the database.
-  if (urlObj.hash.includes(":~:")) {
-    logger.error(`URL ${urlLocator.url.url} already contains a fragment.`);
+  const fragmentDirectiveIndex = urlObj.hash.indexOf(FRAGMENT_DIRECTIVE);
+  if (fragmentDirectiveIndex > -1) {
+    logger.warn(
+      `URL ${urlLocator.url.url} already contains a fragment. It will be overwritten.`
+    );
   }
-  // For now, just ignore the hash if it already contains a fragment.
-  const hash = urlObj.hash.includes(":~:") ? "" : urlObj.hash.replace(/^#/, "");
+
+  const hash =
+    // substring from 1 to remove the leading #.
+    fragmentDirectiveIndex > -1
+      ? urlObj.hash.substring(1, fragmentDirectiveIndex)
+      : urlObj.hash.substring(1);
   const textDirectives = urlLocator.anchors?.map((a) => {
     const parameters = [];
     if (useContext && a.prefixText) {
@@ -42,7 +58,7 @@ function encodeTextFragmentParameter(textParameter: string) {
   // The text fragment spec requires percent-encoding ampersand, comma, and dash.
   // https://wicg.github.io/scroll-to-text-fragment/#fragmentdirective:~:text=The%20text%20parameters%20are%20percent%2Ddecoded%20before%20matching.%20Dash%20(%2D)%2C%20ampersand%20(%26)%2C%20and%20comma%20(%2C)%20characters%20in%20text%20parameters%20are%20percent%2Dencoded%20to%20avoid%20being%20interpreted%20as%20part%20of%20the%20text%20directive%20syntax.
   // encodeURIComponent encodes ampersand and comma, but not dash. decodeURIComponent will decode all three.
-  return encodeURIComponent(textParameter).replace("-", "%2D");
+  return encodeURIComponent(textParameter).replace(/-/g, "%2D");
 }
 
 export function extractQuotationFromTextFragment(

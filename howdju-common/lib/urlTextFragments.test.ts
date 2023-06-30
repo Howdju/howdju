@@ -118,6 +118,54 @@ describe("toUrlWithFragment", () => {
       "https://example.com/#:~:text=the%20exact%20text"
     );
   });
+  it("preserves a document fragment while overwriting an existing text fragment", () => {
+    const urlLocator: UrlLocatorView = brandedParse(UrlLocatorRef, {
+      id: "url-locator-id",
+      url: brandedParse(UrlRef, {
+        id: "url-id",
+        url: "https://example.com#the-doc-fragment:~:text=some%20previous%20fragment",
+      }),
+      anchors: [
+        {
+          exactText: "the exact text",
+          prefixText: "the prefix text",
+          suffixText: "the suffix text",
+          startOffset: 0,
+          endOffset: 1,
+          urlLocatorId: "url-locator-id",
+          created: utcNow(),
+          creatorUserId: "creator-user-id",
+        },
+      ],
+    });
+    expect(toUrlWithFragment(urlLocator)).toBe(
+      "https://example.com/#the-doc-fragment:~:text=the%20exact%20text"
+    );
+  });
+  it("encodes hyphens", () => {
+    const urlLocator: UrlLocatorView = brandedParse(UrlLocatorRef, {
+      id: "url-locator-id",
+      url: brandedParse(UrlRef, {
+        id: "url-id",
+        url: "https://example.com",
+      }),
+      anchors: [
+        {
+          exactText: "the - exact - text",
+          prefixText: "the prefix text",
+          suffixText: "the suffix text",
+          startOffset: 0,
+          endOffset: 1,
+          urlLocatorId: "url-locator-id",
+          created: utcNow(),
+          creatorUserId: "creator-user-id",
+        },
+      ],
+    });
+    expect(toUrlWithFragment(urlLocator)).toBe(
+      "https://example.com/#:~:text=the%20%2D%20exact%20%2D%20text"
+    );
+  });
 });
 
 describe("extractQuotationFromTextFragment", () => {
