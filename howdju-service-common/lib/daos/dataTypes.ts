@@ -197,7 +197,7 @@ export type ReadPropositionCompoundDataOut = MergeDeep<
   Persisted<PropositionCompound>,
   {
     atoms: {
-      compoundId: EntityId;
+      propositionCompoundId: EntityId;
       entity: Persisted<Proposition> & {
         rootJustificationCountByPolarity?: Partial<
           Record<"POSITIVE" | "NEGATIVE", number>

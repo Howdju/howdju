@@ -8,17 +8,27 @@ const mapValues = require("lodash/mapValues");
 const map = require("lodash/map");
 const sortBy = require("lodash/sortBy");
 const values = require("lodash/values");
-const { normalizeText } = require("./daosUtil");
+const { normalizeText, toIdString } = require("./daosUtil");
 
 const {
   JustificationBasisTypes,
   JustificationRootTargetTypes,
   toJson,
+  toSlug,
 } = require("howdju-common");
 const { toPropositionCompound, toPropositionCompoundAtom } = require("./orm");
+const { merge } = require("lodash");
 
-const atomOrderPositionRegExp = new RegExp(/^atom_order_position_(\d+)$/);
 const atomPropositionTextRegExp = new RegExp(/^atom_proposition_text_(\d+)$/);
+const atomPropositionNormalTextRegExp = new RegExp(
+  /^atom_proposition_normal_text_(\d+)$/
+);
+const atomPropositionCreatedRegExp = new RegExp(
+  /^atom_proposition_created_(\d+)$/
+);
+const atomPropositionCreatorUserIdRegExp = new RegExp(
+  /^atom_proposition_creator_user_id_(\d+)$/
+);
 const atomPropositionIdRegExp = new RegExp(/^atom_proposition_id_(\d+)$/);
 
 exports.PropositionCompoundsDao = class PropositionCompoundsDao {
@@ -94,22 +104,25 @@ exports.PropositionCompoundsDao = class PropositionCompoundsDao {
 
   readPropositionCompoundEquivalentTo(propositionCompound) {
     const selects = flatMap(propositionCompound.atoms, (atom, index) => [
-      `sca${index}.order_position as atom_order_position_${index}`,
-      `s${index}.text as atom_proposition_text_${index}`,
-      `s${index}.proposition_id as atom_proposition_id_${index}`,
+      `pca${index}.order_position as atom_order_position_${index}`,
+      `p${index}.text as atom_proposition_text_${index}`,
+      `p${index}.normal_text as atom_proposition_normal_text_${index}`,
+      `p${index}.proposition_id as atom_proposition_id_${index}`,
+      `p${index}.created as atom_proposition_created_${index}`,
+      `p${index}.creator_user_id as atom_proposition_creator_user_id_${index}`,
     ]);
     const selectsSql = selects.join("\n,");
     const joins = map(
       propositionCompound.atoms,
       (atom, index) => `
-        join proposition_compound_atoms sca${index} on
-              sc.deleted is null
-          and sc.proposition_compound_id = sca${index}.proposition_compound_id
-          and sca${index}.order_position = $${2 * index + 2}
-        join propositions s${index} on
-              s${index}.deleted is null
-          and sca${index}.proposition_id = s${index}.proposition_id
-          and s${index}.normal_text = $${2 * index + 3}
+        join proposition_compound_atoms pca${index} on
+              pc.deleted is null
+          and pc.proposition_compound_id = pca${index}.proposition_compound_id
+          and pca${index}.order_position = $${2 * index + 2}
+        join propositions p${index} on
+              p${index}.deleted is null
+          and pca${index}.proposition_id = p${index}.proposition_id
+          and p${index}.normal_text = $${2 * index + 3}
           `
     );
     const joinsSql = joins.join("\n");
@@ -125,17 +138,17 @@ exports.PropositionCompoundsDao = class PropositionCompoundsDao {
         -- Without this limit, we would include compounds that included these propositions and more
         proposition_compounds_with_atom_count as (
           select
-              sc.*
-            , count(sca.proposition_id) over (partition by sc.proposition_compound_id) as proposition_atom_count
-          from proposition_compounds sc
-              join proposition_compound_atoms sca using (proposition_compound_id)
+              pc.*
+            , count(pca.proposition_id) over (partition by pc.proposition_compound_id) as proposition_atom_count
+          from proposition_compounds pc
+              join proposition_compound_atoms pca using (proposition_compound_id)
         )
         , proposition_compounds_having_same_atom_count as (
-          select * from proposition_compounds_with_atom_count sc where proposition_atom_count = $1
+          select * from proposition_compounds_with_atom_count pc where proposition_atom_count = $1
         )
-      select sc.proposition_compound_id, ${selectsSql}
-      from proposition_compounds_having_same_atom_count sc ${joinsSql}
-      order by sc.proposition_compound_id
+      select pc.proposition_compound_id, pc.created, pc.creator_user_id, ${selectsSql}
+      from proposition_compounds_having_same_atom_count pc ${joinsSql}
+      order by pc.proposition_compound_id
     `;
 
     // An alternative that doesn't multiplex the result along columns
@@ -165,44 +178,69 @@ exports.PropositionCompoundsDao = class PropositionCompoundsDao {
         if (rows.length < 1) {
           return null;
         }
-        if (rows.length > 1) {
+        if (rows.length > propositionCompound.atoms.length) {
+          const dupeCount = rows.length / propositionCompound.atoms.length;
           this.logger.error(
-            `${rows.length} proposition compounds equivalent to: ${toJson(
+            `${dupeCount} proposition compounds equivalent to: ${toJson(
               propositionCompound
             )}`
           );
         }
 
         const row = rows[0];
-        const propositionCompoundId = row.proposition_compound_id;
+        const propositionCompoundId = toIdString(row.proposition_compound_id);
 
         // Reconstruct the atoms from the columns of the result
         const atomsByIndex = {};
         forEach(row, (value, name) => {
           let match;
-          // atomIndex ensures that the correct orderPosition and propositionText go together
-          // atomIndex may not equal orderPosition; we don't know what scheme we might use to order atoms.
-          if (!isNull((match = atomOrderPositionRegExp.exec(name)))) {
-            const atomIndex = match[1];
-            let atom = atomsByIndex[atomIndex];
-            if (!atom) {
-              atomsByIndex[atomIndex] = atom = { propositionCompoundId };
-            }
-            atom.orderPosition = value;
-          } else if (!isNull((match = atomPropositionTextRegExp.exec(name)))) {
+          // TODO(439) we should be re-using the ORM mappers and not duplicating the logic here
+          if (!isNull((match = atomPropositionTextRegExp.exec(name)))) {
             const atomIndex = match[1];
             let atom = atomsByIndex[atomIndex];
             if (!atom) {
               atomsByIndex[atomIndex] = atom = { propositionCompoundId };
             }
             atom.entity = assign({}, atom.entity, { text: value });
+          } else if (
+            !isNull((match = atomPropositionNormalTextRegExp.exec(name)))
+          ) {
+            const atomIndex = match[1];
+            let atom = atomsByIndex[atomIndex];
+            if (!atom) {
+              atomsByIndex[atomIndex] = atom = { propositionCompoundId };
+            }
+            atom.entity = assign({}, atom.entity, {
+              normalText: value,
+              slug: toSlug(value),
+            });
           } else if (!isNull((match = atomPropositionIdRegExp.exec(name)))) {
             const atomIndex = match[1];
             let atom = atomsByIndex[atomIndex];
             if (!atom) {
               atomsByIndex[atomIndex] = atom = { propositionCompoundId };
             }
-            atom.entity = assign({}, atom.entity, { id: value });
+            atom.entity = assign({}, atom.entity, { id: toIdString(value) });
+          } else if (
+            !isNull((match = atomPropositionCreatedRegExp.exec(name)))
+          ) {
+            const atomIndex = match[1];
+            let atom = atomsByIndex[atomIndex];
+            if (!atom) {
+              atomsByIndex[atomIndex] = atom = { propositionCompoundId };
+            }
+            atom.entity = assign({}, atom.entity, { created: value });
+          } else if (
+            !isNull((match = atomPropositionCreatorUserIdRegExp.exec(name)))
+          ) {
+            const atomIndex = match[1];
+            let atom = atomsByIndex[atomIndex];
+            if (!atom) {
+              atomsByIndex[atomIndex] = atom = { propositionCompoundId };
+            }
+            atom.entity = merge({}, atom.entity, {
+              creator: { id: toIdString(value), longName: "" },
+            });
           }
         });
 

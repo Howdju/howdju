@@ -54,7 +54,10 @@ export default class LandingPage extends Component {
         entity: {
           ...PropositionCompoundRef.parse({ id: "example" }),
           atoms: [
-            { compoundId: "example", entity: proJustificationProposition },
+            {
+              propositionCompoundId: "example",
+              entity: proJustificationProposition,
+            },
           ],
         },
       },
@@ -127,7 +130,7 @@ export default class LandingPage extends Component {
           ...PropositionCompoundRef.parse({ id: "example" }),
           atoms: [
             {
-              compoundId: "example",
+              propositionCompoundId: "example",
               entity: conJustificationProposition,
             },
           ],
@@ -196,7 +199,7 @@ export default class LandingPage extends Component {
           ...PropositionCompoundRef.parse({ id: "example" }),
           atoms: [
             {
-              compoundId: "example",
+              propositionCompoundId: "example",
               entity: {
                 ...PropositionRef.parse({ id: "example" }),
                 created,

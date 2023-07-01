@@ -582,8 +582,12 @@ export const MediaExcerpt = Entity.extend({
 export type MediaExcerpt = z.output<typeof MediaExcerpt>;
 
 export const PropositionCompoundAtom = z.object({
-  /** A reference to this atom's parent compound. */
-  compoundId: z.string(),
+  /**
+   * A reference to this atom's parent compound.
+   *
+   * TODO(440) do we need this?
+   */
+  propositionCompoundId: z.string(),
   entity: Proposition,
 });
 export type PropositionCompoundAtom = z.infer<typeof PropositionCompoundAtom>;

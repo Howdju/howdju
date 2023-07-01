@@ -1,14 +1,14 @@
 import { every } from "lodash";
 import { Moment } from "moment";
 
-import { CreateSource, EntityId, Logger, SourceOut } from "howdju-common";
+import { CreateSource, EntityId, SourceOut } from "howdju-common";
 
 import { SourcesDao } from "../daos";
-import { EntityWrapper } from "@/types";
+import { EntityWrapper } from "../types";
 import { readWriteReread } from "./patterns";
 
 export class SourcesService {
-  constructor(private logger: Logger, private sourcesDao: SourcesDao) {}
+  constructor(private sourcesDao: SourcesDao) {}
 
   async readOrCreateSources(
     userId: EntityId,
