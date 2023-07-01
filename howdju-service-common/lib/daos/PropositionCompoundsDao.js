@@ -13,6 +13,7 @@ const { normalizeText } = require("./daosUtil");
 const {
   JustificationBasisTypes,
   JustificationRootTargetTypes,
+  toJson,
 } = require("howdju-common");
 const { toPropositionCompound, toPropositionCompoundAtom } = require("./orm");
 
@@ -165,9 +166,11 @@ exports.PropositionCompoundsDao = class PropositionCompoundsDao {
           return null;
         }
         if (rows.length > 1) {
-          this.logger.error(`${rows.length} equivalent proposition compounds`, {
-            propositionCompound,
-          });
+          this.logger.error(
+            `${rows.length} proposition compounds equivalent to: ${toJson(
+              propositionCompound
+            )}`
+          );
         }
 
         const row = rows[0];

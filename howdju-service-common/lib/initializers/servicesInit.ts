@@ -142,7 +142,10 @@ export function servicesInitializer(provider: AwsProvider) {
       provider.justificationBasisCompoundsDao
     );
 
-  const sourcesService = new SourcesService(provider.sourcesDao);
+  const sourcesService = new SourcesService(
+    provider.logger,
+    provider.sourcesDao
+  );
 
   const mediaExcerptsService = new MediaExcerptsService(
     authService,
