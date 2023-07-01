@@ -44,10 +44,10 @@ export type ExtensionAction = ReturnType<
 
 /** Actions the content script sends to the iframed web app. */
 export const extensionFrame = {
-  beginEditOfMediaExcerptFromAnchorInfo: createAction(
-    "EXTENSION_FRAME/BEGIN_EDIT_OF_MEDIA_EXCERPT_FROM_ANCHOR_INFO",
-    (anchorInfo: MediaExcerptInfo) => ({
-      payload: anchorInfo,
+  beginEditOfMediaExcerptFromInfo: createAction(
+    "EXTENSION_FRAME/BEGIN_EDIT_OF_MEDIA_EXCERPT_FROM_INFO",
+    (mediaExcerptInfo: MediaExcerptInfo) => ({
+      payload: mediaExcerptInfo,
     })
   ),
   gotoJustification: createAction(

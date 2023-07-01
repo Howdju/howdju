@@ -982,37 +982,41 @@ const CreateMediaExcerptBase = MediaExcerpt.omit({ id: true }).extend({
   citations: z.array(CreateMediaExcerptCitation).optional(),
   speakers: z.array(CreatePersorg).optional(),
 });
-export const CreateMediaExcerpt = CreateMediaExcerptBase.superRefine(
-  (val, ctx) => {
-    if (keys(val.localRep).length < 1) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: `At least one of ${keys(
-          MediaExcerpt.shape.localRep.shape
-        )} is required.`,
-      });
-    }
-    if (!val.locators && (!val.citations || val.citations.length < 1)) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: `At least one of locators or citations is required.`,
-      });
-    }
-    if (val.locators && keys(val.locators).length < 1) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: `Locators must contain at least one of ${keys(
-          MediaExcerpt.shape.locators.shape
-        )} is required.`,
-      });
-    }
+function refineCreateMediaExcerpt(
+  val: CreateMediaExcerpt | CreateMediaExcerptInput,
+  ctx: z.RefinementCtx
+) {
+  if (keys(val.localRep).length < 1) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: `At least one of ${keys(
+        MediaExcerpt.shape.localRep.shape
+      )} is required.`,
+    });
   }
+  if (!val.locators && (!val.citations || val.citations.length < 1)) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: `At least one of locators or citations is required.`,
+    });
+  }
+  if (val.locators && keys(val.locators).length < 1) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: `Locators must contain at least one of ${keys(
+        MediaExcerpt.shape.locators.shape
+      )} is required.`,
+    });
+  }
+}
+export const CreateMediaExcerpt = CreateMediaExcerptBase.superRefine(
+  refineCreateMediaExcerpt
 );
 export type CreateMediaExcerpt = z.infer<typeof CreateMediaExcerpt>;
 
 export const CreateMediaExcerptInput = CreateMediaExcerptBase.extend({
   citations: z.array(CreateMediaExcerptCitationInput).optional(),
-});
+}).superRefine(refineCreateMediaExcerpt);
 export type CreateMediaExcerptInput = z.output<typeof CreateMediaExcerptInput>;
 
 export const UpdateMediaExcerpt = CreateMediaExcerpt;

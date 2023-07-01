@@ -14,6 +14,7 @@ export interface BibliographicInfo {
   authors?: CreatePersorgInput[];
 }
 
+/** Info to help construct a MediaExcerpt. */
 export interface MediaExcerptInfo extends BibliographicInfo {
   anchors?: CreateDomAnchor[];
   url: string;
@@ -471,7 +472,7 @@ export type AnchoredBibliographicInfo = BibliographicInfo & {
   anchors?: CreateDomAnchor[];
 };
 
-/** Given a URL and quotation from it, return anchor info for it */
+/** Given a URL and quotation from it, infer bibliographic info and anchors for the quote. */
 export function inferAnchoredBibliographicInfo(
   doc: Document,
   quotation: string | undefined

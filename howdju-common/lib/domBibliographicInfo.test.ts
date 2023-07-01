@@ -7,7 +7,7 @@ import {
   inferBibliographicInfo,
 } from "./domBibliographicInfo";
 
-describe("domBibliographicInfo", () => {
+describe("inferBibliographicInfo", () => {
   it("should handle NYT", () => {
     const html = readFileSync(
       "lib/domBibliographicInfoTestData/nytimes.html",
@@ -15,7 +15,7 @@ describe("domBibliographicInfo", () => {
     );
     const dom = new JSDOM(html);
 
-    const info = inferBibliographicInfo(dom.window.document);
+    const info = dom.window.document;
 
     expect(info).toStrictEqual({
       authors: [

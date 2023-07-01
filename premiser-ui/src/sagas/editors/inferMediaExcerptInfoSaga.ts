@@ -4,6 +4,7 @@ import { api, editors } from "@/actions";
 import { callApiForResource } from "../resourceApiSagas";
 import { AnyApiAction } from "@/apiActions";
 
+/** Translates an editor action to an API call. */
 export function* inferMediaExcerptInfo() {
   yield takeEvery(
     editors.inferMediaExcerptInfo,

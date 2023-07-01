@@ -11,7 +11,7 @@ import {
   isCoextensive,
   insertNodeAfter,
   insertNodeBefore,
-  selectionToAnchorInfo,
+  selectionToMediaExcerptInfo,
   targetToRanges,
 } from "howdju-client-common";
 
@@ -39,7 +39,7 @@ export function annotateSelection(): AnnotatedExcerpt | undefined {
   }
 
   // Get target before selection may change
-  const anchorInfo = selectionToAnchorInfo(selection);
+  const mediaExcerptInfo = selectionToMediaExcerptInfo(selection);
 
   const nodes = getNodesForSelection(selection);
 
@@ -49,7 +49,7 @@ export function annotateSelection(): AnnotatedExcerpt | undefined {
   //  a reasonable UX choice, since the selection in a sense has been replaced with the annotation.
   clearSelection();
 
-  return { annotation, mediaExcerptInfo: anchorInfo };
+  return { annotation, mediaExcerptInfo };
 }
 
 export function annotateTarget(target: UrlTarget) {

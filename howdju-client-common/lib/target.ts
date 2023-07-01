@@ -13,7 +13,9 @@ import {
 import { nodeIsBefore, getPreviousLeafNode } from "./dom";
 import { getCanonicalOrCurrentUrl } from "./location";
 
-export function selectionToAnchorInfo(selection: Selection): MediaExcerptInfo {
+export function selectionToMediaExcerptInfo(
+  selection: Selection
+): MediaExcerptInfo {
   const anchors = [];
 
   for (let i = 0; i < selection.rangeCount; i++) {
