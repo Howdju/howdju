@@ -122,7 +122,7 @@ describe("extractDate", () => {
 });
 
 describe("inferAnchoredBibliographicInfo", () => {
-  it("returns MediaExcerptInfo", () => {
+  it("returns the info", () => {
     const html = readFileSync(
       "lib/domBibliographicInfoTestData/pubmed.html",
       "utf8"

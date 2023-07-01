@@ -42,9 +42,9 @@ export default function SubmitMediaExcerptPage() {
   return (
     <div className="md-grid">
       <HowdjuHelmet>
-        <title>Submit Source Excerpt — Howdju</title>
+        <title>Submit Media Excerpt — Howdju</title>
       </HowdjuHelmet>
-      <h1 className="md-cell--12">Create WritQuote</h1>
+      <h1 className="md-cell--12">Create Media Excerpt</h1>
       <ErrorMessages errors={errors} />
       <MediaExcerptEditor
         id={id}
