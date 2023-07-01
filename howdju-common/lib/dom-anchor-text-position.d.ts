@@ -4,20 +4,12 @@ declare module "dom-anchor-text-position" {
     end: number;
   }
 
-  function fromRange(root: Node, range: Range): TextPositionAnchor;
-
   interface Selector {
     start?: number;
     end?: number;
   }
 
-  function toRange(root: Node, selector: Selector = {});
+  function fromRange(root: Node, range: Range): TextPositionAnchor;
 
-  function toTextPosition(
-    root: Node,
-    selector: Selector,
-    options?: {
-      hint?: number;
-    }
-  ): TextPositionAnchor;
+  function toRange(root: Node, selector: Selector = {}): Range;
 }

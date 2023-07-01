@@ -1,3 +1,4 @@
+import * as textQuote from "dom-anchor-text-quote";
 import { isDefined, logger, UrlLocator } from "howdju-common";
 
 const FRAGMENT_DIRECTIVE = ":~:";
@@ -61,14 +62,24 @@ function encodeTextFragmentParameter(textParameter: string) {
   return encodeURIComponent(textParameter).replace(/-/g, "%2D");
 }
 
+export interface ExtractQuotationFromTextFragmentOptions {
+  /** The DOM document to use to infer from a split (start/end) text fragment. */
+  doc?: Document;
+  /** The text used to join text directives. */
+  textDirectiveDelimiter?: string;
+  /** The text used to join textStart and textEnd. */
+  textParameterStartEndDelimiter?: string;
+}
+
+const defaultOptions = {
+  doc: undefined as Document | undefined,
+  textDirectiveDelimiter: "…",
+  textParameterStartEndDelimiter: "…",
+};
+
 export function extractQuotationFromTextFragment(
   url: string,
-  options = {
-    /** The text used to join text directives. */
-    textDirectiveDelimiter: "…",
-    /** The text used to join textStart and textEnd. */
-    textParameterStartEndDelimiter: "…",
-  }
+  options: ExtractQuotationFromTextFragmentOptions = defaultOptions
 ): string | undefined {
   const urlObj = new URL(url);
   const hash = urlObj.hash.replace(/^#/, "");
@@ -83,7 +94,10 @@ export function extractQuotationFromTextFragment(
       logger.error(`Text directive must start with "text=": ${directive}`);
       return undefined;
     }
-    const textParameters = directive.replace(/^text=/, "").split(",");
+    const textParameters = directive
+      .replace(/^text=/, "")
+      .split(",")
+      .map(decodeURIComponent);
 
     if (textParameters.length < 1 || textParameters.length > 4) {
       logger.error(`Text directive must have 1–4 parameters: ${directive}`);
@@ -93,10 +107,11 @@ export function extractQuotationFromTextFragment(
       return textParameters[0];
     }
     if (textParameters.length === 4) {
+      const textParameterStartEndDelimiter =
+        options.textParameterStartEndDelimiter ??
+        defaultOptions.textParameterStartEndDelimiter;
       return (
-        textParameters[1] +
-        options.textParameterStartEndDelimiter +
-        textParameters[2]
+        textParameters[1] + textParameterStartEndDelimiter + textParameters[2]
       );
     }
 
@@ -114,12 +129,38 @@ export function extractQuotationFromTextFragment(
       );
       return undefined;
     }
-    return textParameters
-      .slice(start, end + 1)
-      .join(options.textDirectiveDelimiter);
+    if (options.doc) {
+      const startText = textParameters[start];
+      const endText = textParameters[end];
+      const textWithin = getTextWithin(options.doc, startText, endText);
+      if (textWithin) {
+        return textWithin;
+      }
+      // otherwise, fall through
+    }
+    const textDirectiveDelimiter =
+      options.textDirectiveDelimiter ?? defaultOptions.textDirectiveDelimiter;
+    return textParameters.slice(start, end + 1).join(textDirectiveDelimiter);
   });
-  return quoteParts
-    .filter(isDefined)
-    .map(decodeURIComponent)
-    .join(options.textDirectiveDelimiter);
+  return quoteParts.filter(isDefined).join(options.textDirectiveDelimiter);
+}
+
+function getTextWithin(doc: Document, startText: string, endText: string) {
+  const startPosition = textQuote.toTextPosition(doc.body, {
+    exact: startText,
+  });
+  const endPosition = textQuote.toTextPosition(doc.body, {
+    exact: endText,
+  });
+  if (!startPosition || !endPosition) {
+    return undefined;
+  }
+  const textQuoteAnchor = textQuote.fromTextPosition(doc.body, {
+    start: startPosition.start,
+    end: endPosition.end,
+  });
+  if (!textQuoteAnchor) {
+    return undefined;
+  }
+  return textQuoteAnchor.exact;
 }

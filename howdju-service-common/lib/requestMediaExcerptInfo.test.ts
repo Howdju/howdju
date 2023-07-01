@@ -11,13 +11,16 @@ describe("requestMediaExcerptInfo", () => {
     );
     const get = jest.spyOn(axios, "get");
     get.mockImplementation(() => Promise.resolve({ data: html }));
+    const quotation =
+      "The results indicate that MeHg is not a suitable reference for risk assessment from exposure to thimerosal-derived Hg. Knowledge of the toxicokinetics and developmental toxicity of thimerosal is needed to afford a meaningful assessment of the developmental effects of thimerosal-containing vaccines.";
 
     const info = await requestMediaExcerptInfo(
       "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC1280342/",
-      "The results indicate that MeHg is not a suitable reference for risk assessment from exposure to thimerosal-derived Hg. Knowledge of the toxicokinetics and developmental toxicity of thimerosal is needed to afford a meaningful assessment of the developmental effects of thimerosal-containing vaccines."
+      quotation
     );
 
     expect(info).toStrictEqual({
+      quotation,
       anchors: [
         {
           exactText:

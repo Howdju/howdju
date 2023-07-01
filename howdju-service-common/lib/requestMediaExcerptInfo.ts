@@ -19,13 +19,19 @@ export async function requestMediaExcerptInfo(
     url,
   });
 
-  const inferredQuotation = quotation || extractQuotationFromTextFragment(url);
+  // if URL has text fragment with start/end, locate both separately and then
+  // construct the full quotation from the dom content using start.start and
+  // end.end.
+  const inferredQuotation =
+    quotation ||
+    extractQuotationFromTextFragment(url, { doc: dom.window.document });
 
   const anchoredBibliographicInfo = inferAnchoredBibliographicInfo(
     dom.window.document,
     inferredQuotation
   );
   return {
+    quotation: inferredQuotation,
     ...anchoredBibliographicInfo,
     url,
   };

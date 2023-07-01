@@ -15,7 +15,7 @@ describe("inferBibliographicInfo", () => {
     );
     const dom = new JSDOM(html);
 
-    const info = dom.window.document;
+    const info = inferBibliographicInfo(dom.window.document);
 
     expect(info).toStrictEqual({
       authors: [

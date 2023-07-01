@@ -128,6 +128,8 @@ export type DirtyFields<T> = RecursiveObject<T, typeof dirtyProp, boolean>;
 
 const UNABLE_TO_INFER_MEDIA_EXCERPT_INFO_MESSAGE =
   "Unable to infer media excerpt info";
+const UNABLE_TO_LOCATION_QUOTATION_MESSAGE =
+  "Unable to locate the quotation (it may have a typo or the content may be pay-walled.)";
 
 /**
  * Something we have an editor for.
@@ -710,7 +712,12 @@ const editorReducerByType: {
           }
 
           const { mediaExcerptInfo } = action.payload;
-          const { sourceDescription, anchors, authors } = mediaExcerptInfo;
+          const { quotation, sourceDescription, anchors, authors } =
+            mediaExcerptInfo;
+
+          if (quotation) {
+            editEntity.localRep.quotation = quotation;
+          }
 
           if (
             editEntity.citations &&
@@ -725,7 +732,31 @@ const editorReducerByType: {
             editEntity.locators.urlLocators.length > 0
           ) {
             editEntity.locators.urlLocators[0].anchors = anchors;
+
+            // Remove the error if it exists
+            if (
+              state.errors?.locators &&
+              "urlLocators" in state.errors.locators &&
+              state.errors.locators.urlLocators?.[0].anchors?._errors
+            ) {
+              state.errors.locators.urlLocators[0].anchors._errors =
+                state.errors.locators.urlLocators[0].anchors._errors.filter(
+                  (err) => err.message !== UNABLE_TO_LOCATION_QUOTATION_MESSAGE
+                );
+            }
           }
+
+          if (quotation && !anchors) {
+            state.errors = merge(
+              state.errors,
+              makeModelErrors<CreateMediaExcerptInput>((me) =>
+                me.locators.urlLocators[0].anchors(
+                  UNABLE_TO_LOCATION_QUOTATION_MESSAGE
+                )
+              )
+            );
+          }
+
           if (authors && (editEntity.speakers?.length ?? 0) < 1) {
             editEntity.speakers = authors;
           }
@@ -750,7 +781,7 @@ const editorReducerByType: {
         state.errors = merge(
           state.errors,
           makeModelErrors<CreateMediaExcerptInput>((me) =>
-            me.locators?.urlLocators[0].url.url(
+            me.locators.urlLocators[0].url.url(
               UNABLE_TO_INFER_MEDIA_EXCERPT_INFO_MESSAGE
             )
           )

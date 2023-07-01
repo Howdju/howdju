@@ -61,6 +61,10 @@ export function targetToRanges(target: UrlTarget) {
       suffix: anchor.suffixText,
     };
     const range = textQuote.toRange(document.body, selector, options);
+    if (!range) {
+      logger.warn(`Unable to create a rand for anchor ${anchor}. Skipping.`);
+      continue;
+    }
     // textQuote.toRange returns a range that is exclusive at the end.
     // If the end is at the beginning of a node that is after the start
     // node (indicating from the library that the range should include

@@ -16,7 +16,11 @@ export interface BibliographicInfo {
 
 /** Info to help construct a MediaExcerpt. */
 export interface MediaExcerptInfo extends BibliographicInfo {
+  /** The inferred quotation, if any were inferrable. */
+  quotation?: string;
+  /** The DOM anchors, if any were inferrable. */
   anchors?: CreateDomAnchor[];
+  /** The URL that was passed in. */
   url: string;
 }
 
@@ -494,6 +498,9 @@ export function inferAnchoredBibliographicInfo(
     doc.body,
     textPositionAnchor
   );
+  if (!textQuoteAnchor) {
+    return bibliographicInfo;
+  }
   const domAnchor = makeDomAnchor(textQuoteAnchor, textPositionAnchor);
 
   return {

@@ -1,3 +1,5 @@
+import { JSDOM } from "jsdom";
+
 import {
   brandedParse,
   UrlLocatorRef,
@@ -203,6 +205,18 @@ describe("extractQuotationFromTextFragment", () => {
         "https://example.com#:~:text=the%20exact%20text%20start,the%20exact%20text%20end"
       )
     ).toBe("the exact text start…the exact text end");
+  });
+  it("returns the full quotation from a text fragment with a text end if doc is provided", () => {
+    const dom = new JSDOM(
+      `<html><body>Something eloquent about the exact text should include the whole text to the text end and what not.</body></html>`
+    );
+    const doc = dom.window.document;
+    expect(
+      extractQuotationFromTextFragment(
+        "https://example.com#:~:text=the%20exact%20text,the%20text%20end",
+        { doc }
+      )
+    ).toBe("the exact text should include the whole text to the text end");
   });
   it("extracts the quotation from the text fragment with a text end, prefix, and suffix", () => {
     expect(
