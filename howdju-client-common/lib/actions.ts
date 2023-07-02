@@ -2,12 +2,12 @@ import { ActionCreator } from "redux";
 import { createAction } from "@reduxjs/toolkit";
 
 import {
+  MediaExcerptInfo,
   decircularizeJustification,
   JustificationOut,
   PersistedJustificationWithRootRef,
   UrlOut,
 } from "howdju-common";
-import { AnchorInfo } from "./target";
 
 /**
  * redux-actions and @reduxjs/toolkit have a convention that action creators get a .toString method
@@ -44,10 +44,10 @@ export type ExtensionAction = ReturnType<
 
 /** Actions the content script sends to the iframed web app. */
 export const extensionFrame = {
-  beginEditOfMediaExcerptFromAnchorInfo: createAction(
-    "EXTENSION_FRAME/BEGIN_EDIT_OF_MEDIA_EXCERPT_FROM_ANCHOR_INFO",
-    (anchorInfo: AnchorInfo) => ({
-      payload: anchorInfo,
+  beginEditOfMediaExcerptFromInfo: createAction(
+    "EXTENSION_FRAME/BEGIN_EDIT_OF_MEDIA_EXCERPT_FROM_INFO",
+    (mediaExcerptInfo: MediaExcerptInfo) => ({
+      payload: mediaExcerptInfo,
     })
   ),
   gotoJustification: createAction(

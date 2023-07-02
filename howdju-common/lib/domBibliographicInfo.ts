@@ -1,15 +1,27 @@
 import { isString } from "lodash";
 import moment from "moment";
 import type { Article, NewsArticle } from "schema-dts";
+import * as textQuote from "dom-anchor-text-quote";
+
 import { isDefined } from "./general";
 import { logger } from "./logger";
+import { makeDomAnchor } from "./anchors";
+import { CreateDomAnchor, CreatePersorgInput } from "./zodSchemas";
 
-import { CreatePersorgInput } from "./zodSchemas";
-
-interface BibliographicInfo {
+export interface BibliographicInfo {
   sourceDescription: string;
   pincite?: string;
   authors?: CreatePersorgInput[];
+}
+
+/** Info to help construct a MediaExcerpt. */
+export interface MediaExcerptInfo extends BibliographicInfo {
+  /** The inferred quotation, if any were inferrable. */
+  quotation?: string;
+  /** The DOM anchors, if any were inferrable. */
+  anchors?: CreateDomAnchor[];
+  /** The URL that was passed in. */
+  url: string;
 }
 
 type NewsArticleAuthor = NonNullable<NewsArticle["author"]>;
@@ -458,4 +470,41 @@ function getKnownForFromAuthor(author: NewsArticleAuthor): string | undefined {
     return author.description.textValue;
   }
   return undefined;
+}
+
+export type AnchoredBibliographicInfo = BibliographicInfo & {
+  anchors?: CreateDomAnchor[];
+};
+
+/** Given a URL and quotation from it, infer bibliographic info and anchors for the quote. */
+export function inferAnchoredBibliographicInfo(
+  doc: Document,
+  quotation: string | undefined
+): AnchoredBibliographicInfo {
+  const bibliographicInfo = inferBibliographicInfo(doc);
+
+  if (!quotation) {
+    return bibliographicInfo;
+  }
+
+  const textPositionAnchor = textQuote.toTextPosition(doc.body, {
+    exact: quotation,
+  });
+  if (!textPositionAnchor) {
+    return bibliographicInfo;
+  }
+
+  const textQuoteAnchor = textQuote.fromTextPosition(
+    doc.body,
+    textPositionAnchor
+  );
+  if (!textQuoteAnchor) {
+    return bibliographicInfo;
+  }
+  const domAnchor = makeDomAnchor(textQuoteAnchor, textPositionAnchor);
+
+  return {
+    ...bibliographicInfo,
+    anchors: [domAnchor],
+  };
 }

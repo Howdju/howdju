@@ -2,6 +2,9 @@
  * Entry point for mobile app.
  */
 
+/// <reference path="../howdju-common/lib/dom-anchor-text-position.d.ts" />
+/// <reference path="../howdju-common/lib/dom-anchor-text-quote.d.ts" />
+
 import React from "react";
 import { AppRegistry } from "react-native";
 

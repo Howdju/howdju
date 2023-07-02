@@ -17,7 +17,7 @@ import { logger } from "./logger";
 
 /** Dispatch-bound action creators needed by WindowMessageHandler. */
 export interface WindowMessageHandlerActionCreators {
-  beginEditOfMediaExcerptFromAnchorInfo: typeof flows.beginEditOfMediaExcerptFromAnchorInfo;
+  beginEditOfMediaExcerptFromInfo: typeof flows.beginEditOfMediaExcerptFromInfo;
   gotoJustification: typeof goto.justification;
   extensionFrameAckMessage: typeof actions.extensionFrame.ackMessage;
 }
@@ -83,9 +83,9 @@ export default class WindowMessageHandler {
   ) {
     const type = action.type;
     switch (type) {
-      case `${actions.extensionFrame.beginEditOfMediaExcerptFromAnchorInfo}`: {
+      case `${actions.extensionFrame.beginEditOfMediaExcerptFromInfo}`: {
         const payload = action.payload as PayloadOf<
-          typeof actions.extensionFrame.beginEditOfMediaExcerptFromAnchorInfo
+          typeof actions.extensionFrame.beginEditOfMediaExcerptFromInfo
         >;
         if (!payload.url.startsWith(eventOrigin)) {
           logger.error(
@@ -94,7 +94,7 @@ export default class WindowMessageHandler {
           );
           return;
         }
-        this.actionCreators.beginEditOfMediaExcerptFromAnchorInfo(payload);
+        this.actionCreators.beginEditOfMediaExcerptFromInfo(payload);
         break;
       }
       case `${actions.extensionFrame.gotoJustification}`: {

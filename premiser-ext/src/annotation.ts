@@ -1,4 +1,4 @@
-import { AnchorInfo } from "howdju-client-common";
+import { MediaExcerptInfo } from "howdju-common";
 
 import { setNodeData } from "./node-data";
 import {
@@ -13,9 +13,9 @@ import { arrayInsertAfter, arrayInsertBefore } from "./util";
 export const annotationMouseOverClass = "howdju-annotation-mouse-over";
 export const annotationIndexClassPrefix = "howdju-annotation-index-";
 
-export interface AnnotationAnchors {
+export interface AnnotatedExcerpt {
   annotation: Annotation;
-  anchorInfo: AnchorInfo;
+  mediaExcerptInfo: MediaExcerptInfo;
 }
 
 export class Annotation {

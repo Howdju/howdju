@@ -1,20 +1,14 @@
 import { put, takeEvery } from "typed-redux-saga";
 
-import { CreateMediaExcerptInput } from "howdju-common";
+import { CreateMediaExcerptInput, MediaExcerptInfo } from "howdju-common";
 
-import { editors, flows, str, goto } from "../../actions";
+import { editors, flows, goto } from "../../actions";
 import { editorType, editorId } from "@/pages/SubmitMediaExcerptPage";
-import { PayloadAction } from "@reduxjs/toolkit";
-import { PayloadType } from "@/actionHelpers";
 
-type Payload = PayloadType<typeof flows.beginEditOfMediaExcerptFromAnchorInfo>;
-
-export function* beginEditOfMediaExcerptFromAnchorInfo() {
+export function* beginEditOfMediaExcerptFromInfo() {
   yield* takeEvery(
-    str(flows.beginEditOfMediaExcerptFromAnchorInfo),
-    function* beginEditOfMediaExcerptFromAnchorInfoWorker(
-      action: PayloadAction<Payload>
-    ) {
+    flows.beginEditOfMediaExcerptFromInfo,
+    function* beginEditOfMediaExcerptFromAnchorInfoWorker(action) {
       const input = toCreateMediaExcerptInput(action.payload);
       yield* put(editors.beginEdit(editorType, editorId, input));
       yield* put(goto.newMediaExcerpt());
@@ -22,7 +16,9 @@ export function* beginEditOfMediaExcerptFromAnchorInfo() {
   );
 }
 
-function toCreateMediaExcerptInput(payload: Payload): CreateMediaExcerptInput {
+function toCreateMediaExcerptInput(
+  payload: MediaExcerptInfo
+): CreateMediaExcerptInput {
   const {
     anchors,
     sourceDescription,
@@ -30,7 +26,7 @@ function toCreateMediaExcerptInput(payload: Payload): CreateMediaExcerptInput {
     pincite,
     url,
   } = payload;
-  const quotation = anchors.map((a) => a.exactText.trim()).join("\n\n");
+  const quotation = anchors?.map((a) => a.exactText.trim()).join("\n\n") ?? "";
   return {
     localRep: {
       quotation,

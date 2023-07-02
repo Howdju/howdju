@@ -11,12 +11,12 @@ import {
   isCoextensive,
   insertNodeAfter,
   insertNodeBefore,
-  selectionToAnchorInfo,
+  selectionToMediaExcerptInfo,
   targetToRanges,
 } from "howdju-client-common";
 
 import { getNodeData } from "./node-data";
-import { Annotation, AnnotationAnchors } from "./annotation";
+import { AnnotatedExcerpt, Annotation } from "./annotation";
 
 export const annotationClass = "howdju-annotation";
 export const annotationLevelClassPrefix = "howdju-annotation-level-";
@@ -27,7 +27,7 @@ export const annotationLevelStyleElementId = "howdju-annotation-level-styles";
 let maxAnnotationLevel = 0;
 export const annotations: Annotation[] = [];
 
-export function annotateSelection(): AnnotationAnchors | undefined {
+export function annotateSelection(): AnnotatedExcerpt | undefined {
   const selection = getSelection();
   if (!selection) {
     logger.warn("Selection was null, can't annotate it.");
@@ -39,7 +39,7 @@ export function annotateSelection(): AnnotationAnchors | undefined {
   }
 
   // Get target before selection may change
-  const anchorInfo = selectionToAnchorInfo(selection);
+  const mediaExcerptInfo = selectionToMediaExcerptInfo(selection);
 
   const nodes = getNodesForSelection(selection);
 
@@ -49,7 +49,7 @@ export function annotateSelection(): AnnotationAnchors | undefined {
   //  a reasonable UX choice, since the selection in a sense has been replaced with the annotation.
   clearSelection();
 
-  return { annotation, anchorInfo };
+  return { annotation, mediaExcerptInfo };
 }
 
 export function annotateTarget(target: UrlTarget) {

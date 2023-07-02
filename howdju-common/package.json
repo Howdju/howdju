@@ -20,10 +20,13 @@
     "ajv": "^8.1.0",
     "ajv-formats": "^2.0.2",
     "bases": "^0.2.1",
+    "dom-anchor-text-position": "^5.0.0",
+    "dom-anchor-text-quote": "^4.0.2",
     "lodash": "^4.17.21",
     "moment": "^2.29.4",
     "random-seed": "^0.3.0",
-    "type-fest": "^3.2.0",
+    "striptags": "alpha",
+    "type-fest": "^3.12.0",
     "validator": "^13.7.0",
     "zod": "https://github.com/Howdju/zod.git#c2b02dc84a1e25614479aff0c1c26de27a406ea8"
   },
@@ -36,9 +39,9 @@
     "eslint-config-howdju": "workspace:eslint-config-howdju",
     "howdju-test-common": "workspace:howdju-test-common",
     "jest": "^29.3.1",
-    "jsdom": "~21.1.2",
     "prettier": "2.7.1",
     "schema-dts": "^1.1.2",
+    "strip-indent": "^4.0.0",
     "ts-node": "^10.9.1",
     "typescript": "^4.9.4"
   }

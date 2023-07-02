@@ -10,6 +10,7 @@ import {
   JustificationVotesService,
   MainSearchService,
   MediaExcerptsService,
+  MediaExcerptInfosService,
   PermissionsService,
   PerspectivesService,
   PicRegionsService,
@@ -241,6 +242,8 @@ export function servicesInitializer(provider: AwsProvider) {
     justificationsService
   );
 
+  const mediaExcerptInfosService = new MediaExcerptInfosService();
+
   provider.logger.debug("servicesInit complete");
 
   return {
@@ -255,6 +258,7 @@ export function servicesInitializer(provider: AwsProvider) {
     justificationVotesService,
     mainSearchService,
     mediaExcerptsService,
+    mediaExcerptInfosService,
     permissionsService,
     perspectivesService,
     sourceExcerptParaphrasesService,

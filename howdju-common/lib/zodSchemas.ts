@@ -416,6 +416,9 @@ export const CreateUrlLocator = UrlLocator.omit({ id: true }).extend({
 });
 export type CreateUrlLocator = z.output<typeof CreateUrlLocator>;
 
+export const CreateUrlLocatorInput = CreateUrlLocator;
+export type CreateUrlLocatorInput = z.output<typeof CreateUrlLocatorInput>;
+
 /** A source of information */
 export const Source = Entity.extend({
   /**
@@ -482,6 +485,7 @@ export type CreateMediaExcerptCitation = z.output<
 
 export const CreateMediaExcerptCitationInput =
   CreateMediaExcerptCitation.extend({
+    source: CreateSourceInput,
     // An empty pincite translates to null upon creation.
     pincite: z.string().max(64).optional(),
   });
@@ -967,45 +971,52 @@ export const CreateSourceExcerpt = z.discriminatedUnion("type", [
 /** @deprecated */
 export type CreateSourceExcerpt = z.infer<typeof CreateSourceExcerpt>;
 
-export const CreateMediaExcerpt = MediaExcerpt.omit({ id: true })
-  .extend({
-    localRep: MediaExcerpt.shape.localRep.omit({ normalQuotation: true }),
-    locators: z
-      .object({
-        // urlLocators can become optional if we add other locator types.
-        urlLocators: z.array(CreateUrlLocator),
-      })
-      .optional(),
-    citations: z.array(CreateMediaExcerptCitation).optional(),
-    speakers: z.array(CreatePersorg).optional(),
-  })
-  .superRefine((val, ctx) => {
-    if (keys(val.localRep).length < 1) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: `At least one of ${keys(
-          MediaExcerpt.shape.localRep.shape
-        )} is required.`,
-      });
-    }
-    if (!val.locators && (!val.citations || val.citations.length < 1)) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: `At least one of locators or citations is required.`,
-      });
-    }
-    if (val.locators && keys(val.locators).length < 1) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: `Locators must contain at least one of ${keys(
-          MediaExcerpt.shape.locators.shape
-        )} is required.`,
-      });
-    }
-  });
+const CreateMediaExcerptBase = MediaExcerpt.omit({ id: true }).extend({
+  localRep: MediaExcerpt.shape.localRep.omit({ normalQuotation: true }),
+  locators: z
+    .object({
+      // urlLocators can become optional if we add other locator types.
+      urlLocators: z.array(CreateUrlLocator),
+    })
+    .optional(),
+  citations: z.array(CreateMediaExcerptCitation).optional(),
+  speakers: z.array(CreatePersorg).optional(),
+});
+function refineCreateMediaExcerpt(
+  val: CreateMediaExcerpt | CreateMediaExcerptInput,
+  ctx: z.RefinementCtx
+) {
+  if (keys(val.localRep).length < 1) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: `At least one of ${keys(
+        MediaExcerpt.shape.localRep.shape
+      )} is required.`,
+    });
+  }
+  if (!val.locators && (!val.citations || val.citations.length < 1)) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: `At least one of locators or citations is required.`,
+    });
+  }
+  if (val.locators && keys(val.locators).length < 1) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: `Locators must contain at least one of ${keys(
+        MediaExcerpt.shape.locators.shape
+      )} is required.`,
+    });
+  }
+}
+export const CreateMediaExcerpt = CreateMediaExcerptBase.superRefine(
+  refineCreateMediaExcerpt
+);
 export type CreateMediaExcerpt = z.infer<typeof CreateMediaExcerpt>;
 
-export const CreateMediaExcerptInput = CreateMediaExcerpt;
+export const CreateMediaExcerptInput = CreateMediaExcerptBase.extend({
+  citations: z.array(CreateMediaExcerptCitationInput).optional(),
+}).superRefine(refineCreateMediaExcerpt);
 export type CreateMediaExcerptInput = z.output<typeof CreateMediaExcerptInput>;
 
 export const UpdateMediaExcerpt = CreateMediaExcerpt;

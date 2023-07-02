@@ -1,13 +1,17 @@
 import React from "react";
+import { MaterialSymbol } from "react-material-symbols";
 
-import { extractDomain, MediaExcerptView, UrlLocatorView } from "howdju-common";
+import {
+  extractDomain,
+  MediaExcerptView,
+  toUrlWithFragment,
+  UrlLocatorView,
+} from "howdju-common";
 
 import CollapsibleTextViewer from "@/components/collapsableText/CollapsableTextViewer";
 import MediaExcerptCitationViewer from "./MediaExcerptCitationViewer";
 
 import "./MediaExcerptViewer.scss";
-import { MaterialSymbol } from "react-material-symbols";
-import { toUrlWithFragment } from "howdju-client-common";
 
 interface Props {
   mediaExcerpt: MediaExcerptView;
@@ -48,18 +52,16 @@ export default function MediaExcerptViewer({ mediaExcerpt }: Props) {
 function toAnchorElement(urlLocator: UrlLocatorView) {
   const url = toUrlWithFragment(urlLocator);
   const domain = extractDomain(urlLocator.url.url);
-  const urlLocatorCount = urlLocator.anchors?.length ?? 0;
   return (
     <a href={url}>
       {domain}{" "}
-      {urlLocator.anchors?.length && (
+      {urlLocator.anchors?.length ? (
         <MaterialSymbol
           icon="my_location"
           size={13}
           title="Has a fragment taking you directly to the excerpt"
         />
-      )}
-      {urlLocatorCount > 1 && { urlLocatorCount }}
+      ) : null}
     </a>
   );
 }

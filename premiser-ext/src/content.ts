@@ -1,5 +1,5 @@
-/// <reference path="../../howdju-client-common/lib/dom-anchor-text-position.d.ts" />
-/// <reference path="../../howdju-client-common/lib/dom-anchor-text-quote.d.ts" />
+/// <reference path="../../howdju-common/lib/dom-anchor-text-position.d.ts" />
+/// <reference path="../../howdju-common/lib/dom-anchor-text-quote.d.ts" />
 
 // Babel runtime dependencies
 import "core-js/stable";
@@ -211,8 +211,8 @@ function annotateSelectionAndEdit() {
     return;
   }
   postActionMessageToFrame(
-    actions.extensionFrame.beginEditOfMediaExcerptFromAnchorInfo(
-      annotationAnchors.anchorInfo
+    actions.extensionFrame.beginEditOfMediaExcerptFromInfo(
+      annotationAnchors.mediaExcerptInfo
     )
   );
 }

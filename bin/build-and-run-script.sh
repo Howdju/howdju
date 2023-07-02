@@ -12,7 +12,7 @@ echo "Building & running ${@}"
 script_path=$1
 echo "Building script ${script_path}"
 esbuild "${script_path}" --bundle --platform=node\
- --external:esbuild --external:pg-native --external:dns-sync\
+ --external:esbuild --external:dns-sync\
  --target=node14\
  --outfile="dist/${script_path}"
 echo "Running" "dist/${script_path}" "${@:2}"

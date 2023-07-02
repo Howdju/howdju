@@ -1180,4 +1180,30 @@ export const serviceRoutes = {
       }
     ),
   },
+
+  /*
+   * MediaExcerptInfo
+   */
+  inferMediaExcerptInfo: {
+    path: "media-excerpt-info",
+    method: httpMethods.GET,
+    request: handler(
+      // Require auth to prevent abuse
+      Authed.merge(QueryStringParams("url", "quotation")),
+      async (
+        appProvider: ServicesProvider,
+        { queryStringParams: { url, quotation } }
+      ) => {
+        if (!url) {
+          throw new InvalidRequestError("url is required.");
+        }
+        const mediaExcerptInfo =
+          await appProvider.mediaExcerptInfosService.inferMediaExcerptInfo(
+            url,
+            quotation
+          );
+        return { body: { mediaExcerptInfo } };
+      }
+    ),
+  },
 } as const;

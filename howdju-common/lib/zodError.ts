@@ -9,6 +9,7 @@ import {
   uniqWith,
 } from "lodash";
 import { z } from "zod";
+import { RequiredDeep } from "type-fest";
 
 import { assert, mapValuesDeep } from "./general";
 import { logger } from "./logger";
@@ -58,7 +59,7 @@ export function formatZodError<T>(error: z.ZodError<T>): ModelErrors<T> {
  * Helper for constructing a Zod error based upon the fields of a type.
  *
  * ```
- * const error = newValidationError<User>([
+ * const error = makeZodCustomIssuesError<User>([
  *   (r) => r.user.name("Email is already in use."),
  * ]);
  * ```
@@ -87,7 +88,9 @@ export function makeModelErrors<T extends object>(
 /**
  * A method that describes an issue at a path.
  */
-type IssueDescriptor<T> = (t: Callable<T, IssueDescriptorArg>) => any;
+type IssueDescriptor<T> = (
+  t: AllCallable<RequiredDeep<T>, IssueDescriptorArg>
+) => any;
 
 /**
  * A type helper that converts a type T into another type that has all callable fields.
@@ -95,14 +98,14 @@ type IssueDescriptor<T> = (t: Callable<T, IssueDescriptorArg>) => any;
  * @typeparam T the shape of the object
  * @typeparam A the type of the arg of the methods.
  */
-export type Callable<T, A> = {
+export type AllCallable<T, A> = {
   (a: A): any;
 } & (NonNullable<T> extends [any, ...any[]]
-  ? { [K in keyof NonNullable<T>]: Callable<NonNullable<T>[K], A> }
+  ? { [K in keyof NonNullable<T>]: AllCallable<NonNullable<T>[K], A> }
   : NonNullable<T> extends any[]
-  ? { [k: number]: Callable<NonNullable<T>[number], A> }
+  ? { [k: number]: AllCallable<NonNullable<T>[number], A> }
   : NonNullable<T> extends object
-  ? { [K in keyof NonNullable<T>]: Callable<NonNullable<T>[K], A> }
+  ? { [K in keyof NonNullable<T>]: AllCallable<NonNullable<T>[K], A> }
   : unknown);
 
 /** The acceptable arg to an issue descriptor. */
@@ -119,35 +122,41 @@ const callableProxyTarget = function () {};
  * If called with a string, it becomes the message. If called with an object, it must contain a
  * message field and can contain any other fields.
  */
-function makeCallableProxy<T>(): Callable<T, IssueDescriptorArg> {
+function makeCallableProxy<T>(): AllCallable<
+  RequiredDeep<T>,
+  IssueDescriptorArg
+> {
   const names: (string | number | symbol)[] = [];
-  return new Proxy(callableProxyTarget as Callable<T, IssueDescriptorArg>, {
-    get(_target, name, receiver) {
-      names.push(name);
-      return receiver;
-    },
-    apply(_target, _thisArg, argumentsList): z.ZodCustomIssue {
-      if (argumentsList.length !== 1) {
-        throw new Error("Must be a single argument.");
-      }
-      let props;
-      const arg = argumentsList[0];
-      if (isString(arg)) {
-        props = { message: arg };
-      } else if ("message" in arg) {
-        props = arg;
-      } else {
-        throw new Error(
-          "Argument must be a string or an object with at least a .message property."
-        );
-      }
-      return {
-        code: z.ZodIssueCode.custom,
-        path: names,
-        ...props,
-      };
-    },
-  });
+  return new Proxy(
+    callableProxyTarget as AllCallable<RequiredDeep<T>, IssueDescriptorArg>,
+    {
+      get(_target, name, receiver) {
+        names.push(name);
+        return receiver;
+      },
+      apply(_target, _thisArg, argumentsList): z.ZodCustomIssue {
+        if (argumentsList.length !== 1) {
+          throw new Error("Must be a single argument.");
+        }
+        let props;
+        const arg = argumentsList[0];
+        if (isString(arg)) {
+          props = { message: arg };
+        } else if ("message" in arg) {
+          props = arg;
+        } else {
+          throw new Error(
+            "Argument must be a string or an object with at least a .message property."
+          );
+        }
+        return {
+          code: z.ZodIssueCode.custom,
+          path: names,
+          ...props,
+        };
+      },
+    }
+  );
 }
 
 /**

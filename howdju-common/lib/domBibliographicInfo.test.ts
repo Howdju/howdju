@@ -1,11 +1,18 @@
 import { readFileSync } from "fs";
 import { JSDOM } from "jsdom";
 
-import { extractDate, inferBibliographicInfo } from "./domBibliographicInfo";
+import {
+  extractDate,
+  inferAnchoredBibliographicInfo,
+  inferBibliographicInfo,
+} from "./domBibliographicInfo";
 
-describe("domBibliographicInfo", () => {
+describe("inferBibliographicInfo", () => {
   it("should handle NYT", () => {
-    const html = readFileSync("lib/domMetadataTestData/nytimes.html", "utf8");
+    const html = readFileSync(
+      "lib/domBibliographicInfoTestData/nytimes.html",
+      "utf8"
+    );
     const dom = new JSDOM(html);
 
     const info = inferBibliographicInfo(dom.window.document);
@@ -21,7 +28,10 @@ describe("domBibliographicInfo", () => {
   });
 
   it("should handle PubMed", () => {
-    const html = readFileSync("lib/domMetadataTestData/pubmed.html", "utf8");
+    const html = readFileSync(
+      "lib/domBibliographicInfoTestData/pubmed.html",
+      "utf8"
+    );
     const dom = new JSDOM(html);
 
     const info = inferBibliographicInfo(dom.window.document);
@@ -43,7 +53,10 @@ describe("domBibliographicInfo", () => {
   });
 
   it("should handle Wikipedia", () => {
-    const html = readFileSync("lib/domMetadataTestData/wikipedia.html", "utf8");
+    const html = readFileSync(
+      "lib/domBibliographicInfoTestData/wikipedia.html",
+      "utf8"
+    );
     const dom = new JSDOM(html);
 
     const info = inferBibliographicInfo(dom.window.document);
@@ -55,7 +68,10 @@ describe("domBibliographicInfo", () => {
   });
 
   it("should handle Aeon", () => {
-    const html = readFileSync("lib/domMetadataTestData/aeon.html", "utf8");
+    const html = readFileSync(
+      "lib/domBibliographicInfoTestData/aeon.html",
+      "utf8"
+    );
     const dom = new JSDOM(html);
 
     const info = inferBibliographicInfo(dom.window.document);
@@ -74,7 +90,10 @@ describe("domBibliographicInfo", () => {
   });
 
   it("should handle Substack", () => {
-    const html = readFileSync("lib/domMetadataTestData/substack.html", "utf8");
+    const html = readFileSync(
+      "lib/domBibliographicInfoTestData/substack.html",
+      "utf8"
+    );
     const dom = new JSDOM(html);
 
     const info = inferBibliographicInfo(dom.window.document);
@@ -99,5 +118,59 @@ describe("extractDate", () => {
       `<div class="article__PublishedDate-sc-br4ey4-17 hWOVM">23 June 2023</div>`
     );
     expect(extractDate(dom.window.document)).toBe("2023-06-23");
+  });
+});
+
+describe("inferAnchoredBibliographicInfo", () => {
+  it("returns the info", () => {
+    const html = readFileSync(
+      "lib/domBibliographicInfoTestData/pubmed.html",
+      "utf8"
+    );
+    const dom = new JSDOM(html);
+    const exactText =
+      "The results indicate that MeHg is not a suitable reference for risk assessment from exposure to thimerosal-derived Hg. Knowledge of the toxicokinetics and developmental toxicity of thimerosal is needed to afford a meaningful assessment of the developmental effects of thimerosal-containing vaccines.";
+
+    const info = inferAnchoredBibliographicInfo(dom.window.document, exactText);
+
+    expect(info).toStrictEqual({
+      anchors: [
+        {
+          exactText,
+          prefixText: "l-exposed monkeys (34% vs. 7%). ",
+          suffixText: "Keywords: brain and blood distri",
+          startOffset: 10427,
+          endOffset: 10726,
+        },
+      ],
+      authors: [
+        {
+          isOrganization: false,
+          name: "Thomas M. Burbacher",
+        },
+        {
+          isOrganization: false,
+          name: "Danny D. Shen",
+        },
+        {
+          isOrganization: false,
+          name: "Noelle Liberato",
+        },
+        {
+          isOrganization: false,
+          name: "Kimberly S. Grant",
+        },
+        {
+          isOrganization: false,
+          name: "Elsa Cernichiari",
+        },
+        {
+          isOrganization: false,
+          name: "Thomas Clarkson",
+        },
+      ],
+      sourceDescription:
+        "“Comparison of Blood and Brain Mercury Levels in Infant Monkeys Exposed to Methylmercury or Vaccines Containing Thimerosal” Environmental Health Perspectives vol. 113,8 (2005): 1015. doi:10.1289/ehp.7712",
+    });
   });
 });

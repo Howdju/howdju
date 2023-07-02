@@ -2,25 +2,20 @@ import * as textPosition from "dom-anchor-text-position";
 import * as textQuote from "dom-anchor-text-quote";
 
 import {
+  MediaExcerptInfo,
   CreateDomAnchor,
-  CreatePersorgInput,
   inferBibliographicInfo,
   logger,
   UrlTarget,
+  makeDomAnchor,
 } from "howdju-common";
 
 import { nodeIsBefore, getPreviousLeafNode } from "./dom";
 import { getCanonicalOrCurrentUrl } from "./location";
 
-export interface AnchorInfo {
-  anchors: CreateDomAnchor[];
-  authors?: CreatePersorgInput[];
-  sourceDescription: string;
-  pincite?: string;
-  url: string;
-}
-
-export function selectionToAnchorInfo(selection: Selection): AnchorInfo {
+export function selectionToMediaExcerptInfo(
+  selection: Selection
+): MediaExcerptInfo {
   const anchors = [];
 
   for (let i = 0; i < selection.rangeCount; i++) {
@@ -39,19 +34,6 @@ export function selectionToAnchorInfo(selection: Selection): AnchorInfo {
     sourceDescription,
     pincite,
     url,
-  };
-}
-
-export function makeDomAnchor(
-  { exact, prefix, suffix }: textQuote.TextQuoteAnchor,
-  { start, end }: textPosition.TextPositionAnchor
-): CreateDomAnchor {
-  return {
-    exactText: exact,
-    prefixText: prefix,
-    suffixText: suffix,
-    startOffset: start,
-    endOffset: end,
   };
 }
 
@@ -79,6 +61,10 @@ export function targetToRanges(target: UrlTarget) {
       suffix: anchor.suffixText,
     };
     const range = textQuote.toRange(document.body, selector, options);
+    if (!range) {
+      logger.warn(`Unable to create a rand for anchor ${anchor}. Skipping.`);
+      continue;
+    }
     // textQuote.toRange returns a range that is exclusive at the end.
     // If the end is at the beginning of a node that is after the start
     // node (indicating from the library that the range should include
