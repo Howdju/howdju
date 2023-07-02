@@ -1,4 +1,6 @@
+import { readFileSync } from "fs";
 import { JSDOM } from "jsdom";
+import stripIndent from "strip-indent";
 
 import {
   brandedParse,
@@ -208,7 +210,7 @@ describe("extractQuotationFromTextFragment", () => {
   });
   it("returns the full quotation from a text fragment with a text end if doc is provided", () => {
     const dom = new JSDOM(
-      `<html><body>Something eloquent about the exact text should include the whole text to the text end and what not.</body></html>`
+      `<html><body>Something eloquent about the exact text <a href="link">should include the whole text</a> to the text end and what not.</body></html>`
     );
     const doc = dom.window.document;
     expect(
@@ -218,6 +220,51 @@ describe("extractQuotationFromTextFragment", () => {
       )
     ).toBe("the exact text should include the whole text to the text end");
   });
+  it("returns the full quotation from a text fragment with a text end if doc is provided from substack", () => {
+    const html = readFileSync(
+      "lib/domBibliographicInfoTestData/substack.html",
+      "utf8"
+    );
+    const dom = new JSDOM(html);
+    const doc = dom.window.document;
+
+    expect(
+      extractQuotationFromTextFragment(
+        "https://www.thefp.com/p/rfk-jr-is-striking-a-nerve-with-democrats#:~:text=A%20few%20days,running%20for%20president.",
+        { doc }
+      )
+    ).toBe(
+      stripIndent(`
+    A few days ago, Joe Rogan offered Dr. Peter Hotez $100,000 to appear on his show to debate RFK Jr. on the subject of vaccines and public health. Not 48 hours later, thanks to Twitter, the ante is now more than $2 million and counting.
+
+    If this debate happens, it could rival the audience tuning in to the official presidential debates in the 2024 election cycle.
+
+    Which tells us a tremendous amount about our current political moment.
+
+    So does the fact that Robert Francis Kennedy Jr. is even running for president.`).trim()
+    );
+  });
+  it("returns the full quotation from a text fragment with a text end if doc is provided and initial textStart is after initial textEnd", () => {
+    const html = readFileSync(
+      "lib/domBibliographicInfoTestData/pubmed.html",
+      "utf8"
+    );
+    const dom = new JSDOM(html);
+    const doc = dom.window.document;
+
+    // I'm not sure why `Thimerosal is a` matches with `Thimerosal is eliminated` (later in the
+    // doc), but it is. And this situation exercises the code that handles that by trying to find
+    // better start/end offsets.
+    expect(
+      extractQuotationFromTextFragment(
+        "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC1280342/#:~:text=Thimerosal%20is%20a,after%20each%20exposure.",
+        { doc }
+      )
+    ).toBe(
+      `Thimerosal is a preservative that has been used in manufacturing vaccines since the 1930s. Reports have indicated that infants can receive ethylmercury (in the form of thimerosal) at or above the U.S. Environmental Protection Agency guidelines for methylmercury exposure, depending on the exact vaccinations, schedule, and size of the infant. In this study we compared the systemic disposition and brain distribution of total and inorganic mercury in infant monkeys after thimerosal exposure with those exposed to MeHg. Monkeys were exposed to MeHg (via oral gavage) or vaccines containing thimerosal (via intramuscular injection) at birth and 1, 2, and 3 weeks of age. Total blood Hg levels were determined 2, 4, and 7 days after each exposure.`
+    );
+  });
+
   it("extracts the quotation from the text fragment with a text end, prefix, and suffix", () => {
     expect(
       extractQuotationFromTextFragment(

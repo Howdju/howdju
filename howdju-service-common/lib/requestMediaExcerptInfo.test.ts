@@ -20,7 +20,7 @@ describe("requestMediaExcerptInfo", () => {
     );
 
     expect(info).toStrictEqual({
-      quotation,
+      quotation: undefined,
       anchors: [
         {
           exactText:

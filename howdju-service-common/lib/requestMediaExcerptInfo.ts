@@ -19,19 +19,18 @@ export async function requestMediaExcerptInfo(
     url,
   });
 
-  // if URL has text fragment with start/end, locate both separately and then
-  // construct the full quotation from the dom content using start.start and
-  // end.end.
-  const inferredQuotation =
-    quotation ||
-    extractQuotationFromTextFragment(url, { doc: dom.window.document });
+  const extractedQuotation = extractQuotationFromTextFragment(url, {
+    doc: dom.window.document,
+  });
 
   const anchoredBibliographicInfo = inferAnchoredBibliographicInfo(
     dom.window.document,
-    inferredQuotation
+    // Try to provide a quotation to get the anchors
+    extractedQuotation || quotation
   );
   return {
-    quotation: inferredQuotation,
+    // Only return a quotation if we found one.
+    quotation: extractedQuotation,
     ...anchoredBibliographicInfo,
     url,
   };

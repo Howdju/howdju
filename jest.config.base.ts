@@ -18,7 +18,7 @@ const config: Config = {
   ],
   transformIgnorePatterns: [
     // Include some extra stuff under node_modules in our babel transform
-    "node_modules/(?!(@grrr/cookie-consent|@grrr/utils|nanoid|jsdom))",
+    "node_modules/(?!(@grrr/cookie-consent|@grrr/utils|nanoid|jsdom|strip-indent))",
   ],
   transform: {
     // This custom transform does:
