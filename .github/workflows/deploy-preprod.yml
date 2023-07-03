@@ -6,8 +6,8 @@ on:
   # Run after the CI workflow has completed.
   workflow_run:
     workflows: ["CI"]
-    types:
-      - completed
+    types: [completed]
+    branches: [master]
   workflow_dispatch:
 
 env:
@@ -17,8 +17,8 @@ env:
 
 jobs:
   deployment:
-    # Only deploy if CI succeeded and only if it was run on master.
-    if: github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'master'
+    # Only deploy if CI succeeded or if it's a manual trigger.
+    if: ${{ github.event.workflow_run.conclusion == 'success' ||  github.event_name == 'workflow_dispatch' }}
     runs-on: ubuntu-latest
     environment: preprod
     steps:
