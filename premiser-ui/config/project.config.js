@@ -13,12 +13,12 @@
  */
 
 import path, { resolve } from "path";
-import Debug from "debug";
+import { existsSync } from "fs";
 
-const debug = Debug("premiser-ui:project-config");
-
-debug(`__dirname: ${__dirname}`);
-const basePath = resolve(__dirname, "..");
+let basePath = __dirname;
+while (basePath !== "/" && !existsSync(resolve(basePath, "package.json"))) {
+  basePath = path.dirname(basePath);
+}
 
 export default {
   names: {
