@@ -2,6 +2,7 @@ import CopyPlugin from "copy-webpack-plugin";
 import MiniCssExtractPlugin from "mini-css-extract-plugin";
 import webpack from "webpack";
 import CssMinimizerPlugin from "css-minimizer-webpack-plugin";
+import TerserPlugin from "terser-webpack-plugin";
 
 import { utcTimestamp } from "howdju-common";
 
@@ -40,7 +41,8 @@ Supposed to support more stuff like this:
 
  but didn't work; maybe in a newer version
 */
-const banner = `name: ${projectConfig.names.js}
+const banner = `@banner
+name: ${projectConfig.names.js}
 version: ${packageInfo.version}
 timstamp: ${utcTimestamp()}
 git_commit: ${gitSha()}`;
@@ -83,7 +85,20 @@ export const webpackConfig = {
   optimization: {
     minimize: true,
     moduleIds: "named",
-    minimizer: [`...`, new CssMinimizerPlugin()],
+    minimizer: [
+      new TerserPlugin({
+        terserOptions: {
+          compress: {
+            passes: 2,
+          },
+          format: {
+            // Override TerserPlugin so that we can keep our banner.
+            comments: /@banner/i,
+          },
+        },
+      }),
+      new CssMinimizerPlugin(),
+    ],
     emitOnErrors: true,
   },
 };
