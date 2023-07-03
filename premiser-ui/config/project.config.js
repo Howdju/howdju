@@ -13,7 +13,11 @@
  */
 
 import path, { resolve } from "path";
+import Debug from "debug";
 
+const debug = Debug("premiser-ui:project-config");
+
+debug(`__dirname: ${__dirname}`);
 const basePath = resolve(__dirname, "..");
 
 export default {

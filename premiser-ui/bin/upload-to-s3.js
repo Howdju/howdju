@@ -75,7 +75,9 @@ walkRelative(projectConfig.paths.dist(), upload);
 function walk(dirPath, action) {
   debug(`Walking ${dirPath}`);
   readdir(dirPath, function (err, fileNames) {
-    if (err) return debug(err);
+    if (err) {
+      throw err;
+    }
 
     fileNames.forEach(function (fileName) {
       if (fileName[0] === ".") {
