@@ -1,5 +1,5 @@
 import { JSDOM } from "jsdom";
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 import { ZenRows } from "zenrows";
 
 import {
@@ -36,7 +36,7 @@ export async function requestMediaExcerptInfo(
 }
 
 async function getHtml(url: string): Promise<string> {
-  // Some sites (e.g. science.org) fail if you send a text fragment.
+  logger.info(`Requesting URL: ${url}`);
   try {
     const response = await axios.get(url, {
       timeout: 5000,
@@ -50,17 +50,25 @@ async function getHtml(url: string): Promise<string> {
 
     if (!process.env.ZEN_ROWS_API_KEY) {
       logger.info("ZenRows API key is missing so we cannot retry the request.");
-      throw new DownstreamServiceError("Failed to fetch URL", error);
+      throw new DownstreamServiceError(`Failed to fetch URL: ${url}`, error);
     }
+    logger.info(
+      `Requesting URL directly failed, retrying with ZenRows. ${{ url, error }}`
+    );
     try {
       const client = new ZenRows(process.env.ZEN_ROWS_API_KEY);
-      const { data } = await client.get(url, {});
+      const { data } = (await Promise.race([
+        client.get(url),
+        new Promise((_resolve, reject) =>
+          setTimeout(() => reject(new Error("ZenRows request timed out")), 5000)
+        ),
+      ])) as AxiosResponse;
       return data;
     } catch (error) {
       if (!axios.isAxiosError(error)) {
         throw error;
       }
-      throw new DownstreamServiceError("Failed to fetch URL", error);
+      throw new DownstreamServiceError(`Failed to fetch URL: ${url}`, error);
     }
   }
 }
