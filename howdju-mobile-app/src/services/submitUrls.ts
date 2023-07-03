@@ -2,7 +2,7 @@ import type { ShareDataItem } from "react-native-share-menu";
 import logger from "@/logger";
 import { makeUrl } from "./urls";
 
-type SafariShareInfo = {
+type ShareInfo = {
   url?: string;
   selectedText?: string;
   title?: string;
@@ -12,11 +12,11 @@ export function inferSubmitUrl(
   urlAuthority: string,
   items: ShareDataItem[]
 ): string {
-  const safariShareInfo = inferSafariShareInfo(items);
+  const safariShareInfo = inferShareInfo(items);
   return makeSubmitUrl(urlAuthority, safariShareInfo);
 }
 
-const inferSafariShareInfo = (items: ShareDataItem[]): SafariShareInfo => {
+const inferShareInfo = (items: ShareDataItem[]): ShareInfo => {
   let url;
   let selectedText;
   let title;
@@ -27,7 +27,7 @@ const inferSafariShareInfo = (items: ShareDataItem[]): SafariShareInfo => {
         case "provider/data/javascript-preprocessing":
         case "provider/property-list/javascript-preprocessing": {
           const valueObject = JSON.parse(item.value);
-          return valueObject as SafariShareInfo;
+          return valueObject as ShareInfo;
         }
         default:
         // fallthrough
@@ -42,10 +42,10 @@ const inferSafariShareInfo = (items: ShareDataItem[]): SafariShareInfo => {
           url = item.value;
           break;
         case "text/plain":
-          if (title) {
+          if (selectedText) {
             logger.warn({ title }, "title was already inferred");
           }
-          title = item.value;
+          selectedText = item.value;
           break;
       }
     }
@@ -54,12 +54,9 @@ const inferSafariShareInfo = (items: ShareDataItem[]): SafariShareInfo => {
   return { url, title, selectedText };
 };
 
-const makeSubmitUrl = (
-  urlAuthority: string,
-  safariShareInfo: SafariShareInfo
-) => {
-  const { url, selectedText, title } = safariShareInfo;
-  const submitUrl = makeUrl(urlAuthority, "/submit/");
+const makeSubmitUrl = (urlAuthority: string, shareInfo: ShareInfo) => {
+  const { url, selectedText, title } = shareInfo;
+  const submitUrl = makeUrl(urlAuthority, "/media-excerpts/new");
   if (url) {
     submitUrl.searchParams.append("url", encodeURIComponent(url));
   }
@@ -68,7 +65,7 @@ const makeSubmitUrl = (
   }
   if (selectedText) {
     submitUrl.searchParams.append(
-      "quoteText",
+      "quotation",
       encodeURIComponent(selectedText)
     );
   }
