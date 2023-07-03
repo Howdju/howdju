@@ -73,6 +73,7 @@ const upload = (filename) => {
 walkRelative(projectConfig.paths.dist(), upload);
 
 function walk(dirPath, action) {
+  debug(`Walking ${dirPath}`);
   readdir(dirPath, function (err, fileNames) {
     if (err) return debug(err);
 
@@ -81,6 +82,7 @@ function walk(dirPath, action) {
         return debug(`Skipping ${fileName}`);
       }
       const filePath = resolve(dirPath, fileName);
+      debug(`Found ${filePath}`);
       _stat(filePath, function (err, stat) {
         if (stat && stat.isDirectory()) {
           return walk(filePath, action);
