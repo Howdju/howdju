@@ -27,6 +27,7 @@ export const httpStatusCodes = {
    */
   CONFLICT: 409,
 
+  /** The server is responsible for the error. */
   ERROR: 500,
 } as const;
 export type HttpStatusCode =

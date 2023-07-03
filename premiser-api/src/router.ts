@@ -5,12 +5,14 @@ import {
   apiErrorCodes,
   formatZodError,
   isCustomError,
+  logger,
   toJson,
 } from "howdju-common";
 import {
   AuthenticationError,
   AuthorizationError,
   ConflictError,
+  DownstreamServiceError,
   EntityConflictError,
   EntityNotFoundError,
   EntityValidationError,
@@ -170,6 +172,18 @@ export async function routeRequest(
         callback,
         body: {
           errorCode: apiErrorCodes.CONSUMED,
+        },
+      });
+    } else if (err instanceof DownstreamServiceError) {
+      logger.error("Downstream service error", {
+        err,
+        stack: err.stack,
+        sourceError: err.sourceError,
+      });
+      return error({
+        callback,
+        body: {
+          errorCode: apiErrorCodes.DOWNSTREAM_SERVICE_ERROR,
         },
       });
     } else if (err instanceof Error) {

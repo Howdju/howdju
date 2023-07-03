@@ -66,6 +66,12 @@ export class EntityNotFoundError extends HowdjuApiError {
   }
 }
 
+export class DownstreamServiceError extends HowdjuApiError {
+  constructor(message: string, public sourceError: Error) {
+    super("(DownstreamServiceError) " + message);
+  }
+}
+
 export class UserIsInactiveError extends HowdjuApiError {
   userId: EntityId;
   constructor(userId: EntityId) {
