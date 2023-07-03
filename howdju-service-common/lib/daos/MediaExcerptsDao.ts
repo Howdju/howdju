@@ -15,6 +15,7 @@ import {
   MediaExcerptRef,
   newImpossibleError,
   normalizeText,
+  normalizeQuotation,
   PartialPersist,
   PersorgOut,
   UrlLocatorOut,
@@ -192,7 +193,7 @@ export class MediaExcerptsDao {
     } = await this.database.query(
       "readEquivalentMediaExcerpt",
       `select media_excerpt_id from media_excerpts where normal_quotation = $1 and deleted is null`,
-      [normalizeText(mediaExcerpt.localRep.quotation)]
+      [normalizeQuotation(mediaExcerpt.localRep.quotation)]
     );
     if (!row) {
       return undefined;
@@ -205,7 +206,7 @@ export class MediaExcerptsDao {
     creatorUserId: EntityId,
     created: Moment
   ) {
-    const normalQuotation = normalizeText(mediaExcerpt.localRep.quotation);
+    const normalQuotation = normalizeQuotation(mediaExcerpt.localRep.quotation);
     const {
       rows: [row],
     } = await this.database.query(

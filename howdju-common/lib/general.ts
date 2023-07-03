@@ -453,6 +453,20 @@ export const normalizeText = (text: string) => {
   return text;
 };
 
+/**
+ * Normalizes quotation text.
+ *
+ * Quotations are more permissive with their normal text, since special characters like
+ * emoji,
+ */
+export function normalizeQuotation(text: string) {
+  text = toLower(text);
+  // https://unicode.org/reports/tr18/#General_Category_Property
+  text = replace(text, /[\p{Mark}\p{Punctuation}\p{Zl}\p{Zp}\p{Other}]/gu, " ");
+  text = cleanWhitespace(text);
+  return text;
+}
+
 const randomSeed = createRandomSeed();
 
 export const randomBase36Number = (length: number) => {

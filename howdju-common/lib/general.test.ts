@@ -10,6 +10,7 @@ import {
   mapKeysDeep,
   filterDefined,
   pushAll,
+  normalizeQuotation,
 } from "./general";
 
 describe("cleanWhitespace", () => {
@@ -27,6 +28,16 @@ describe("cleanWhitespace", () => {
     expect(cleanWhitespace("This   wîll be   clëaned?")).toBe(
       "This wîll be clëaned?"
     );
+  });
+});
+
+describe("normalizeQuotation", () => {
+  test("normalizes a quotation", () => {
+    expect(
+      normalizeQuotation(`This is a
+
+    full-text quotation 😀.Yay! `)
+    ).toBe("this is a full text quotation 😀 yay");
   });
 });
 
