@@ -6,6 +6,10 @@ if [[ -z "${HOWDJU_RUNNING_IN_GITHUB_WORKFLOW+present}" ]]; then
   echo "Not in a Github action; starting a temporary local Postgres container"
   export $(cat ../config/test.env | xargs)
   image_id=$(docker run --rm -d -p $DB_PORT:5432 -e POSTGRES_PASSWORD=$DB_PASSWORD postgres:12.5)
+  if [[ $? -ne 0 ]]; then
+    echo "Failed to start docker image"
+    exit 1
+  fi
   echo "Started docker image ${image_id}"
 fi
 

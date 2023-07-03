@@ -1,15 +1,14 @@
 import { every } from "lodash";
 import { Moment } from "moment";
 
-import { CreateSource, EntityId } from "howdju-common";
+import { CreateSource, EntityId, SourceOut } from "howdju-common";
 
 import { SourcesDao } from "../daos";
+import { EntityWrapper } from "../types";
+import { readWriteReread } from "./patterns";
 
 export class SourcesService {
-  sourcesDao: SourcesDao;
-  constructor(sourcesDao: SourcesDao) {
-    this.sourcesDao = sourcesDao;
-  }
+  constructor(private sourcesDao: SourcesDao) {}
 
   async readOrCreateSources(
     userId: EntityId,
@@ -31,24 +30,14 @@ export class SourcesService {
     userId: EntityId,
     createSource: CreateSource,
     created: Moment
-  ) {
-    const extantSource = await this.sourcesDao.readEquivalentSource(
-      createSource
-    );
-    if (extantSource) {
-      return {
-        source: extantSource,
-        isExtant: true,
-      };
-    }
-    const source = await this.sourcesDao.createSource(
-      userId,
-      createSource,
-      created
+  ): Promise<EntityWrapper<SourceOut>> {
+    const { entity, isExtant } = await readWriteReread(
+      () => this.sourcesDao.readEquivalentSource(createSource),
+      () => this.sourcesDao.createSource(userId, createSource, created)
     );
     return {
-      source,
-      isExtant: false,
+      source: entity,
+      isExtant,
     };
   }
 }

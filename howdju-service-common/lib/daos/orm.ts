@@ -657,7 +657,7 @@ export const toPropositionCompoundAtom = wrapMapper(
       throw newProgrammingError("Proposition required.");
     }
     return {
-      compoundId: toIdString(row.proposition_compound_id),
+      propositionCompoundId: toIdString(row.proposition_compound_id),
       entity,
     };
   }

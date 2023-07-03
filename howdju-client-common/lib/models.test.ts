@@ -29,7 +29,7 @@ describe("makeJustificationViewModel", () => {
           ...PropositionCompoundRef.parse({ id: "example" }),
           atoms: [
             {
-              compoundId: "example",
+              propositionCompoundId: "example",
               entity: {
                 ...PropositionRef.parse({ id: "example" }),
                 text: "The 1899 Height of Buildings Act established that no building could be taller than the Capitol (289 feet)",
@@ -64,7 +64,7 @@ describe("makeJustificationViewModel", () => {
           ...PropositionCompoundRef.parse({ id: "example" }),
           atoms: [
             {
-              compoundId: "example",
+              propositionCompoundId: "example",
               entity: {
                 ...PropositionRef.parse({ id: "example" }),
                 text: "The 1899 Height of Buildings Act established that no building could be taller than the Capitol (289 feet)",
@@ -91,7 +91,7 @@ describe("makeJustificationViewModel", () => {
           ...PropositionCompoundRef.parse({ id: "example" }),
           atoms: [
             {
-              compoundId: "example",
+              propositionCompoundId: "example",
               entity: {
                 ...PropositionRef.parse({ id: "example" }),
                 created,

@@ -483,6 +483,15 @@ To deal with this, use `git add -p` to selectively stage only the relevant chang
 editing the file manually, you may benefit from this command too: `git restore path/to/file` which
 removes unstaged changes while keeping staged changes.)
 
+### Flaky tests
+
+You can use `check-flaky-test.sh` to run a test multiple times to elicit flaky (rare failures.) This
+command will output how often the test fails along with the output from failed tests:
+
+```sh
+../bin/check-flaky-test.sh 100 MediaExcerptsService 'readOrCreateMediaExcerpt re-uses related entities.'
+```
+
 ### Testing Github actions
 
 Warning: Act currently fails for tests that use our Postgres docker because Act doesn't support Github

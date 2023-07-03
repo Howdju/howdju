@@ -22,7 +22,7 @@ describe("Justification schema", () => {
           created,
           atoms: [
             {
-              compoundId: "1",
+              propositionCompoundId: "1",
               entity: {
                 text: "the basis text",
                 created,

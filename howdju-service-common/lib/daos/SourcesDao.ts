@@ -2,10 +2,12 @@ import { merge } from "lodash";
 import { Moment } from "moment";
 
 import {
+  brandedParse,
   CreateSource,
   EntityId,
   normalizeText,
   SourceOut,
+  SourceRef,
 } from "howdju-common";
 
 import { Database } from "../database";
@@ -65,11 +67,14 @@ export class SourcesDao {
       `,
       [source.description, normalDescription, creatorUserId, created]
     );
-    return merge({}, source, {
-      id: row.source_id,
-      normalDescription,
-      creatorUserId,
-      created,
-    });
+    return brandedParse(
+      SourceRef,
+      merge({}, source, {
+        id: row.source_id,
+        normalDescription,
+        creatorUserId,
+        created,
+      })
+    );
   }
 }
