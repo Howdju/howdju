@@ -33,6 +33,7 @@
     "pg": "^8.6.0",
     "urlsafe-base64": "^1.0.0",
     "uuid": "^9.0.0",
+    "zenrows": "^1.3.1",
     "zod": "https://github.com/Howdju/zod.git#c2b02dc84a1e25614479aff0c1c26de27a406ea8"
   },
   "devDependencies": {
