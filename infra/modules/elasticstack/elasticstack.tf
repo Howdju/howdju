@@ -142,8 +142,11 @@ resource "aws_volume_attachment" "elasticstack" {
 // NB when upgrading the instance, ensure that our ephemeral port definitions still correspond to those in /proc/sys/net/ipv4/ip_local_port_range
 data "aws_ami" "elasticstack_latest" {
   owners      = ["amazon"]
-  name_regex  = "^amzn-ami-\\d{4}\\.\\d{2}\\.[a-z]-amazon-ecs-optimized"
   most_recent = true
+  filter {
+    name   = "name"
+    values = ["amzn2-ami-ecs-hvm-*-x86_64-ebs"]
+  }
 }
 
 resource "aws_security_group" "elasticstack_instance" {
@@ -196,4 +199,3 @@ resource "aws_security_group" "elasticstack_instance" {
     Terraform = "true"
   }
 }
-
