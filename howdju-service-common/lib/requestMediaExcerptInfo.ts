@@ -36,14 +36,17 @@ export async function requestMediaExcerptInfo(
   };
 }
 
+const DIRECT_REQUEST_TIMEOUT = 3000;
+const ZEN_ROWS_REQUEST_TIMEOUT = 5000;
+
 async function getHtml(url: string): Promise<string> {
-  logger.info(`Requesting URL: ${url}`);
+  logger.info(`Requesting URL directly: ${url}`);
   try {
     const response = await axios.get(url, {
-      timeout: 5000,
+      timeout: DIRECT_REQUEST_TIMEOUT,
     });
-    const html = await response.data;
-    return html;
+    logger.info(`Requesting URL directly succeeded: ${url}`);
+    return response.data;
   } catch (error) {
     if (!axios.isAxiosError(error)) {
       throw error;
@@ -59,14 +62,22 @@ async function getHtml(url: string): Promise<string> {
         error,
       })}`
     );
+
+    const controller = new AbortController();
     try {
       const client = new ZenRows(process.env.ZEN_ROWS_API_KEY);
       const { data } = (await Promise.race([
-        client.get(url),
+        client.get(url, {
+          signal: controller.signal,
+        }),
         new Promise((_resolve, reject) =>
-          setTimeout(() => reject(new Error("ZenRows request timed out")), 5000)
+          setTimeout(() => {
+            controller.abort();
+            reject(new Error("ZenRows request timed out"));
+          }, ZEN_ROWS_REQUEST_TIMEOUT)
         ),
       ])) as AxiosResponse;
+      logger.info(`Requesting URL with ZenRows succeeded: ${url}`);
       return data;
     } catch (error) {
       if (!axios.isAxiosError(error)) {
