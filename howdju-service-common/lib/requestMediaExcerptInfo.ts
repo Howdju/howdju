@@ -7,6 +7,7 @@ import {
   inferAnchoredBibliographicInfo,
   logger,
   MediaExcerptInfo,
+  toJson,
 } from "howdju-common";
 import { DownstreamServiceError } from "./serviceErrors";
 
@@ -53,7 +54,10 @@ async function getHtml(url: string): Promise<string> {
       throw new DownstreamServiceError(`Failed to fetch URL: ${url}`, error);
     }
     logger.info(
-      `Requesting URL directly failed, retrying with ZenRows. ${{ url, error }}`
+      `Requesting URL directly failed, retrying with ZenRows. ${toJson({
+        url,
+        error,
+      })}`
     );
     try {
       const client = new ZenRows(process.env.ZEN_ROWS_API_KEY);
