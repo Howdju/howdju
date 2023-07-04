@@ -18,9 +18,12 @@
           SUBQUERY (
             $extensionItem.attachments,
             $attachment,
-            ANY $attachment.registeredTypeIdentifiers UTI-CONFORMS-TO "public.url"
+            ANY $attachment.registeredTypeIdentifiers UTI-CONFORMS-TO "public.url" ||
+            ANY $attachment.registeredTypeIdentifiers UTI-CONFORMS-TO "public.file-url" ||
+            ANY $attachment.registeredTypeIdentifiers UTI-CONFORMS-TO "public.text" ||
+            ANY $attachment.registeredTypeIdentifiers UTI-CONFORMS-TO "public.plain-text"
           ).@count == $extensionItem.attachments.@count
-        ).@count >= 1
+        ).@count > 0
       </string>
 			<key>NSExtensionJavaScriptPreprocessingFile</key>
 			<string>Share</string>
