@@ -246,7 +246,9 @@ type CreateModelEntityName<T extends CreateModel> = T extends CreateMediaExcerpt
   ? "MediaExcerpt"
   : never;
 
-type CreateModelOrRef<T extends CreateModel> = T | Ref<CreateModelEntityName<T>>;
+type CreateModelOrRef<T extends CreateModel> =
+  | T
+  | Ref<CreateModelEntityName<T>>;
 
 /** Makes an Entity's ID required and all related entities can be refs. */
 export type Persisted<T extends Entity> = PersistedEntity &

@@ -66,6 +66,14 @@ export default function MediaExcerptPage(props: Props) {
         />,
         <Divider key="divider" />,
         <ListItem
+          primaryText="See usages"
+          key="see-usages"
+          leftIcon={<MaterialSymbol icon="search" />}
+          component={Link}
+          to={paths.mediaExcerptUsages(mediaExcerptId)}
+        />,
+        <Divider key="divider" />,
+        <ListItem
           primaryText="Delete"
           key="delete"
           leftIcon={<MaterialSymbol icon="delete" />}

@@ -12,7 +12,7 @@ export const propositionUsagesPageSlice = createSlice({
     directStatements: [],
     indirectStatements: [],
     justifications: [],
-    continuationToken: undefined as ContinuationToken | undefined,
+    justificationsContinuationToken: undefined as ContinuationToken | undefined,
   },
   reducers: {},
   extraReducers(builder) {
@@ -56,7 +56,7 @@ export const propositionUsagesPageSlice = createSlice({
         action.meta.normalizationSchema
       );
       state.justifications = result.justifications;
-      state.continuationToken = action.payload.continuationToken;
+      state.justificationsContinuationToken = action.payload.continuationToken;
       state.isFetchingJustifications = false;
     });
   },

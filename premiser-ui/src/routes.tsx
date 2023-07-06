@@ -46,6 +46,7 @@ import { CreatePropositionPageMode } from "./types";
 import { Location, LocationState } from "history";
 import { PrimaryContextTrailProvider } from "./components/contextTrail/PrimaryContextTrailProvider";
 import MediaExcerptPage from "./pages/MediaExcerptPage";
+import MediaExcerptUsagesPage from "./pages/mediaExcerptUsages/MediaExcerptUsagesPage";
 
 const renderHomePath = (props: RouteProps) => {
   const mainSearchText =
@@ -137,6 +138,13 @@ const routesById = {
   ),
   propositionUsages: (
     <Route exact path="/proposition-usages" component={PropositionUsagesPage} />
+  ),
+  mediaExcerptUsages: (
+    <Route
+      exact
+      path="/media-excerpts/:mediaExcerptId/usages"
+      component={MediaExcerptUsagesPage}
+    />
   ),
 
   submitMediaExcerpt: (

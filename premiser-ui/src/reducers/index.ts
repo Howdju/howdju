@@ -19,6 +19,7 @@ import { persorgPage } from "@/pages/persorg/persorgPageSlice";
 import { justificationsPage } from "@/pages/justifications/justificationsPageSlice";
 import { accountSettingsPage } from "@/pages/accountSettings/accountSettingsPageSlice";
 import { propositionUsagesPage } from "@/pages/propositionUsages/propositionUsagesPageSlice";
+import { mediaExcerptUsagesPage } from "@/pages/mediaExcerptUsages/mediaExcerptUsagesPageSlice";
 import { registrationConfirmationPage } from "@/pages/registration/registrationConfirmationPageSlice";
 import { primaryContextTrail } from "@/components/contextTrail/primaryContextTrailSlice";
 
@@ -39,6 +40,7 @@ export default (history: History) =>
     primaryContextTrail,
     privacyConsent,
     propositionUsagesPage,
+    mediaExcerptUsagesPage,
     registrationConfirmationPage,
     router: connectRouter(history),
     tagPage,
