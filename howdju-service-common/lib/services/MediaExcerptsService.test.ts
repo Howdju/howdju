@@ -70,7 +70,7 @@ describe("MediaExcerptsService", () => {
       };
 
       const { isExtant, mediaExcerpt } = await service.readOrCreateMediaExcerpt(
-        authToken,
+        { authToken },
         createMediaExcerpt
       );
 
@@ -165,11 +165,11 @@ describe("MediaExcerptsService", () => {
         ],
         speakers: [{ name: "the speaker", isOrganization: false }],
       };
-      await service.readOrCreateMediaExcerpt(authToken, createMediaExcerpt);
+      await service.readOrCreateMediaExcerpt({ authToken }, createMediaExcerpt);
 
       // Act
       const { isExtant, mediaExcerpt } = await service.readOrCreateMediaExcerpt(
-        authToken,
+        { authToken },
         createMediaExcerpt
       );
 
@@ -186,7 +186,7 @@ describe("MediaExcerptsService", () => {
     test("reads a media excerpt.", async () => {
       // Arrange
       const { authToken } = await testHelper.makeUser();
-      const mediaExcerpt = await testHelper.makeMediaExcerpt(authToken);
+      const mediaExcerpt = await testHelper.makeMediaExcerpt({ authToken });
 
       // Act
       const readMediaExcerpt = await service.readMediaExcerptForId(

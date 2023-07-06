@@ -83,39 +83,6 @@ describe("CreatePropositionPage", () => {
       expect(container).toMatchSnapshot();
     });
 
-    test("can add URL while editing a WritQuote-based justification", async () => {
-      // Arrange
-      const user = setupUserEvent();
-
-      const history = createMemoryHistory();
-      const { location, match } = makeRouteComponentProps("submit");
-
-      const { container } = renderWithProviders(
-        <CreatePropositionPage
-          mode={"CREATE_PROPOSITION"}
-          history={history}
-          location={location}
-          match={match}
-        />,
-        { history }
-      );
-      await user.click(
-        screen.getByRole("checkbox", { name: /create justification/i })
-      );
-      await user.click(
-        screen.getByRole("radio", { name: /An external reference/i })
-      );
-
-      // Act
-      await user.click(screen.getByRole("button", { name: /add url/i }));
-
-      // Assert
-      expect(await screen.findAllByLabelText(/url/)).toHaveLength(2);
-
-      jest.runAllTimers();
-      expect(container).toMatchSnapshot();
-    });
-
     test("can submit a proposition justified via WritQuote query params", async () => {
       // Arrange
       const user = setupUserEvent();
@@ -207,13 +174,14 @@ describe("CreatePropositionPage", () => {
       expect(history.location.pathname).toMatch(pathToRegexp("/p/:id"));
     });
 
-    test("can submit a proposition justified via a new WritQote", async () => {
+    test("can create a MediaExcerpt-based proposition", async () => {
       // Arrange
       const user = setupUserEvent();
 
-      const quoteText = "An important conclusion.";
-      const title = "A credible source";
-      const url = "https://www.info.com";
+      const quotation = "An important quotation.";
+      const sourceDescription = `“An insightful article” A Friendly Local Paper (2023-05-26)`;
+      const url = "https://www.news-paper.com";
+      const speakerName = "Bugs Bunny";
 
       const history = createMemoryHistory();
       const { location, match } = makeRouteComponentProps("create-proposition");
@@ -238,13 +206,14 @@ describe("CreatePropositionPage", () => {
         },
         polarity: "POSITIVE",
         basis: {
-          type: "WRIT_QUOTE",
+          type: "MEDIA_EXCERPT",
           entity: {
-            quoteText,
-            writ: {
-              title,
+            localRep: {
+              quotation,
             },
-            urls: [{ url }],
+            locators: { urlLocators: [{ url: { url } }] },
+            citations: [{ source: { description: sourceDescription } }],
+            speakers: [{ name: speakerName, isOrganization: false }],
           },
         },
       };
@@ -281,17 +250,29 @@ describe("CreatePropositionPage", () => {
         getElementByQuerySelector('textarea[name="proposition.text"]'),
         proposition.text
       );
-      const writQuoteRadio = getElementMatching(
+      const mediaExcerptRadio = getElementMatching(
         'input[name="justification.basis.type"]',
-        (el) => /Quote/i.test(getTextContent(el.parentElement))
+        (el) => /media excerpt/i.test(getTextContent(el.parentElement))
       );
-      await user.click(writQuoteRadio);
+      await user.click(mediaExcerptRadio);
       await user.type(
-        document.querySelectorAll(".writ-quote-editor-fields textarea")[0],
-        quoteText
+        document.querySelectorAll(".media-excerpt-editor-fields textarea")[0],
+        quotation
       );
-      await user.type(screen.getByLabelText(/Title/i), title);
+
+      await user.click(
+        screen.getByRole("button", { name: /add URL locator/i })
+      );
       await user.type(screen.getByLabelText(/URL/i), url);
+
+      await user.type(screen.getByLabelText(/description/i), sourceDescription);
+
+      await user.click(
+        getElementByQuerySelector(
+          '.media-excerpt-editor-fields .speakers [title="Add speaker"]'
+        )
+      );
+      await user.type(screen.getByLabelText(/name/i), speakerName);
 
       // Act
       await user.click(screen.getByRole("button", { name: /create/i }));

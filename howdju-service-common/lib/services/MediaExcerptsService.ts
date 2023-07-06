@@ -2,7 +2,6 @@ import { merge, zip } from "lodash";
 import { Moment } from "moment";
 
 import {
-  AuthToken,
   CreateMediaExcerpt,
   CreateMediaExcerptCitation,
   CreateUrlLocator,
@@ -22,6 +21,8 @@ import { CreateMediaExcerptDataIn, MediaExcerptsDao } from "../daos";
 import { WritQuotesService } from "./WritQuotesService";
 import { PersorgsService } from "./PersorgsService";
 import { UrlsService } from "./UrlsService";
+import { UserIdent } from "./types";
+import { EntityNotFoundError } from "..";
 
 export class MediaExcerptsService {
   authService: AuthService;
@@ -47,17 +48,19 @@ export class MediaExcerptsService {
     this.urlsService = urlsService;
   }
 
-  async readMediaExcerptForId(
-    id: EntityId
-  ): Promise<MediaExcerptOut | undefined> {
-    return this.mediaExcerptsDao.readMediaExcerptForId(id);
+  async readMediaExcerptForId(id: EntityId): Promise<MediaExcerptOut> {
+    const mediaExcerpt = await this.mediaExcerptsDao.readMediaExcerptForId(id);
+    if (!mediaExcerpt) {
+      throw new EntityNotFoundError("MEDIA_EXCERPT", id);
+    }
+    return mediaExcerpt;
   }
 
   async readOrCreateMediaExcerpt(
-    authToken: AuthToken,
+    userIdent: UserIdent,
     createMediaExcerpt: CreateMediaExcerpt
   ): Promise<{ isExtant: boolean; mediaExcerpt: MediaExcerptOut }> {
-    const userId = await this.authService.readUserIdForAuthToken(authToken);
+    const userId = await this.authService.readUserIdForUserIdent(userIdent);
     const now = utcNow();
     const createCitations = createMediaExcerpt.citations ?? [];
 

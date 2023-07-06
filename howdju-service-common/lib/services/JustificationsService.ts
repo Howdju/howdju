@@ -49,6 +49,7 @@ import {
   WritQuoteOut,
   makeModelErrors,
   JustificationView,
+  isOnlyRef,
 } from "howdju-common";
 
 import { ApiConfig } from "../config";
@@ -692,26 +693,34 @@ export class JustificationsService extends EntityService<
       }
 
       case "MEDIA_EXCERPT": {
-        const mediaExcerpt = await prefixErrorPath(
-          this.mediaExcerptsService.readMediaExcerptForId(
-            justificationBasis.entity.id
+        if (isOnlyRef(justificationBasis.entity)) {
+          const mediaExcerpt = await prefixErrorPath(
+            this.mediaExcerptsService.readMediaExcerptForId(
+              justificationBasis.entity.id
+            ),
+            "entity"
+          );
+          return {
+            isExtant: true,
+            basis: { type, entity: mediaExcerpt },
+          };
+        }
+
+        const { isExtant, mediaExcerpt } = await prefixErrorPath(
+          this.mediaExcerptsService.readOrCreateMediaExcerpt(
+            { userId },
+            justificationBasis.entity
           ),
           "entity"
         );
-        if (!mediaExcerpt) {
-          throw new EntityNotFoundError(
-            "MEDIA_EXCERPT",
-            justificationBasis.entity.id
-          );
-        }
         return {
-          isExtant: true,
+          isExtant,
           basis: { type, entity: mediaExcerpt },
         };
       }
 
       case "SOURCE_EXCERPT":
-        // TODO(201): implement
+        // TODO(201): remove
         throw newUnimplementedError(
           "SourceExcerpt bases are not yet implemented."
         );

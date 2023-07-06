@@ -819,7 +819,7 @@ export const serviceRoutes = {
       ) => {
         const { isExtant, mediaExcerpt } =
           await appProvider.mediaExcerptsService.readOrCreateMediaExcerpt(
-            authToken,
+            { authToken },
             createMediaExcerpt
           );
         return {

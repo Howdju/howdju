@@ -29,6 +29,14 @@ exports.AuthService = class AuthService {
     return this.authDao.getUserIdForAuthToken(authToken);
   }
 
+  readUserIdForUserIdent(userIdent) {
+    const { authToken, userId } = userIdent;
+    if (userId) {
+      return userId;
+    }
+    return this.readUserIdForAuthToken(authToken);
+  }
+
   readUserIdForAuthToken(authToken) {
     if (!authToken) {
       throw new AuthenticationError();

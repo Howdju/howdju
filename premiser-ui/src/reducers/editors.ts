@@ -586,6 +586,22 @@ const editorReducerByType: {
         PropositionTagVotePolarities.POSITIVE,
         (list1, list2) => differenceWith(list1, list2, isEqual)
       ),
+      [str(editors.inferMediaExcerptInfo)]: produce((state) => {
+        if (
+          state.editEntity &&
+          state.editEntity.justification.basis.mediaExcerpt
+        ) {
+          state.isFetching = true;
+        }
+      }),
+      [str(editors.inferMediaExcerptInfoSucceeded)]:
+        inferMediaExcerptInfoSuccessHandler<CreateJustifiedSentenceInput>(
+          "justification.basis.mediaExcerpt"
+        ),
+      [str(editors.inferMediaExcerptInfoFailed)]:
+        inferMediaExcerptInfoFailureHandler<CreateJustifiedSentenceInput>(
+          "justification.basis.mediaExcerpt"
+        ),
     },
     defaultEditorState()
   ),
@@ -696,101 +712,140 @@ const editorReducerByType: {
       [str(editors.inferMediaExcerptInfo)]: produce((state) => {
         state.isFetching = true;
       }),
-      [str(editors.inferMediaExcerptInfoSucceeded)]: produce(
-        (
-          state,
-          action: Action<
-            InferResponseBody<typeof serviceRoutes.inferMediaExcerptInfo>
-          >
-        ) => {
-          state.isFetching = false;
-
-          const editEntity = state.editEntity;
-          if (!editEntity) {
-            logger.error("Cannot infer media excerpt info for absent entity.");
-            return;
-          }
-
-          const { mediaExcerptInfo } = action.payload;
-          const { quotation, sourceDescription, anchors, authors } =
-            mediaExcerptInfo;
-
-          if (quotation) {
-            editEntity.localRep.quotation = quotation;
-          }
-
-          if (
-            editEntity.citations &&
-            editEntity.citations.length > 0 &&
-            !editEntity.citations[0].source.description
-          ) {
-            editEntity.citations[0].source.description = sourceDescription;
-          }
-          if (
-            anchors &&
-            editEntity.locators &&
-            editEntity.locators.urlLocators.length > 0
-          ) {
-            editEntity.locators.urlLocators[0].anchors = anchors;
-
-            // Remove the error if it exists
-            if (
-              state.errors?.locators &&
-              "urlLocators" in state.errors.locators &&
-              state.errors.locators.urlLocators?.[0].anchors?._errors
-            ) {
-              state.errors.locators.urlLocators[0].anchors._errors =
-                state.errors.locators.urlLocators[0].anchors._errors.filter(
-                  (err) => err.message !== UNABLE_TO_LOCATION_QUOTATION_MESSAGE
-                );
-            }
-          }
-
-          if (quotation && !anchors) {
-            state.errors = merge(
-              state.errors,
-              makeModelErrors<CreateMediaExcerptInput>((me) =>
-                me.locators.urlLocators[0].anchors(
-                  UNABLE_TO_LOCATION_QUOTATION_MESSAGE
-                )
-              )
-            );
-          }
-
-          if (authors && (editEntity.speakers?.length ?? 0) < 1) {
-            editEntity.speakers = authors;
-          }
-
-          // Remove the error if it exists
-          if (
-            state.errors?.locators &&
-            "urlLocators" in state.errors.locators &&
-            state.errors.locators.urlLocators?.[0].url?.url?._errors
-          ) {
-            state.errors.locators.urlLocators[0].url.url._errors =
-              state.errors.locators.urlLocators[0].url.url._errors.filter(
-                (err) =>
-                  err.message !== UNABLE_TO_INFER_MEDIA_EXCERPT_INFO_MESSAGE
-              );
-          }
-        }
-      ),
-      [str(editors.inferMediaExcerptInfoFailed)]: produce((state) => {
-        state.isFetching = false;
-
-        state.errors = merge(
-          state.errors,
-          makeModelErrors<CreateMediaExcerptInput>((me) =>
-            me.locators.urlLocators[0].url.url(
-              UNABLE_TO_INFER_MEDIA_EXCERPT_INFO_MESSAGE
-            )
-          )
-        );
-      }),
+      [str(editors.inferMediaExcerptInfoSucceeded)]:
+        inferMediaExcerptInfoSuccessHandler(),
+      [str(editors.inferMediaExcerptInfoFailed)]:
+        inferMediaExcerptInfoFailureHandler(),
     },
     defaultEditorState()
   ),
 };
+
+function inferMediaExcerptInfoSuccessHandler<T extends EditorEntity>(
+  mediaExcerptPath?: string
+) {
+  return produce(
+    (
+      state: EditorState<T>,
+      action: Action<
+        InferResponseBody<typeof serviceRoutes.inferMediaExcerptInfo>
+      >
+    ) => {
+      state.isFetching = false;
+
+      const editEntity = state.editEntity;
+      if (!editEntity) {
+        logger.error("Cannot infer media excerpt info for absent entity.");
+        return;
+      }
+      const mediaExcerpt: CreateMediaExcerptInput = mediaExcerptPath
+        ? get(editEntity, mediaExcerptPath)
+        : editEntity;
+      let mediaExcerptErrors: ModelErrors<CreateMediaExcerptInput> =
+        mediaExcerptPath ? get(state.errors, mediaExcerptPath) : state.errors;
+
+      const { mediaExcerptInfo } = action.payload;
+      const { quotation, sourceDescription, anchors, authors } =
+        mediaExcerptInfo;
+
+      if (quotation) {
+        mediaExcerpt.localRep.quotation = quotation;
+      }
+
+      if (
+        mediaExcerpt.citations &&
+        mediaExcerpt.citations.length > 0 &&
+        !mediaExcerpt.citations[0].source.description
+      ) {
+        mediaExcerpt.citations[0].source.description = sourceDescription;
+      }
+      if (
+        anchors &&
+        mediaExcerpt.locators &&
+        mediaExcerpt.locators.urlLocators.length > 0
+      ) {
+        mediaExcerpt.locators.urlLocators[0].anchors = anchors;
+
+        // Remove the error if it exists
+        if (
+          mediaExcerptErrors?.locators &&
+          "urlLocators" in mediaExcerptErrors.locators &&
+          mediaExcerptErrors.locators.urlLocators?.[0].anchors?._errors
+        ) {
+          mediaExcerptErrors.locators.urlLocators[0].anchors._errors =
+            mediaExcerptErrors.locators.urlLocators[0].anchors._errors.filter(
+              (err) => err.message !== UNABLE_TO_LOCATION_QUOTATION_MESSAGE
+            );
+        }
+      }
+
+      if (quotation && !anchors) {
+        mediaExcerptErrors = merge(
+          mediaExcerptErrors,
+          makeModelErrors<CreateMediaExcerptInput>((me) =>
+            me.locators.urlLocators[0].anchors(
+              UNABLE_TO_LOCATION_QUOTATION_MESSAGE
+            )
+          )
+        );
+      }
+
+      if (authors && (mediaExcerpt.speakers?.length ?? 0) < 1) {
+        mediaExcerpt.speakers = authors;
+      }
+
+      // Remove the error if it exists
+      if (
+        mediaExcerptErrors?.locators &&
+        "urlLocators" in mediaExcerptErrors.locators &&
+        mediaExcerptErrors.locators.urlLocators?.[0].url?.url?._errors
+      ) {
+        mediaExcerptErrors.locators.urlLocators[0].url.url._errors =
+          mediaExcerptErrors.locators.urlLocators[0].url.url._errors.filter(
+            (err) => err.message !== UNABLE_TO_INFER_MEDIA_EXCERPT_INFO_MESSAGE
+          );
+      }
+
+      if (mediaExcerptPath) {
+        if (!state.errors) {
+          state.errors = makeModelErrors<T>();
+        }
+        set(state.errors, mediaExcerptPath, mediaExcerptErrors);
+      } else {
+        state.errors = mediaExcerptErrors as ModelErrors<T>;
+      }
+    }
+  );
+}
+
+function inferMediaExcerptInfoFailureHandler<T extends EditorEntity>(
+  mediaExcerptPath?: string
+) {
+  return produce((state: EditorState<T>) => {
+    state.isFetching = false;
+
+    let mediaExcerptErrors: ModelErrors<CreateMediaExcerptInput> =
+      mediaExcerptPath ? get(state.errors, mediaExcerptPath) : state.errors;
+
+    mediaExcerptErrors = merge(
+      mediaExcerptErrors,
+      makeModelErrors<CreateMediaExcerptInput>((me) =>
+        me.locators.urlLocators[0].url.url(
+          UNABLE_TO_INFER_MEDIA_EXCERPT_INFO_MESSAGE
+        )
+      )
+    );
+
+    if (mediaExcerptPath) {
+      if (!state.errors) {
+        state.errors = makeModelErrors<T>();
+      }
+      set(state.errors, mediaExcerptPath, mediaExcerptErrors);
+    } else {
+      state.errors = mediaExcerptErrors as ModelErrors<T>;
+    }
+  });
+}
 
 function makePropositionTagReducer(
   polarity: PropositionTagVotePolarity,

@@ -129,9 +129,10 @@ export default function MediaExcerptEditorFields(props: Props) {
     if (!quotation) {
       inferredQuotation = extractQuotationFromTextFragment(url);
       if (inferredQuotation) {
+        const quotationName = combineNames(name, "localRep.quotation");
         editorDispatch((editorType: EditorType, editorId: EditorId) =>
           editors.propertyChange(editorType, editorId, {
-            "localRep.quotation": inferredQuotation,
+            [quotationName]: inferredQuotation,
           })
         );
       }
@@ -162,8 +163,8 @@ export default function MediaExcerptEditorFields(props: Props) {
         disabled={disabled}
       />
 
-      <fieldset>
-        <legend>URL locators</legend>
+      <fieldset className="url-locators">
+        <legend>URLs</legend>
         {mediaExcerpt?.locators?.urlLocators.map(({ url, anchors }, index) => (
           <SingleLineTextField
             {...errorProps((me) => me.locators?.urlLocators[index].url.url)}
@@ -227,7 +228,7 @@ export default function MediaExcerptEditorFields(props: Props) {
         )}
       </fieldset>
       <fieldset>
-        <legend>Citation</legend>
+        <legend>Citations</legend>
         {mediaExcerpt?.citations?.map(({ source, pincite }, index) => (
           <React.Fragment key={combineIds(id, `citations[${index}]`)}>
             <SourceDescriptionAutocomplete
@@ -323,7 +324,7 @@ export default function MediaExcerptEditorFields(props: Props) {
           </React.Fragment>
         ))}
       </fieldset>
-      <fieldset>
+      <fieldset className="speakers">
         <legend>Speakers</legend>
         {mediaExcerpt?.speakers?.map((speaker, index) => {
           return (

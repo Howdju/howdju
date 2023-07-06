@@ -1,5 +1,5 @@
 import React, { FormEvent } from "react";
-import { Link, RouteComponentProps } from "react-router-dom";
+import { RouteComponentProps } from "react-router-dom";
 import { goBack } from "connected-react-router";
 import {
   Button,
@@ -35,7 +35,6 @@ import {
 
 import Helmet from "./Helmet";
 import { editors, flows } from "./actions";
-import paths from "./paths";
 import t, {
   ADD_JUSTIFICATION_TO_CREATE_PROPOSITION,
   CREATE_JUSTIFICATION_SUBMIT_BUTTON_LABEL,
@@ -319,17 +318,6 @@ export default function CreatePropositionPage({ mode, location }: Props) {
       <Helmet>
         <title>{title} — Howdju</title>
       </Helmet>
-      {mode === "CREATE_PROPOSITION" && (
-        <div className="md-grid">
-          <div className="md-cell md-cell--12">
-            <p>
-              The <Link to={paths.tools()}>Chrome extension & bookmarklet</Link>{" "}
-              are convenient ways to create justifications based upon web pages
-              you visit
-            </p>
-          </div>
-        </div>
-      )}
       <form onSubmit={onSubmit}>
         <div className="md-grid">
           <div className="md-cell md-cell--12">

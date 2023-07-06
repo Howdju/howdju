@@ -6,11 +6,14 @@ import {
   CreateSource,
   CreateWritQuote,
   EntityId,
+  Persisted,
+  User,
   utcNow,
   WritQuoteOut,
 } from "howdju-common";
 
 import { ServicesProvider } from "./servicesInit";
+import { UserIdent } from "../services/types";
 import { merge } from "lodash";
 
 /** A helper for integration tests to create test data. */
@@ -42,13 +45,13 @@ export default class TestHelper {
   }
 
   async makeMediaExcerpt(
-    authToken: AuthToken,
+    userIdent: UserIdent,
     overrides: Partial<CreateMediaExcerpt> = {}
   ) {
     const createMediaExcerpt = merge({}, defaultMediaExcerpt, overrides);
     const { mediaExcerpt } =
       await this.servicesProvider.mediaExcerptsService.readOrCreateMediaExcerpt(
-        authToken,
+        userIdent,
         createMediaExcerpt
       );
     return mediaExcerpt;
@@ -75,13 +78,15 @@ export default class TestHelper {
       isActive: true,
     };
 
-    const user = await this.servicesProvider.usersDao.createUser(
+    const user = (await this.servicesProvider.usersDao.createUser(
       userData,
       creatorUserId,
       now
-    );
+    )) as Persisted<User>;
     const { authToken } =
-      await this.servicesProvider.authService.createAuthToken(user, now);
+      (await this.servicesProvider.authService.createAuthToken(user, now)) as {
+        authToken: AuthToken;
+      };
     return { user, authToken };
   }
 
