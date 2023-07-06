@@ -60,6 +60,7 @@ import {
   justificationVoteSchema,
   mainSearchResultsSchema,
   mediaExcerptSchema,
+  mediaExcerptsSchema,
   persorgSchema,
   persorgsSchema,
   propositionCompoundSchema,
@@ -606,6 +607,30 @@ export const api = {
         config: {
           queryStringParams,
           normalizationSchema: { writQuotes: writQuotesSchema },
+        },
+        meta: { widgetId },
+      };
+    }
+  ),
+  fetchRecentMediaExcerpts: apiActionCreator(
+    "FETCH_RECENT_MEDIA_EXCERPTS",
+    serviceRoutes.readMediaExcerpts,
+    (
+      widgetId: WidgetId,
+      count: number,
+      continuationToken?: ContinuationToken
+    ) => {
+      const queryStringParams: ContinuationQueryStringParams = {
+        continuationToken,
+        count: toString(count),
+      };
+      if (!queryStringParams.continuationToken) {
+        queryStringParams.sorts = defaultSorts;
+      }
+      return {
+        config: {
+          queryStringParams,
+          normalizationSchema: { mediaExcerpts: mediaExcerptsSchema },
         },
         meta: { widgetId },
       };

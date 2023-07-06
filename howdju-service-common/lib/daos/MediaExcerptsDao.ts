@@ -1,4 +1,4 @@
-import { merge } from "lodash";
+import { concat, forEach, merge, snakeCase } from "lodash";
 import { Moment } from "moment";
 
 import {
@@ -20,12 +20,16 @@ import {
   PersorgOut,
   UrlLocatorOut,
   UrlLocatorRef,
+  SortDescription,
+  isDefined,
 } from "howdju-common";
 
 import { Database } from "../database";
 import { PersorgsDao } from "./PersorgsDao";
 import { SourcesDao } from "./SourcesDao";
 import { UrlsDao } from "./UrlsDao";
+import { toDbDirection } from "./daoModels";
+import { InvalidRequestError } from "..";
 
 export type CreateMediaExcerptDataIn = Pick<
   PartialPersist<CreateMediaExcerpt, "localRep">,
@@ -515,5 +519,97 @@ export class MediaExcerptsDao {
       ) values ($1, $2, $3, $4)`,
       [mediaExcerpt.id, speaker.id, userId, created]
     );
+  }
+
+  async readMediaExcerpts(sorts: SortDescription[], count: number) {
+    const args = [count];
+    const countSql = `limit $${args.length}`;
+
+    const whereSqls = ["deleted is null"];
+    const orderBySqls: string[] = [];
+    forEach(sorts, (sort) => {
+      const columnName =
+        sort.property === "id" ? "media_excerpt_id" : snakeCase(sort.property);
+      const direction = toDbDirection(sort.direction);
+      whereSqls.push(`${columnName} is not null`);
+      orderBySqls.push(`${columnName} ${direction}`);
+    });
+    const whereSql = whereSqls.join("\nand ");
+    const orderBySql =
+      orderBySqls.length > 0 ? "order by " + orderBySqls.join(",") : "";
+
+    const sql = `
+      select media_excerpt_id
+      from media_excerpts
+        where
+          ${whereSql}
+      ${orderBySql}
+      ${countSql}
+      `;
+    const { rows } = await this.database.query("readMediaExcerpts", sql, args);
+    const mediaExcerpts = await Promise.all(
+      rows.map((row) => this.readMediaExcerptForId(row.media_excerpt_id))
+    );
+    return mediaExcerpts.filter(isDefined);
+  }
+
+  async readMoreMediaExcerpts(sorts: SortDescription[], count: number) {
+    const args: any[] = [count];
+    const countSql = `\nlimit $${args.length}`;
+
+    const whereSqls = ["deleted is null"];
+    const continuationWhereSqls: string[] = [];
+    const prevWhereSqls: string[] = [];
+    const orderBySqls: string[] = [];
+    forEach(sorts, (sort) => {
+      const value = sort.value;
+      if (!value) {
+        this.logger.error(
+          `readMoreMediaExcerpts sort description missing value.`
+        );
+        throw new InvalidRequestError("Invalid continuation.");
+      }
+      // The default direction is ascending
+      const direction = toDbDirection(sort.direction);
+      // 'id' is a special property name for entities. The column is prefixed by the entity type
+      const columnName =
+        sort.property === "id" ? "media_excerpt_id" : snakeCase(sort.property);
+      const operator = direction === "asc" ? ">" : "<";
+      args.push(value);
+      const currContinuationWhereSql = concat(prevWhereSqls, [
+        `${columnName} ${operator} $${args.length}`,
+      ]);
+      continuationWhereSqls.push(currContinuationWhereSql.join(" and "));
+      prevWhereSqls.push(`${columnName} = $${args.length}`);
+      whereSqls.push(`${columnName} is not null`);
+      orderBySqls.push(`${columnName} ${direction}`);
+    });
+
+    const continuationWhereSql = continuationWhereSqls.join("\n or ");
+    const whereSql = whereSqls.join("\nand ");
+    const orderBySql =
+      orderBySqls.length > 0 ? "order by " + orderBySqls.join(",") : "";
+
+    const sql = `
+      select
+          media_excerpt_id
+      from media_excerpts
+        where
+          ${whereSql}
+        and (
+          ${continuationWhereSql}
+        )
+      ${orderBySql}
+      ${countSql}
+      `;
+    const { rows } = await this.database.query(
+      "readMoreMediaExcerpts",
+      sql,
+      args
+    );
+    const mediaExcerpts = await Promise.all(
+      rows.map((row) => this.readMediaExcerptForId(row.media_excerpt_id))
+    );
+    return mediaExcerpts.filter(isDefined);
   }
 }

@@ -851,6 +851,34 @@ export const serviceRoutes = {
       }
     ),
   },
+  readMediaExcerpts: {
+    path: "media-excerpts",
+    method: httpMethods.GET,
+    request: handler(
+      QueryStringParams("sorts", "continuationToken", "count"),
+      async (
+        appProvider: ServicesProvider,
+        {
+          queryStringParams: {
+            sorts: encodedSorts,
+            continuationToken: prevContinuationToken,
+            count,
+          },
+        }
+      ) => {
+        const sorts = decodeSorts(encodedSorts);
+        const { mediaExcerpts, continuationToken } =
+          await appProvider.mediaExcerptsService.readMediaExcerpts(
+            sorts,
+            prevContinuationToken,
+            toNumber(count)
+          );
+        return {
+          body: { mediaExcerpts, continuationToken },
+        };
+      }
+    ),
+  },
 
   /*
    * Auth

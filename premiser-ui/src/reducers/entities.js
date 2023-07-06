@@ -79,6 +79,7 @@ export default handleActions(
       api.fetchRecentPropositions.response,
       api.fetchRecentWrits.response,
       api.fetchRecentWritQuotes.response,
+      api.fetchRecentMediaExcerpts.response,
       api.fetchRootPropositionStatements.response,
       api.fetchSentenceStatements.response,
       api.fetchSourceDescriptionSuggestions.response,

@@ -1,7 +1,8 @@
-import { merge, zip } from "lodash";
+import { concat, merge, zip } from "lodash";
 import { Moment } from "moment";
 
 import {
+  ContinuationToken,
   CreateMediaExcerpt,
   CreateMediaExcerptCitation,
   CreateUrlLocator,
@@ -12,6 +13,7 @@ import {
   newImpossibleError,
   PartialPersist,
   PersorgOut,
+  SortDescription,
   utcNow,
 } from "howdju-common";
 
@@ -22,7 +24,12 @@ import { WritQuotesService } from "./WritQuotesService";
 import { PersorgsService } from "./PersorgsService";
 import { UrlsService } from "./UrlsService";
 import { UserIdent } from "./types";
-import { EntityNotFoundError } from "..";
+import { EntityNotFoundError, RequestValidationError } from "..";
+import {
+  createContinuationToken,
+  createNextContinuationToken,
+  decodeContinuationToken,
+} from "./pagination";
 
 export class MediaExcerptsService {
   authService: AuthService;
@@ -314,5 +321,63 @@ export class MediaExcerptsService {
       created
     );
     return { isExtant: false };
+  }
+
+  async readMediaExcerpts(
+    sorts: SortDescription[],
+    continuationToken?: ContinuationToken,
+    count = 25
+  ) {
+    if (!isFinite(count)) {
+      throw new RequestValidationError(
+        `count must be a number. ${count} is not ${typeof count}.`
+      );
+    }
+
+    if (!continuationToken) {
+      return this.readInitialMediaExcerpts(sorts, count);
+    }
+    return this.readMoreMediaExcerpts(continuationToken, count);
+  }
+
+  async readInitialMediaExcerpts(sorts: SortDescription[], count: number) {
+    const unambiguousSorts = concat(sorts, [
+      { property: "id", direction: "ascending" },
+    ]);
+    const mediaExcerpts = await this.mediaExcerptsDao.readMediaExcerpts(
+      unambiguousSorts,
+      count
+    );
+
+    const continuationToken = createContinuationToken(
+      unambiguousSorts,
+      mediaExcerpts
+    ) as ContinuationToken;
+    return {
+      mediaExcerpts,
+      continuationToken,
+    };
+  }
+
+  async readMoreMediaExcerpts(
+    prevContinuationToken: ContinuationToken,
+    count: number
+  ) {
+    const { sorts, filters } = decodeContinuationToken(prevContinuationToken);
+    const mediaExcerpts = await this.mediaExcerptsDao.readMoreMediaExcerpts(
+      sorts,
+      count
+    );
+
+    const continuationToken =
+      (createNextContinuationToken(
+        sorts,
+        mediaExcerpts,
+        filters
+      ) as ContinuationToken) || prevContinuationToken;
+    return {
+      mediaExcerpts,
+      continuationToken,
+    };
   }
 }

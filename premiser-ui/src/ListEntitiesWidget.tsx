@@ -10,7 +10,7 @@ import FetchButton from "./FetchButton";
 import { useAppDispatch, useAppSelector } from "./hooks";
 
 type ListEntitiesWidgetProps = {
-  id: string;
+  id?: string;
   widgetId: string;
   entitiesWidgetStateKey: string;
   fetchEntities: ActionCreator<any>;
