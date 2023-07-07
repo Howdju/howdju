@@ -251,21 +251,21 @@ export class MediaExcerptsDao {
       })
     );
 
-    const defindedMediaExcerpts = [];
-    const undefindedIds = [];
+    const definedMediaExcerpts = [];
+    const undefinedIds = [];
     for (const { id, mediaExcerpt } of mediaExcerpts) {
       if (mediaExcerpt) {
-        defindedMediaExcerpts.push(mediaExcerpt);
+        definedMediaExcerpts.push(mediaExcerpt);
       } else {
-        undefindedIds.push(id);
+        undefinedIds.push(id);
       }
     }
-    if (undefindedIds.length) {
+    if (undefinedIds.length) {
       this.logger.error(
-        `Unable to read equivalent MediaExcerpt IDs: ${toJson(undefindedIds)}`
+        `Unable to read equivalent MediaExcerpt IDs: ${toJson(undefinedIds)}`
       );
     }
-    return defindedMediaExcerpts;
+    return definedMediaExcerpts;
   }
 
   async createMediaExcerpt<T extends CreateMediaExcerptDataIn>(

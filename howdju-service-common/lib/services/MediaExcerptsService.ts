@@ -102,13 +102,12 @@ export class MediaExcerptsService {
     ]);
 
     // Create the media excerpt
-    const distinctSources = uniqBy(sources, (s) => s.id);
     const { mediaExcerpt, isExtant: isExtantMediaExcerpt } =
       await this.readOrCreateJustMediaExcerpt(
         userId,
         createMediaExcerpt,
         urls,
-        distinctSources,
+        sources,
         now
       );
 
@@ -230,6 +229,7 @@ export class MediaExcerptsService {
     sources: SourceOut[],
     created: Moment
   ) {
+    const distinctSources = uniqBy(sources, (s) => s.id);
     const { entity: mediaExcerpt, isExtant } =
       await readWriteRereadUnconstrained(
         "MediaExcerpts",
@@ -237,7 +237,7 @@ export class MediaExcerptsService {
           this.mediaExcerptsDao.readEquivalentMediaExcerpts(
             createMediaExcerpt,
             urls,
-            sources
+            distinctSources
           ),
         () =>
           this.mediaExcerptsDao.createMediaExcerpt(

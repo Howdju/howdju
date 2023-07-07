@@ -185,6 +185,63 @@ describe("MediaExcerptsService", () => {
       expect(readMediaExcerpt).toEqual(expectToBeSameMomentDeep(mediaExcerpt));
       expect(isExtant).toBe(true);
     });
+    test("re-uses related entities for concurrent attempts", async () => {
+      // Arrange
+      const { authToken } = await testHelper.makeUser();
+      const createMediaExcerpt: CreateMediaExcerpt = {
+        localRep: {
+          quotation: "the text quote",
+        },
+        locators: {
+          urlLocators: [
+            {
+              url: {
+                url: "https://www.example.com",
+              },
+              anchors: [
+                {
+                  exactText: "exact text",
+                  prefixText: "prefix text",
+                  suffixText: "suffix text",
+                  startOffset: 0,
+                  endOffset: 1,
+                },
+              ],
+            },
+          ],
+        },
+        citations: [
+          {
+            source: { description: "the source description" },
+            pincite: "the pincite",
+          },
+          {
+            source: { description: "the source description" },
+          },
+        ],
+        speakers: [{ name: "the speaker", isOrganization: false }],
+      };
+      // Trigger the readWriteRereadUnconstrained behavior, expecting that dupes will occur. But
+      // this test ensures that there is no error.
+      await Promise.all(
+        Array.from({ length: 10 }).map(() =>
+          service.readOrCreateMediaExcerpt({ authToken }, createMediaExcerpt)
+        )
+      );
+
+      // Act
+      const { isExtant, mediaExcerpt } = await service.readOrCreateMediaExcerpt(
+        { authToken },
+        createMediaExcerpt
+      );
+
+      // Assert
+      const readMediaExcerpt = await service.readMediaExcerptForId(
+        mediaExcerpt.id
+      );
+      expect(readMediaExcerpt).toEqual(expectToBeSameMomentDeep(mediaExcerpt));
+      expect(isExtant).toBe(true);
+    });
   });
 
   describe("readMediaExcerptForId", () => {
