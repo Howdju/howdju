@@ -348,10 +348,10 @@ export function decodeQueryStringObject<K extends readonly string[]>(
   });
 
   if (invalidKeys.length) {
+    const invalidKeysString = invalidKeys.map((k) => `"${k}"`).join(",");
+    const validKeysString = validKeys?.map((k) => `"${k}"`).join(",");
     throw new Error(
-      `Invalid query string keys: ${invalidKeys.join(
-        ","
-      )}. Valid keys must come from: ${validKeys?.join(",")}`
+      `Invalid query string keys: [${invalidKeysString}]. Valid keys are: [${validKeysString}]`
     );
   }
 

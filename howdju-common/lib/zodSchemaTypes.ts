@@ -2,7 +2,6 @@ import { Moment } from "moment";
 import { z } from "zod";
 import { UserOut, WritOut, WritQuoteOut } from "./apiModels";
 import { newProgrammingError } from "./commonErrors";
-import { assert } from "./general";
 import { logger } from "./logger";
 
 import {

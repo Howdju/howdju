@@ -5,9 +5,7 @@ import {
   CreateDomAnchor,
   CreateMediaExcerptCitation,
   CreateUrlLocator,
-  MediaExcerptSearchFilter,
   MomentConstructor,
-  SortDescription,
   utcNow,
 } from "howdju-common";
 import { expectToBeSameMomentDeep, mockLogger } from "howdju-test-common";

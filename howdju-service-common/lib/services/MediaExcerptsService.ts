@@ -31,7 +31,6 @@ import {
   createNextContinuationToken,
   decodeContinuationToken,
 } from "./pagination";
-import { readWriteReread } from "./patterns";
 
 export class MediaExcerptsService {
   authService: AuthService;
