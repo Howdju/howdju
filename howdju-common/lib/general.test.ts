@@ -11,6 +11,7 @@ import {
   filterDefined,
   pushAll,
   normalizeQuotation,
+  decodeQueryStringObject,
 } from "./general";
 
 describe("cleanWhitespace", () => {
@@ -175,5 +176,27 @@ describe("pushAll", () => {
     const ret = pushAll(arr, [4, 5, 6]);
 
     expect(ret).toEqual([1, 2, 3, 4, 5, 6]);
+  });
+});
+
+describe("decodeQueryStringObject", () => {
+  test("decodes a query string object", () => {
+    expect(decodeQueryStringObject("foo=bar,hello=world")).toEqual({
+      foo: "bar",
+      hello: "world",
+    });
+  });
+  test("decodes a query string object having valid keys", () => {
+    expect(
+      decodeQueryStringObject("foo=bar,hello=world", ["foo", "hello"])
+    ).toEqual({
+      foo: "bar",
+      hello: "world",
+    });
+  });
+  test("throws for a query string object having invalid keys", () => {
+    expect(() =>
+      decodeQueryStringObject("foo=bar,hello=world", ["foo", "baz"])
+    ).toThrowErrorMatchingSnapshot();
   });
 });

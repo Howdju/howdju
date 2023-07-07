@@ -60,6 +60,7 @@ import {
   justificationVoteSchema,
   mainSearchResultsSchema,
   mediaExcerptSchema,
+  mediaExcerptsSchema,
   persorgSchema,
   persorgsSchema,
   propositionCompoundSchema,
@@ -511,6 +512,16 @@ export const api = {
       normalizationSchema: { statements: statementsSchema },
     })
   ),
+  fetchSpeakerMediaExcerpts: apiActionCreator(
+    "FETCH_MEDIA_EXCERPTS_WITH_SPEAKER",
+    serviceRoutes.readMediaExcerpts,
+    (speakerPersorgId: EntityId) => ({
+      queryStringParams: {
+        filters: encodeQueryStringObject({ speakerPersorgId }),
+      },
+      normalizationSchema: { mediaExcerpts: mediaExcerptsSchema },
+    })
+  ),
   fetchSentenceStatements: apiActionCreator(
     "FETCH_SENTENCE_STATEMENTS",
     serviceRoutes.readSentenceStatements,
@@ -606,6 +617,30 @@ export const api = {
         config: {
           queryStringParams,
           normalizationSchema: { writQuotes: writQuotesSchema },
+        },
+        meta: { widgetId },
+      };
+    }
+  ),
+  fetchRecentMediaExcerpts: apiActionCreator(
+    "FETCH_RECENT_MEDIA_EXCERPTS",
+    serviceRoutes.readMediaExcerpts,
+    (
+      widgetId: WidgetId,
+      count: number,
+      continuationToken?: ContinuationToken
+    ) => {
+      const queryStringParams: ContinuationQueryStringParams = {
+        continuationToken,
+        count: toString(count),
+      };
+      if (!queryStringParams.continuationToken) {
+        queryStringParams.sorts = defaultSorts;
+      }
+      return {
+        config: {
+          queryStringParams,
+          normalizationSchema: { mediaExcerpts: mediaExcerptsSchema },
         },
         meta: { widgetId },
       };

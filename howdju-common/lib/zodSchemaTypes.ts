@@ -1,7 +1,7 @@
 import { Moment } from "moment";
 import { z } from "zod";
 import { UserOut, WritOut, WritQuoteOut } from "./apiModels";
-import { assert } from "./general";
+import { newProgrammingError } from "./commonErrors";
 import { logger } from "./logger";
 
 import {
@@ -17,6 +17,8 @@ import {
   CreateJustificationTarget,
   CreateJustifiedSentence,
   CreateJustifiedSentenceInput,
+  CreateMediaExcerpt,
+  CreateMediaExcerptInput,
   CreateProposition,
   CreatePropositionCompound,
   CreatePropositionCompoundAtom,
@@ -31,12 +33,14 @@ import {
   CreateWritQuote,
   CreateWritQuoteInput,
   Entity,
+  CreateModel,
   Justification,
   JustificationRootTarget,
   JustificationVote,
   MediaExcerpt,
   PasswordResetRequest,
   PersistedEntity,
+  PersistCreateModel,
   Persorg,
   Proposition,
   PropositionCompound,
@@ -217,10 +221,12 @@ export type EntityName<T> = T extends Proposition
   ? "User"
   : T extends MediaExcerpt
   ? "MediaExcerpt"
+  : T extends CreateMediaExcerpt
+  ? "MediaExcerpt"
+  : T extends CreateMediaExcerptInput
+  ? "MediaExcerpt"
   : T extends UrlLocator
   ? "UrlLocator"
-  : T extends MediaExcerpt
-  ? "MediaExcerpt"
   : T extends Source
   ? "Source"
   : T extends Url
@@ -235,6 +241,15 @@ export type EntityRef<T extends Entity> = T extends Ref<string>
   ? T
   : Ref<EntityName<T>>;
 
+/** Translates a CreateModel to its corresponding Entity's name. */
+type CreateModelEntityName<T extends CreateModel> = T extends CreateMediaExcerpt
+  ? "MediaExcerpt"
+  : never;
+
+type CreateModelOrRef<T extends CreateModel> =
+  | T
+  | Ref<CreateModelEntityName<T>>;
+
 /** Makes an Entity's ID required and all related entities can be refs. */
 export type Persisted<T extends Entity> = PersistedEntity &
   EntityRef<T> &
@@ -242,6 +257,8 @@ export type Persisted<T extends Entity> = PersistedEntity &
 export type PersistRelated<T> = {
   [key in keyof T]: T[key] extends Entity
     ? Persisted<T[key]>
+    : T[key] extends CreateModelOrRef<infer U>
+    ? PersistCreateModel<U>
     : T[key] extends Moment
     ? T[key]
     : T[key] extends object
@@ -274,22 +291,40 @@ export type PersistOrRef<T> = T extends Entity
         : PersistOrRef<T[key]>;
     };
 
+/**
+ * Whether o is a plain Ref of type brand.
+ *
+ * A plain Ref has just an ID and a BRAND. If brand is provided, the BRAND must match.
+ */
+export function isOnlyRef<T extends string = string>(
+  o: any,
+  brand?: T
+): o is Ref<T> {
+  if (Object.keys(o).length !== 1) {
+    return false;
+  }
+  return "id" in o && z.BRAND in o && (!brand || o[z.BRAND] === brand);
+}
+
 export function isRef<T extends Entity>(e: EntityOrRef<T>): e is EntityRef<T> {
   const keys = Object.keys(e);
   // An entity with a single property `id` is a ref.
   if (keys.length === 1 && keys[0] === "id") {
-    // If we have typed everything correctly, it should have also had the Zod BRAND, which it
-    // doesn't because it has just one key.
-    logger.warn(`Ref lacks z.BRAND property (id: ${e.id}).`);
+    // If we have typed everything correctly, it should have also had the Zod BRAND
+    if (!(z.BRAND in e)) {
+      logger.warn(`Ref lacks z.BRAND property (id: ${e.id}).`);
+    }
     return true;
   }
   // Otherwise, an object with a BRAND is a Ref because we only brand Refs. (We don't brand objects
   // that can be stucturally typed.)
+  // TODO(451) "we only brand Refs." is not true. We brand materialized entities elsewhere. Use isOnlyRef where we mean
+  // an object having just an ID and a BRAND.
   const isBranded = z.BRAND in e;
-  if (isBranded) {
-    // And if it's a Ref, it must have an ID (or else we don't know what it references.)
-    assert(keys.length === 2);
-    assert(!!e.id);
+  if (isBranded && !e.id) {
+    throw newProgrammingError(
+      `Ref has a BRAND but lacks an ID (BRAND: ${e[z.BRAND]}).`
+    );
   }
   // Technically we don't know that the object is branded as a T; we must rely on the typesystem,
   // and that a programmer hasn't overridden the typesystem incorrectly.

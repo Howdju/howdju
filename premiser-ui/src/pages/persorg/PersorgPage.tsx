@@ -1,8 +1,7 @@
-import get from "lodash/get";
-import map from "lodash/map";
 import React, { useEffect } from "react";
+import get from "lodash/get";
+import { toString } from "lodash";
 import { denormalize } from "normalizr";
-import Helmet from "../../Helmet";
 import {
   CircularProgress,
   DropdownMenu,
@@ -10,18 +9,25 @@ import {
   ListItem,
   MenuButton,
 } from "react-md";
+import { RouteComponentProps } from "react-router";
 
+import { EntityId, MediaExcerptOut, StatementOut } from "howdju-common";
+
+import Helmet from "../../Helmet";
 import { api, editors } from "../../actions";
 import CellList, { largeCellClasses } from "../../CellList";
 import * as characters from "../../characters";
-import { persorgSchema, statementsSchema } from "../../normalizationSchemas";
+import {
+  mediaExcerptsSchema,
+  persorgSchema,
+  statementsSchema,
+} from "../../normalizationSchemas";
 import { EditorTypes } from "../../reducers/editors";
 import PersorgEntityCard from "../../PersorgEntityCard";
 import StatementCard from "../../StatementCard";
 import { combineIds, combineSuggestionsKeys } from "../../viewModels";
 import { useAppDispatch, useAppSelector } from "@/hooks";
-import { RouteComponentProps } from "react-router";
-import { EntityId } from "howdju-common";
+import MediaExcerptCard from "@/components/mediaExcerpts/MediaExcerptCard";
 
 const id = "persorg-page";
 const editorId = "persorgPageEditorId";
@@ -37,14 +43,27 @@ export default function PersorgPage(props: Props) {
   useEffect(() => {
     dispatch(api.fetchPersorg(persorgId));
     dispatch(api.fetchSpeakerStatements(persorgId));
+    dispatch(api.fetchSpeakerMediaExcerpts(persorgId));
   }, [dispatch, persorgId]);
 
   const entities = useAppSelector((state) => state.entities);
   const persorg = denormalize(persorgId, persorgSchema, entities);
-  const { statements: statementIds, isFetching } = useAppSelector(
-    (state) => state.persorgPage
-  );
-  const statements = denormalize(statementIds, statementsSchema, entities);
+  const {
+    statements: statementIds,
+    isFetchingStatements,
+    mediaExcerpts: mediaExcerptIds,
+    isFetchingMediaExcerpts,
+  } = useAppSelector((state) => state.persorgPage);
+  const statements = denormalize(
+    statementIds,
+    statementsSchema,
+    entities
+  ) as StatementOut[];
+  const mediaExcerpts = denormalize(
+    mediaExcerptIds,
+    mediaExcerptsSchema,
+    entities
+  ) as MediaExcerptOut[];
 
   const editPersorg = () =>
     dispatch(
@@ -58,12 +77,20 @@ export default function PersorgPage(props: Props) {
   const persorgName = get(persorg, "name", characters.ellipsis);
   const title = `${persorgName}`;
 
-  const statementCards = map(statements, (statement, index) => (
+  const statementCards = statements.map((statement, index) => (
     <StatementCard
-      id={combineIds(id, "statements", index)}
+      id={combineIds(id, "statements", toString(index))}
       className={largeCellClasses}
       key={index}
       statement={statement}
+    />
+  ));
+  const mediaExcerptCards = mediaExcerpts.map((mediaExcerpt, index) => (
+    <MediaExcerptCard
+      id={combineIds(id, "media-excerpts", toString(index))}
+      className={largeCellClasses}
+      key={index}
+      mediaExcerpt={mediaExcerpt}
     />
   ));
 
@@ -101,14 +128,35 @@ export default function PersorgPage(props: Props) {
         menu={menu}
         suggestionsKey={combineSuggestionsKeys(id, "persorg")}
       />
+
       <h2 className="md-cell md-cell--12">Statements</h2>
-      {isFetching && (
+      {isFetchingStatements && (
         <div className="md-cell md-cell--12 cell--centered-contents">
           <CircularProgress id="tagged-propositions-page--progress" />
         </div>
       )}
+      {!isFetchingStatements && statementCards.length === 0 && (
+        <div className="md-cell md-cell--12">
+          <p>None.</p>
+        </div>
+      )}
       <CellList className="md-grid md-cell md-cell--12 md-grid--card-list--tablet">
         {statementCards}
+      </CellList>
+
+      <h2 className="md-cell md-cell--12">Media excerpts</h2>
+      {isFetchingMediaExcerpts && (
+        <div className="md-cell md-cell--12 cell--centered-contents">
+          <CircularProgress id="tagged-propositions-page--progress" />
+        </div>
+      )}
+      {!isFetchingMediaExcerpts && mediaExcerptCards.length === 0 && (
+        <div className="md-cell md-cell--12">
+          <p>None.</p>
+        </div>
+      )}
+      <CellList className="md-grid md-cell md-cell--12 md-grid--card-list--tablet">
+        {mediaExcerptCards}
       </CellList>
     </div>
   );

@@ -99,6 +99,12 @@ const defaultRecentWritQuotesWidgetState = {
   isFetching: false,
   didError: false,
 } as BaseListEntitiesState;
+const defaultRecentMediaExcerptsWidgetState = {
+  recentMediaExcerpts: [],
+  continuationToken: undefined,
+  isFetching: false,
+  didError: false,
+} as BaseListEntitiesState;
 const defaultRecentJustificationsWidgetState = {
   recentJustifications: [],
   continuationToken: undefined,
@@ -149,6 +155,17 @@ export default handleActions<
         "writQuotes"
       ),
       throw: widgetResponseErrorReducer(defaultRecentWritQuotesWidgetState),
+    },
+    [str(api.fetchRecentMediaExcerpts)]: widgetRequestReducer(
+      defaultRecentMediaExcerptsWidgetState
+    ),
+    [str(api.fetchRecentMediaExcerpts.response)]: {
+      next: widgetResponseReducer(
+        defaultRecentMediaExcerptsWidgetState,
+        "recentMediaExcerpts",
+        "mediaExcerpts"
+      ),
+      throw: widgetResponseErrorReducer(defaultRecentJustificationsWidgetState),
     },
     [str(api.fetchRecentJustifications)]: widgetRequestReducer(
       defaultRecentJustificationsWidgetState

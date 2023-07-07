@@ -28,6 +28,10 @@ const urlRefinement =
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         message: "Must be a valid URL",
+        params: {
+          val,
+          require_tld,
+        },
       });
     }
 
@@ -37,6 +41,9 @@ const urlRefinement =
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           message: `URL domain must match: ${domainPattern}.`,
+          params: {
+            val,
+          },
         });
       }
     }

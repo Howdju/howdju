@@ -128,8 +128,10 @@ class Paths {
     });
   propositionUsages = (propositionId: EntityId) =>
     `/proposition-usages?propositionId=${propositionId}`;
+  mediaExcerptUsages = (mediaExcerptId: EntityId) =>
+    `/media-excerpts/${mediaExcerptId}/usages`;
   statementUsages = (statementId: EntityId) =>
-    `/statement-usages?propositionId=${statementId}`;
+    `/statement-usages?statementId=${statementId}`;
 
   mediaExcerpt = (mediaExcerpt: MediaExcerptRef) =>
     `/media-excerpts/${mediaExcerpt.id}`;

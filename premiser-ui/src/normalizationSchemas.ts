@@ -210,6 +210,7 @@ export const mediaExcerptSchema = new schema.Entity<MediaExcerpt>(
     speakers: new schema.Array(persorgSchema),
   }
 );
+export const mediaExcerptsSchema = new schema.Array(mediaExcerptSchema);
 
 /**
  * Converts a normalizr schema into a response payload.

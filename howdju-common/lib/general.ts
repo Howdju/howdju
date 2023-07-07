@@ -27,7 +27,7 @@ import bases from "bases";
 
 import { newProgrammingError } from "./commonErrors";
 import { CamelCasedPropertiesDeep } from "type-fest";
-import { SortDescription } from "./apiModels";
+import { SortDescription, ToFilter } from "./apiModels";
 
 export interface MapValuesOptions {
   /**
@@ -321,21 +321,42 @@ export const removeAt = (array: any[], index: number) => {
 export const encodeQueryStringObject = (obj: object) =>
   map(obj, (val, key) => `${key}=${val}`).join(",");
 
-export const decodeQueryStringObject = (param: string | undefined) => {
+/**
+ * Decodes query string `param` into an object.
+ *
+ * @param param The query string to decode, e.g. `foo=bar,baz=qux`
+ * @param validKeys If provided, throws an error if any of the keys in the query string are not in this array.
+ */
+export function decodeQueryStringObject<K extends readonly string[]>(
+  param: string | undefined,
+  validKeys?: K
+): ToFilter<K> | undefined {
   if (!param) {
     return undefined;
   }
 
   const keyVals = param.split(",");
 
+  const invalidKeys: string[] = [];
   const obj: Record<string, string> = {};
   forEach(keyVals, (keyVal) => {
     const [key, val] = keyVal.split("=");
     obj[key] = val;
+    if (validKeys && !validKeys.includes(key)) {
+      invalidKeys.push(key);
+    }
   });
 
+  if (invalidKeys.length) {
+    const invalidKeysString = invalidKeys.map((k) => `"${k}"`).join(",");
+    const validKeysString = validKeys?.map((k) => `"${k}"`).join(",");
+    throw new Error(
+      `Invalid query string keys: [${invalidKeysString}]. Valid keys are: [${validKeysString}]`
+    );
+  }
+
   return obj;
-};
+}
 
 export const encodeSorts = (sorts: SortDescription[]) =>
   map(sorts, ({ property, direction }) => `${property}=${direction}`).join(",");

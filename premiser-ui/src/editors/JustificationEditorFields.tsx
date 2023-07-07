@@ -9,13 +9,12 @@ import {
   CreateJustificationInput,
   isRef,
   isMediaExcerptBased,
+  isOnlyRef,
 } from "howdju-common";
 
 import t, {
   JUSTIFICATION_POLARITY_NEGATIVE,
   JUSTIFICATION_POLARITY_POSITIVE,
-  JUSTIFICATION_BASIS_TYPE_PROPOSITION_COMPOUND,
-  JUSTIFICATION_BASIS_TYPE_WRIT_QUOTE,
 } from "@/texts";
 import WritQuoteEditorFields from "@/WritQuoteEditorFields";
 import PropositionCompoundEditorFields from "@/PropositionCompoundEditorFields";
@@ -32,10 +31,11 @@ import { makeErrorPropCreator } from "@/modelErrorMessages";
 import { logger } from "@/logger";
 
 import "./JustificationEditorFields.scss";
-import MediaExcerptViewer from "@/components/mediaExcerpts/MediaExcerptViewer";
+import MediaExcerptEditorFields from "./MediaExcerptEditorFields";
 
 const polarityName = "polarity";
 const propositionCompoundName = "basis.propositionCompound";
+const mediaExcerptName = "basis.mediaExcerpt";
 const writQuoteName = "basis.writQuote";
 const polarityControls = [
   {
@@ -53,24 +53,16 @@ const basisTypeControls = [
   {
     value: JustificationBasisTypes.PROPOSITION_COMPOUND,
     label: (
-      <div title="A list of propositions that together imply the target">
-        {t(JUSTIFICATION_BASIS_TYPE_PROPOSITION_COMPOUND)}
+      <div title="An argument based on an ordered list of propositions">
+        Proposition(s)
       </div>
     ),
   },
   {
-    value: JustificationBasisTypes.WRIT_QUOTE,
+    value: "MEDIA_EXCERPT",
     label: (
-      <div title="An external reference">
-        {t(JUSTIFICATION_BASIS_TYPE_WRIT_QUOTE)}
-      </div>
-    ),
-  },
-  {
-    value: JustificationBasisTypes.JUSTIFICATION_BASIS_COMPOUND,
-    label: (
-      <div title="A list of justifications that together imply the target">
-        {t("Compound (deprecated)")}
+      <div title="Evidence based on an excerpt of an external media source">
+        Media Excerpt
       </div>
     ),
   },
@@ -105,7 +97,7 @@ export default function JustificationEditorFields(props: Props) {
   const onChange = toOnChangeCallback(onPropertyChange);
 
   const basisPropositionCompound = justification?.basis.propositionCompound;
-  const mediaExcerpt = justification?.basis.mediaExcerpt;
+  const basisMediaExcerpt = justification?.basis.mediaExcerpt;
   const basisWritQuote = justification?.basis.writQuote;
   const _isPropositionCompoundBased =
     justification && isPropositionCompoundBased(justification);
@@ -150,9 +142,25 @@ export default function JustificationEditorFields(props: Props) {
         editorDispatch={editorDispatch}
       />
     );
-  const mediaExcerptViewer = mediaExcerpt && !isRef(mediaExcerpt) && (
-    <MediaExcerptViewer mediaExcerpt={mediaExcerpt} />
-  );
+  const mediaExcerptEditorFields = basisMediaExcerpt &&
+    !isOnlyRef(basisMediaExcerpt) && (
+      <MediaExcerptEditorFields
+        {...commonFieldsProps}
+        mediaExcerpt={basisMediaExcerpt}
+        id={combineIds(id, mediaExcerptName)}
+        key={mediaExcerptName}
+        name={combineNames(name, mediaExcerptName)}
+        suggestionsKey={combineSuggestionsKeys(
+          suggestionsKey,
+          mediaExcerptName
+        )}
+        blurredFields={blurredFields?.basis?.mediaExcerpt}
+        dirtyFields={dirtyFields?.basis?.mediaExcerpt}
+        errors={errors?.basis?.mediaExcerpt}
+        wasSubmitAttempted={wasSubmitAttempted}
+        editorDispatch={editorDispatch}
+      />
+    );
   const writQuoteEditorFields = basisWritQuote && !isRef(basisWritQuote) && (
     <WritQuoteEditorFields
       {...commonFieldsProps}
@@ -171,7 +179,7 @@ export default function JustificationEditorFields(props: Props) {
   const editorFields = _isPropositionCompoundBased ? (
     propositionCompoundEditorFields
   ) : _isMediaExcerptBased ? (
-    mediaExcerptViewer
+    mediaExcerptEditorFields
   ) : _isWritQuoteBased ? (
     writQuoteEditorFields
   ) : (

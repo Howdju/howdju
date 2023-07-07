@@ -28,7 +28,7 @@ export default function withEntityCard<
     id: ComponentId;
     editorId?: EditorId;
     suggestionsKey?: SuggestionsKey;
-    menu: ReactNode;
+    menu?: ReactNode;
     className?: string;
   } & { [key in EntityPropName]: Entity };
   // TODO(221) convert to functional component

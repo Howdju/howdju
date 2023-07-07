@@ -58,7 +58,7 @@ function ValidPropositionUsagesPage({ propositionId }: ValidProps) {
     isFetchingDirect,
     isFetchingIndirect,
     isFetchingJustifications,
-    continuationToken,
+    justificationsContinuationToken,
   } = pageState;
   const entities = useAppSelector((state) => state.entities);
   const directStatements = denormalize(
@@ -83,7 +83,7 @@ function ValidPropositionUsagesPage({ propositionId }: ValidProps) {
       api.fetchJustificationsSearch({
         filters: { propositionId },
         count: fetchCount,
-        continuationToken,
+        continuationToken: justificationsContinuationToken,
       })
     );
   };

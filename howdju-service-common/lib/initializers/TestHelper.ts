@@ -3,14 +3,18 @@ import moment, { Moment } from "moment";
 import {
   AuthToken,
   CreateMediaExcerpt,
+  CreatePersorg,
   CreateSource,
   CreateWritQuote,
   EntityId,
+  Persisted,
+  User,
   utcNow,
   WritQuoteOut,
 } from "howdju-common";
 
 import { ServicesProvider } from "./servicesInit";
+import { UserIdent } from "../services/types";
 import { merge } from "lodash";
 
 /** A helper for integration tests to create test data. */
@@ -42,13 +46,13 @@ export default class TestHelper {
   }
 
   async makeMediaExcerpt(
-    authToken: AuthToken,
+    userIdent: UserIdent,
     overrides: Partial<CreateMediaExcerpt> = {}
   ) {
     const createMediaExcerpt = merge({}, defaultMediaExcerpt, overrides);
     const { mediaExcerpt } =
       await this.servicesProvider.mediaExcerptsService.readOrCreateMediaExcerpt(
-        authToken,
+        userIdent,
         createMediaExcerpt
       );
     return mediaExcerpt;
@@ -66,6 +70,21 @@ export default class TestHelper {
     return proposition;
   }
 
+  async makePersorg(
+    creatorUserId: EntityId,
+    overrides?: Partial<CreatePersorg>
+  ) {
+    const createPersorg = merge({}, defaultCreatePersorg, overrides);
+    const created = utcNow();
+    const { persorg } =
+      await this.servicesProvider.persorgsService.readOrCreateValidPersorgAsUser(
+        createPersorg,
+        creatorUserId,
+        created.toDate()
+      );
+    return persorg;
+  }
+
   async makeUser() {
     const now = moment();
     const creatorUserId = null;
@@ -75,13 +94,15 @@ export default class TestHelper {
       isActive: true,
     };
 
-    const user = await this.servicesProvider.usersDao.createUser(
+    const user = (await this.servicesProvider.usersDao.createUser(
       userData,
       creatorUserId,
       now
-    );
+    )) as Persisted<User>;
     const { authToken } =
-      await this.servicesProvider.authService.createAuthToken(user, now);
+      (await this.servicesProvider.authService.createAuthToken(user, now)) as {
+        authToken: AuthToken;
+      };
     return { user, authToken };
   }
 
@@ -116,6 +137,11 @@ export default class TestHelper {
     );
   }
 }
+
+const defaultCreatePersorg: CreatePersorg = {
+  name: "The persorg name",
+  isOrganization: false,
+};
 
 const defaultMediaExcerpt: CreateMediaExcerpt = {
   localRep: { quotation: "the text quote" },

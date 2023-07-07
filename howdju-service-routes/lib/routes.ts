@@ -39,6 +39,8 @@ import {
   parseContextTrail,
   toJson,
   CreateMediaExcerpt,
+  MediaExcerptSearchFilterKeys,
+  isDefined,
 } from "howdju-common";
 import {
   EntityNotFoundError,
@@ -819,7 +821,7 @@ export const serviceRoutes = {
       ) => {
         const { isExtant, mediaExcerpt } =
           await appProvider.mediaExcerptsService.readOrCreateMediaExcerpt(
-            authToken,
+            { authToken },
             createMediaExcerpt
           );
         return {
@@ -848,6 +850,41 @@ export const serviceRoutes = {
           throw new EntityNotFoundError("MEDIA_EXCERPT", mediaExcerptId);
         }
         return { body: { mediaExcerpt } };
+      }
+    ),
+  },
+  readMediaExcerpts: {
+    path: "media-excerpts",
+    method: httpMethods.GET,
+    request: handler(
+      QueryStringParams("filters", "sorts", "continuationToken", "count"),
+      async (
+        appProvider: ServicesProvider,
+        {
+          queryStringParams: {
+            filters: encodedFilters,
+            sorts: encodedSorts,
+            continuationToken: prevContinuationToken,
+            count,
+          },
+        }
+      ) => {
+        const filters = decodeQueryStringObject(
+          encodedFilters,
+          MediaExcerptSearchFilterKeys
+        );
+
+        const sorts = decodeSorts(encodedSorts);
+        const { mediaExcerpts, continuationToken } =
+          await appProvider.mediaExcerptsService.readMediaExcerpts(
+            filters,
+            sorts,
+            prevContinuationToken,
+            isDefined(count) ? toNumber(count) : undefined
+          );
+        return {
+          body: { mediaExcerpts, continuationToken },
+        };
       }
     ),
   },

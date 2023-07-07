@@ -16,14 +16,12 @@ import { mockLogger, expectToBeSameMomentDeep } from "howdju-test-common";
 import { endPoolAndDropDb, initDb, makeTestDbConfig } from "@/util/testUtil";
 import {
   AuthenticationError,
-  AuthService,
   Database,
   EntityNotFoundError,
   EntityValidationError,
   JustificationsService,
   makePool,
   PropositionCompoundsService,
-  UsersDao,
   WritQuotesService,
 } from "..";
 import { makeTestProvider } from "@/initializers/TestProvider";
@@ -36,8 +34,6 @@ describe("JustificationsService", () => {
   let pool: Pool;
 
   let service: JustificationsService;
-  let usersDao: UsersDao;
-  let authService: AuthService;
   let propositionCompoundsService: PropositionCompoundsService;
   let writQuotesService: WritQuotesService;
   let testHelper: TestHelper;
@@ -50,8 +46,6 @@ describe("JustificationsService", () => {
     const provider = makeTestProvider(database);
 
     service = provider.justificationsService;
-    usersDao = provider.usersDao;
-    authService = provider.authService;
     propositionCompoundsService = provider.propositionCompoundsService;
     writQuotesService = provider.writQuotesService;
     testHelper = provider.testHelper;
@@ -62,7 +56,7 @@ describe("JustificationsService", () => {
   describe("readOrCreate", () => {
     test("can create a proposition compound based justification targeting a proposition", async () => {
       // Arrange
-      const { authToken, user } = await makeUser();
+      const { authToken, user } = await testHelper.makeUser();
 
       const createJustification = makePropositionCompoundBasedJustification();
 
@@ -83,7 +77,7 @@ describe("JustificationsService", () => {
 
     test("can create an extant PropositionCompound-based justification targeting a proposition", async () => {
       // Arrange
-      const { authToken, user } = await makeUser();
+      const { authToken, user } = await testHelper.makeUser();
 
       const createPropositionCompound = {
         atoms: [
@@ -129,7 +123,7 @@ describe("JustificationsService", () => {
     });
     test("can create an extant WritQuote-based justification targeting a proposition", async () => {
       // Arrange
-      const { authToken, user } = await makeUser();
+      const { authToken, user } = await testHelper.makeUser();
 
       const createWritQuote = {
         quoteText:
@@ -176,7 +170,7 @@ describe("JustificationsService", () => {
 
     test("can create a writ quote based justification targeting a statement", async () => {
       // Arrange
-      const { authToken, user } = await makeUser();
+      const { authToken, user } = await testHelper.makeUser();
 
       const createJustification = makeWritQuoteBasedJustification();
 
@@ -197,7 +191,7 @@ describe("JustificationsService", () => {
 
     test("fails to create a writ quote based justification with a javascript URL", async () => {
       // Arrange
-      const { authToken } = await makeUser();
+      const { authToken } = await testHelper.makeUser();
 
       const createJustification = makeWritQuoteBasedJustification(
         "javascript:alert('gotcha')"
@@ -237,7 +231,7 @@ describe("JustificationsService", () => {
     });
     test("can create a counter justification", async () => {
       // Arrange
-      const { authToken, user } = await makeUser();
+      const { authToken, user } = await testHelper.makeUser();
 
       const createJustification = makePropositionCompoundBasedJustification();
 
@@ -271,7 +265,7 @@ describe("JustificationsService", () => {
     });
     test("can read a justification equivalent to a proposition compound based justification targeting a proposition", async () => {
       // Arrange
-      const { authToken } = await makeUser();
+      const { authToken } = await testHelper.makeUser();
 
       const createJustification1 = makePropositionCompoundBasedJustification();
       const { justification: justificationOut1 } = await service.readOrCreate(
@@ -294,7 +288,7 @@ describe("JustificationsService", () => {
     });
     test("can read a justification equivalent to a writ quote based justification targeting a statement", async () => {
       // Arrange
-      const { authToken } = await makeUser();
+      const { authToken } = await testHelper.makeUser();
 
       const createJustification1 = makeWritQuoteBasedJustification();
       const { justification: justificationOut1 } = await service.readOrCreate(
@@ -317,7 +311,7 @@ describe("JustificationsService", () => {
     });
     test("can read an equivalent counter justification", async () => {
       // Arrange
-      const { authToken } = await makeUser();
+      const { authToken } = await testHelper.makeUser();
 
       const createJustification = makeWritQuoteBasedJustification();
       const { justification: justificationOut } = await service.readOrCreate(
@@ -362,7 +356,7 @@ describe("JustificationsService", () => {
     });
     test("raises a validation error if the justification is invalid", async () => {
       // Arrange
-      const { authToken } = await makeUser();
+      const { authToken } = await testHelper.makeUser();
 
       const createJustification: CreateJustification = {
         target: {
@@ -417,7 +411,7 @@ describe("JustificationsService", () => {
   describe("readJustifications", () => {
     test("Can read initial justifications", async () => {
       // Arrange
-      const { authToken } = await makeUser();
+      const { authToken } = await testHelper.makeUser();
       const createJustifications = Array.from(Array(20).keys()).map((i) =>
         makeJustificationWithTargetPropositionText(`Socrates is mortal ${i}`)
       );
@@ -449,7 +443,7 @@ describe("JustificationsService", () => {
     });
     test("Can read more justifications", async () => {
       // Arrange
-      const { authToken } = await makeUser();
+      const { authToken } = await testHelper.makeUser();
       const createJustifications = Array.from(Array(20).keys()).map((i) =>
         makeJustificationWithTargetPropositionText(`Socrates is mortal ${i}`)
       );
@@ -489,7 +483,7 @@ describe("JustificationsService", () => {
   });
   describe("readJustificationsForRootTarget", () => {
     test("can read justifications for a proposition root target", async () => {
-      const { user, authToken } = await makeUser();
+      const { user, authToken } = await testHelper.makeUser();
 
       const createJustifications = Array.from(Array(20).keys()).map((i) =>
         makeJustificationWithBasisPropositionText(
@@ -541,10 +535,10 @@ describe("JustificationsService", () => {
     });
 
     test("can read a media excerpt based justification for a proposition root target", async () => {
-      const { user, authToken } = await makeUser();
+      const { user, authToken } = await testHelper.makeUser();
 
       const proposition = await testHelper.makeProposition(authToken);
-      const mediaExcerpt = await testHelper.makeMediaExcerpt(authToken);
+      const mediaExcerpt = await testHelper.makeMediaExcerpt({ authToken });
       const createJustification: CreateJustification = {
         target: {
           type: "PROPOSITION",
@@ -590,7 +584,7 @@ describe("JustificationsService", () => {
   describe("deleteJustification", () => {
     test("can delete justification", async () => {
       // Arrange
-      const { authToken } = await makeUser();
+      const { authToken } = await testHelper.makeUser();
 
       const createJustification = makePropositionCompoundBasedJustification();
 
@@ -609,7 +603,7 @@ describe("JustificationsService", () => {
     });
     test("can delete justification with counter justifications", async () => {
       // Arrange
-      const { authToken } = await makeUser();
+      const { authToken } = await testHelper.makeUser();
 
       const createJustification = makePropositionCompoundBasedJustification();
       const { justification: justificationOut } = await service.readOrCreate(
@@ -634,7 +628,7 @@ describe("JustificationsService", () => {
     });
     test("cannot read deleted (counter) justifications by ID", async () => {
       // Arrange
-      const { authToken } = await makeUser();
+      const { authToken } = await testHelper.makeUser();
 
       const createJustification = makePropositionCompoundBasedJustification();
       const { justification: justificationOut } = await service.readOrCreate(
@@ -665,7 +659,7 @@ describe("JustificationsService", () => {
     });
     test("cannot read deleted (counter) justifications by filters", async () => {
       // Arrange
-      const { authToken } = await makeUser();
+      const { authToken } = await testHelper.makeUser();
 
       const createJustification = makeJustificationWithTargetPropositionText(
         "We will delete this one."
@@ -724,21 +718,6 @@ describe("JustificationsService", () => {
       ]);
     });
   });
-
-  async function makeUser() {
-    const now = moment();
-    const creatorUserId = null;
-    const userData = {
-      email: "user@domain.com",
-      username: "the-username",
-      isActive: true,
-    };
-
-    const user = await usersDao.createUser(userData, creatorUserId, now);
-    const { authToken } = await authService.createAuthToken(user, now);
-
-    return { user, authToken };
-  }
 });
 
 function makeCounterJustificationTargeting(

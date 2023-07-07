@@ -1,4 +1,4 @@
-import { merge } from "lodash";
+import { concat, forEach, merge, snakeCase } from "lodash";
 import { Moment } from "moment";
 
 import {
@@ -20,12 +20,19 @@ import {
   PersorgOut,
   UrlLocatorOut,
   UrlLocatorRef,
+  SortDescription,
+  isDefined,
+  MediaExcerptSearchFilter,
 } from "howdju-common";
 
 import { Database } from "../database";
 import { PersorgsDao } from "./PersorgsDao";
 import { SourcesDao } from "./SourcesDao";
 import { UrlsDao } from "./UrlsDao";
+import { toDbDirection } from "./daoModels";
+import { InvalidRequestError } from "..";
+import { SqlClause } from "./daoTypes";
+import { renumberSqlArgs } from "./daosUtil";
 
 export type CreateMediaExcerptDataIn = Pick<
   PartialPersist<CreateMediaExcerpt, "localRep">,
@@ -455,8 +462,8 @@ export class MediaExcerptsDao {
     createCitation: PartialPersist<CreateMediaExcerptCitation, "source">,
     created: Moment
   ) {
-    const normalPincite =
-      createCitation.pincite && normalizeText(createCitation.pincite);
+    const pincite = createCitation.pincite;
+    const normalPincite = pincite && normalizeText(pincite);
     await this.database.query(
       "createMediaExcerptCitation",
       `insert into media_excerpt_citations (
@@ -480,6 +487,7 @@ export class MediaExcerptsDao {
       mediaExcerptId: mediaExcerpt.id,
       created,
       creatorUserId,
+      pincite,
       normalPincite,
     });
   }
@@ -516,4 +524,156 @@ export class MediaExcerptsDao {
       [mediaExcerpt.id, speaker.id, userId, created]
     );
   }
+
+  async readMediaExcerpts(
+    filters: MediaExcerptSearchFilter | undefined,
+    sorts: SortDescription[],
+    count: number
+  ) {
+    const args: any[] = [count];
+    const limitSql = `limit $${args.length}`;
+
+    const whereSqls = ["deleted is null"];
+    const orderBySqls: string[] = [];
+    forEach(sorts, (sort) => {
+      const columnName =
+        sort.property === "id" ? "media_excerpt_id" : snakeCase(sort.property);
+      const direction = toDbDirection(sort.direction);
+      whereSqls.push(`${columnName} is not null`);
+      orderBySqls.push(`${columnName} ${direction}`);
+    });
+
+    const filterSubselects = makeFilterSubselects(filters);
+    filterSubselects.forEach(({ sql, args: subselectArgs }) => {
+      const renumberedSql = renumberSqlArgs(sql, args.length);
+      whereSqls.push(`media_excerpt_id in (${renumberedSql})`);
+      args.push(...subselectArgs);
+    });
+
+    const whereSql = whereSqls.join("\nand ");
+    const orderBySql =
+      orderBySqls.length > 0 ? "order by " + orderBySqls.join(",") : "";
+
+    const sql = `
+      select media_excerpt_id
+      from media_excerpts
+        where
+          ${whereSql}
+      ${orderBySql}
+      ${limitSql}
+      `;
+    const { rows } = await this.database.query("readMediaExcerpts", sql, args);
+    const mediaExcerpts = await Promise.all(
+      rows.map((row) => this.readMediaExcerptForId(row.media_excerpt_id))
+    );
+    return mediaExcerpts.filter(isDefined);
+  }
+
+  async readMoreMediaExcerpts(
+    filters: MediaExcerptSearchFilter | undefined,
+    sorts: SortDescription[],
+    count: number
+  ) {
+    const args: any[] = [count];
+    const countSql = `\nlimit $${args.length}`;
+
+    const whereSqls = ["deleted is null"];
+    const continuationWhereSqls: string[] = [];
+    const prevWhereSqls: string[] = [];
+    const orderBySqls: string[] = [];
+    forEach(sorts, (sort) => {
+      const value = sort.value;
+      if (!value) {
+        this.logger.error(
+          `readMoreMediaExcerpts sort description missing value.`
+        );
+        throw new InvalidRequestError("Invalid continuation.");
+      }
+      const direction = toDbDirection(sort.direction);
+      const columnName =
+        sort.property === "id" ? "media_excerpt_id" : snakeCase(sort.property);
+      const operator = direction === "asc" ? ">" : "<";
+      args.push(value);
+      const currContinuationWhereSql = concat(prevWhereSqls, [
+        `${columnName} ${operator} $${args.length}`,
+      ]);
+      continuationWhereSqls.push(currContinuationWhereSql.join(" and "));
+      prevWhereSqls.push(`${columnName} = $${args.length}`);
+      whereSqls.push(`${columnName} is not null`);
+      orderBySqls.push(`${columnName} ${direction}`);
+    });
+
+    const filterSubselects = makeFilterSubselects(filters);
+    const filterWhereSqls: string[] = [];
+    filterSubselects.forEach(({ sql, args: subselectArgs }) => {
+      const renumberedSql = renumberSqlArgs(sql, args.length);
+      filterWhereSqls.push(`media_excerpt_id in (${renumberedSql})`);
+      args.push(...subselectArgs);
+    });
+
+    const whereSql = whereSqls.join("\nand ");
+    const continuationWhereSql = continuationWhereSqls.join("\n or ");
+    const filterWhereSql = filterWhereSqls.join("\nand ");
+    const orderBySql =
+      orderBySqls.length > 0 ? "order by " + orderBySqls.join(",") : "";
+
+    const sql = `
+      select
+          media_excerpt_id
+      from media_excerpts
+        where
+          ${whereSql}
+        and (
+          ${continuationWhereSql}
+        ) and (
+          ${filterWhereSql}
+        )
+      ${orderBySql}
+      ${countSql}
+      `;
+    const { rows } = await this.database.query(
+      "readMoreMediaExcerpts",
+      sql,
+      args
+    );
+    const mediaExcerpts = await Promise.all(
+      rows.map((row) => this.readMediaExcerptForId(row.media_excerpt_id))
+    );
+    return mediaExcerpts.filter(isDefined);
+  }
+}
+
+function makeFilterSubselects(filters: MediaExcerptSearchFilter | undefined) {
+  const filterSubselects: SqlClause[] = [];
+  if (!filters) {
+    return filterSubselects;
+  }
+  forEach(filters, (value, filterName) => {
+    if (!value) {
+      return;
+    }
+    switch (filterName) {
+      case "creatorUserId": {
+        const sql = `
+          select media_excerpt_id
+          from media_excerpts
+          where creator_user_id = $1
+        `;
+        const args = [value];
+        filterSubselects.push({ sql, args });
+        break;
+      }
+      case "speakerPersorgId": {
+        const sql = `
+          select media_excerpt_id
+          from media_excerpts join media_excerpt_speakers using (media_excerpt_id)
+          where speaker_persorg_id = $1
+        `;
+        const args = [value];
+        filterSubselects.push({ sql, args });
+        break;
+      }
+    }
+  });
+  return filterSubselects;
 }

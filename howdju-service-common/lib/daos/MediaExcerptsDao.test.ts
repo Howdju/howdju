@@ -42,7 +42,7 @@ describe("MediaExcerptsDao", () => {
   describe("readMediaExcerptForId", () => {
     test("reads a media excerpt for an ID", async () => {
       const { authToken, user } = await testHelper.makeUser();
-      const mediaExcerpt = await testHelper.makeMediaExcerpt(authToken);
+      const mediaExcerpt = await testHelper.makeMediaExcerpt({ authToken });
 
       const readMediaExcerpt = await dao.readMediaExcerptForId(mediaExcerpt.id);
 
@@ -96,7 +96,7 @@ describe("MediaExcerptsDao", () => {
     });
     test("doesn't read a missing ID", async () => {
       const { authToken } = await testHelper.makeUser();
-      const mediaExcerpt = await testHelper.makeMediaExcerpt(authToken);
+      const mediaExcerpt = await testHelper.makeMediaExcerpt({ authToken });
 
       const readMediaExcerpt = await dao.readMediaExcerptForId(
         // Try to get a nonexistent ID.
@@ -113,9 +113,12 @@ describe("MediaExcerptsDao", () => {
     test("reads an equivalent media excerpt", async () => {
       const { authToken } = await testHelper.makeUser();
       const quotation = "the text quote";
-      const mediaExcerpt = await testHelper.makeMediaExcerpt(authToken, {
-        localRep: { quotation },
-      });
+      const mediaExcerpt = await testHelper.makeMediaExcerpt(
+        { authToken },
+        {
+          localRep: { quotation },
+        }
+      );
 
       const readMediaExcerpt = await dao.readEquivalentMediaExcerpt({
         localRep: { quotation },
@@ -128,10 +131,13 @@ describe("MediaExcerptsDao", () => {
   describe("readEquivalentUrlLocator", () => {
     test("returns an equivalent UrlLocator", async () => {
       const { authToken, user: creator } = await testHelper.makeUser();
-      const mediaExcerpt = await testHelper.makeMediaExcerpt(authToken, {
-        localRep: { quotation: "the text quote" },
-      });
-      const url = await testHelper.makeUrl({ userId: authToken.userId });
+      const mediaExcerpt = await testHelper.makeMediaExcerpt(
+        { authToken },
+        {
+          localRep: { quotation: "the text quote" },
+        }
+      );
+      const url = await testHelper.makeUrl({ userId: creator.id });
       const createUrlLocator: CreateUrlLocator = {
         url,
         anchors: [
@@ -163,10 +169,13 @@ describe("MediaExcerptsDao", () => {
 
     test("doesn't return a UrlLocator with a superset of DomAnchors", async () => {
       const { authToken, user: creator } = await testHelper.makeUser();
-      const mediaExcerpt = await testHelper.makeMediaExcerpt(authToken, {
-        localRep: { quotation: "the text quote" },
-      });
-      const url = await testHelper.makeUrl({ userId: authToken.userId });
+      const mediaExcerpt = await testHelper.makeMediaExcerpt(
+        { authToken },
+        {
+          localRep: { quotation: "the text quote" },
+        }
+      );
+      const url = await testHelper.makeUrl({ userId: creator.id });
       const createUrlLocator: CreateUrlLocator = {
         url,
         anchors: [
@@ -231,10 +240,13 @@ describe("MediaExcerptsDao", () => {
           },
         ],
       };
-      const mediaExcerpt = await testHelper.makeMediaExcerpt(authToken, {
-        localRep: { quotation: "the text quote" },
-        locators: { urlLocators: [urlLocator] },
-      });
+      const mediaExcerpt = await testHelper.makeMediaExcerpt(
+        { authToken },
+        {
+          localRep: { quotation: "the text quote" },
+          locators: { urlLocators: [urlLocator] },
+        }
+      );
 
       expect(
         await dao.readEquivalentUrlLocator(mediaExcerpt, {
@@ -278,9 +290,12 @@ describe("MediaExcerptsDao", () => {
   describe("createUrlAnchor", () => {
     test("creates a UrlAnchor", async () => {
       const { authToken, user: creator } = await testHelper.makeUser();
-      const mediaExcerpt = await testHelper.makeMediaExcerpt(authToken, {
-        localRep: { quotation: "the text quote" },
-      });
+      const mediaExcerpt = await testHelper.makeMediaExcerpt(
+        { authToken },
+        {
+          localRep: { quotation: "the text quote" },
+        }
+      );
       const url = await testHelper.makeUrl({ userId: creator.id });
       const createDomAnchor: CreateDomAnchor = {
         exactText: "exact text",
@@ -322,9 +337,12 @@ describe("MediaExcerptsDao", () => {
   describe("createMediaExcerptCitation", () => {
     test("creates a media excerpt citation", async () => {
       const { authToken, user: creator } = await testHelper.makeUser();
-      const mediaExcerpt = await testHelper.makeMediaExcerpt(authToken, {
-        localRep: { quotation: "the text quote" },
-      });
+      const mediaExcerpt = await testHelper.makeMediaExcerpt(
+        { authToken },
+        {
+          localRep: { quotation: "the text quote" },
+        }
+      );
       const source = await testHelper.makeSource(creator.id, {
         description: "the description",
       });
@@ -352,9 +370,12 @@ describe("MediaExcerptsDao", () => {
 
     test("cannot create a conflicting media excerpt citation", async () => {
       const { authToken, user: creator } = await testHelper.makeUser();
-      const mediaExcerpt = await testHelper.makeMediaExcerpt(authToken, {
-        localRep: { quotation: "the text quote" },
-      });
+      const mediaExcerpt = await testHelper.makeMediaExcerpt(
+        { authToken },
+        {
+          localRep: { quotation: "the text quote" },
+        }
+      );
       const source = await testHelper.makeSource(creator.id, {
         description: "the description",
       });
@@ -390,9 +411,12 @@ describe("MediaExcerptsDao", () => {
   describe("readEquivalentMediaExcerptCitation", () => {
     test("reads an equivalent media excerpt citation when pincites are not identical", async () => {
       const { authToken, user: creator } = await testHelper.makeUser();
-      const mediaExcerpt = await testHelper.makeMediaExcerpt(authToken, {
-        localRep: { quotation: "the text quote" },
-      });
+      const mediaExcerpt = await testHelper.makeMediaExcerpt(
+        { authToken },
+        {
+          localRep: { quotation: "the text quote" },
+        }
+      );
       const source = await testHelper.makeSource(creator.id, {
         description: "the description",
       });

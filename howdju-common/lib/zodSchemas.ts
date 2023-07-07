@@ -13,14 +13,31 @@ import { Simplify } from "type-fest";
 import { z } from "zod";
 
 import { momentObject, urlString } from "./zodRefinements";
-import { EntityName, EntityOrRef } from "./zodSchemaTypes";
+import { EntityName, EntityOrRef, EntityRef } from "./zodSchemaTypes";
 
-/** A perstisent conceptual entity */
+/** A persisent conceptual entity */
 export const Entity = z.object({
   // Entities have an ID after they have been persisted.
   id: z.string().optional(),
 });
 export type Entity = z.infer<typeof Entity>;
+
+/**
+ * Objects for creating an Entity.
+ *
+ * We use this as a marker type for helpers that translate between CreateEntity and Entity.
+ *
+ * E.g. CreateMediaExcerpt should not have an ID, but it corresponds to the entity MediaExcerpt and
+ * in type helpers we want to be able to translate it to an Entity.
+ *
+ * TODO(452) replace Entity with CreateModel for Create/CreateInput models.
+ */
+export const CreateModel = z.object({
+  _isCreateModel: z.boolean().optional(),
+});
+export type CreateModel = z.output<typeof CreateModel>;
+
+export type PersistCreateModel<T extends CreateModel> = T & PersistedEntity;
 
 const PersistedEntity = Entity.required();
 export type PersistedEntity = z.infer<typeof PersistedEntity>;
@@ -911,43 +928,71 @@ export type SourceRef = z.infer<typeof SourceRef>;
  * Entities lacking alternatives don't require special Create/Update models
  */
 
+/** @deprecated prefer MediaExcerpt */
 export const CreateWritQuoteInput = Entity.extend({
   quoteText: WritQuote.shape.quoteText,
   writ: CreateWritInput,
   urls: z.array(CreateUrlInput),
 });
+/** @deprecated prefer MediaExcerpt */
 export type CreateWritQuoteInput = z.infer<typeof CreateWritQuoteInput>;
+/** @deprecated prefer MediaExcerpt */
 export const CreateWritQuote = CreateWritQuoteInput;
+/** @deprecated prefer MediaExcerpt */
 export type CreateWritQuote = z.infer<typeof CreateWritQuote>;
 
+/** @deprecated prefer MediaExcerpt */
 export const UpdateWritQuoteInput = WritQuote;
+/** @deprecated prefer MediaExcerpt */
 export type UpdateWritQuoteInput = z.infer<typeof UpdateWritQuoteInput>;
+/** @deprecated prefer MediaExcerpt */
 export const UpdateWritQuote = WritQuote.merge(PersistedEntity);
+/** @deprecated prefer MediaExcerpt */
 export type UpdateWritQuote = z.infer<typeof UpdateWritQuote>;
 
+/** @deprecated prefer MediaExcerpt */
 export const CreateVidSegmentInput = VidSegment;
+/** @deprecated prefer MediaExcerpt */
 export type CreateVidSegmentInput = z.infer<typeof CreateVidSegmentInput>;
+/** @deprecated prefer MediaExcerpt */
 export const CreateVidSegment = VidSegment;
+/** @deprecated prefer MediaExcerpt */
 export type CreateVidSegment = z.infer<typeof CreateVidSegment>;
 
+/** @deprecated prefer MediaExcerpt */
 export const CreateAudSegmentInput = AudSegment;
+/** @deprecated prefer MediaExcerpt */
 export type CreateAudSegmentInput = z.infer<typeof CreateAudSegmentInput>;
+/** @deprecated prefer MediaExcerpt */
 export const CreateAudSegment = AudSegment;
+/** @deprecated prefer MediaExcerpt */
 export type CreateAudSegment = z.infer<typeof CreateAudSegment>;
 
+/** @deprecated prefer MediaExcerpt */
 export const UpdateVidSegmentInput = VidSegment;
+/** @deprecated prefer MediaExcerpt */
 export type UpdateVidSegmentInput = z.infer<typeof UpdateVidSegmentInput>;
+/** @deprecated prefer MediaExcerpt */
 export const UpdateVidSegment = VidSegment;
+/** @deprecated prefer MediaExcerpt */
 export type UpdateVidSegment = z.infer<typeof UpdateVidSegment>;
 
+/** @deprecated prefer MediaExcerpt */
 export const CreatePicRegionInput = PicRegion;
+/** @deprecated prefer MediaExcerpt */
 export type CreatePicRegionInput = z.infer<typeof CreatePicRegionInput>;
+/** @deprecated prefer MediaExcerpt */
 export const CreatePicRegion = PicRegion;
+/** @deprecated prefer MediaExcerpt */
 export type CreatePicRegion = z.infer<typeof CreatePicRegion>;
 
+/** @deprecated prefer MediaExcerpt */
 export const UpdatePicRegionInput = PicRegion;
+/** @deprecated prefer MediaExcerpt */
 export type UpdatePicRegionInput = z.infer<typeof UpdatePicRegionInput>;
+/** @deprecated prefer MediaExcerpt */
 export const UpdatePicRegion = PicRegion;
+/** @deprecated prefer MediaExcerpt */
 export type UpdatePicRegion = z.infer<typeof UpdatePicRegion>;
 
 /** @deprecated */
@@ -975,17 +1020,19 @@ export const CreateSourceExcerpt = z.discriminatedUnion("type", [
 /** @deprecated */
 export type CreateSourceExcerpt = z.infer<typeof CreateSourceExcerpt>;
 
-const CreateMediaExcerptBase = MediaExcerpt.omit({ id: true }).extend({
-  localRep: MediaExcerpt.shape.localRep.omit({ normalQuotation: true }),
-  locators: z
-    .object({
-      // urlLocators can become optional if we add other locator types.
-      urlLocators: z.array(CreateUrlLocator),
-    })
-    .optional(),
-  citations: z.array(CreateMediaExcerptCitation).optional(),
-  speakers: z.array(CreatePersorg).optional(),
-});
+const CreateMediaExcerptBase = MediaExcerpt.omit({ id: true })
+  .merge(CreateModel)
+  .extend({
+    localRep: MediaExcerpt.shape.localRep.omit({ normalQuotation: true }),
+    locators: z
+      .object({
+        // urlLocators can become optional if we add other locator types.
+        urlLocators: z.array(CreateUrlLocator),
+      })
+      .optional(),
+    citations: z.array(CreateMediaExcerptCitation).optional(),
+    speakers: z.array(CreatePersorg).optional(),
+  });
 function refineCreateMediaExcerpt(
   val: CreateMediaExcerpt | CreateMediaExcerptInput,
   ctx: z.RefinementCtx
@@ -1043,7 +1090,8 @@ export type CreateJustificationInput = Entity & {
   basis: {
     type: JustificationBasisType;
     propositionCompound: EntityOrRef<CreatePropositionCompoundInput>;
-    mediaExcerpt?: MediaExcerptRef;
+    mediaExcerpt?: CreateMediaExcerptInput | EntityRef<MediaExcerpt>;
+    /** @deprecated */
     sourceExcerpt: EntityOrRef<CreateSourceExcerptInput>;
     /** @deprecated */
     writQuote: EntityOrRef<CreateWritQuoteInput>;
@@ -1146,7 +1194,7 @@ export type CreateJustification = Simplify<
         }
       | {
           type: "MEDIA_EXCERPT";
-          entity: MediaExcerptRef;
+          entity: CreateMediaExcerpt | EntityRef<MediaExcerpt>;
         }
       | {
           type: "SOURCE_EXCERPT";
@@ -1181,7 +1229,7 @@ export const CreateJustification: z.ZodType<CreateJustification> = z.lazy(() =>
       }),
       z.object({
         type: z.literal("MEDIA_EXCERPT"),
-        entity: MediaExcerptRef,
+        entity: z.union([CreateMediaExcerpt, MediaExcerptRef]),
       }),
       z.object({
         type: z.literal("SOURCE_EXCERPT"),

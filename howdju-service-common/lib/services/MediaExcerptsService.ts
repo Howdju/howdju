@@ -1,8 +1,8 @@
-import { merge, zip } from "lodash";
+import { concat, merge, zip } from "lodash";
 import { Moment } from "moment";
 
 import {
-  AuthToken,
+  ContinuationToken,
   CreateMediaExcerpt,
   CreateMediaExcerptCitation,
   CreateUrlLocator,
@@ -10,9 +10,11 @@ import {
   MediaExcerpt,
   MediaExcerptOut,
   MediaExcerptRef,
+  MediaExcerptSearchFilter,
   newImpossibleError,
   PartialPersist,
   PersorgOut,
+  SortDescription,
   utcNow,
 } from "howdju-common";
 
@@ -22,6 +24,13 @@ import { CreateMediaExcerptDataIn, MediaExcerptsDao } from "../daos";
 import { WritQuotesService } from "./WritQuotesService";
 import { PersorgsService } from "./PersorgsService";
 import { UrlsService } from "./UrlsService";
+import { UserIdent } from "./types";
+import { EntityNotFoundError, RequestValidationError } from "..";
+import {
+  createContinuationToken,
+  createNextContinuationToken,
+  decodeContinuationToken,
+} from "./pagination";
 
 export class MediaExcerptsService {
   authService: AuthService;
@@ -47,17 +56,19 @@ export class MediaExcerptsService {
     this.urlsService = urlsService;
   }
 
-  async readMediaExcerptForId(
-    id: EntityId
-  ): Promise<MediaExcerptOut | undefined> {
-    return this.mediaExcerptsDao.readMediaExcerptForId(id);
+  async readMediaExcerptForId(id: EntityId): Promise<MediaExcerptOut> {
+    const mediaExcerpt = await this.mediaExcerptsDao.readMediaExcerptForId(id);
+    if (!mediaExcerpt) {
+      throw new EntityNotFoundError("MEDIA_EXCERPT", id);
+    }
+    return mediaExcerpt;
   }
 
   async readOrCreateMediaExcerpt(
-    authToken: AuthToken,
+    userIdent: UserIdent,
     createMediaExcerpt: CreateMediaExcerpt
   ): Promise<{ isExtant: boolean; mediaExcerpt: MediaExcerptOut }> {
-    const userId = await this.authService.readUserIdForAuthToken(authToken);
+    const userId = await this.authService.readUserIdForUserIdent(userIdent);
     const now = utcNow();
     const createCitations = createMediaExcerpt.citations ?? [];
 
@@ -205,16 +216,7 @@ export class MediaExcerptsService {
   private async readOrCreateJustMediaExcerpt<
     T extends CreateMediaExcerptDataIn
   >(userId: EntityId, createMediaExcerpt: T, created: Moment) {
-    const extantMediaExcerpt =
-      await this.mediaExcerptsDao.readEquivalentMediaExcerpt(
-        createMediaExcerpt
-      );
-    if (extantMediaExcerpt) {
-      return {
-        mediaExcerpt: extantMediaExcerpt,
-        isExtant: true,
-      };
-    }
+    // TODO(38) implement equivalence checking
     const mediaExcerpt = await this.mediaExcerptsDao.createMediaExcerpt(
       createMediaExcerpt,
       userId,
@@ -311,5 +313,71 @@ export class MediaExcerptsService {
       created
     );
     return { isExtant: false };
+  }
+
+  async readMediaExcerpts(
+    filters: MediaExcerptSearchFilter | undefined,
+    sorts: SortDescription[],
+    continuationToken?: ContinuationToken,
+    count = 25
+  ) {
+    if (!isFinite(count)) {
+      throw new RequestValidationError(
+        `count must be a number. ${count} is not ${typeof count}.`
+      );
+    }
+
+    if (!continuationToken) {
+      return this.readInitialMediaExcerpts(filters, sorts, count);
+    }
+    return this.readMoreMediaExcerpts(continuationToken, count);
+  }
+
+  async readInitialMediaExcerpts(
+    filters: MediaExcerptSearchFilter | undefined,
+    sorts: SortDescription[],
+    count: number
+  ) {
+    const unambiguousSorts = concat(sorts, [
+      { property: "id", direction: "ascending" },
+    ]);
+    const mediaExcerpts = await this.mediaExcerptsDao.readMediaExcerpts(
+      filters,
+      unambiguousSorts,
+      count
+    );
+
+    const continuationToken = createContinuationToken(
+      unambiguousSorts,
+      mediaExcerpts,
+      filters
+    ) as ContinuationToken;
+    return {
+      mediaExcerpts,
+      continuationToken,
+    };
+  }
+
+  async readMoreMediaExcerpts(
+    prevContinuationToken: ContinuationToken,
+    count: number
+  ) {
+    const { filters, sorts } = decodeContinuationToken(prevContinuationToken);
+    const mediaExcerpts = await this.mediaExcerptsDao.readMoreMediaExcerpts(
+      filters,
+      sorts,
+      count
+    );
+
+    const continuationToken =
+      (createNextContinuationToken(
+        sorts,
+        mediaExcerpts,
+        filters
+      ) as ContinuationToken) || prevContinuationToken;
+    return {
+      mediaExcerpts,
+      continuationToken,
+    };
   }
 }

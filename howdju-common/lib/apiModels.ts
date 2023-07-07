@@ -121,6 +121,10 @@ export type JustificationFilters = Partial<
   Record<typeof ExternalJustificationSearchFilters[number], string>
 > & { justificationId?: string | string[] };
 
+export type ToFilter<T extends readonly string[]> = {
+  [key in T[number]]?: string;
+};
+
 /** The justification search filters that clients can send. */
 export const ExternalJustificationSearchFilters = [
   "writQuoteId",
@@ -133,9 +137,17 @@ export const ExternalJustificationSearchFilters = [
   "propositionId",
   "url",
 ] as const;
-export type JustificationSearchFilters = {
-  [key in typeof ExternalJustificationSearchFilters[number]]?: string;
-};
+export type JustificationSearchFilters = ToFilter<
+  typeof ExternalJustificationSearchFilters
+>;
+
+export const MediaExcerptSearchFilterKeys = [
+  "creatorUserId",
+  "speakerPersorgId",
+] as const;
+export type MediaExcerptSearchFilter = ToFilter<
+  typeof MediaExcerptSearchFilterKeys
+>;
 
 export interface SortDescription {
   property: string;

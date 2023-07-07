@@ -4,11 +4,14 @@ import RecentPropositionsWidget from "./RecentPropositionsWidget";
 import RecentWritsWidget from "./RecentWritsWidget";
 import RecentWritQuotesWidget from "./RecentWritQuotesWidget";
 import RecentJustificationsWidget from "./RecentJustificationsWidget";
+import RecentMediaExcerptsWidget from "./RecentMediaExcerptsWidget";
 
 const recentPropositionsWidgetId =
   "RecentActivityPage.recentPropositionsWidgetId";
 const recentWritsWidgetId = "RecentActivityPage.recentWritsWidgetId";
 const recentWritQuotesWidgetId = "RecentActivityPage.recentWritQuotesWidgetId";
+const recentMediaExcerptsWidgetId =
+  "RecentActivityPage.recentMediaExcerptsWidgetId";
 const recentJustificationsWidgetId =
   "RecentActivityPage.recentJustificationsWidgetId";
 
@@ -20,6 +23,12 @@ export default function RecentActivityPage() {
         id="recent-activity-page-propositions"
         className="md-grid md-cell md-cell--12 md-grid--card-list--tablet"
         widgetId={recentPropositionsWidgetId}
+      />
+
+      <h1 className="md-cell--12">Recent media excerpts</h1>
+      <RecentMediaExcerptsWidget
+        className="md-grid md-cell md-cell--12 md-grid--card-list--tablet"
+        widgetId={recentMediaExcerptsWidgetId}
       />
 
       <h1 className="md-cell--12">Recent quotes</h1>

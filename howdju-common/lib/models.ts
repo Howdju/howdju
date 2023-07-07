@@ -33,6 +33,7 @@ import {
   CreateJustificationInputTarget,
   CreateJustificationTarget,
   CreateJustifiedSentenceInput,
+  CreateMediaExcerptInput,
   CreatePicRegionInput,
   CreatePropositionCompoundAtomInput,
   CreatePropositionCompoundInput,
@@ -43,6 +44,7 @@ import {
   CreateSourceExcerpt,
   CreateSourceExcerptInput,
   CreateStatementInput,
+  CreateUrl,
   CreateUrlInput,
   CreateUrlLocatorInput,
   CreateVidSegmentInput,
@@ -195,9 +197,12 @@ export const makeCreatePropositionCompoundAtomInput =
 export const makeUrl = (props?: Partial<Url>): Url =>
   merge({ url: "", canonicalUrl: "" }, props);
 
+export const makeCreateUrl = (props?: Partial<CreateUrl>): CreateUrl =>
+  merge({ url: "" }, props);
+
 export const makeCreateUrlLocatorInput = (
   props?: Partial<CreateUrlLocatorInput>
-): CreateUrlLocatorInput => merge({ url: makeUrl() }, props);
+): CreateUrlLocatorInput => merge({ url: makeCreateUrl() }, props);
 
 export const makePersorg = (): Persorg => ({
   isOrganization: false,
@@ -305,6 +310,7 @@ export const makeCreateJustificationInput = (
       basis: {
         type: "PROPOSITION_COMPOUND",
         propositionCompound: makeCreatePropositionCompoundInput(),
+        mediaExcerpt: makeCreateMediaExcerptInput(),
         sourceExcerpt: makeCreateSourceExcerptInput(),
         writQuote: makeCreateWritQuoteInput(),
       },
@@ -316,6 +322,24 @@ export const makeCreateJustificationInput = (
 
   return model;
 };
+
+export function makeCreateMediaExcerptInput(
+  props?: Partial<CreateMediaExcerptInput>
+): CreateMediaExcerptInput {
+  return merge(
+    {
+      localRep: {
+        quotation: "",
+      },
+      locators: {
+        urlLocators: [],
+      },
+      citations: [{ source: { description: "" } }],
+      speakers: [],
+    },
+    props
+  );
+}
 
 export const makeWritInput = (): CreateWritInput => ({ title: "" });
 export const makeUrlInput = (): CreateUrlInput => ({ url: "" });
