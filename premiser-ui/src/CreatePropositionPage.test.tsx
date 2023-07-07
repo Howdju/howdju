@@ -240,7 +240,7 @@ describe("CreatePropositionPage", () => {
           // delay so that we can cancel the request.
           return res(ctx.delay(1), ctx.json([]));
         }),
-        rest.get("http://localhost/search-writs", (_req, res, ctx) => {
+        rest.get("http://localhost/search-sources", (_req, res, ctx) => {
           // delay so that we can cancel the request.
           return res(ctx.delay(1), ctx.json([]));
         })
