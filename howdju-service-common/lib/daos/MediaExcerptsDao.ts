@@ -531,7 +531,7 @@ export class MediaExcerptsDao {
     count: number
   ) {
     const args: any[] = [count];
-    const countSql = `limit $${args.length}`;
+    const limitSql = `limit $${args.length}`;
 
     const whereSqls = ["deleted is null"];
     const orderBySqls: string[] = [];
@@ -560,7 +560,7 @@ export class MediaExcerptsDao {
         where
           ${whereSql}
       ${orderBySql}
-      ${countSql}
+      ${limitSql}
       `;
     const { rows } = await this.database.query("readMediaExcerpts", sql, args);
     const mediaExcerpts = await Promise.all(
@@ -569,7 +569,11 @@ export class MediaExcerptsDao {
     return mediaExcerpts.filter(isDefined);
   }
 
-  async readMoreMediaExcerpts(sorts: SortDescription[], count: number) {
+  async readMoreMediaExcerpts(
+    filters: MediaExcerptSearchFilter | undefined,
+    sorts: SortDescription[],
+    count: number
+  ) {
     const args: any[] = [count];
     const countSql = `\nlimit $${args.length}`;
 
@@ -585,9 +589,7 @@ export class MediaExcerptsDao {
         );
         throw new InvalidRequestError("Invalid continuation.");
       }
-      // The default direction is ascending
       const direction = toDbDirection(sort.direction);
-      // 'id' is a special property name for entities. The column is prefixed by the entity type
       const columnName =
         sort.property === "id" ? "media_excerpt_id" : snakeCase(sort.property);
       const operator = direction === "asc" ? ">" : "<";
@@ -601,8 +603,17 @@ export class MediaExcerptsDao {
       orderBySqls.push(`${columnName} ${direction}`);
     });
 
-    const continuationWhereSql = continuationWhereSqls.join("\n or ");
+    const filterSubselects = makeFilterSubselects(filters);
+    const filterWhereSqls: string[] = [];
+    filterSubselects.forEach(({ sql, args: subselectArgs }) => {
+      const renumberedSql = renumberSqlArgs(sql, args.length);
+      filterWhereSqls.push(`media_excerpt_id in (${renumberedSql})`);
+      args.push(...subselectArgs);
+    });
+
     const whereSql = whereSqls.join("\nand ");
+    const continuationWhereSql = continuationWhereSqls.join("\n or ");
+    const filterWhereSql = filterWhereSqls.join("\nand ");
     const orderBySql =
       orderBySqls.length > 0 ? "order by " + orderBySqls.join(",") : "";
 
@@ -614,6 +625,8 @@ export class MediaExcerptsDao {
           ${whereSql}
         and (
           ${continuationWhereSql}
+        ) and (
+          ${filterWhereSql}
         )
       ${orderBySql}
       ${countSql}

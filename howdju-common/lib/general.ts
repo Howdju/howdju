@@ -321,6 +321,12 @@ export const removeAt = (array: any[], index: number) => {
 export const encodeQueryStringObject = (obj: object) =>
   map(obj, (val, key) => `${key}=${val}`).join(",");
 
+/**
+ * Decodes query string `param` into an object.
+ *
+ * @param param The query string to decode, e.g. `foo=bar,baz=qux`
+ * @param validKeys If provided, throws an error if any of the keys in the query string are not in this array.
+ */
 export function decodeQueryStringObject<K extends readonly string[]>(
   param: string | undefined,
   validKeys?: K
@@ -345,7 +351,7 @@ export function decodeQueryStringObject<K extends readonly string[]>(
     throw new Error(
       `Invalid query string keys: ${invalidKeys.join(
         ","
-      )}. Valid keys: ${validKeys?.join(",")}`
+      )}. Valid keys must come from: ${validKeys?.join(",")}`
     );
   }
 

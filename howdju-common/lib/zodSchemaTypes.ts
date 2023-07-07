@@ -1,6 +1,7 @@
 import { Moment } from "moment";
 import { z } from "zod";
 import { UserOut, WritOut, WritQuoteOut } from "./apiModels";
+import { newProgrammingError } from "./commonErrors";
 import { assert } from "./general";
 import { logger } from "./logger";
 
@@ -300,19 +301,20 @@ export function isOnlyRef<T extends string = string>(
   o: any,
   brand?: T
 ): o is Ref<T> {
-  if (Object.keys(o).length !== 2) {
+  if (Object.keys(o).length !== 1) {
     return false;
   }
-  return "id" in o && z.BRAND in o && !(brand || o[z.BRAND] === brand);
+  return "id" in o && z.BRAND in o && (!brand || o[z.BRAND] === brand);
 }
 
 export function isRef<T extends Entity>(e: EntityOrRef<T>): e is EntityRef<T> {
   const keys = Object.keys(e);
   // An entity with a single property `id` is a ref.
   if (keys.length === 1 && keys[0] === "id") {
-    // If we have typed everything correctly, it should have also had the Zod BRAND, which it
-    // doesn't because it has just one key.
-    logger.warn(`Ref lacks z.BRAND property (id: ${e.id}).`);
+    // If we have typed everything correctly, it should have also had the Zod BRAND
+    if (!(z.BRAND in e)) {
+      logger.warn(`Ref lacks z.BRAND property (id: ${e.id}).`);
+    }
     return true;
   }
   // Otherwise, an object with a BRAND is a Ref because we only brand Refs. (We don't brand objects
@@ -320,10 +322,10 @@ export function isRef<T extends Entity>(e: EntityOrRef<T>): e is EntityRef<T> {
   // TODO(451) "we only brand Refs." is not true. We brand materialized entities elsewhere. Use isOnlyRef where we mean
   // an object having just an ID and a BRAND.
   const isBranded = z.BRAND in e;
-  if (isBranded) {
-    // And if it's a Ref, it must have an ID (or else we don't know what it references.)
-    assert(keys.length === 2);
-    assert(!!e.id);
+  if (isBranded && !e.id) {
+    throw newProgrammingError(
+      `Ref has a BRAND but lacks an ID (BRAND: ${e[z.BRAND]}).`
+    );
   }
   // Technically we don't know that the object is branded as a T; we must rely on the typesystem,
   // and that a programmer hasn't overridden the typesystem incorrectly.

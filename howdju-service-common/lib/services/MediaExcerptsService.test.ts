@@ -1,7 +1,12 @@
 import { Pool } from "pg";
-import { merge } from "lodash";
+import { merge, toNumber } from "lodash";
 
-import { CreateMediaExcerpt, MomentConstructor } from "howdju-common";
+import {
+  CreateMediaExcerpt,
+  MediaExcerptSearchFilter,
+  MomentConstructor,
+  SortDescription,
+} from "howdju-common";
 import { expectToBeSameMomentDeep, mockLogger } from "howdju-test-common";
 
 import { endPoolAndDropDb, initDb, makeTestDbConfig } from "@/util/testUtil";
@@ -195,6 +200,115 @@ describe("MediaExcerptsService", () => {
 
       // Assert
       expect(readMediaExcerpt).toEqual(expectToBeSameMomentDeep(mediaExcerpt));
+    });
+  });
+
+  describe("readMediaExcerpts", () => {
+    test("reads initial filtered MediaExcerpts", async () => {
+      const { authToken, user } = await testHelper.makeUser();
+      const speaker1 = await testHelper.makePersorg(user.id, {
+        name: "Name 1",
+      });
+      const speaker2 = await testHelper.makePersorg(user.id, {
+        name: "Name 2",
+      });
+      const mediaExcerpts = await Promise.all(
+        Array.from({ length: 10 }).map((_, i) =>
+          testHelper.makeMediaExcerpt(
+            { authToken },
+            {
+              localRep: {
+                // Make quotaiton unique to avoid any equivalence.
+                quotation: `The most magical thing ${i}`,
+              },
+              speakers: [i % 2 == 0 ? speaker1 : speaker2],
+            }
+          )
+        )
+      );
+      // Media excerpts are created out of ID order above, but will be returned sorted by ID
+      const filters: MediaExcerptSearchFilter = {
+        speakerPersorgId: speaker1.id,
+      };
+      const sorts: SortDescription[] = [];
+      const count = 3;
+      const continuationToken = undefined;
+
+      mediaExcerpts.sort((a, b) => toNumber(a.id) - toNumber(b.id));
+      const expectedMediaExcerpts = mediaExcerpts
+        .filter((me) => me.speakers[0].id === speaker1.id)
+        .slice(0, count);
+
+      // Act
+      const { mediaExcerpts: mediaExcerptsOut } =
+        await service.readMediaExcerpts(
+          filters,
+          sorts,
+          continuationToken,
+          count
+        );
+
+      // Assert
+      expect(mediaExcerptsOut).toIncludeSameMembers(
+        expectToBeSameMomentDeep(expectedMediaExcerpts)
+      );
+    });
+
+    test("reads more filtered MediaExcerpts", async () => {
+      const { authToken, user } = await testHelper.makeUser();
+      const speaker1 = await testHelper.makePersorg(user.id, {
+        name: "Name 1",
+      });
+      const speaker2 = await testHelper.makePersorg(user.id, {
+        name: "Name 2",
+      });
+      const mediaExcerpts = await Promise.all(
+        Array.from({ length: 10 }).map((_, i) =>
+          testHelper.makeMediaExcerpt(
+            { authToken },
+            {
+              localRep: {
+                // Make quotaiton unique to avoid any equivalence.
+                quotation: `The most magical thing ${i}`,
+              },
+              speakers: [i % 2 == 0 ? speaker1 : speaker2],
+            }
+          )
+        )
+      );
+      mediaExcerpts.sort((a, b) => toNumber(a.id) - toNumber(b.id));
+      const filters: MediaExcerptSearchFilter = {
+        speakerPersorgId: speaker1.id,
+      };
+      const sorts: SortDescription[] = [];
+      const count = 3;
+
+      const { continuationToken } = await service.readMediaExcerpts(
+        filters,
+        sorts,
+        /*continuationToken=*/ undefined,
+        count
+      );
+
+      // Media excerpts are created out of ID order above, but will be returned sorted by ID
+      mediaExcerpts.sort((a, b) => toNumber(a.id) - toNumber(b.id));
+      const expectedMediaExcerpts = mediaExcerpts
+        .filter((me) => me.speakers[0].id === speaker1.id)
+        .slice(count, 2 * count);
+
+      // Act
+      const { mediaExcerpts: mediaExcerptsOut } =
+        await service.readMediaExcerpts(
+          filters,
+          sorts,
+          continuationToken,
+          count
+        );
+
+      // Assert
+      expect(mediaExcerptsOut).toIncludeSameMembers(
+        expectToBeSameMomentDeep(expectedMediaExcerpts)
+      );
     });
   });
 });

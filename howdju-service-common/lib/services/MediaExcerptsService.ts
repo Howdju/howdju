@@ -31,6 +31,7 @@ import {
   createNextContinuationToken,
   decodeContinuationToken,
 } from "./pagination";
+import { readWriteReread } from "./patterns";
 
 export class MediaExcerptsService {
   authService: AuthService;
@@ -216,16 +217,7 @@ export class MediaExcerptsService {
   private async readOrCreateJustMediaExcerpt<
     T extends CreateMediaExcerptDataIn
   >(userId: EntityId, createMediaExcerpt: T, created: Moment) {
-    const extantMediaExcerpt =
-      await this.mediaExcerptsDao.readEquivalentMediaExcerpt(
-        createMediaExcerpt
-      );
-    if (extantMediaExcerpt) {
-      return {
-        mediaExcerpt: extantMediaExcerpt,
-        isExtant: true,
-      };
-    }
+    // TODO(38) implement equivalence checking
     const mediaExcerpt = await this.mediaExcerptsDao.createMediaExcerpt(
       createMediaExcerpt,
       userId,
@@ -371,8 +363,9 @@ export class MediaExcerptsService {
     prevContinuationToken: ContinuationToken,
     count: number
   ) {
-    const { sorts, filters } = decodeContinuationToken(prevContinuationToken);
+    const { filters, sorts } = decodeContinuationToken(prevContinuationToken);
     const mediaExcerpts = await this.mediaExcerptsDao.readMoreMediaExcerpts(
+      filters,
       sorts,
       count
     );

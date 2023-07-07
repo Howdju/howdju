@@ -52,7 +52,9 @@ export async function readWriteReread<E extends Entity>(
     }
 
     const { detail, constraint } = err;
-    logger.info(`An intervening row was created: ${{ detail, constraint }}`);
+    logger.info(
+      `An intervening row was created: ${toJson({ detail, constraint })}`
+    );
 
     const interveningEntity = await readEquivalent();
     if (!interveningEntity) {
