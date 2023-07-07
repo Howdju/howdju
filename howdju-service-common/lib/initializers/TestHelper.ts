@@ -3,6 +3,7 @@ import moment, { Moment } from "moment";
 import {
   AuthToken,
   CreateMediaExcerpt,
+  CreatePersorg,
   CreateSource,
   CreateWritQuote,
   EntityId,
@@ -69,6 +70,21 @@ export default class TestHelper {
     return proposition;
   }
 
+  async makePersorg(
+    creatorUserId: EntityId,
+    overrides?: Partial<CreatePersorg>
+  ) {
+    const createPersorg = merge({}, defaultCreatePersorg, overrides);
+    const created = utcNow();
+    const { persorg } =
+      await this.servicesProvider.persorgsService.readOrCreateValidPersorgAsUser(
+        createPersorg,
+        creatorUserId,
+        created.toDate()
+      );
+    return persorg;
+  }
+
   async makeUser() {
     const now = moment();
     const creatorUserId = null;
@@ -121,6 +137,11 @@ export default class TestHelper {
     );
   }
 }
+
+const defaultCreatePersorg: CreatePersorg = {
+  name: "The persorg name",
+  isOrganization: false,
+};
 
 const defaultMediaExcerpt: CreateMediaExcerpt = {
   localRep: { quotation: "the text quote" },

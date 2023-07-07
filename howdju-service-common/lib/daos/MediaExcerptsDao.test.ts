@@ -5,7 +5,9 @@ import {
   CreateDomAnchor,
   CreateMediaExcerptCitation,
   CreateUrlLocator,
+  MediaExcerptSearchFilter,
   MomentConstructor,
+  SortDescription,
   utcNow,
 } from "howdju-common";
 import { expectToBeSameMomentDeep, mockLogger } from "howdju-test-common";
@@ -107,6 +109,33 @@ describe("MediaExcerptsDao", () => {
     });
     test.todo("doesn't read a deleted media excerpt");
     test.todo("allows recreating a deleted media excerpt");
+  });
+
+  describe("readMediaExcerpts", () => {
+    test("reads filtered MediaExcerpts", async () => {
+      const { authToken, user } = await testHelper.makeUser();
+      const speaker1 = await testHelper.makePersorg(user.id);
+      const speaker2 = await testHelper.makePersorg(user.id);
+      const mediaExcerpt1 = await testHelper.makeMediaExcerpt(
+        { authToken },
+        { speakers: [speaker1] }
+      );
+      await testHelper.makeMediaExcerpt(
+        { authToken },
+        { speakers: [speaker2] }
+      );
+      const filters: MediaExcerptSearchFilter = {
+        speakerPersorgId: speaker1.id,
+      };
+      const sorts: SortDescription[] = [];
+      const count = 5;
+
+      // Act
+      const mediaExcerpts = await dao.readMediaExcerpts(filters, sorts, count);
+
+      // Assert
+      expect(mediaExcerpts).toEqual(expectToBeSameMomentDeep([mediaExcerpt1]));
+    });
   });
 
   describe("readEquivalentMediaExcerpt", () => {

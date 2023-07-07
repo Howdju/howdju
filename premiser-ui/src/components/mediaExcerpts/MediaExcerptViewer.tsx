@@ -12,6 +12,8 @@ import CollapsibleTextViewer from "@/components/collapsableText/CollapsableTextV
 import MediaExcerptCitationViewer from "./MediaExcerptCitationViewer";
 
 import "./MediaExcerptViewer.scss";
+import paths from "@/paths";
+import Link from "@/Link";
 
 interface Props {
   mediaExcerpt: MediaExcerptView;
@@ -41,7 +43,7 @@ export default function MediaExcerptViewer({ mediaExcerpt }: Props) {
       <ul className="speakers">
         {mediaExcerpt.speakers.map((speaker) => (
           <li key={speaker.key} className="speaker">
-            {speaker.name}
+            <Link to={paths.persorg(speaker)}>{speaker.name}</Link>
           </li>
         ))}
       </ul>

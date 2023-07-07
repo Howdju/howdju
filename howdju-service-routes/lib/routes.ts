@@ -39,6 +39,8 @@ import {
   parseContextTrail,
   toJson,
   CreateMediaExcerpt,
+  MediaExcerptSearchFilterKeys,
+  isDefined,
 } from "howdju-common";
 import {
   EntityNotFoundError,
@@ -855,23 +857,30 @@ export const serviceRoutes = {
     path: "media-excerpts",
     method: httpMethods.GET,
     request: handler(
-      QueryStringParams("sorts", "continuationToken", "count"),
+      QueryStringParams("filters", "sorts", "continuationToken", "count"),
       async (
         appProvider: ServicesProvider,
         {
           queryStringParams: {
+            filters: encodedFilters,
             sorts: encodedSorts,
             continuationToken: prevContinuationToken,
             count,
           },
         }
       ) => {
+        const filters = decodeQueryStringObject(
+          encodedFilters,
+          MediaExcerptSearchFilterKeys
+        );
+
         const sorts = decodeSorts(encodedSorts);
         const { mediaExcerpts, continuationToken } =
           await appProvider.mediaExcerptsService.readMediaExcerpts(
+            filters,
             sorts,
             prevContinuationToken,
-            toNumber(count)
+            isDefined(count) ? toNumber(count) : undefined
           );
         return {
           body: { mediaExcerpts, continuationToken },

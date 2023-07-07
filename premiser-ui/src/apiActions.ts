@@ -512,6 +512,16 @@ export const api = {
       normalizationSchema: { statements: statementsSchema },
     })
   ),
+  fetchSpeakerMediaExcerpts: apiActionCreator(
+    "FETCH_MEDIA_EXCERPTS_WITH_SPEAKER",
+    serviceRoutes.readMediaExcerpts,
+    (speakerPersorgId: EntityId) => ({
+      queryStringParams: {
+        filters: encodeQueryStringObject({ speakerPersorgId }),
+      },
+      normalizationSchema: { mediaExcerpts: mediaExcerptsSchema },
+    })
+  ),
   fetchSentenceStatements: apiActionCreator(
     "FETCH_SENTENCE_STATEMENTS",
     serviceRoutes.readSentenceStatements,

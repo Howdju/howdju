@@ -22,6 +22,7 @@ import {
   UrlLocatorRef,
   SortDescription,
   isDefined,
+  MediaExcerptSearchFilter,
 } from "howdju-common";
 
 import { Database } from "../database";
@@ -30,6 +31,8 @@ import { SourcesDao } from "./SourcesDao";
 import { UrlsDao } from "./UrlsDao";
 import { toDbDirection } from "./daoModels";
 import { InvalidRequestError } from "..";
+import { SqlClause } from "./daoTypes";
+import { renumberSqlArgs } from "./daosUtil";
 
 export type CreateMediaExcerptDataIn = Pick<
   PartialPersist<CreateMediaExcerpt, "localRep">,
@@ -459,8 +462,8 @@ export class MediaExcerptsDao {
     createCitation: PartialPersist<CreateMediaExcerptCitation, "source">,
     created: Moment
   ) {
-    const normalPincite =
-      createCitation.pincite && normalizeText(createCitation.pincite);
+    const pincite = createCitation.pincite;
+    const normalPincite = pincite && normalizeText(pincite);
     await this.database.query(
       "createMediaExcerptCitation",
       `insert into media_excerpt_citations (
@@ -484,6 +487,7 @@ export class MediaExcerptsDao {
       mediaExcerptId: mediaExcerpt.id,
       created,
       creatorUserId,
+      pincite,
       normalPincite,
     });
   }
@@ -521,8 +525,12 @@ export class MediaExcerptsDao {
     );
   }
 
-  async readMediaExcerpts(sorts: SortDescription[], count: number) {
-    const args = [count];
+  async readMediaExcerpts(
+    filters: MediaExcerptSearchFilter | undefined,
+    sorts: SortDescription[],
+    count: number
+  ) {
+    const args: any[] = [count];
     const countSql = `limit $${args.length}`;
 
     const whereSqls = ["deleted is null"];
@@ -534,6 +542,14 @@ export class MediaExcerptsDao {
       whereSqls.push(`${columnName} is not null`);
       orderBySqls.push(`${columnName} ${direction}`);
     });
+
+    const filterSubselects = makeFilterSubselects(filters);
+    filterSubselects.forEach(({ sql, args: subselectArgs }) => {
+      const renumberedSql = renumberSqlArgs(sql, args.length);
+      whereSqls.push(`media_excerpt_id in (${renumberedSql})`);
+      args.push(...subselectArgs);
+    });
+
     const whereSql = whereSqls.join("\nand ");
     const orderBySql =
       orderBySqls.length > 0 ? "order by " + orderBySqls.join(",") : "";
@@ -612,4 +628,39 @@ export class MediaExcerptsDao {
     );
     return mediaExcerpts.filter(isDefined);
   }
+}
+
+function makeFilterSubselects(filters: MediaExcerptSearchFilter | undefined) {
+  const filterSubselects: SqlClause[] = [];
+  if (!filters) {
+    return filterSubselects;
+  }
+  forEach(filters, (value, filterName) => {
+    if (!value) {
+      return;
+    }
+    switch (filterName) {
+      case "creatorUserId": {
+        const sql = `
+          select media_excerpt_id
+          from media_excerpts
+          where creator_user_id = $1
+        `;
+        const args = [value];
+        filterSubselects.push({ sql, args });
+        break;
+      }
+      case "speakerPersorgId": {
+        const sql = `
+          select media_excerpt_id
+          from media_excerpts join media_excerpt_speakers using (media_excerpt_id)
+          where speaker_persorg_id = $1
+        `;
+        const args = [value];
+        filterSubselects.push({ sql, args });
+        break;
+      }
+    }
+  });
+  return filterSubselects;
 }

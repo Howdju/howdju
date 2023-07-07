@@ -10,6 +10,7 @@ import {
   MediaExcerpt,
   MediaExcerptOut,
   MediaExcerptRef,
+  MediaExcerptSearchFilter,
   newImpossibleError,
   PartialPersist,
   PersorgOut,
@@ -324,6 +325,7 @@ export class MediaExcerptsService {
   }
 
   async readMediaExcerpts(
+    filters: MediaExcerptSearchFilter | undefined,
     sorts: SortDescription[],
     continuationToken?: ContinuationToken,
     count = 25
@@ -335,23 +337,29 @@ export class MediaExcerptsService {
     }
 
     if (!continuationToken) {
-      return this.readInitialMediaExcerpts(sorts, count);
+      return this.readInitialMediaExcerpts(filters, sorts, count);
     }
     return this.readMoreMediaExcerpts(continuationToken, count);
   }
 
-  async readInitialMediaExcerpts(sorts: SortDescription[], count: number) {
+  async readInitialMediaExcerpts(
+    filters: MediaExcerptSearchFilter | undefined,
+    sorts: SortDescription[],
+    count: number
+  ) {
     const unambiguousSorts = concat(sorts, [
       { property: "id", direction: "ascending" },
     ]);
     const mediaExcerpts = await this.mediaExcerptsDao.readMediaExcerpts(
+      filters,
       unambiguousSorts,
       count
     );
 
     const continuationToken = createContinuationToken(
       unambiguousSorts,
-      mediaExcerpts
+      mediaExcerpts,
+      filters
     ) as ContinuationToken;
     return {
       mediaExcerpts,

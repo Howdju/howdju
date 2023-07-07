@@ -84,6 +84,7 @@ export default handleActions(
       api.fetchSentenceStatements.response,
       api.fetchSourceDescriptionSuggestions.response,
       api.fetchSpeakerStatements.response,
+      api.fetchSpeakerMediaExcerpts.response,
       api.fetchStatementRootJustificationTarget.response,
       api.fetchTag.response,
       api.fetchTagNameSuggestions.response,
