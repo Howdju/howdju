@@ -183,8 +183,7 @@ describe("MediaExcerptsService", () => {
         mediaExcerpt.id
       );
       expect(readMediaExcerpt).toEqual(expectToBeSameMomentDeep(mediaExcerpt));
-      // TODO(38) implement MediaExcerpt equivalence
-      expect(isExtant).toBe(false);
+      expect(isExtant).toBe(true);
     });
   });
 

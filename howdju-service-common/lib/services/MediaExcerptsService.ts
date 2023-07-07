@@ -1,4 +1,4 @@
-import { concat, merge, zip } from "lodash";
+import { concat, merge, uniqBy, zip } from "lodash";
 import { Moment } from "moment";
 
 import {
@@ -15,6 +15,8 @@ import {
   PartialPersist,
   PersorgOut,
   SortDescription,
+  SourceOut,
+  UrlOut,
   utcNow,
 } from "howdju-common";
 
@@ -31,6 +33,7 @@ import {
   createNextContinuationToken,
   decodeContinuationToken,
 } from "./pagination";
+import { readWriteRereadUnconstrained } from "./patterns";
 
 export class MediaExcerptsService {
   authService: AuthService;
@@ -99,8 +102,15 @@ export class MediaExcerptsService {
     ]);
 
     // Create the media excerpt
+    const distinctSources = uniqBy(sources, (s) => s.id);
     const { mediaExcerpt, isExtant: isExtantMediaExcerpt } =
-      await this.readOrCreateJustMediaExcerpt(userId, createMediaExcerpt, now);
+      await this.readOrCreateJustMediaExcerpt(
+        userId,
+        createMediaExcerpt,
+        urls,
+        distinctSources,
+        now
+      );
 
     // Create entities that depend on the media excerpt's ID
     const createUrlLocatorsWithUrl = zip(
@@ -213,18 +223,32 @@ export class MediaExcerptsService {
     };
   }
 
-  private async readOrCreateJustMediaExcerpt<
-    T extends CreateMediaExcerptDataIn
-  >(userId: EntityId, createMediaExcerpt: T, created: Moment) {
-    // TODO(38) implement equivalence checking
-    const mediaExcerpt = await this.mediaExcerptsDao.createMediaExcerpt(
-      createMediaExcerpt,
-      userId,
-      created
-    );
+  private async readOrCreateJustMediaExcerpt(
+    userId: EntityId,
+    createMediaExcerpt: CreateMediaExcerptDataIn,
+    urls: UrlOut[],
+    sources: SourceOut[],
+    created: Moment
+  ) {
+    const { entity: mediaExcerpt, isExtant } =
+      await readWriteRereadUnconstrained(
+        "MediaExcerpts",
+        () =>
+          this.mediaExcerptsDao.readEquivalentMediaExcerpts(
+            createMediaExcerpt,
+            urls,
+            sources
+          ),
+        () =>
+          this.mediaExcerptsDao.createMediaExcerpt(
+            createMediaExcerpt,
+            userId,
+            created
+          )
+      );
     return {
       mediaExcerpt,
-      isExtant: false,
+      isExtant,
     };
   }
 

@@ -23,6 +23,9 @@ import {
   SortDescription,
   isDefined,
   MediaExcerptSearchFilter,
+  UrlOut,
+  SourceOut,
+  toJson,
 } from "howdju-common";
 
 import { Database } from "../database";
@@ -182,30 +185,87 @@ export class MediaExcerptsDao {
     }));
   }
 
-  // TODO(20) improve equivalence calculation and support MediaExcerpt suggestions
-  //
-  // Technically an equivalent media excerpt has redundant localRep, locators, and
-  // citations. And the same localRep could technically be used in multiple media excerpts if
-  // the same literal quote was used in different contexts to mean different things.
-  // So: 1) return an equivalent MediaExcerpt if the create model
-  // is redundant with existing localRep, locators, and citations, and 2) if a user is creating
-  // a MediaExcerpt with (a) redundant or (b) significantly overlapping localRep, suggest
-  // MediaExcerpts with the redundant localRep (those that are non-equivalent according to both
-  // locators and citations.) (Overlapping start/end offsets and x % of overlapping exact text?)
-  async readEquivalentMediaExcerpt(
-    mediaExcerpt: CreateMediaExcerptDataIn
-  ): Promise<MediaExcerptOut | undefined> {
-    const {
-      rows: [row],
-    } = await this.database.query(
+  /**
+   * Returns an equivalent MediaExcerpt.
+   *
+   * An equivalent MediaExcerpt has a equivalent localRep and overlapping locators, and
+   * citations. An equivalent _localRep_ could be used in multiple distinct MediaExcerpts if
+   * the same literal quote was used in different contexts to mean different things.
+   *
+   * The current logic checks for overlapping URLs and sources, which does not allow for the case
+   * where the same localRep appears in different places with different speech intent in the same
+   * URL or source. Since the same localRep in the same URL/Source is likely to have the same speech
+   * intent, this should be okay; users can add multiple citations (with different pincites) and
+   * multiple URLs (with different locators) to the MediaExcerpt.
+   *
+   * If we add additional fields to MediaExcerpt.localRep, we should add them to the equivalence
+   * check here. localRep fields may follow a similar 'overlapping' apporoach as URLs/MediaExceprts,
+   * where if any of the localRep fields are equivalent, then the entire localRep is equivalent. It
+   * depends on whether the overlap is a good representation of the equivalence.
+   *
+   * TODO(454) this logic leaves the possibility that a user may be creating a MediaExcerpt that
+   * conceptually is identical to another, but will not be detected as such according to our
+   * equivalence logic. To help avoid that, if a user is creating a MediaExcerpt with substantially
+   * overlapping localRep to an existing MediaExcerpt, we should suggest those existing
+   * MediaExcerpts with the redundant localRep. If the user selects one of those, we should
+   * probably add a new field to the CreateMediaExcerpt `equivalentMediaExcerptId` that will allow
+   * us to select it here. We can indicate it with a sort of pill or other UI element. (Another
+   * option would be to add the citations and URLs to the new MediaExcerpt, but then the user might
+   * delete them, frustrating our logic here.)
+   */
+  async readEquivalentMediaExcerpts(
+    mediaExcerpt: CreateMediaExcerptDataIn,
+    urls: UrlOut[],
+    sources: SourceOut[]
+  ): Promise<MediaExcerptOut[]> {
+    const { rows } = await this.database.query(
       "readEquivalentMediaExcerpt",
-      `select media_excerpt_id from media_excerpts where normal_quotation = $1 and deleted is null`,
-      [normalizeQuotation(mediaExcerpt.localRep.quotation)]
+      `
+      select distinct media_excerpt_id
+      from media_excerpts me
+        join url_locators ul using (media_excerpt_id)
+        join urls u using (url_id)
+        join media_excerpt_citations mec using (media_excerpt_id)
+        join sources s using (source_id)
+      where me.normal_quotation = $1
+        and me.deleted is null
+        and (cardinality($2::bigint[]) = 0 or u.url_id = any ($2))
+        and u.deleted is null
+        and (cardinality($3::bigint[]) = 0 or s.source_id = any ($3))
+        and s.deleted is null
+      `,
+      [
+        normalizeQuotation(mediaExcerpt.localRep.quotation),
+        urls.map((u) => u.id),
+        sources.map((s) => s.id),
+      ]
     );
-    if (!row) {
-      return undefined;
+    const mediaExcerpts = await Promise.all(
+      rows.map(async (r) => {
+        const id = r.media_excerpt_id;
+        const mediaExcerpt = await this.readMediaExcerptForId(id);
+        return {
+          id,
+          mediaExcerpt,
+        };
+      })
+    );
+
+    const defindedMediaExcerpts = [];
+    const undefindedIds = [];
+    for (const { id, mediaExcerpt } of mediaExcerpts) {
+      if (mediaExcerpt) {
+        defindedMediaExcerpts.push(mediaExcerpt);
+      } else {
+        undefindedIds.push(id);
+      }
     }
-    return await this.readMediaExcerptForId(row.media_excerpt_id);
+    if (undefindedIds.length) {
+      this.logger.error(
+        `Unable to read equivalent MediaExcerpt IDs: ${toJson(undefindedIds)}`
+      );
+    }
+    return defindedMediaExcerpts;
   }
 
   async createMediaExcerpt<T extends CreateMediaExcerptDataIn>(
