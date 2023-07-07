@@ -240,7 +240,7 @@ export class MediaExcerptsService {
             distinctSources
           ),
         () =>
-          this.mediaExcerptsDao.createMediaExcerpt(
+          this.mediaExcerptsDao.readOrCreateMediaExcerpt(
             createMediaExcerpt,
             userId,
             created

@@ -28,7 +28,7 @@ import {
   toJson,
 } from "howdju-common";
 
-import { Database } from "../database";
+import { Database, TxnClient } from "../database";
 import { PersorgsDao } from "./PersorgsDao";
 import { SourcesDao } from "./SourcesDao";
 import { UrlsDao } from "./UrlsDao";
@@ -36,6 +36,7 @@ import { toDbDirection } from "./daoModels";
 import { InvalidRequestError } from "..";
 import { SqlClause } from "./daoTypes";
 import { renumberSqlArgs } from "./daosUtil";
+import { getEntityWithLowestId } from "@/services/patterns";
 
 export type CreateMediaExcerptDataIn = Pick<
   PartialPersist<CreateMediaExcerpt, "localRep">,
@@ -216,9 +217,11 @@ export class MediaExcerptsDao {
   async readEquivalentMediaExcerpts(
     mediaExcerpt: CreateMediaExcerptDataIn,
     urls: UrlOut[],
-    sources: SourceOut[]
+    sources: SourceOut[],
+    client?: TxnClient
   ): Promise<MediaExcerptOut[]> {
-    const { rows } = await this.database.query(
+    const db = client || this.database;
+    const { rows } = await db.query(
       "readEquivalentMediaExcerpt",
       `
       select distinct media_excerpt_id
@@ -268,31 +271,63 @@ export class MediaExcerptsDao {
     return definedMediaExcerpts;
   }
 
-  async createMediaExcerpt<T extends CreateMediaExcerptDataIn>(
+  readOrCreateMediaExcerpt<T extends CreateMediaExcerptDataIn>(
     mediaExcerpt: T,
     creatorUserId: EntityId,
-    created: Moment
+    created: Moment,
+    urls: UrlOut[] = [],
+    sources: SourceOut[] = []
   ) {
     const normalQuotation = normalizeQuotation(mediaExcerpt.localRep.quotation);
-    const {
-      rows: [row],
-    } = await this.database.query(
-      "createMediaExcerpt",
-      `insert into media_excerpts (quotation, normal_quotation, creator_user_id, created)
-       values ($1, $2, $3, $4)
-       returning media_excerpt_id`,
-      [mediaExcerpt.localRep.quotation, normalQuotation, creatorUserId, created]
-    );
-    return brandedParse(
-      MediaExcerptRef,
-      merge({}, mediaExcerpt, {
-        id: row.media_excerpt_id,
-        localRep: {
-          normalQuotation,
-        },
-        creatorUserId,
-        created,
-      })
+    return this.database.transaction(
+      "readOrCreateMediaExcerpt",
+      async (client) => {
+        const equivalentMediaExcerpts = await this.readEquivalentMediaExcerpts(
+          mediaExcerpt,
+          urls,
+          sources,
+          client
+        );
+        if (equivalentMediaExcerpts.length) {
+          const lowest = getEntityWithLowestId(equivalentMediaExcerpts);
+          if (equivalentMediaExcerpts.length > 1) {
+            this.logger.error(
+              `readOrCreateMediaExcerpt: multiple equivalent MediaExcerpts (lowestId: ${
+                lowest.id
+              }, ids: ${toJson(equivalentMediaExcerpts.map((e) => e.id))})`
+            );
+          }
+          return lowest;
+        }
+
+        const {
+          rows: [row],
+        } = await client.query(
+          "createMediaExcerpt",
+          `
+          insert into media_excerpts (quotation, normal_quotation, creator_user_id, created)
+          values ($1, $2, $3, $4)
+          returning media_excerpt_id`,
+          [
+            mediaExcerpt.localRep.quotation,
+            normalQuotation,
+            creatorUserId,
+            created,
+          ]
+        );
+
+        return brandedParse(
+          MediaExcerptRef,
+          merge({}, mediaExcerpt, {
+            id: row.media_excerpt_id,
+            localRep: {
+              normalQuotation,
+            },
+            creatorUserId,
+            created,
+          })
+        );
+      }
     );
   }
 

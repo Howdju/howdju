@@ -109,7 +109,7 @@ describe("MediaExcerptsDao", () => {
     test.todo("allows recreating a deleted media excerpt");
   });
 
-  describe("readEquivalentMediaExcerpt", () => {
+  describe("readEquivalentMediaExcerpts", () => {
     test("reads an equivalent media excerpt with a source", async () => {
       const { authToken } = await testHelper.makeUser();
       const quotation = "the text quote";
@@ -133,57 +133,57 @@ describe("MediaExcerptsDao", () => {
         expectToBeSameMomentDeep([mediaExcerpt])
       );
     });
-  });
-  test("reads an equivalent media excerpt with a url", async () => {
-    const { authToken } = await testHelper.makeUser();
-    const quotation = "the text quote";
-    const mediaExcerpt = await testHelper.makeMediaExcerpt(
-      { authToken },
-      {
-        localRep: { quotation },
-        locators: {
-          urlLocators: [{ url: { url: "https://www.web.com/path" } }],
+    test("reads an equivalent media excerpt with a url", async () => {
+      const { authToken } = await testHelper.makeUser();
+      const quotation = "the text quote";
+      const mediaExcerpt = await testHelper.makeMediaExcerpt(
+        { authToken },
+        {
+          localRep: { quotation },
+          locators: {
+            urlLocators: [{ url: { url: "https://www.web.com/path" } }],
+          },
+        }
+      );
+
+      const equivalenMediaExcerpts = await dao.readEquivalentMediaExcerpts(
+        {
+          localRep: { quotation },
         },
-      }
-    );
+        mediaExcerpt.locators.urlLocators.map((ul) => ul.url),
+        []
+      );
 
-    const equivalenMediaExcerpts = await dao.readEquivalentMediaExcerpts(
-      {
-        localRep: { quotation },
-      },
-      mediaExcerpt.locators.urlLocators.map((ul) => ul.url),
-      []
-    );
+      expect(equivalenMediaExcerpts).toEqual(
+        expectToBeSameMomentDeep([mediaExcerpt])
+      );
+    });
+    test("reads an equivalent media excerpt with multiple sources", async () => {
+      const { authToken } = await testHelper.makeUser();
+      const quotation = "the text quote";
+      const mediaExcerpt = await testHelper.makeMediaExcerpt(
+        { authToken },
+        {
+          localRep: { quotation },
+          citations: [
+            { source: { description: "the source description" } },
+            { source: { description: "the source description 2" } },
+          ],
+        }
+      );
 
-    expect(equivalenMediaExcerpts).toEqual(
-      expectToBeSameMomentDeep([mediaExcerpt])
-    );
-  });
-  test("reads an equivalent media excerpt with multiple sources", async () => {
-    const { authToken } = await testHelper.makeUser();
-    const quotation = "the text quote";
-    const mediaExcerpt = await testHelper.makeMediaExcerpt(
-      { authToken },
-      {
-        localRep: { quotation },
-        citations: [
-          { source: { description: "the source description" } },
-          { source: { description: "the source description 2" } },
-        ],
-      }
-    );
+      const equivalenMediaExcerpts = await dao.readEquivalentMediaExcerpts(
+        {
+          localRep: { quotation },
+        },
+        [],
+        mediaExcerpt.citations.map((citation) => citation.source)
+      );
 
-    const equivalenMediaExcerpts = await dao.readEquivalentMediaExcerpts(
-      {
-        localRep: { quotation },
-      },
-      [],
-      mediaExcerpt.citations.map((citation) => citation.source)
-    );
-
-    expect(equivalenMediaExcerpts).toEqual(
-      expectToBeSameMomentDeep([mediaExcerpt])
-    );
+      expect(equivalenMediaExcerpts).toEqual(
+        expectToBeSameMomentDeep([mediaExcerpt])
+      );
+    });
   });
 
   describe("readEquivalentUrlLocator", () => {
@@ -315,7 +315,7 @@ describe("MediaExcerptsDao", () => {
     });
   });
 
-  describe("createMediaExcerpt", () => {
+  describe("readOrCreateMediaExcerpt", () => {
     test("creates a media excerpt", async () => {
       const { user: creator } = await testHelper.makeUser();
 
@@ -326,7 +326,7 @@ describe("MediaExcerptsDao", () => {
       };
       const creatorUserId = creator.id;
       const created = utcNow();
-      const mediaExcerpt = await dao.createMediaExcerpt(
+      const mediaExcerpt = await dao.readOrCreateMediaExcerpt(
         createMediaExcerpt,
         creatorUserId,
         created
