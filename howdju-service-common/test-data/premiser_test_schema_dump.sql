@@ -1835,6 +1835,20 @@ CREATE UNIQUE INDEX media_excerpt_citations_unq_idx ON public.media_excerpt_cita
 
 
 --
+-- Name: persorg_organization_unique_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX persorg_organization_unique_idx ON public.persorgs USING btree (normal_name) WHERE ((deleted IS NULL) AND (is_organization = true));
+
+
+--
+-- Name: persorg_person_unique_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX persorg_person_unique_idx ON public.persorgs USING btree (normal_name, normal_known_for) WHERE ((deleted IS NULL) AND (is_organization = false));
+
+
+--
 -- Name: source_normal_description_unique_idx; Type: INDEX; Schema: public; Owner: -
 --
 

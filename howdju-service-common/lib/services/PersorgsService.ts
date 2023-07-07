@@ -23,6 +23,7 @@ import { PermissionsService } from "./PermissionsService";
 import { AuthService } from "./AuthService";
 import { EntityService } from "./EntityService";
 import { PersorgData, PersorgsDao } from "../daos";
+import { readWriteReread } from "./patterns";
 
 export class PersorgsService extends EntityService<
   CreatePersorg,
@@ -51,30 +52,17 @@ export class PersorgsService extends EntityService<
   }
 
   async readOrCreateValidPersorgAsUser(
-    persorg: CreatePersorg,
+    createPersorg: CreatePersorg,
     userId: EntityId,
     now: Date
   ): Promise<{ isExtant: boolean; persorg: PersorgOut }> {
-    if (persorg.id) {
-      return {
-        isExtant: true,
-        persorg: await this.readPersorgForId(persorg.id),
-      };
-    }
-
-    let dbPersorg = await this.persorgsDao.readEquivalentPersorg(persorg);
-    if (dbPersorg) {
-      return {
-        isExtant: true,
-        persorg: dbPersorg,
-      };
-    }
-
-    dbPersorg = await this.persorgsDao.createPersorg(persorg, userId, now);
-
+    const { entity: persorg, isExtant } = await readWriteReread(
+      () => this.persorgsDao.readEquivalentPersorg(createPersorg),
+      () => this.persorgsDao.createPersorg(createPersorg, userId, now)
+    );
     return {
-      isExtant: false,
-      persorg: dbPersorg,
+      isExtant,
+      persorg,
     };
   }
 
