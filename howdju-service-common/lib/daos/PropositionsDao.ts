@@ -5,6 +5,7 @@ import isFinite from "lodash/isFinite";
 import map from "lodash/map";
 import snakeCase from "lodash/snakeCase";
 import toNumber from "lodash/toNumber";
+import { Moment } from "moment";
 
 import {
   cleanWhitespace,
@@ -21,27 +22,83 @@ import {
 } from "howdju-common";
 
 import { toProposition } from "./orm";
-
 import { normalizeText } from "./daosUtil";
 import { DatabaseSortDirection } from "./daoModels";
 import { Database, EntityNotFoundError, PropositionRow } from "..";
-import { Moment } from "moment";
+import { toString } from "lodash";
 
 export class PropositionsDao {
   constructor(private database: Database) {}
+
+  async createProposition(
+    userId: EntityId,
+    proposition: CreateProposition,
+    now: Moment
+  ) {
+    const {
+      rows: [row],
+    } = await this.database.query<PropositionRow>(
+      "createProposition",
+      `
+      insert into propositions (text, normal_text, creator_user_id, created)
+      values ($1, $2, $3, $4)
+      returning proposition_id`,
+      [
+        cleanWhitespace(proposition.text),
+        normalizeText(proposition.text),
+        userId,
+        now,
+      ]
+    );
+
+    return this.readPropositionForId(toString(row.proposition_id));
+  }
+
+  async readPropositionsForIds(propositionIds: EntityId[]) {
+    const { rows } = await this.database.query<PropositionRow>(
+      "readPropositionsForIds",
+      `select * from propositions where proposition_id = any ($1) and deleted is null`,
+      [propositionIds]
+    );
+    return rows.map(toProposition);
+  }
+
+  async readPropositionForId(propositionId: EntityId) {
+    const {
+      rows: [row],
+    } = await this.database.query<PropositionRow>(
+      "readPropositionForId",
+      `
+        with
+          extant_users as (select * from users where deleted is null)
+        select
+            s.*
+          , u.long_name as creator_long_name
+        from propositions s left join extant_users u on s.creator_user_id = u.user_id
+          where s.proposition_id = $1 and s.deleted is null`,
+      [propositionId]
+    );
+    if (!row) {
+      return undefined;
+    }
+    return toProposition(row);
+  }
 
   async readPropositionByText(propositionText: string) {
     const {
       rows: [row],
     } = await this.database.query<PropositionRow>(
       "readPropositionByText",
-      "select * from propositions where normal_text = $1 and deleted is null",
+      `
+      select p.proposition_id
+      from propositions p
+      where p.normal_text = $1 and p.deleted is null`,
       [normalizeText(propositionText)]
     );
     if (!row) {
       return undefined;
     }
-    return toProposition(row);
+    return this.readPropositionForId(toString(row.proposition_id));
   }
 
   async readPropositions(sorts: SortDescription[], count: number) {
@@ -140,56 +197,6 @@ export class PropositionsDao {
       args
     );
     return map(rows, toProposition);
-  }
-
-  async readPropositionsForIds(propositionIds: EntityId[]) {
-    const { rows } = await this.database.query<PropositionRow>(
-      "readPropositionsForIds",
-      `select * from propositions where proposition_id = any ($1) and deleted is null`,
-      [propositionIds]
-    );
-    return rows.map(toProposition);
-  }
-
-  async readPropositionForId(propositionId: EntityId) {
-    const {
-      rows: [row],
-    } = await this.database.query<PropositionRow>(
-      "readPropositionForId",
-      `
-        with
-          extant_users as (select * from users where deleted is null)
-        select
-            s.*
-          , u.long_name as creator_long_name
-        from propositions s left join extant_users u on s.creator_user_id = u.user_id
-          where s.proposition_id = $1 and s.deleted is null`,
-      [propositionId]
-    );
-    if (!row) {
-      return undefined;
-    }
-    return toProposition(row);
-  }
-
-  async createProposition(
-    userId: EntityId,
-    proposition: CreateProposition,
-    now: Moment
-  ) {
-    const {
-      rows: [row],
-    } = await this.database.query<PropositionRow>(
-      "createProposition",
-      "insert into propositions (text, normal_text, creator_user_id, created) values ($1, $2, $3, $4) returning *",
-      [
-        cleanWhitespace(proposition.text),
-        normalizeText(proposition.text),
-        userId,
-        now,
-      ]
-    );
-    return toProposition(row);
   }
 
   async updateProposition(proposition: UpdateProposition) {

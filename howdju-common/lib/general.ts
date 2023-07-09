@@ -399,18 +399,6 @@ export const toSingleLine = (val: string | number) =>
           }
         );
 
-export const cleanWhitespace = (text: string) => {
-  text = trim(text);
-  text = replace(text, /\s+/g, " ");
-  return text;
-};
-
-export const toSlug = (text: string) =>
-  text &&
-  normalizeText(text)
-    .replace(/\s+/g, "-")
-    .replace(/[^a-zA-Z0-9-_]/g, "");
-
 export const omitDeep = function omitDeep(
   value: any,
   predicate = (val: any) => !val
@@ -462,6 +450,21 @@ export const toJson = function toJson(val: any) {
 export const fromJson = function fromJson(json: string) {
   return JSON.parse(json);
 };
+
+export const cleanWhitespace = (text: string) => {
+  text = trim(text);
+  text = replace(text, /\s+/g, " ");
+  return text;
+};
+
+export function toSlug(text: string) {
+  if (!text) {
+    return text;
+  }
+  text = toLower(text);
+  text = deburr(text);
+  return text.replace(/\s+/g, "-").replace(/[^a-zA-Z0-9_-]/g, "");
+}
 
 export const normalizeText = (text: string) => {
   // Postgres SQL for the same
@@ -523,6 +526,13 @@ export function filterDefined<T>(
   return pickBy(items, (i) => i !== undefined) as Record<string, T>;
 }
 
+/**
+ * Supports async sleep.
+ *
+ * ```
+ * await sleep(1000);
+ * ```
+ */
 export async function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(() => resolve(), ms));
 }

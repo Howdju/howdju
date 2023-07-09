@@ -25,7 +25,6 @@ import {
   MediaExcerptSearchFilter,
   UrlOut,
   SourceOut,
-  toJson,
 } from "howdju-common";
 
 import { Database, TxnClient } from "../database";
@@ -36,7 +35,6 @@ import { toDbDirection } from "./daoModels";
 import { EntityNotFoundError, InvalidRequestError } from "..";
 import { SqlClause } from "./daoTypes";
 import { renumberSqlArgs } from "./daosUtil";
-import { getEntityWithLowestId } from "../services/patterns";
 
 export type CreateMediaExcerptDataIn = Pick<
   PartialPersist<CreateMediaExcerpt, "localRep">,
@@ -212,7 +210,10 @@ export class MediaExcerptsDao {
    *
    * TODO(454) this logic leaves the possibility that a user may be creating a MediaExcerpt that
    * conceptually is identical to another, but will not be detected as such according to our
-   * equivalence logic. To help avoid that, if a user is creating a MediaExcerpt with substantially
+   * equivalence logic. For example, a user is adding a MediaExcerpt with the same (or nearly the same)
+   * quotation but based on a URL that republishes an article that was already excerpted by another user.
+   *
+   * To help avoid that, if a user is creating a MediaExcerpt with substantially
    * overlapping localRep to an existing MediaExcerpt, we should suggest those existing
    * MediaExcerpts with the redundant localRep. If the user selects one of those, we should
    * probably add a new field to the CreateMediaExcerpt `equivalentMediaExcerptId` that will allow
@@ -220,12 +221,12 @@ export class MediaExcerptsDao {
    * option would be to add the citations and URLs to the new MediaExcerpt, but then the user might
    * delete them, frustrating our logic here.)
    */
-  private async readEquivalentMediaExcerpts(
+  private async readEquivalentMediaExcerptIds(
     client: TxnClient,
     mediaExcerpt: CreateMediaExcerptDataIn,
     urls: UrlOut[],
     sources: SourceOut[]
-  ): Promise<MediaExcerptOut[]> {
+  ): Promise<EntityId[]> {
     const { rows } = await client.query(
       "readEquivalentMediaExcerpt",
       `
@@ -245,32 +246,7 @@ export class MediaExcerptsDao {
         sources.map((s) => s.id),
       ]
     );
-    const mediaExcerpts = await Promise.all(
-      rows.map(async (r) => {
-        const id = r.media_excerpt_id;
-        const mediaExcerpt = await this.readMediaExcerptForId(id);
-        return {
-          id,
-          mediaExcerpt,
-        };
-      })
-    );
-
-    const definedMediaExcerpts = [];
-    const undefinedIds = [];
-    for (const { id, mediaExcerpt } of mediaExcerpts) {
-      if (mediaExcerpt) {
-        definedMediaExcerpts.push(mediaExcerpt);
-      } else {
-        undefinedIds.push(id);
-      }
-    }
-    if (undefinedIds.length) {
-      this.logger.error(
-        `Unable to read equivalent MediaExcerpt IDs: ${toJson(undefinedIds)}`
-      );
-    }
-    return definedMediaExcerpts;
+    return rows.map((r) => r.media_excerpt_id);
   }
 
   /**
@@ -296,19 +272,30 @@ export class MediaExcerptsDao {
       "serializable",
       "read write",
       async (client) => {
-        const equivalentMediaExcerpts = await this.readEquivalentMediaExcerpts(
-          client,
-          createMediaExcerpt,
-          createUrlLocators.map((l) => l.url),
-          createCitations.map((c) => c.source)
-        );
-        if (equivalentMediaExcerpts.length) {
-          const mediaExcerpt = getEntityWithLowestId(equivalentMediaExcerpts);
-          if (equivalentMediaExcerpts.length > 1) {
-            this.logger.error(
-              `readOrCreateMediaExcerpt: multiple equivalent MediaExcerpts (lowestId: ${
-                mediaExcerpt.id
-              }, ids: ${toJson(equivalentMediaExcerpts.map((e) => e.id))})`
+        const equivalentMediaExcerptIds =
+          await this.readEquivalentMediaExcerptIds(
+            client,
+            createMediaExcerpt,
+            createUrlLocators.map((l) => l.url),
+            createCitations.map((c) => c.source)
+          );
+        if (equivalentMediaExcerptIds.length) {
+          if (equivalentMediaExcerptIds.length > 1) {
+            this.logger.warn(
+              `readOrCreateMediaExcerpt: multiple equivalent MediaExcerpts: ${equivalentMediaExcerptIds.join(
+                ","
+              )})`
+            );
+          }
+          // We don't need to read the full MediaExcerpt of multiple equivalents since we only
+          // return one, but since we have a transaction to prevent equivalents, and we need to
+          // ensure that we return one that can be read
+          const mediaExcerpt = await this.readMediaExcerptForId(
+            equivalentMediaExcerptIds[0]
+          );
+          if (!mediaExcerpt) {
+            throw new Error(
+              `readOrCreateMediaExcerpt: equivalent MediaExcerpt not found (id: ${equivalentMediaExcerptIds[0]})`
             );
           }
           return { mediaExcerpt, isExtant: true };
@@ -320,6 +307,9 @@ export class MediaExcerptsDao {
           creatorUserId,
           created
         );
+
+        // Creating the UrlLocators and Citations in the serializable transaction will conflict
+        // with having read them in the readEquivalentMediaExcerpts query above.
 
         const urlLocators = await Promise.all(
           createUrlLocators.map((createUrlLocator) =>

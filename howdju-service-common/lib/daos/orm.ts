@@ -254,7 +254,7 @@ function toPropositionMapper(row: PropositionRow): PropositionData {
     ...PropositionRef.parse({ id: toIdString(propositionId) }),
     text: row.text,
     normalText: row.normal_text,
-    slug: toSlug(row.normal_text),
+    slug: toSlug(row.text),
     created: row.created,
   };
 
@@ -652,6 +652,7 @@ export const toPropositionCompoundAtom = wrapMapper(
       text: row.proposition_text,
       normal_text: row.proposition_normal_text,
       creator_user_id: row.proposition_creator_user_id,
+      creator_long_name: row.proposition_creator_long_name,
       created: row.proposition_created,
     });
     if (!entity) {

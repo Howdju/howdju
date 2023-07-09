@@ -36,7 +36,7 @@ import {
   decodeContinuationToken,
 } from "./pagination";
 
-const MAX_SUPPORTED_CONCURRENT_EQUIVALENT_MEDIA_EXCERPT_CREATIONS = 12;
+const MAX_SUPPORTED_CONCURRENT_EQUIVALENT_MEDIA_EXCERPT_CREATIONS = 10;
 export class MediaExcerptsService {
   constructor(
     private logger: Logger,

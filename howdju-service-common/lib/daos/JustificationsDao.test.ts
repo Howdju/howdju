@@ -6,7 +6,6 @@ import { Pool } from "pg";
 import {
   JustificationRef,
   negateRootPolarity,
-  PropositionCompoundRef,
   StatementRef,
   SortDescription,
   CreatePropositionCompound,
@@ -31,6 +30,7 @@ import {
 import { makeTestProvider } from "@/initializers/TestProvider";
 import { CreateJustificationDataIn } from "./dataTypes";
 import TestHelper from "@/initializers/TestHelper";
+import { merge } from "lodash";
 
 describe("JustificationsDao", () => {
   const dbConfig = makeTestDbConfig();
@@ -64,41 +64,43 @@ describe("JustificationsDao", () => {
   describe("createJustification", () => {
     test("creates a statement justification", async () => {
       // Arrange
-      const targetId = "1";
-      const userId = "4";
+      const { user, authToken } = await testHelper.makeUser();
+      const statement = await makeStatement({ user, authToken });
+      const propositionCompound = await makePropositionCompound({
+        userId: user.id,
+      });
+
       const now = moment();
       const createJustificationData: CreateJustificationDataIn = {
         rootTargetType: "STATEMENT",
-        rootTarget: StatementRef.parse({ id: targetId }),
+        rootTarget: statement,
         polarity: "NEGATIVE",
         target: {
           type: "STATEMENT",
-          entity: StatementRef.parse({ id: targetId }),
+          entity: statement,
         },
         basis: {
           type: "PROPOSITION_COMPOUND",
-          entity: PropositionCompoundRef.parse({ id: "2" }),
+          entity: propositionCompound,
         },
       };
 
       // Act
       const justificationData = await dao.createJustification(
         createJustificationData,
-        userId,
+        user.id,
         now
       );
 
       // Assert
-      const expectedJustification = assign({}, createJustificationData, {
+      const expectedJustification = merge({}, createJustificationData, {
         id: expect.any(String),
         counterJustifications: [],
-        creator: { id: userId },
+        creator: { id: user.id },
         created: expect.toBeSameMoment(now),
         rootPolarity: createJustificationData.polarity,
       });
-      expect(justificationData).toEqual(
-        expect.objectContaining(expectedJustification)
-      );
+      expect(justificationData).toMatchObject(expectedJustification);
     });
   });
 
@@ -140,7 +142,7 @@ describe("JustificationsDao", () => {
       const expectedJustificationData = assign({}, createJustificationData, {
         id: expect.any(String),
         counterJustifications: [],
-        creator: { id: user.id },
+        creator: { id: user.id, longName: user.longName },
         created: expect.toBeSameMoment(now),
         rootPolarity: createJustificationData.polarity,
         rootTarget: expectToBeSameMomentDeep(statementData),

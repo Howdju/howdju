@@ -30,8 +30,6 @@ import {
   JustificationPolarity,
   JustificationRootPolarity,
   filterDefined,
-  JustificationRef,
-  UserRef,
   JustificationFilters,
   SortDescription,
 } from "howdju-common";
@@ -70,7 +68,6 @@ import {
   ReadJustificationDataOut,
   CreateJustificationDataIn,
   DeleteJustificationDataIn,
-  CreateJustificationDataOut,
   PropositionCompoundRow,
   WritQuoteData,
   PropositionCompoundAtomRow,
@@ -179,6 +176,8 @@ export class JustificationsDao {
         , ${tableAlias}.creator_user_id
         , ${tableAlias}.created
 
+        , u.long_name as creator_long_name
+
         , rp.proposition_id       as root_target_proposition_id
         , rp.text                 as root_target_proposition_text
         , rp.normal_text          as root_target_proposition_normal_text
@@ -204,6 +203,7 @@ export class JustificationsDao {
         , scas.normal_text           as basis_proposition_compound_atom_proposition_normal_text
         , scas.created               as basis_proposition_compound_atom_proposition_created
         , scas.creator_user_id       as basis_proposition_compound_atom_proposition_creator_user_id
+        , scasu.long_name            as basis_proposition_compound_atom_proposition_creator_long_name
 
         , jbc.justification_basis_compound_id          as basis_jbc_id
         , jbca.justification_basis_compound_atom_id    as basis_jbc_atom_id
@@ -232,6 +232,8 @@ export class JustificationsDao {
       from limited_justifications
           join justifications ${tableAlias} using (justification_id)
 
+          left join users u on ${tableAlias}.creator_user_id = u.user_id
+
           left join propositions rp on
                 ${tableAlias}.root_target_type = $1
             and ${tableAlias}.root_target_id = rp.proposition_id
@@ -246,6 +248,7 @@ export class JustificationsDao {
             and ${tableAlias}.basis_id = sc.proposition_compound_id
           left join proposition_compound_atoms sca using (proposition_compound_id)
           left join propositions scas on sca.proposition_id = scas.proposition_id
+          left join users scasu on scas.creator_user_id = scasu.user_id
 
           left join justification_basis_compounds jbc on
                 ${tableAlias}.basis_type = $4
@@ -719,12 +722,12 @@ export class JustificationsDao {
   }
 
   async createJustification(
-    justification: CreateJustificationDataIn,
+    createJustification: CreateJustificationDataIn,
     userId: EntityId,
     now: Moment
-  ): Promise<CreateJustificationDataOut> {
+  ): Promise<ReadJustificationDataOut> {
     const rootPolarity = await this.getNewJustificationRootPolarity(
-      justification
+      createJustification
     );
     const sql = `
           insert into justifications
@@ -733,14 +736,14 @@ export class JustificationsDao {
           returning *
           `;
     const args = [
-      justification.rootTargetType,
-      justification.rootTarget.id,
+      createJustification.rootTargetType,
+      createJustification.rootTarget.id,
       rootPolarity,
-      justification.target.type,
-      justification.target.entity.id,
-      justification.basis.type,
-      justification.basis.entity.id,
-      justification.polarity,
+      createJustification.target.type,
+      createJustification.target.entity.id,
+      createJustification.basis.type,
+      createJustification.basis.entity.id,
+      createJustification.polarity,
       userId,
       now,
     ];
@@ -751,16 +754,13 @@ export class JustificationsDao {
       sql,
       args
     );
-    return {
-      ...justification,
-      ...JustificationRef.parse({ id: toIdString(justification_id) }),
-      creator: UserRef.parse({
-        id: userId,
-      }),
-      created: now,
-      counterJustifications: [],
-      rootPolarity,
-    };
+    const justification = await this.readJustificationForId(
+      toIdString(justification_id)
+    );
+    if (!justification) {
+      throw new Error(`Could not read justification ${justification_id}`);
+    }
+    return justification;
   }
 
   deleteJustifications(
@@ -1280,6 +1280,7 @@ function mapJustificationRowsWithOrdering(
         basis_proposition_compound_proposition_compound_id: undefined,
         polarity: row[prefix + "polarity"],
         creator_user_id: row[prefix + "creator_user_id"],
+        creator_long_name: row[prefix + "creator_long_name"],
         created: row[prefix + "created"],
         vote_justification_vote_id: undefined,
       };
@@ -1352,6 +1353,11 @@ function mapJustificationRowsWithOrdering(
             row[
               prefix +
                 "basis_proposition_compound_atom_proposition_creator_user_id"
+            ],
+          proposition_creator_long_name:
+            row[
+              prefix +
+                "basis_proposition_compound_atom_proposition_creator_long_name"
             ],
           order_position:
             row[prefix + "basis_proposition_compound_atom_order_position"],

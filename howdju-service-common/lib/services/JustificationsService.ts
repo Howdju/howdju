@@ -576,7 +576,7 @@ export class JustificationsService extends EntityService<
     const actionType = isExtant
       ? ActionTypes.TRY_CREATE_DUPLICATE
       : ActionTypes.CREATE;
-    this.actionsService.asyncRecordAction(
+    await this.actionsService.recordAction(
       userId,
       now,
       actionType,

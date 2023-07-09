@@ -1,4 +1,4 @@
-import { logger, PersistedEntity, toJson } from "howdju-common";
+import { logger, toJson } from "howdju-common";
 import { DatabaseError } from "pg";
 
 const CONSTRAINT_VIOLATION_CODE = "23505";
@@ -67,12 +67,4 @@ export async function readWriteReread<T>(
       isExtant: true,
     };
   }
-}
-
-export function getEntityWithLowestId<E extends PersistedEntity>(
-  entities: E[]
-) {
-  return entities.reduce((lowest, entity) =>
-    lowest.id < entity.id ? lowest : entity
-  );
 }
