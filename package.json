@@ -28,7 +28,7 @@
     "custom-check:all": "echo custom-check:all && yarn workspaces foreach -Apv run custom-check && echo custom-check:all succeeded || {echo custom-check:all faied; exit 1}",
     "typecheck:all": "echo typecheck:all && yarn workspaces foreach -Apv --topological-dev run typecheck && echo typecheck:all succeeded || {echo typecheck:all failed; exit 1}",
     "test:all": "echo test:all && time yarn workspaces foreach -Apv run test --runInBand && echo test:all succeeded || {echo test:all failed; exit 1}",
-    "test:all:coverage": "yarn run clear:coverage && echo test:all:ci && time yarn workspaces foreach -Apv run test --ci --runInBand --coverage && echo test:all:ci succeeded || {echo test:all:ci failed; exit 1}",
+    "test:all:coverage": "yarn run clear:coverage && echo test:all:coverage && time yarn workspaces foreach -Apv run test --ci --runInBand --coverage && echo test:all:coverage succeeded || {echo test:all:coverage failed; exit 1}",
     "test:all:coverage:changed": "yarn run clear:coverage && echo test:all:coverage:changed && time yarn workspaces foreach -Apv run test --ci --runInBand --coverage --changedSince=${0:-origin/master} && echo test:all:coverage:changed succeeded || {echo test:all:coverage:changed failed; exit 1}"
   },
   "workspaces": {

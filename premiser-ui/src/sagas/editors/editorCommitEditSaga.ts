@@ -67,10 +67,9 @@ export function* editorCommitEdit() {
       }
       const { editEntity } = editorState;
       if (!editEntity) {
-        logger.error(
+        throw new Error(
           `editEntity was missing while commiting editor: ${editorType} ${editorId}`
         );
-        return;
       }
 
       const editorCommitApiResourceAction = createEditorCommitApiResourceAction(

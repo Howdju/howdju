@@ -67,6 +67,7 @@ export const setupStore = (
             // TODO(154) remove these ignores
             "payload.normalizationSchema",
             "meta.normalizationSchema",
+            "payload.itemFactory",
           ],
         },
       }).concat([routerMiddleware(history), sagaMiddleware]),
