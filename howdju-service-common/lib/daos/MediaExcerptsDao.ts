@@ -287,9 +287,6 @@ export class MediaExcerptsDao {
               )})`
             );
           }
-          // We don't need to read the full MediaExcerpt of multiple equivalents since we only
-          // return one, but since we have a transaction to prevent equivalents, and we need to
-          // ensure that we return one that can be read
           const mediaExcerpt = await this.readMediaExcerptForId(
             equivalentMediaExcerptIds[0]
           );
