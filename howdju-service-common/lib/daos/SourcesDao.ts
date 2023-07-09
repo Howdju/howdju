@@ -50,6 +50,16 @@ export class SourcesDao {
     return toSource(row);
   }
 
+  async createSources(
+    creatorUserId: EntityId,
+    sources: CreateSource[],
+    created: Moment
+  ) {
+    return Promise.all(
+      sources.map((s) => this.createSource(creatorUserId, s, created))
+    );
+  }
+
   async createSource(
     creatorUserId: EntityId,
     source: CreateSource,

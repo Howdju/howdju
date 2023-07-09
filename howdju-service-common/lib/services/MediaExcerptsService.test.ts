@@ -41,6 +41,7 @@ describe("MediaExcerptsService", () => {
   describe("readOrCreateMediaExcerpt", () => {
     test("creates a media excerpt", async () => {
       const { authToken, user } = await testHelper.makeUser();
+      const url = { url: "https://www.example.com" };
       const createMediaExcerpt: CreateMediaExcerpt = {
         localRep: {
           quotation: "the text quote",
@@ -48,9 +49,7 @@ describe("MediaExcerptsService", () => {
         locators: {
           urlLocators: [
             {
-              url: {
-                url: "https://www.example.com",
-              },
+              url,
               anchors: [
                 {
                   exactText: "exact text",
@@ -97,6 +96,7 @@ describe("MediaExcerptsService", () => {
                   id: expect.any(String),
                   url: {
                     id: expect.any(String),
+                    canonicalUrl: url.url,
                     ...creatorInfo,
                   },
                   anchors: [
@@ -183,8 +183,70 @@ describe("MediaExcerptsService", () => {
         mediaExcerpt.id
       );
       expect(readMediaExcerpt).toEqual(expectToBeSameMomentDeep(mediaExcerpt));
-      // TODO(38) implement MediaExcerpt equivalence
-      expect(isExtant).toBe(false);
+      expect(isExtant).toBe(true);
+    });
+    test("re-uses related entities for concurrent attempts", async () => {
+      // Arrange
+      const count = 10;
+      const users = await Promise.all(
+        Array.from({ length: count }).map((_, i) =>
+          testHelper.makeUser({
+            username: `user${i}`,
+            email: `user${i}@domain.org`,
+          })
+        )
+      );
+      const createMediaExcerpt: CreateMediaExcerpt = {
+        localRep: {
+          quotation: "the text quote",
+        },
+        locators: {
+          urlLocators: [
+            {
+              url: {
+                url: "https://www.example.com",
+              },
+              anchors: [
+                {
+                  exactText: "exact text",
+                  prefixText: "prefix text",
+                  suffixText: "suffix text",
+                  startOffset: 0,
+                  endOffset: 1,
+                },
+              ],
+            },
+          ],
+        },
+        citations: [
+          {
+            source: { description: "the source description" },
+            pincite: "the pincite",
+          },
+          {
+            source: { description: "the source description" },
+          },
+        ],
+        speakers: [{ name: "the speaker", isOrganization: false }],
+      };
+
+      // Act
+      const mediaExcerptResults = await Promise.all(
+        Array.from({ length: count }).map((_, i) =>
+          service.readOrCreateMediaExcerpt(
+            { authToken: users[i].authToken },
+            createMediaExcerpt
+          )
+        )
+      );
+
+      // Assert
+      const mediaExcerpt = mediaExcerptResults[0].mediaExcerpt;
+      for (const mediaExcerptResult of mediaExcerptResults) {
+        expect(mediaExcerptResult.mediaExcerpt).toEqual(
+          expectToBeSameMomentDeep(mediaExcerpt)
+        );
+      }
     });
   });
 

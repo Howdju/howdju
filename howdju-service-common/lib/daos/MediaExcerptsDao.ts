@@ -23,14 +23,16 @@ import {
   SortDescription,
   isDefined,
   MediaExcerptSearchFilter,
+  UrlOut,
+  SourceOut,
 } from "howdju-common";
 
-import { Database } from "../database";
+import { Database, TxnClient } from "../database";
 import { PersorgsDao } from "./PersorgsDao";
 import { SourcesDao } from "./SourcesDao";
 import { UrlsDao } from "./UrlsDao";
 import { toDbDirection } from "./daoModels";
-import { InvalidRequestError } from "..";
+import { EntityNotFoundError, InvalidRequestError } from "..";
 import { SqlClause } from "./daoTypes";
 import { renumberSqlArgs } from "./daosUtil";
 
@@ -125,6 +127,9 @@ export class MediaExcerptsDao {
     return await Promise.all(
       rows.map(async (row) => {
         const source = await this.sourcesDao.readSourceForId(row.source_id);
+        if (!source) {
+          throw new EntityNotFoundError("SOURCE", row.source_id);
+        }
         return {
           mediaExcerptId,
           pincite: row.pincite,
@@ -148,6 +153,9 @@ export class MediaExcerptsDao {
     return await Promise.all(
       rows.map(async (row) => {
         const url = await this.urlsDao.readUrlForId(row.url_id);
+        if (!url) {
+          throw new EntityNotFoundError("URL", row.url_id);
+        }
         const anchors = await this.readDomAnchorsForUrlLocatorId(
           row.url_locator_id
         );
@@ -182,50 +190,190 @@ export class MediaExcerptsDao {
     }));
   }
 
-  // TODO(20) improve equivalence calculation and support MediaExcerpt suggestions
-  //
-  // Technically an equivalent media excerpt has redundant localRep, locators, and
-  // citations. And the same localRep could technically be used in multiple media excerpts if
-  // the same literal quote was used in different contexts to mean different things.
-  // So: 1) return an equivalent MediaExcerpt if the create model
-  // is redundant with existing localRep, locators, and citations, and 2) if a user is creating
-  // a MediaExcerpt with (a) redundant or (b) significantly overlapping localRep, suggest
-  // MediaExcerpts with the redundant localRep (those that are non-equivalent according to both
-  // locators and citations.) (Overlapping start/end offsets and x % of overlapping exact text?)
-  async readEquivalentMediaExcerpt(
-    mediaExcerpt: CreateMediaExcerptDataIn
-  ): Promise<MediaExcerptOut | undefined> {
-    const {
-      rows: [row],
-    } = await this.database.query(
+  /**
+   * Returns an equivalent MediaExcerpt.
+   *
+   * An equivalent MediaExcerpt has a equivalent localRep and overlapping locators, and
+   * citations. An equivalent _localRep_ could be used in multiple distinct MediaExcerpts if
+   * the same literal quote was used in different contexts to mean different things.
+   *
+   * The current logic checks for overlapping URLs and sources, which does not allow for the case
+   * where the same localRep appears in different places with different speech intent in the same
+   * URL or source. Since the same localRep in the same URL/Source is likely to have the same speech
+   * intent, this should be okay; users can add multiple citations (with different pincites) and
+   * multiple URLs (with different locators) to the MediaExcerpt.
+   *
+   * If we add additional fields to MediaExcerpt.localRep, we should add them to the equivalence
+   * check here. localRep fields may follow a similar 'overlapping' apporoach as URLs/MediaExceprts,
+   * where if any of the localRep fields are equivalent, then the entire localRep is equivalent. It
+   * depends on whether the overlap is a good representation of the equivalence.
+   *
+   * TODO(454) this logic leaves the possibility that a user may be creating a MediaExcerpt that
+   * conceptually is identical to another, but will not be detected as such according to our
+   * equivalence logic. For example, a user is adding a MediaExcerpt with the same (or nearly the same)
+   * quotation but based on a URL that republishes an article that was already excerpted by another user.
+   *
+   * To help avoid that, if a user is creating a MediaExcerpt with substantially
+   * overlapping localRep to an existing MediaExcerpt, we should suggest those existing
+   * MediaExcerpts with the redundant localRep. If the user selects one of those, we should
+   * probably add a new field to the CreateMediaExcerpt `equivalentMediaExcerptId` that will allow
+   * us to select it here. We can indicate it with a sort of pill or other UI element. (Another
+   * option would be to add the citations and URLs to the new MediaExcerpt, but then the user might
+   * delete them, frustrating our logic here.)
+   */
+  private async readEquivalentMediaExcerptIds(
+    client: TxnClient,
+    mediaExcerpt: CreateMediaExcerptDataIn,
+    urls: UrlOut[],
+    sources: SourceOut[]
+  ): Promise<EntityId[]> {
+    const { rows } = await client.query(
       "readEquivalentMediaExcerpt",
-      `select media_excerpt_id from media_excerpts where normal_quotation = $1 and deleted is null`,
-      [normalizeQuotation(mediaExcerpt.localRep.quotation)]
+      `
+      select distinct media_excerpt_id
+      from media_excerpts me
+        join url_locators ul using (media_excerpt_id)
+        join media_excerpt_citations mec using (media_excerpt_id)
+      where me.normal_quotation = $1
+        and me.deleted is null
+        and (cardinality($2::bigint[]) = 0 or ul.url_id = any ($2))
+        and (cardinality($3::bigint[]) = 0 or mec.source_id = any ($3))
+      order by media_excerpt_id asc
+      `,
+      [
+        normalizeQuotation(mediaExcerpt.localRep.quotation),
+        urls.map((u) => u.id),
+        sources.map((s) => s.id),
+      ]
     );
-    if (!row) {
-      return undefined;
-    }
-    return await this.readMediaExcerptForId(row.media_excerpt_id);
+    return rows.map((r) => r.media_excerpt_id);
   }
 
-  async createMediaExcerpt<T extends CreateMediaExcerptDataIn>(
-    mediaExcerpt: T,
+  /**
+   * Returns an equivalent MediaExcerpt or creates a new one.
+   *
+   * See readEquivalentMediaExcerpts for the definition of equivalence.
+   *
+   * A new MediaExcerpt will be associated with the given UrlLocators and Citations. If an
+   * equivalent MediaExcerpt is returned, it may not have all of the UrlLocators or Citations.
+   */
+  async readOrCreateMediaExcerpt<T extends CreateMediaExcerptDataIn>(
+    createMediaExcerpt: T,
+    creatorUserId: EntityId,
+    created: Moment,
+    createUrlLocators: (CreateUrlLocator & { url: UrlOut })[],
+    createCitations: (CreateMediaExcerptCitation & { source: SourceOut })[]
+  ): Promise<{
+    mediaExcerpt: MediaExcerptOut;
+    isExtant: boolean;
+  }> {
+    const result = await this.database.transaction(
+      "readOrCreateMediaExcerpt",
+      "serializable",
+      "read write",
+      async (client) => {
+        const equivalentMediaExcerptIds =
+          await this.readEquivalentMediaExcerptIds(
+            client,
+            createMediaExcerpt,
+            createUrlLocators.map((l) => l.url),
+            createCitations.map((c) => c.source)
+          );
+        if (equivalentMediaExcerptIds.length) {
+          if (equivalentMediaExcerptIds.length > 1) {
+            this.logger.warn(
+              `readOrCreateMediaExcerpt: multiple equivalent MediaExcerpts: ${equivalentMediaExcerptIds.join(
+                ","
+              )})`
+            );
+          }
+          const mediaExcerpt = await this.readMediaExcerptForId(
+            equivalentMediaExcerptIds[0]
+          );
+          if (!mediaExcerpt) {
+            throw new Error(
+              `readOrCreateMediaExcerpt: equivalent MediaExcerpt not found (id: ${equivalentMediaExcerptIds[0]})`
+            );
+          }
+          return { mediaExcerpt, isExtant: true };
+        }
+
+        const mediaExcerpt = await this.createMediaExcerpt(
+          client,
+          createMediaExcerpt,
+          creatorUserId,
+          created
+        );
+
+        // Creating the UrlLocators and Citations in the serializable transaction will conflict
+        // with having read them in the readEquivalentMediaExcerpts query above.
+
+        const urlLocators = await Promise.all(
+          createUrlLocators.map((createUrlLocator) =>
+            this.createUrlLocator({
+              client,
+              creatorUserId,
+              mediaExcerpt,
+              createUrlLocator,
+              created,
+            })
+          )
+        );
+
+        const citations = await Promise.all(
+          createCitations.map((createCitation) =>
+            this.createMediaExcerptCitation({
+              client,
+              creatorUserId,
+              mediaExcerpt,
+              createCitation,
+              created,
+            })
+          )
+        );
+
+        return {
+          mediaExcerpt: merge({}, mediaExcerpt, {
+            locators: {
+              urlLocators,
+            },
+            citations,
+          }),
+          isExtant: false,
+        };
+      }
+    );
+    return result;
+  }
+
+  private async createMediaExcerpt(
+    client: TxnClient,
+    createMediaExcerpt: CreateMediaExcerptDataIn,
     creatorUserId: EntityId,
     created: Moment
   ) {
-    const normalQuotation = normalizeQuotation(mediaExcerpt.localRep.quotation);
+    const normalQuotation = normalizeQuotation(
+      createMediaExcerpt.localRep.quotation
+    );
     const {
       rows: [row],
-    } = await this.database.query(
+    } = await client.query(
       "createMediaExcerpt",
-      `insert into media_excerpts (quotation, normal_quotation, creator_user_id, created)
-       values ($1, $2, $3, $4)
-       returning media_excerpt_id`,
-      [mediaExcerpt.localRep.quotation, normalQuotation, creatorUserId, created]
+      `
+      insert into media_excerpts (quotation, normal_quotation, creator_user_id, created)
+      values ($1, $2, $3, $4)
+      returning media_excerpt_id`,
+      [
+        createMediaExcerpt.localRep.quotation,
+        normalQuotation,
+        creatorUserId,
+        created,
+      ]
     );
+
     return brandedParse(
       MediaExcerptRef,
-      merge({}, mediaExcerpt, {
+      merge({}, createMediaExcerpt, {
         id: row.media_excerpt_id,
         localRep: {
           normalQuotation,
@@ -341,54 +489,91 @@ export class MediaExcerptsDao {
     );
   }
 
-  async createUrlLocator(
-    creatorUserId: EntityId,
-    mediaExcerpt: MediaExcerptRef,
-    urlLocator: CreateUrlLocator,
-    created: Moment
-  ) {
+  async createUrlLocator({
+    client,
+    creatorUserId,
+    mediaExcerpt,
+    createUrlLocator,
+    created,
+  }: {
+    client?: TxnClient;
+    creatorUserId: EntityId;
+    mediaExcerpt: MediaExcerptRef;
+    createUrlLocator: CreateUrlLocator;
+    created: Moment;
+  }) {
+    const db = client || this.database;
     const {
       rows: [row],
-    } = await this.database.query(
+    } = await db.query(
       "createUrlLocator",
       `
       insert into url_locators (media_excerpt_id, url_id, creator_user_id, created)
       values ($1, $2, $3, $4)
       returning url_locator_id
       `,
-      [mediaExcerpt.id, urlLocator.url.id, creatorUserId, created]
+      [mediaExcerpt.id, createUrlLocator.url.id, creatorUserId, created]
     );
     const id = row.url_locator_id;
-    const anchors = urlLocator.anchors
-      ? await this.createDomAnchors(
+    const anchors = createUrlLocator.anchors
+      ? await this.createDomAnchors({
+          client,
           creatorUserId,
-          id,
-          urlLocator.anchors,
-          created
-        )
+          urlLocatorId: id,
+          createDomAnchors: createUrlLocator.anchors,
+          created,
+        })
       : [];
-    return { ...urlLocator, id, anchors, created, creatorUserId };
+    return brandedParse(UrlLocatorRef, {
+      ...createUrlLocator,
+      id,
+      anchors,
+      created,
+      creatorUserId,
+    });
   }
 
-  private async createDomAnchors(
-    creatorUserId: EntityId,
-    urlLocatorId: EntityId,
-    createDomAnchors: CreateDomAnchor[],
-    created: Moment
-  ) {
+  private async createDomAnchors({
+    client,
+    creatorUserId,
+    urlLocatorId,
+    createDomAnchors,
+    created,
+  }: {
+    client?: TxnClient;
+    creatorUserId: EntityId;
+    urlLocatorId: EntityId;
+    createDomAnchors: CreateDomAnchor[];
+    created: Moment;
+  }) {
     return await Promise.all(
-      createDomAnchors.map((da) =>
-        this.createDomAnchor(creatorUserId, urlLocatorId, da, created)
+      createDomAnchors.map((createDomAnchor) =>
+        this.createDomAnchor({
+          client,
+          creatorUserId,
+          urlLocatorId,
+          createDomAnchor,
+          created,
+        })
       )
     );
   }
-  private async createDomAnchor(
-    creatorUserId: EntityId,
-    urlLocatorId: EntityId,
-    createDomAnchor: CreateDomAnchor,
-    created: Moment
-  ) {
-    await this.database.query(
+
+  private async createDomAnchor({
+    client,
+    creatorUserId,
+    urlLocatorId,
+    createDomAnchor,
+    created,
+  }: {
+    client?: TxnClient;
+    creatorUserId: EntityId;
+    urlLocatorId: EntityId;
+    createDomAnchor: CreateDomAnchor;
+    created: Moment;
+  }) {
+    const db = client || this.database;
+    await db.query(
       "createDomAnchor",
       `insert into dom_anchors (
         url_locator_id,
@@ -456,15 +641,23 @@ export class MediaExcerptsDao {
     };
   }
 
-  async createMediaExcerptCitation(
-    creatorUserId: EntityId,
-    mediaExcerpt: MediaExcerpt,
-    createCitation: PartialPersist<CreateMediaExcerptCitation, "source">,
-    created: Moment
-  ) {
+  async createMediaExcerptCitation({
+    client,
+    creatorUserId,
+    mediaExcerpt,
+    createCitation,
+    created,
+  }: {
+    client?: TxnClient;
+    creatorUserId: EntityId;
+    mediaExcerpt: MediaExcerptOut;
+    createCitation: PartialPersist<CreateMediaExcerptCitation, "source">;
+    created: Moment;
+  }) {
+    const db = client || this.database;
     const pincite = createCitation.pincite;
     const normalPincite = pincite && normalizeText(pincite);
-    await this.database.query(
+    await db.query(
       "createMediaExcerptCitation",
       `insert into media_excerpt_citations (
         media_excerpt_id,

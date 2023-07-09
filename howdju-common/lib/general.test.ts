@@ -12,6 +12,7 @@ import {
   pushAll,
   normalizeQuotation,
   decodeQueryStringObject,
+  toSlug,
 } from "./general";
 
 describe("cleanWhitespace", () => {
@@ -39,6 +40,15 @@ describe("normalizeQuotation", () => {
 
     full-text quotation 😀.Yay! `)
     ).toBe("this is a full text quotation 😀 yay");
+  });
+});
+
+describe("toSlug", () => {
+  test("should slugify a string", () => {
+    expect(toSlug("This is a slug")).toBe("this-is-a-slug");
+    expect(toSlug("Stanly is the very model of a modern Major-General")).toBe(
+      "stanly-is-the-very-model-of-a-modern-major-general"
+    );
   });
 });
 

@@ -16,6 +16,7 @@ import {
 import { ServicesProvider } from "./servicesInit";
 import { UserIdent } from "../services/types";
 import { merge } from "lodash";
+import { CreateUserDataIn } from "..";
 
 /** A helper for integration tests to create test data. */
 export default class TestHelper {
@@ -85,14 +86,23 @@ export default class TestHelper {
     return persorg;
   }
 
-  async makeUser() {
+  async makeUser(overrides?: Partial<User>) {
     const now = moment();
     const creatorUserId = null;
-    const userData = {
-      email: "user@domain.com",
-      username: "the-username",
-      isActive: true,
-    };
+    const userData: CreateUserDataIn = merge(
+      {
+        email: "user@domain.com",
+        longName: "The User",
+        shortName: "User",
+        username: "the-username",
+        isActive: true,
+        acceptedTerms: now,
+        affirmed13YearsOrOlder: now,
+        affirmedMajorityConsent: now,
+        affirmedNotGdpr: now,
+      },
+      overrides
+    );
 
     const user = (await this.servicesProvider.usersDao.createUser(
       userData,

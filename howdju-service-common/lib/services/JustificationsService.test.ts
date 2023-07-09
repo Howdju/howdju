@@ -1,6 +1,6 @@
 import moment from "moment";
 import { Pool } from "pg";
-import { filter } from "lodash";
+import { filter, merge } from "lodash";
 
 import {
   CreateCounterJustification,
@@ -113,13 +113,14 @@ describe("JustificationsService", () => {
 
       // Assert
       expect(isExtant).toBe(false);
-      expect(justificationOut).toMatchObject({
-        ...createJustification,
-        id: expect.any(String),
-        creator: {
-          id: user.id,
-        },
-      });
+      expect(justificationOut).toMatchObject(
+        merge({}, createJustification, {
+          id: expect.any(String),
+          creator: {
+            id: user.id,
+          },
+        })
+      );
     });
     test("can create an extant WritQuote-based justification targeting a proposition", async () => {
       // Arrange

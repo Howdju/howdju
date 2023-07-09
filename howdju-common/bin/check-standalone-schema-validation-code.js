@@ -22,7 +22,7 @@ function checkStandaloneSchemaValidationCode() {
   if (makeStandaloneCode() !== standaloneCode) {
     throw new Error(
       "File system standalone AJV does not match generated one." +
-        " Please run `yarn run gen-standalone-schema-validation` and commit the" +
+        " Please run `yarn run gen:standalone-schema-validation` and commit the" +
         " result."
     );
   }

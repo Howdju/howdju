@@ -34,7 +34,6 @@ import {
   Statement,
   User,
   UserExternalIds,
-  UserRef,
   Writ,
   WritQuote,
   EntityId,
@@ -159,12 +158,6 @@ export type JustificationRootTargetData =
     };
 export type CreateJustificationDataIn = PersistRelated<CreateJustification> &
   JustificationRootTargetData;
-export type CreateJustificationDataOut = Persisted<CreateJustification> & {
-  rootPolarity: JustificationRootPolarity;
-  created: Moment;
-  counterJustifications: [];
-  creator: UserRef;
-} & JustificationRootTargetData;
 
 export type BasedJustificationDataOut = BasedJustificationWithRootRef & {
   creator?: CreatorBlurbData | EntityRef<User>;

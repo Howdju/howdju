@@ -58,7 +58,7 @@ export function daosInitializer(provider: DatabaseProvider) {
     database
   );
   const propositionCompoundsDao = new PropositionCompoundsDao(logger, database);
-  const propositionsDao = new PropositionsDao(logger, database);
+  const propositionsDao = new PropositionsDao(database);
   const picRegionsDao = new PicRegionsDao(logger, database);
   const vidSegmentsDao = new VidSegmentsDao(logger, database);
   const writQuoteUrlTargetsDao = new WritQuoteUrlTargetsDao(logger, database);

@@ -148,7 +148,7 @@ describe("ContextTrailsService", () => {
         contextTrailInfos
       );
 
-      expect(trailItems).toEqual([
+      expect(trailItems).toMatchObject([
         {
           connectingEntityType: "JUSTIFICATION",
           connectingEntityId: justification.id,

@@ -1,13 +1,7 @@
 import { Pool } from "pg";
 import { merge, parseInt, toString } from "lodash";
 
-import {
-  CreateDomAnchor,
-  CreateMediaExcerptCitation,
-  CreateUrlLocator,
-  MomentConstructor,
-  utcNow,
-} from "howdju-common";
+import { CreateUrlLocator, MomentConstructor, utcNow } from "howdju-common";
 import { expectToBeSameMomentDeep, mockLogger } from "howdju-test-common";
 
 import { endPoolAndDropDb, initDb, makeTestDbConfig } from "@/util/testUtil";
@@ -109,25 +103,6 @@ describe("MediaExcerptsDao", () => {
     test.todo("allows recreating a deleted media excerpt");
   });
 
-  describe("readEquivalentMediaExcerpt", () => {
-    test("reads an equivalent media excerpt", async () => {
-      const { authToken } = await testHelper.makeUser();
-      const quotation = "the text quote";
-      const mediaExcerpt = await testHelper.makeMediaExcerpt(
-        { authToken },
-        {
-          localRep: { quotation },
-        }
-      );
-
-      const readMediaExcerpt = await dao.readEquivalentMediaExcerpt({
-        localRep: { quotation },
-      });
-
-      expect(readMediaExcerpt?.id).toEqual(mediaExcerpt.id);
-    });
-  });
-
   describe("readEquivalentUrlLocator", () => {
     test("returns an equivalent UrlLocator", async () => {
       const { authToken, user: creator } = await testHelper.makeUser();
@@ -150,12 +125,12 @@ describe("MediaExcerptsDao", () => {
           },
         ],
       };
-      const urlLocator = await dao.createUrlLocator(
-        creator.id,
+      const urlLocator = await dao.createUrlLocator({
+        creatorUserId: creator.id,
         mediaExcerpt,
         createUrlLocator,
-        utcNow()
-      );
+        created: utcNow(),
+      });
 
       // Act
       const readUrlLocator = await dao.readEquivalentUrlLocator(
@@ -195,12 +170,12 @@ describe("MediaExcerptsDao", () => {
           },
         ],
       };
-      await dao.createUrlLocator(
-        creator.id,
+      await dao.createUrlLocator({
+        creatorUserId: creator.id,
         mediaExcerpt,
         createUrlLocator,
-        utcNow()
-      );
+        created: utcNow(),
+      });
       const subsetUrlLocator: CreateUrlLocator = {
         url,
         anchors: [
@@ -257,9 +232,13 @@ describe("MediaExcerptsDao", () => {
     });
   });
 
-  describe("createMediaExcerpt", () => {
+  describe("readOrCreateMediaExcerpt", () => {
     test("creates a media excerpt", async () => {
       const { user: creator } = await testHelper.makeUser();
+      const url = await testHelper.makeUrl({ userId: creator.id });
+      const urlLocators = [{ url }];
+      const source = await testHelper.makeSource(creator.id);
+      const citations = [{ source }];
 
       const createMediaExcerpt = {
         localRep: {
@@ -268,181 +247,27 @@ describe("MediaExcerptsDao", () => {
       };
       const creatorUserId = creator.id;
       const created = utcNow();
-      const mediaExcerpt = await dao.createMediaExcerpt(
+      const { mediaExcerpt, isExtant } = await dao.readOrCreateMediaExcerpt(
         createMediaExcerpt,
         creatorUserId,
-        created
+        created,
+        urlLocators,
+        citations
       );
 
+      expect(isExtant).toBe(false);
       expect(mediaExcerpt).toEqual(
         merge({}, createMediaExcerpt, {
           id: expect.any(String),
           localRep: {
             normalQuotation: "the text quote",
           },
+          locators: { urlLocators: [expect.objectContaining(urlLocators[0])] },
+          citations: [expect.objectContaining(citations[0])],
           created,
           creatorUserId,
         })
       );
-    });
-  });
-
-  describe("createUrlAnchor", () => {
-    test("creates a UrlAnchor", async () => {
-      const { authToken, user: creator } = await testHelper.makeUser();
-      const mediaExcerpt = await testHelper.makeMediaExcerpt(
-        { authToken },
-        {
-          localRep: { quotation: "the text quote" },
-        }
-      );
-      const url = await testHelper.makeUrl({ userId: creator.id });
-      const createDomAnchor: CreateDomAnchor = {
-        exactText: "exact text",
-        prefixText: "prefix text",
-        suffixText: "suffix text",
-        startOffset: 0,
-        endOffset: 1,
-      };
-      const createUrlLocator: CreateUrlLocator = {
-        url,
-        anchors: [createDomAnchor],
-      };
-      const created = utcNow();
-
-      const urlLocator = await dao.createUrlLocator(
-        creator.id,
-        mediaExcerpt,
-        createUrlLocator,
-        created
-      );
-
-      expect(urlLocator).toEqual(
-        merge({}, createUrlLocator, {
-          id: expect.any(String),
-          creatorUserId: creator.id,
-          created,
-          anchors: [
-            {
-              urlLocatorId: urlLocator.id,
-              creatorUserId: creator.id,
-              created,
-            },
-          ],
-        })
-      );
-    });
-  });
-
-  describe("createMediaExcerptCitation", () => {
-    test("creates a media excerpt citation", async () => {
-      const { authToken, user: creator } = await testHelper.makeUser();
-      const mediaExcerpt = await testHelper.makeMediaExcerpt(
-        { authToken },
-        {
-          localRep: { quotation: "the text quote" },
-        }
-      );
-      const source = await testHelper.makeSource(creator.id, {
-        description: "the description",
-      });
-      const createCitation: CreateMediaExcerptCitation = {
-        source,
-        pincite: "The lovely pincite!",
-      };
-      const created = utcNow();
-      const citation = await dao.createMediaExcerptCitation(
-        creator.id,
-        mediaExcerpt,
-        createCitation,
-        created
-      );
-
-      expect(citation).toEqual(
-        merge({}, createCitation, {
-          mediaExcerptId: mediaExcerpt.id,
-          created,
-          creatorUserId: creator.id,
-          normalPincite: "the lovely pincite",
-        })
-      );
-    });
-
-    test("cannot create a conflicting media excerpt citation", async () => {
-      const { authToken, user: creator } = await testHelper.makeUser();
-      const mediaExcerpt = await testHelper.makeMediaExcerpt(
-        { authToken },
-        {
-          localRep: { quotation: "the text quote" },
-        }
-      );
-      const source = await testHelper.makeSource(creator.id, {
-        description: "the description",
-      });
-      const createCitation: CreateMediaExcerptCitation = {
-        source,
-        pincite: "A lovely pincite",
-      };
-      const created = utcNow();
-      await dao.createMediaExcerptCitation(
-        creator.id,
-        mediaExcerpt,
-        createCitation,
-        created
-      );
-
-      // Act/Assert
-      // creating another with the same media excerpt, source, and normalized pincite should fail.
-      await expect(
-        dao.createMediaExcerptCitation(
-          creator.id,
-          mediaExcerpt,
-          createCitation,
-          created
-        )
-      ).rejects.toMatchObject({
-        message: expect.stringContaining(
-          "duplicate key value violates unique constraint"
-        ),
-      });
-    });
-  });
-
-  describe("readEquivalentMediaExcerptCitation", () => {
-    test("reads an equivalent media excerpt citation when pincites are not identical", async () => {
-      const { authToken, user: creator } = await testHelper.makeUser();
-      const mediaExcerpt = await testHelper.makeMediaExcerpt(
-        { authToken },
-        {
-          localRep: { quotation: "the text quote" },
-        }
-      );
-      const source = await testHelper.makeSource(creator.id, {
-        description: "the description",
-      });
-      const createCitation: CreateMediaExcerptCitation = {
-        source,
-        pincite: "the lovely pincite",
-      };
-      const created = utcNow();
-      const citation = await dao.createMediaExcerptCitation(
-        creator.id,
-        mediaExcerpt,
-        createCitation,
-        created
-      );
-
-      // Act
-      const readCitation = await dao.readEquivalentMediaExcerptCitation(
-        mediaExcerpt,
-        {
-          ...citation,
-          pincite: "The lovely Pincite.",
-        }
-      );
-
-      // Assert
-      expect(readCitation).toEqual(expectToBeSameMomentDeep(citation));
     });
   });
 });

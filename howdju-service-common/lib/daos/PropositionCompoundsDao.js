@@ -29,6 +29,9 @@ const atomPropositionCreatedRegExp = new RegExp(
 const atomPropositionCreatorUserIdRegExp = new RegExp(
   /^atom_proposition_creator_user_id_(\d+)$/
 );
+const atomPropositionCreatorLongNameRegExp = new RegExp(
+  /^atom_proposition_creator_long_name_(\d+)$/
+);
 const atomPropositionIdRegExp = new RegExp(/^atom_proposition_id_(\d+)$/);
 
 exports.PropositionCompoundsDao = class PropositionCompoundsDao {
@@ -79,6 +82,7 @@ exports.PropositionCompoundsDao = class PropositionCompoundsDao {
           , p.normal_text as proposition_normal_text
           , p.creator_user_id as proposition_creator_user_id
           , p.created as proposition_created
+          , u.long_name as proposition_creator_long_name
         from proposition_compounds pc
           join proposition_compound_atoms pca on
                 pc.proposition_compound_id = $1
@@ -87,6 +91,9 @@ exports.PropositionCompoundsDao = class PropositionCompoundsDao {
           join propositions p on
                 p.proposition_id = pca.proposition_id
             and p.deleted is null
+          join users u on
+                u.user_id = p.creator_user_id
+            and u.deleted is null
         order by pc.proposition_compound_id, pca.order_position
           `;
     const { rows } = await this.database.query(
@@ -110,6 +117,7 @@ exports.PropositionCompoundsDao = class PropositionCompoundsDao {
       `p${index}.proposition_id as atom_proposition_id_${index}`,
       `p${index}.created as atom_proposition_created_${index}`,
       `p${index}.creator_user_id as atom_proposition_creator_user_id_${index}`,
+      `u${index}.long_name as atom_proposition_creator_long_name_${index}`,
     ]);
     const selectsSql = selects.join("\n,");
     const joins = map(
@@ -123,6 +131,9 @@ exports.PropositionCompoundsDao = class PropositionCompoundsDao {
               p${index}.deleted is null
           and pca${index}.proposition_id = p${index}.proposition_id
           and p${index}.normal_text = $${2 * index + 3}
+        join users u${index} on
+              u${index}.deleted is null
+          and p${index}.creator_user_id = u${index}.user_id
           `
     );
     const joinsSql = joins.join("\n");
@@ -239,7 +250,18 @@ exports.PropositionCompoundsDao = class PropositionCompoundsDao {
               atomsByIndex[atomIndex] = atom = { propositionCompoundId };
             }
             atom.entity = merge({}, atom.entity, {
-              creator: { id: toIdString(value), longName: "" },
+              creator: { id: toIdString(value) },
+            });
+          } else if (
+            !isNull((match = atomPropositionCreatorLongNameRegExp.exec(name)))
+          ) {
+            const atomIndex = match[1];
+            let atom = atomsByIndex[atomIndex];
+            if (!atom) {
+              atomsByIndex[atomIndex] = atom = { propositionCompoundId };
+            }
+            atom.entity = merge({}, atom.entity, {
+              creator: { longName: value },
             });
           }
         });

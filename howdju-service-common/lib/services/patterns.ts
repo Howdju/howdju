@@ -1,4 +1,4 @@
-import { Entity, logger, toJson } from "howdju-common";
+import { logger, toJson } from "howdju-common";
 import { DatabaseError } from "pg";
 
 const CONSTRAINT_VIOLATION_CODE = "23505";
@@ -16,13 +16,13 @@ const CONSTRAINT_VIOLATION_CODE = "23505";
  * - and finally, if the write encountered a constraint violation, to
  *   read the entity again.
  *
- * @param readEquivalent A function that reads the entity from the database.
+ * @param readEquivalent A function that reads an equivalent entity from the database.
  * @param write A function that writes the entity to the database.
  */
-export async function readWriteReread<E extends Entity>(
-  readEquivalent: () => Promise<E | undefined>,
-  write: () => Promise<E>
-): Promise<{ entity: E; isExtant: boolean }> {
+export async function readWriteReread<T>(
+  readEquivalent: () => Promise<T | undefined>,
+  write: () => Promise<T>
+): Promise<{ entity: T; isExtant: boolean }> {
   const extantEntity = await readEquivalent();
   if (extantEntity) {
     return {

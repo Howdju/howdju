@@ -154,7 +154,9 @@ export class UrlsDao {
   }
 
   createUrls(urls: CreateUrl[], userId: EntityId, created: Moment) {
-    return map(urls, (url) => this.createUrl(url, userId, created));
+    return Promise.all(
+      map(urls, (url) => this.createUrl(url, userId, created))
+    );
   }
 
   createUrl(url: CreateUrl, userId: EntityId, now: Moment) {

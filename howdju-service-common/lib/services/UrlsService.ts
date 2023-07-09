@@ -1,21 +1,10 @@
-import {
-  ActionTypes,
-  ActionTargetTypes,
-  CreateUrl,
-  EntityId,
-} from "howdju-common";
-import { ActionsService } from "./ActionsService";
+import { CreateUrl, EntityId } from "howdju-common";
 import { UrlsDao } from "../daos";
 import { Moment } from "moment";
+import { readWriteReread } from "./patterns";
 
 export class UrlsService {
-  private actionsService: ActionsService;
-  private urlsDao: UrlsDao;
-
-  constructor(actionsService: ActionsService, urlsDao: UrlsDao) {
-    this.actionsService = actionsService;
-    this.urlsDao = urlsDao;
-  }
+  constructor(private urlsDao: UrlsDao) {}
 
   async readOrCreateUrlsAsUser(
     urls: CreateUrl[],
@@ -35,18 +24,9 @@ export class UrlsService {
     userId: EntityId,
     now: Moment
   ) {
-    const equivalentUrl = await this.urlsDao.readUrlForUrl(createUrl.url);
-    if (equivalentUrl) {
-      return equivalentUrl;
-    }
-    const url = await this.urlsDao.createUrl(createUrl, userId, now);
-
-    this.actionsService.asyncRecordAction(
-      userId,
-      now,
-      ActionTypes.CREATE,
-      ActionTargetTypes.URL,
-      url.id
+    const { entity: url } = await readWriteReread(
+      () => this.urlsDao.readUrlForUrl(createUrl.url),
+      () => this.urlsDao.createUrl(createUrl, userId, now)
     );
     return url;
   }

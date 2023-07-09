@@ -40,6 +40,7 @@ export default function PropositionCompoundEditorFields(props: Props) {
     onPropertyChange,
     onSubmit,
     wasSubmitAttempted,
+    ...rest
   } = props;
   const atoms = propositionCompound?.atoms;
 
@@ -90,7 +91,7 @@ export default function PropositionCompoundEditorFields(props: Props) {
     });
 
   return (
-    <div>
+    <div {...rest}>
       {atoms?.map((atom, index, atoms) => {
         const atomPropositionTextName = `atoms[${index}].entity.text`;
         const value = get(propositionCompound, atomPropositionTextName, "");
