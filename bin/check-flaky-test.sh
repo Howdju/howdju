@@ -43,6 +43,7 @@ while [[ $run_count -lt $total_runs ]]; do
   if [[ status -ne 0 ]]; then
     failure_count=$((failure_count+1))
     echo
+    echo "Flaky failure output ($failure_count):"
     echo "$output"
   fi
 done

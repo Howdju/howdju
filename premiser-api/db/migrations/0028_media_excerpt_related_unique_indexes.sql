@@ -6,3 +6,6 @@ create unique index persorg_organization_unique_idx
   -- Organizations should have a unique name.
   on persorgs (normal_name)
     where deleted is null and is_organization = true;
+
+create unique index urls_url_unique_idx
+  on urls (url) where deleted is null;

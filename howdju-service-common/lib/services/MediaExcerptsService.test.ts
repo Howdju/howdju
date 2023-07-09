@@ -41,6 +41,7 @@ describe("MediaExcerptsService", () => {
   describe("readOrCreateMediaExcerpt", () => {
     test("creates a media excerpt", async () => {
       const { authToken, user } = await testHelper.makeUser();
+      const url = { url: "https://www.example.com" };
       const createMediaExcerpt: CreateMediaExcerpt = {
         localRep: {
           quotation: "the text quote",
@@ -48,9 +49,7 @@ describe("MediaExcerptsService", () => {
         locators: {
           urlLocators: [
             {
-              url: {
-                url: "https://www.example.com",
-              },
+              url,
               anchors: [
                 {
                   exactText: "exact text",
@@ -97,6 +96,7 @@ describe("MediaExcerptsService", () => {
                   id: expect.any(String),
                   url: {
                     id: expect.any(String),
+                    canonicalUrl: url.url,
                     ...creatorInfo,
                   },
                   anchors: [
@@ -187,7 +187,15 @@ describe("MediaExcerptsService", () => {
     });
     test("re-uses related entities for concurrent attempts", async () => {
       // Arrange
-      const { authToken } = await testHelper.makeUser();
+      const count = 10;
+      const users = await Promise.all(
+        Array.from({ length: count }).map((_, i) =>
+          testHelper.makeUser({
+            username: `user${i}`,
+            email: `user${i}@domain.org`,
+          })
+        )
+      );
       const createMediaExcerpt: CreateMediaExcerpt = {
         localRep: {
           quotation: "the text quote",
@@ -221,26 +229,24 @@ describe("MediaExcerptsService", () => {
         ],
         speakers: [{ name: "the speaker", isOrganization: false }],
       };
-      // Trigger the readWriteRereadUnconstrained behavior, expecting that dupes will occur. But
-      // this test ensures that there is no error.
-      await Promise.all(
-        Array.from({ length: 10 }).map(() =>
-          service.readOrCreateMediaExcerpt({ authToken }, createMediaExcerpt)
+
+      // Act
+      const mediaExcerptResults = await Promise.all(
+        Array.from({ length: count }).map((_, i) =>
+          service.readOrCreateMediaExcerpt(
+            { authToken: users[i].authToken },
+            createMediaExcerpt
+          )
         )
       );
 
-      // Act
-      const { isExtant, mediaExcerpt } = await service.readOrCreateMediaExcerpt(
-        { authToken },
-        createMediaExcerpt
-      );
-
       // Assert
-      const readMediaExcerpt = await service.readMediaExcerptForId(
-        mediaExcerpt.id
-      );
-      expect(readMediaExcerpt).toEqual(expectToBeSameMomentDeep(mediaExcerpt));
-      expect(isExtant).toBe(true);
+      const mediaExcerpt = mediaExcerptResults[0].mediaExcerpt;
+      for (const mediaExcerptResult of mediaExcerptResults) {
+        expect(mediaExcerptResult.mediaExcerpt).toEqual(
+          expectToBeSameMomentDeep(mediaExcerpt)
+        );
+      }
     });
   });
 

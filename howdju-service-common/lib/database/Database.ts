@@ -10,6 +10,14 @@ import {
   mapValuesDeep,
   toJson,
 } from "howdju-common";
+import { omit } from "lodash";
+
+export type IsolationLevel =
+  | "serializable"
+  | "repeatable read"
+  | "read committed"
+  | "read uncommitted";
+export type IsolationMode = "read write" | "read only";
 
 const toUtc = (val: any) => {
   if (isDate(val)) {
@@ -51,46 +59,30 @@ class TxnClientProxy implements TxnClient {
 }
 
 export class Database {
-  logger: Logger;
-  pool: Pool;
-  constructor(logger: Logger, pool: Pool) {
-    this.logger = logger;
-    this.pool = pool;
-  }
+  constructor(private logger: Logger, private pool: Pool) {}
 
-  async transaction(
+  async transaction<R>(
     txnName: string,
-    callback: (client: TxnClient) => Promise<any>
-  ) {
+    isolationLevel: IsolationLevel,
+    isolationMode: IsolationMode,
+    callback: (client: TxnClient) => Promise<R>
+  ): Promise<R> {
     const pgClient = await this.pool.connect();
     const txnClient = new TxnClientProxy(pgClient, this.logger);
     try {
-      if (process.env.DEBUG_PRINT_DB_QUERIES) {
-        this.logger.silly(`Beginning transaction: ${toJson({ txnName })}`);
-      }
-
-      await pgClient.query("BEGIN");
-
+      await txnClient.query(`txn.${txnName}.begin`, "begin");
+      await txnClient.query(
+        `txn.${txnName}.isolation`,
+        `set transaction isolation level ${isolationLevel} ${isolationMode}`
+      );
       const res = await callback(txnClient);
-
-      if (process.env.DEBUG_PRINT_DB_QUERIES) {
-        this.logger.silly(`Committing transaction: ${toJson({ txnName })}`);
-      }
-
-      await pgClient.query("COMMIT");
-
-      if (process.env.DEBUG_PRINT_DB_QUERIES) {
-        this.logger.silly(`Committed transaction: ${toJson({ txnName })}`);
-      }
-
+      await txnClient.query(`txn.${txnName}.commit`, "commit");
       return res;
     } catch (e) {
-      if (process.env.DEBUG_PRINT_DB_QUERIES) {
-        this.logger.silly(
-          `Rolling back transaction: ${toJson({ txnName, e })}`
-        );
-      }
-      await pgClient.query("ROLLBACK");
+      // When Jest logs node-postgres DatabaseErrors, it doesn't show the stack trace, so we log it here.
+      // TODO(457) remove this log-and-rethrow
+      this.logger.error(`Transaction ${txnName} failed: ${e}`);
+      await txnClient.query(`txn.${txnName}.rollback`, "rollback");
       throw e;
     } finally {
       pgClient.release();
@@ -151,10 +143,19 @@ async function doQuery<R extends QueryResultRow>(
         text: sql,
         values: utcArgs,
       };
-  const result = await client.query<R>(config);
+  let result;
+  try {
+    result = await client.query<R>(config);
+  } catch (e) {
+    // When Jest logs node-postgres DatabaseErrors, it doesn't show the stack trace, so we log it here.
+    // TODO(457) remove this log-and-rethrow
+    logger.error(`Query ${queryName} failed: ${e}`);
+    throw e;
+  }
   result.rows = mapValuesDeep(result.rows, (v) => (v === null ? undefined : v));
   if (process.env.DEBUG_PRINT_DB_QUERIES) {
-    logger.silly(`Database result: ${toJson({ queryName, result })}`);
+    const dbResult = omit(result, ["fields", "_parsers", "_types"]);
+    logger.silly(`Database result: ${toJson({ queryName, dbResult })}`);
   }
   return result;
 }

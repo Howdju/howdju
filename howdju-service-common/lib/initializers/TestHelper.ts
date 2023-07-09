@@ -85,14 +85,17 @@ export default class TestHelper {
     return persorg;
   }
 
-  async makeUser() {
+  async makeUser(overrides?: Partial<User>) {
     const now = moment();
     const creatorUserId = null;
-    const userData = {
-      email: "user@domain.com",
-      username: "the-username",
-      isActive: true,
-    };
+    const userData = merge(
+      {
+        email: "user@domain.com",
+        username: "the-username",
+        isActive: true,
+      },
+      overrides
+    );
 
     const user = (await this.servicesProvider.usersDao.createUser(
       userData,

@@ -1905,6 +1905,13 @@ CREATE UNIQUE INDEX unq_users_username ON public.users USING btree (username);
 
 
 --
+-- Name: urls_url_unique_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX urls_url_unique_idx ON public.urls USING btree (url) WHERE (deleted IS NULL);
+
+
+--
 -- Name: writ_quotes_quote_text_english_idx; Type: INDEX; Schema: public; Owner: -
 --
 

@@ -14,7 +14,7 @@ import {
   PropositionCompound,
   Persisted,
   AuthToken,
-  User,
+  UserOut,
 } from "howdju-common";
 import { mockLogger, expectToBeSameMomentDeep } from "howdju-test-common";
 
@@ -389,7 +389,7 @@ describe("JustificationsDao", () => {
     user,
     authToken,
   }: {
-    user: User;
+    user: UserOut;
     authToken: AuthToken;
   }) {
     const now = moment();

@@ -19,10 +19,10 @@ const CONSTRAINT_VIOLATION_CODE = "23505";
  * @param readEquivalent A function that reads an equivalent entity from the database.
  * @param write A function that writes the entity to the database.
  */
-export async function readWriteReread<E extends PersistedEntity>(
-  readEquivalent: () => Promise<E | undefined>,
-  write: () => Promise<E>
-): Promise<{ entity: E; isExtant: boolean }> {
+export async function readWriteReread<T>(
+  readEquivalent: () => Promise<T | undefined>,
+  write: () => Promise<T>
+): Promise<{ entity: T; isExtant: boolean }> {
   const extantEntity = await readEquivalent();
   if (extantEntity) {
     return {
@@ -69,8 +69,9 @@ export async function readWriteReread<E extends PersistedEntity>(
   }
 }
 
-
-export function getEntityWithLowestId<E extends PersistedEntity>(entities: E[]) {
+export function getEntityWithLowestId<E extends PersistedEntity>(
+  entities: E[]
+) {
   return entities.reduce((lowest, entity) =>
     lowest.id < entity.id ? lowest : entity
   );

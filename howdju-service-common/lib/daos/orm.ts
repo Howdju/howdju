@@ -593,6 +593,7 @@ export const toUrl = wrapMapper(function toUrlMapper(row) {
   return brandedParse(UrlRef, {
     id: toIdString(row.url_id),
     url: row.url,
+    canonicalUrl: row.canonical_url,
     creatorUserId: toIdString(row.creator_user_id),
     created: row.created,
   });

@@ -352,6 +352,7 @@ export type ToInput<T> = T extends CreateJustification
  * TODO(339): use this in the places where we are doing `{...BlahRef.parse({id}), ...reset}`. E.g. orm.ts
  * TODO(339): can we type `val` to be a Partial of the actual schema? Maybe pass the schema instead of
  * the brand and use EntityName to lookup the brand: `brandedParse(Justification, {id, target, ...})`
+ * TODO(339) generically type `val: T`. Try to make `T extends z.output<S>`?
  */
 export function brandedParse<
   S extends z.ZodTypeAny,

@@ -55,7 +55,7 @@ export function servicesInitializer(provider: AwsProvider) {
   );
 
   const writsService = new WritsService(actionsService, provider.writsDao);
-  const urlsService = new UrlsService(actionsService, provider.urlsDao);
+  const urlsService = new UrlsService(provider.urlsDao);
   const writQuotesService = new WritQuotesService(
     provider.logger,
     provider.writQuoteValidator,
@@ -145,9 +145,9 @@ export function servicesInitializer(provider: AwsProvider) {
   const sourcesService = new SourcesService(provider.sourcesDao);
 
   const mediaExcerptsService = new MediaExcerptsService(
+    provider.logger,
     authService,
     provider.mediaExcerptsDao,
-    writQuotesService,
     sourcesService,
     persorgsService,
     urlsService
