@@ -11,8 +11,8 @@ import {
   Proposition,
   PropositionCompound,
   PropositionTagVote,
-  Source,
   SourceExcerptParaphrase,
+  SourceOut,
   Statement,
   Tag,
   TagVote,
@@ -196,7 +196,7 @@ export const contextTrailItemsSchema = new schema.Array(
 );
 
 export const urlLocatorSchema = new schema.Entity<UrlLocator>("urlLocators");
-export const sourceSchema = new schema.Entity<Source>("sources");
+export const sourceSchema = new schema.Entity<SourceOut>("sources");
 export const sourcesSchema = new schema.Array(sourceSchema);
 export const mediaExcerptSchema = new schema.Entity<MediaExcerpt>(
   "mediaExcerpts",

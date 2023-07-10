@@ -48,6 +48,7 @@ export function daosInitializer(provider: DatabaseProvider) {
   const accountSettingsDao = new AccountSettingsDao(logger, database);
   const actionsDao = new ActionsDao(database);
   const authDao = new AuthDao(logger, database);
+  const usersDao = new UsersDao(logger, database);
   const contentReportsDao = new ContentReportsDao(logger, database);
   const urlsDao = new UrlsDao(logger, database);
   const writsDao = new WritsDao(logger, database);
@@ -84,7 +85,7 @@ export function daosInitializer(provider: DatabaseProvider) {
   );
   const statementsDao = new StatementsDao(logger, database, propositionsDao);
   const persorgsDao = new PersorgsDao(logger, database);
-  const sourcesDao = new SourcesDao(database);
+  const sourcesDao = new SourcesDao(database, usersDao);
   const mediaExcerptsDao = new MediaExcerptsDao(
     logger,
     database,
@@ -107,7 +108,6 @@ export function daosInitializer(provider: DatabaseProvider) {
   const userExternalIdsDao = new UserExternalIdsDao(database);
   const userGroupsDao = new UserGroupsDao(database);
   const userPermissionsDao = new UserPermissionsDao(database);
-  const usersDao = new UsersDao(logger, database);
   const registrationRequestsDao = new RegistrationRequestsDao(logger, database);
   const justificationVotesDao = new JustificationVotesDao(database);
   const propositionTagVotesDao = new PropositionTagVotesDao(logger, database);

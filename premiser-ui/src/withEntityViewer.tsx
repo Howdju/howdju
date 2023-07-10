@@ -1,5 +1,7 @@
 import React, { ComponentType, ReactNode } from "react";
 
+import { PersistedEntity } from "howdju-common";
+
 import EntityViewer from "./EntityViewer";
 import { ComponentId, EditorId, SuggestionsKey } from "./types";
 
@@ -23,10 +25,12 @@ export type EntityComponentProps<
  */
 export default function withEntityViewer<
   EntityPropName extends string,
-  Entity extends object
+  ComponentProps extends EntityComponentProps<EntityPropName, Model>,
+  Model extends ComponentProps[EntityPropName] & object,
+  Entity extends PersistedEntity
 >(
-  EntityComponent: ComponentType<EntityComponentProps<EntityPropName, Entity>>,
   entityPropName: EntityPropName,
+  EntityComponent: ComponentType<ComponentProps>,
   iconName: string | ReactNode,
   iconTitle: string,
   entityLinkFn: (entity: Entity) => string
@@ -57,7 +61,8 @@ export default function withEntityViewer<
       editorId,
       suggestionsKey,
       showStatusText,
-    } as EntityComponentProps<EntityPropName, Entity>;
+    } as ComponentProps;
+    const AnyComponent = EntityComponent as any;
     return (
       <EntityViewer
         icon={iconName}
@@ -65,7 +70,7 @@ export default function withEntityViewer<
         iconLink={entity && entityLinkFn(entity as unknown as Entity)}
         className={className}
         component={component}
-        entity={<EntityComponent {...entityProps} />}
+        entity={<AnyComponent {...entityProps} />}
         menu={menu}
       />
     );

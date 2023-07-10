@@ -69,6 +69,17 @@ export const User = Entity.extend({
 export type User = z.infer<typeof User>;
 
 /**
+ * An abbreviated form of a user.
+ *
+ * Often included to show an entities creator.
+ */
+export const UserBlurb = User.pick({
+  id: true,
+  longName: true,
+});
+export type UserBlurb = z.output<typeof UserBlurb>;
+
+/**
  * A declarative statement of fact that the system tracks.
  *
  * Other systems might call this a claim.
@@ -444,8 +455,10 @@ export const Source = Entity.extend({
    * The preferred style is MLA-like, but omitting the Authors:
    *
    * - The title of the source comes first and should be in quotes unless it is the only field.
-   * - The date format should be ISO 8601 (YYYY-MM-DD) unless the source is updated frequently, in
-   *   which case including the time is recommended.
+   * - The date format should be ISO 8601 (YYYY-MM-DD) unless:
+   *   - the source frequently omits the month and year, such as in academic journals, in which
+   *     case the year is sufficient.
+   *   - the source is updated frequently, in which case including the time is recommended.
    *
    * Because we can't guarantee that users will follow this style, we will later need a means
    * to vote on preferred manifestations of Sources.
@@ -459,19 +472,30 @@ export const Source = Entity.extend({
   normalDescription: z.string().max(1024),
   created: momentObject,
   deleted: momentObject.optional(),
-  creator: User,
+  creatorUserId: z.string(),
+  creator: UserBlurb,
 });
 export type Source = z.output<typeof Source>;
 
 export const CreateSource = Source.omit({
   normalDescription: true,
   created: true,
+  deleted: true,
   creator: true,
+  creatorUserId: true,
 });
 export type CreateSource = z.output<typeof CreateSource>;
 
 export const CreateSourceInput = CreateSource;
 export type CreateSourceInput = z.output<typeof CreateSourceInput>;
+
+export const UpdateSource = CreateSource.extend({
+  id: z.string(),
+});
+export type UpdateSource = z.output<typeof UpdateSource>;
+
+export const UpdateSourceInput = UpdateSource;
+export type UpdateSourceInput = z.output<typeof UpdateSourceInput>;
 
 /**
  * A description of how to find a particular part of a source.

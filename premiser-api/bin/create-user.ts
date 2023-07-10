@@ -2,9 +2,10 @@ import { ArgumentParser } from "argparse";
 import read from "read";
 
 import { logger } from "howdju-ops";
+import { CreateUser, UserOut } from "howdju-common";
+import { permissions as PERMISSIONS, Permission } from "howdju-service-common";
 
 import { ApiProvider, AppProvider } from "../src/init";
-import { CreateUser, UserOut } from "howdju-common";
 
 const parser = new ArgumentParser({
   description: "Add a user",
@@ -63,7 +64,15 @@ async function createUser() {
 
 async function addPermissionsToUser(user: UserOut, permissions: string) {
   const permissionNames = permissions.split(",");
-  await permissionsService.addPermissionsToUser(user, permissionNames);
+  for (const permissionName of permissionNames) {
+    if (!(permissionName in PERMISSIONS)) {
+      throw new Error(`Unknown permission: ${permissionName}`);
+    }
+  }
+  await permissionsService.addPermissionsToUser(
+    user,
+    permissionNames as Permission[]
+  );
   logger.info(`Granted user ${user.id} permissions: ${permissions}`);
 }
 

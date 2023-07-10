@@ -64,6 +64,19 @@ exports.UsersDao = class UsersDao extends BaseDao {
       .then(({ rows: [row] }) => toUser(row));
   }
 
+  readUserBlurbForId(userId) {
+    return this.database
+      .query(
+        "readUserBlurbForId",
+        "select user_id, long_name from users where user_id = $1 and deleted is null",
+        [userId]
+      )
+      .then(({ rows: [row] }) => ({
+        id: row.user_id,
+        longName: row.long_name,
+      }));
+  }
+
   readUserForEmail(email) {
     return this.database
       .query(

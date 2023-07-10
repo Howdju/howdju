@@ -115,6 +115,8 @@ describe("momentAdd", () => {
     const base = moment.utc("2022-11-08T21:44:00");
     const later = momentAdd(base, { hours: 1 });
     expect(later.format()).toBe("2022-11-08T22:44:00Z");
+    // Doesn't change the original moment
+    expect(base.format()).toBe("2022-11-08T21:44:00Z");
   });
 });
 

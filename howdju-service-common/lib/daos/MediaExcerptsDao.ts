@@ -841,10 +841,9 @@ function makeFilterSubselects(filters: MediaExcerptSearchFilter | undefined) {
   if (!filters) {
     return filterSubselects;
   }
-  forEach(filters, (value, filterName) => {
-    if (!value) {
-      return;
-    }
+  let filterName: keyof MediaExcerptSearchFilter;
+  for (filterName in filters) {
+    const value = filters[filterName];
     switch (filterName) {
       case "creatorUserId": {
         const sql = `
@@ -866,7 +865,17 @@ function makeFilterSubselects(filters: MediaExcerptSearchFilter | undefined) {
         filterSubselects.push({ sql, args });
         break;
       }
+      case "sourceId": {
+        const sql = `
+          select media_excerpt_id
+          from media_excerpts join media_excerpt_citations using (media_excerpt_id)
+          where source_id = $1
+        `;
+        const args = [value];
+        filterSubselects.push({ sql, args });
+        break;
+      }
     }
-  });
+  }
   return filterSubselects;
 }

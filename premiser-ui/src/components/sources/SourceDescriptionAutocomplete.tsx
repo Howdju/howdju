@@ -2,12 +2,12 @@ import React from "react";
 
 import { Source, SourceOut } from "howdju-common";
 
-import { api } from "./actions";
-import { sourceSchema } from "./normalizationSchemas";
-import { cancelSourceDescriptionSuggestions } from "./apiActions";
+import { api } from "../../actions";
+import { sourceSchema } from "../../normalizationSchemas";
+import { cancelSourceDescriptionSuggestions } from "../../apiActions";
 import ApiAutoComplete, {
   Props as ApiAutocompleteProps,
-} from "./ApiAutoComplete";
+} from "../../ApiAutoComplete";
 
 interface Props
   extends Omit<

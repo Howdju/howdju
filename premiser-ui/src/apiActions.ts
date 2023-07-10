@@ -41,6 +41,7 @@ import {
   serializeContextTrail,
   JustificationOut,
   CreateMediaExcerpt,
+  UpdateSource,
 } from "howdju-common";
 import {
   InferPathParams,
@@ -68,6 +69,7 @@ import {
   propositionsSchema,
   propositionTagVoteSchema,
   sourceExcerptParaphraseSchema,
+  sourceSchema,
   sourcesSchema,
   statementSchema,
   statementsSchema,
@@ -515,7 +517,7 @@ export const api = {
     })
   ),
   fetchSpeakerMediaExcerpts: apiActionCreator(
-    "FETCH_MEDIA_EXCERPTS_WITH_SPEAKER",
+    "FETCH_MEDIA_EXCERPTS_HAVING_SPEAKER",
     serviceRoutes.readMediaExcerpts,
     (speakerPersorgId: EntityId) => ({
       queryStringParams: {
@@ -549,6 +551,34 @@ export const api = {
     (rootPropositionId) => ({
       queryStringParams: { rootPropositionId, indirect: null },
       normalizationSchema: { statements: statementsSchema },
+    })
+  ),
+
+  fetchSource: apiActionCreator(
+    "FETCH_SOURCE",
+    serviceRoutes.readSource,
+    (sourceId: EntityId) => ({
+      pathParams: { sourceId },
+      normalizationSchema: { source: sourceSchema },
+    })
+  ),
+  fetchSourceMediaExcerpts: apiActionCreator(
+    "FETCH_SOURCE_MEDIA_EXCERPTS",
+    serviceRoutes.readMediaExcerpts,
+    (sourceId: EntityId) => ({
+      queryStringParams: {
+        filters: encodeQueryStringObject({ sourceId }),
+        sorts: defaultSorts,
+      },
+      normalizationSchema: { mediaExcerpts: mediaExcerptsSchema },
+    })
+  ),
+  fetchMoreSourceMediaExcerpts: apiActionCreator(
+    "FETCH_SOURCE_MEDIA_EXCERPTS",
+    serviceRoutes.readMediaExcerpts,
+    (continuationToken: ContinuationToken) => ({
+      queryStringParams: { continuationToken },
+      normalizationSchema: { mediaExcerpts: mediaExcerptsSchema },
     })
   ),
 
@@ -1072,6 +1102,16 @@ export const api = {
       body: { persorg },
       pathParams: { persorgId: persorg.id },
       normalizationSchema: { persorg: persorgSchema },
+    })
+  ),
+
+  updateSource: apiActionCreator(
+    "UPDATE_SOURCE",
+    serviceRoutes.updateSource,
+    (source: UpdateSource) => ({
+      body: { source },
+      pathParams: { sourceId: source.id },
+      normalizationSchema: { source: sourceSchema },
     })
   ),
 

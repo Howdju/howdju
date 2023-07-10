@@ -12,7 +12,6 @@ import {
   newUnimplementedError,
 } from "howdju-common";
 
-import { permissions } from "../permissions";
 import {
   AuthorizationError,
   EntityNotFoundError,
@@ -98,10 +97,9 @@ export class PersorgsService extends EntityService<
     userId: EntityId,
     now: Date | Moment
   ) {
-    const permission = permissions.EDIT_ANY_ENTITY;
     const [doesConflict, hasPermission] = await Promise.all([
       this.persorgsDao.hasEquivalentPersorgs(updatePersorg),
-      this.permissionsService.userHasPermission(userId, permission),
+      this.permissionsService.userHasPermission(userId, "EDIT_ANY_ENTITY"),
     ]);
 
     if (doesConflict) {

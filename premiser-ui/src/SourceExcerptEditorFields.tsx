@@ -123,6 +123,8 @@ export default function SourceExcerptEditorFields({
           onPropertyChange={onPropertyChange}
           disabled={disabled}
           errors={entityErrors}
+          blurredFields={blurredFields?.writQuote}
+          dirtyFields={dirtyFields?.writQuote}
           onKeyDown={onKeyDown}
           onSubmit={onSubmit}
           editorDispatch={editorDispatch}

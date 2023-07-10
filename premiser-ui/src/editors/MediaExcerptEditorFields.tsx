@@ -1,5 +1,5 @@
-import React, { MouseEvent, useState } from "react";
-import { Button, DialogContainer } from "react-md";
+import React, { MouseEvent } from "react";
+import { Button } from "react-md";
 import { MaterialSymbol } from "react-material-symbols";
 import { isEmpty } from "lodash";
 
@@ -27,9 +27,9 @@ import EntityViewer from "@/EntityViewer";
 import PersorgEditorFields from "@/PersorgEditorFields";
 import { editors } from "@/actions";
 import { EditorId } from "@/types";
-import SourceDescriptionAutocomplete from "@/SourceDescriptionAutocomplete";
 
 import "./MediaExcerptEditorFields.scss";
+import SourceEditorFields from "@/components/sources/SourceEditorFields";
 
 interface Props
   extends EntityEditorFieldsProps<"mediaExcerpt", CreateMediaExcerptInput> {
@@ -113,16 +113,6 @@ export default function MediaExcerptEditorFields(props: Props) {
     );
   }
 
-  const [
-    isSourceDescriptionHelpDialogVisible,
-    setIsSourceDescriptionHelpDialogVisible,
-  ] = useState(false);
-  function showSourceDescriptionHelpDialog() {
-    setIsSourceDescriptionHelpDialogVisible(true);
-  }
-  function hideSourceDescriptionHelpDialog() {
-    setIsSourceDescriptionHelpDialogVisible(false);
-  }
   function onInferMediaExcerptInfo(url: string) {
     const quotation = mediaExcerpt?.localRep?.quotation;
     let inferredQuotation: string | undefined;
@@ -231,82 +221,24 @@ export default function MediaExcerptEditorFields(props: Props) {
         <legend>Citations</legend>
         {mediaExcerpt?.citations?.map(({ source, pincite }, index) => (
           <React.Fragment key={combineIds(id, `citations[${index}]`)}>
-            <SourceDescriptionAutocomplete
-              {...errorProps((me) => me.citations?.[index].source.description)}
-              id={combineIds(id, `citations[${index}].source.description`)}
-              name={combineNames(
-                name,
-                `citations[${index}].source.description`
-              )}
-              key={combineIds(id, `citations[${index}].source.description`)}
+            <SourceEditorFields
+              id={id}
+              source={source}
+              key={combineIds(id, `citations[${index}].source`)}
+              errors={errors?.citations?.[index]?.source}
+              blurredFields={blurredFields?.citations?.[index]?.source}
+              dirtyFields={dirtyFields?.citations?.[index]?.source}
               suggestionsKey={combineSuggestionsKeys(
                 suggestionsKey,
-                `citations[${index}].source.description`
+                `citations[${index}].source`
               )}
-              label="Description"
-              required
-              rows={1}
-              maxRows={2}
-              maxLength={
-                MediaExcerptCitation.shape.source.shape.description.maxLength
-              }
-              value={source.description}
+              name={combineNames(name, `citations[${index}].source`)}
+              editorDispatch={editorDispatch}
+              disabled={disabled}
               onBlur={onBlur}
               onPropertyChange={onPropertyChange}
-              disabled={disabled}
-              helpText={
-                <span>
-                  MLA-like, omitting the authors{" "}
-                  <Button
-                    className="show-source-description-help-dialog"
-                    flat
-                    onClick={showSourceDescriptionHelpDialog}
-                  >
-                    <MaterialSymbol icon="help" />
-                  </Button>
-                </span>
-              }
+              wasSubmitAttempted={wasSubmitAttempted}
             />
-            <DialogContainer
-              id="source-description-help-dialog"
-              visible={isSourceDescriptionHelpDialogVisible}
-              title="About Source Description"
-              onHide={hideSourceDescriptionHelpDialog}
-              className="source-description-help-dialog"
-            >
-              <p>
-                The preferred style is MLA-like, but omitting the Authors:
-                <ul>
-                  <li>
-                    The title of the source comes first and should be in quotes
-                    unless it is the only field.
-                  </li>
-                  <li>
-                    The date format should be ISO 8601 (YYYY-MM-DD) unless the
-                    source is updated frequently, in which case including the
-                    time is recommended.
-                  </li>
-                </ul>
-              </p>
-              <p>
-                Examples:
-                <ul>
-                  <li>
-                    “Russia Accuses Prigozhin of Trying to Mount a Coup: Live
-                    Updates” The New York Times (2023-06-23)
-                  </li>
-                  <li>
-                    “Comparison of Blood and Brain Mercury Levels in Infant
-                    Monkeys Exposed to Methylmercury or Vaccines Containing
-                    Thimerosal” Environmental Health Perspectives vol. 113,8
-                    (2005): 1015. doi:10.1289/ehp.7712
-                  </li>
-                </ul>
-              </p>
-              <Button raised primary onClick={hideSourceDescriptionHelpDialog}>
-                Close
-              </Button>
-            </DialogContainer>
             <SingleLineTextField
               {...errorProps((me) => me.citations?.[index].pincite)}
               id={combineIds(id, `citations[${index}].pincite`)}

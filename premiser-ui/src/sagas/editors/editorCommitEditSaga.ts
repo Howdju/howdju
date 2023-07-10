@@ -351,6 +351,11 @@ export const MediaExcerptConfig = {
   }),
 };
 
+export const UpdateSourceConfig = {
+  requestActionCreator: api.updateSource,
+  inputTransformer: identity,
+};
+
 export const editorCommitConfigs: Partial<
   Record<EditorType, EditorCommitConfig>
 > = {
@@ -396,6 +401,9 @@ export const editorCommitConfigs: Partial<
   },
   MEDIA_EXCERPT: {
     CREATE: MediaExcerptConfig,
+  },
+  SOURCE: {
+    UPDATE: UpdateSourceConfig,
   },
 };
 

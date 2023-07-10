@@ -41,6 +41,7 @@ import {
   CreateMediaExcerpt,
   MediaExcerptSearchFilterKeys,
   isDefined,
+  UpdateSource,
 } from "howdju-common";
 import {
   EntityNotFoundError,
@@ -479,6 +480,41 @@ export const serviceRoutes = {
       }
     ),
   },
+
+  /*
+   * Sources
+   */
+  readSource: {
+    path: "sources/:sourceId",
+    method: httpMethods.GET,
+    request: handler(
+      PathParams("sourceId"),
+      async (appProvider: ServicesProvider, { pathParams: { sourceId } }) => {
+        const source = await appProvider.sourcesService.readSourceForId(
+          sourceId
+        );
+        return { body: { source } };
+      }
+    ),
+  },
+  updateSource: {
+    path: "sources/:sourceId",
+    method: httpMethods.PUT,
+    request: handler(
+      Authed.merge(Body({ source: UpdateSource })),
+      async (
+        appProvider: ServicesProvider,
+        { authToken, body: { source: updateSource } }
+      ) => {
+        const source = await prefixErrorPath(
+          appProvider.sourcesService.updateSource({ authToken }, updateSource),
+          "source"
+        );
+        return { body: { source } };
+      }
+    ),
+  },
+
   /*
    * Root target justifications
    */

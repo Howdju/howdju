@@ -201,8 +201,9 @@ export const isDefined = <T>(val: T | undefined): val is T => !isUndefined(val);
 
 export const utcNow = () => moment.utc();
 
-export const utcNowIsAfter = (dateTimeString: string) =>
-  utcNow().isAfter(moment.utc(dateTimeString));
+export function utcNowIsAfter(dateTimeString: string) {
+  return utcNow().isAfter(moment.utc(dateTimeString));
+}
 
 type MomentArithmeticArg =
   | [number, unitOfTime.DurationConstructor]
