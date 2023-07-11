@@ -181,7 +181,7 @@ describe("CreatePropositionPage", () => {
       const quotation = "An important quotation.";
       const sourceDescription = `“An insightful article” A Friendly Local Paper (2023-05-26)`;
       const url = "https://www.news-paper.com";
-      const speakerName = "Bugs Bunny";
+      const speakerName = "A. N. Author";
 
       const history = createMemoryHistory();
       const { location, match } = makeRouteComponentProps("create-proposition");
@@ -199,7 +199,7 @@ describe("CreatePropositionPage", () => {
       const proposition: CreateProposition = {
         text: "A bonny wee proposition.",
       };
-      const justification: CreateJustification = {
+      const createJustification: CreateJustification = {
         target: {
           type: "PROPOSITION",
           entity: proposition,
@@ -222,7 +222,7 @@ describe("CreatePropositionPage", () => {
         typeof serviceRoutes.createJustification
       > = {
         isExtant: false,
-        justification: merge({}, justification, {
+        justification: merge({}, createJustification, {
           id: "1582",
           target: { entity: { id: "9483" } },
           basis: { entity: { id: "910" } },
@@ -280,7 +280,7 @@ describe("CreatePropositionPage", () => {
       // Assert
       jest.runAllTimers();
       expect(requestBody).toMatchObject({
-        justification,
+        justification: createJustification,
       });
       // TODO(196): get path pattern from routesById instead.
       expect(history.location.pathname).toMatch(pathToRegexp("/p/:id"));

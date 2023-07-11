@@ -1,0 +1,59 @@
+name: Flaky test check
+
+on:
+  workflow_dispatch:
+    inputs:
+      workspace-name:
+        description: "The name of the workspace for which to run tests"
+        required: true
+      total-runs:
+        type: number
+        description: "How many times to run the test"
+        default: 100
+      test-suite-pattern:
+        description: "The pattern to match against test suites"
+      test-name-pattern:
+        description: "The pattern to match against test names"
+
+env:
+  HOWDJU_RUNNING_IN_GITHUB_WORKFLOW:
+  YARN_VERSION: 3.3.1
+
+jobs:
+  check-flaky-tests:
+    runs-on: ubuntu-latest
+    services:
+      howdju-db:
+        image: postgres:12.5
+        env:
+          POSTGRES_PASSWORD: ${{secrets.TEST_POSTGRES_PASSWORD}}
+        ports:
+          - 5432:5432
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup Node.JS
+        uses: actions/setup-node@v3
+        with:
+          node-version: 14.20.1
+          cache: "yarn"
+      - name: Install Yarn
+        run: |
+          corepack enable
+          yarn set version $YARN_VERSION
+      - name: Install dependencies
+        run: yarn install
+      - name: Check flaky tests
+        env:
+          DB_USER: postgres
+          DB_PASSWORD: ${{secrets.TEST_POSTGRES_PASSWORD}}
+          DB_HOST: localhost
+          DB_PORT: 5432
+          LOG_LEVEL: silly
+          NODE_ENV: test
+        run: |
+          workspace_root_dir=$(pwd)
+          workspace_dir=$(yarn workspace ${{ github.event.inputs.workspace-name }} exec pwd)
+          cd $workspace_dir
+          ${workspace_root_dir}/bin/check-flaky-test.sh ${{ github.event.inputs.total-runs }}  ${{github.event.inputs.test-suite-pattern }} ${{ github.event.inputs.test-name-pattern }}
