@@ -63,3 +63,7 @@ while [[ $run_count -lt $total_runs ]]; do
 done
 
 echo -e "\r\033[KFlakiness: $failure_count/$total_runs"
+
+if [[ $failure_count -gt 0 ]]; then
+  exit 1
+fi
