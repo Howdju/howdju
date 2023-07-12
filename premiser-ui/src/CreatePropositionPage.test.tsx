@@ -174,7 +174,69 @@ describe("CreatePropositionPage", () => {
       expect(history.location.pathname).toMatch(pathToRegexp("/p/:id"));
     });
 
-    test("can create a MediaExcerpt-based proposition", async () => {
+    test("removing a tag removes it", async () => {
+      // Arrange
+      const user = setupUserEvent();
+
+      const history = createMemoryHistory();
+      const { location, match } = makeRouteComponentProps("submit");
+
+      renderWithProviders(
+        <CreatePropositionPage
+          mode={"CREATE_PROPOSITION"}
+          history={history}
+          location={location}
+          match={match}
+        />,
+        { history }
+      );
+
+      const tagName = "TestTag";
+      await user.type(screen.getByLabelText(/tag/i), tagName);
+      await user.type(screen.getByLabelText(/tag/i), "{Enter}");
+
+      // Act
+      await user.click(document.querySelector(".remove-chip-icon") as Element);
+
+      // Assert
+      jest.runAllTimers();
+      expect(
+        screen.queryByRole("button", { name: new RegExp(tagName) })
+      ).not.toBeInTheDocument();
+    });
+
+    test("attempting to submit with an invalid form shows errors", async () => {
+      const user = setupUserEvent();
+
+      const history = createMemoryHistory();
+      const { location, match } = makeRouteComponentProps("submit");
+
+      renderWithProviders(
+        <CreatePropositionPage
+          mode={"CREATE_PROPOSITION"}
+          history={history}
+          location={location}
+          match={match}
+        />,
+        { history }
+      );
+
+      const tagName = "TestTag";
+      await user.type(screen.getByLabelText(/tag/i), tagName);
+      await user.type(screen.getByLabelText(/tag/i), "{Enter}");
+
+      // Act
+      await user.click(screen.getByRole("button", { name: /create/i }));
+
+      // Assert
+      screen
+        .getAllByText("String must contain at least 1 character(s)")
+        .forEach((el) => expect(el).toBeInTheDocument());
+    });
+  });
+
+  describe("(with real timers)", () => {
+    test("can create a MediaExcerpt-justified proposition", async () => {
       // Arrange
       const user = setupUserEvent();
 
@@ -286,68 +348,6 @@ describe("CreatePropositionPage", () => {
       expect(history.location.pathname).toMatch(pathToRegexp("/p/:id"));
     });
 
-    test("removing a tag removes it", async () => {
-      // Arrange
-      const user = setupUserEvent();
-
-      const history = createMemoryHistory();
-      const { location, match } = makeRouteComponentProps("submit");
-
-      renderWithProviders(
-        <CreatePropositionPage
-          mode={"CREATE_PROPOSITION"}
-          history={history}
-          location={location}
-          match={match}
-        />,
-        { history }
-      );
-
-      const tagName = "TestTag";
-      await user.type(screen.getByLabelText(/tag/i), tagName);
-      await user.type(screen.getByLabelText(/tag/i), "{Enter}");
-
-      // Act
-      await user.click(document.querySelector(".remove-chip-icon") as Element);
-
-      // Assert
-      jest.runAllTimers();
-      expect(
-        screen.queryByRole("button", { name: new RegExp(tagName) })
-      ).not.toBeInTheDocument();
-    });
-
-    test("attempting to submit with an invalid form shows errors", async () => {
-      const user = setupUserEvent();
-
-      const history = createMemoryHistory();
-      const { location, match } = makeRouteComponentProps("submit");
-
-      renderWithProviders(
-        <CreatePropositionPage
-          mode={"CREATE_PROPOSITION"}
-          history={history}
-          location={location}
-          match={match}
-        />,
-        { history }
-      );
-
-      const tagName = "TestTag";
-      await user.type(screen.getByLabelText(/tag/i), tagName);
-      await user.type(screen.getByLabelText(/tag/i), "{Enter}");
-
-      // Act
-      await user.click(screen.getByRole("button", { name: /create/i }));
-
-      // Assert
-      screen
-        .getAllByText("String must contain at least 1 character(s)")
-        .forEach((el) => expect(el).toBeInTheDocument());
-    });
-  });
-
-  describe("(with real timers)", () => {
     test("can submit a Proposition justified by an extant Proposition", async () => {
       // I'm not sure why we need real timers for this test, but what I observe is that
       // fetchAndBeginEditOfNewJustificationFromBasisSource puts the beginEdit, but then the
