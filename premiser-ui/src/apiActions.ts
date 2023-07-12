@@ -219,6 +219,8 @@ type ApiConfig<Route extends ServiceRoute> = {
   };
   canSkipRehydrate: boolean;
   cancelKey: string;
+  /** Optional: whether to log cancelation of the API call. */
+  logCancellation?: boolean;
 };
 
 const pathMakersByPathPattern = {} as Record<
