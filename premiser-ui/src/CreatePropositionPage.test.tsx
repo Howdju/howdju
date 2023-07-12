@@ -237,8 +237,11 @@ describe("CreatePropositionPage", () => {
 
   describe("(with real timers)", () => {
     test("can create a MediaExcerpt-justified proposition", async () => {
+      // I'm not sure why we need real timers for this test, but when it used fake timers, it failed
+      // 33% of the time with a timeout.
+
       // Arrange
-      const user = setupUserEvent();
+      const user = userEvent.setup();
 
       const quotation = "An important quotation.";
       const sourceDescription = `“An insightful article” A Friendly Local Paper (2023-05-26)`;
@@ -247,6 +250,9 @@ describe("CreatePropositionPage", () => {
 
       const history = createMemoryHistory();
       const { location, match } = makeRouteComponentProps("create-proposition");
+
+      // TODO remove debug logging
+      console.warn("FlakyTest: before render.");
 
       renderWithProviders(
         <CreatePropositionPage
@@ -257,6 +263,8 @@ describe("CreatePropositionPage", () => {
         />,
         { history }
       );
+
+      console.warn("FlakyTest: after render.");
 
       const proposition: CreateProposition = {
         text: "A bonny wee proposition.",
@@ -308,39 +316,50 @@ describe("CreatePropositionPage", () => {
         })
       );
 
+      console.warn("FlakyTest: after msw setup.");
+
       await user.type(
         getElementByQuerySelector('textarea[name="proposition.text"]'),
         proposition.text
       );
+      console.warn("FlakyTest: typing proposition text.");
       const mediaExcerptRadio = getElementMatching(
         'input[name="justification.basis.type"]',
         (el) => /media excerpt/i.test(getTextContent(el.parentElement))
       );
       await user.click(mediaExcerptRadio);
+      console.warn("FlakyTest: After clicking media excerpt basis radio.");
       await user.type(
         document.querySelectorAll(".media-excerpt-editor-fields textarea")[0],
         quotation
       );
+      console.warn("FlakyTest: After typing quotation.");
 
       await user.click(
         screen.getByRole("button", { name: /add URL locator/i })
       );
+      console.warn("FlakyTest: After clicking to add URL.");
       await user.type(screen.getByLabelText(/URL/i), url);
+      console.warn("FlakyTest: After typing URL.");
 
       await user.type(screen.getByLabelText(/description/i), sourceDescription);
+      console.warn("FlakyTest: After typing source description.");
 
       await user.click(
         getElementByQuerySelector(
           '.media-excerpt-editor-fields .speakers [title="Add speaker"]'
         )
       );
+      console.warn("FlakyTest: After clicking add speaker.");
       await user.type(screen.getByLabelText(/name/i), speakerName);
+      console.warn("FlakyTest: After typing speaker name.");
 
       // Act
       await user.click(screen.getByRole("button", { name: /create/i }));
 
+      console.warn("FlakyTest: after input.");
+
       // Assert
-      jest.runAllTimers();
       expect(requestBody).toMatchObject({
         justification: createJustification,
       });

@@ -144,11 +144,11 @@ export default function PropositionCompoundEditorFields(props: Props) {
             <SingleLineTextField {...inputProps} />
           );
         return (
-          <>
+          <div key={`atom ${atom.entity.id}`}>
             {input}
             <ErrorMessages errors={errors?.atoms?.[index]?._errors} />
             <ErrorMessages errors={errors?.atoms?.[index]?.entity?._errors} />
-          </>
+          </div>
         );
       })}
       <ErrorMessages errors={errors?._errors} />
