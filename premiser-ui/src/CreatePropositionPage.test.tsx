@@ -211,6 +211,13 @@ describe("CreatePropositionPage", () => {
       const history = createMemoryHistory();
       const { location, match } = makeRouteComponentProps("submit");
 
+      server.use(
+        rest.get("http://localhost/search-tags", (_req, res, ctx) => {
+          // delay so that we can cancel the request.
+          return res(ctx.delay(1), ctx.json([]));
+        })
+      );
+
       renderWithProviders(
         <CreatePropositionPage
           mode={"CREATE_PROPOSITION"}
@@ -220,6 +227,8 @@ describe("CreatePropositionPage", () => {
         />,
         { history }
       );
+
+      //
 
       const tagName = "TestTag";
       await user.type(screen.getByLabelText(/tag/i), tagName);
