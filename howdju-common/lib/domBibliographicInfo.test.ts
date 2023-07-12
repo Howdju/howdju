@@ -10,7 +10,7 @@ import {
 describe("inferBibliographicInfo", () => {
   it("should handle NYT", () => {
     const html = readFileSync(
-      "lib/domBibliographicInfoTestData/nytimes.html",
+      "lib/testData/domBibliographicInfoTestData/nytimes.html",
       "utf8"
     );
     const dom = new JSDOM(html);
@@ -29,7 +29,7 @@ describe("inferBibliographicInfo", () => {
 
   it("should handle PubMed", () => {
     const html = readFileSync(
-      "lib/domBibliographicInfoTestData/pubmed.html",
+      "lib/testData/domBibliographicInfoTestData/pubmed.html",
       "utf8"
     );
     const dom = new JSDOM(html);
@@ -54,7 +54,7 @@ describe("inferBibliographicInfo", () => {
 
   it("should handle Wikipedia", () => {
     const html = readFileSync(
-      "lib/domBibliographicInfoTestData/wikipedia.html",
+      "lib/testData/domBibliographicInfoTestData/wikipedia.html",
       "utf8"
     );
     const dom = new JSDOM(html);
@@ -69,7 +69,7 @@ describe("inferBibliographicInfo", () => {
 
   it("should handle Aeon", () => {
     const html = readFileSync(
-      "lib/domBibliographicInfoTestData/aeon.html",
+      "lib/testData/domBibliographicInfoTestData/aeon.html",
       "utf8"
     );
     const dom = new JSDOM(html);
@@ -91,7 +91,7 @@ describe("inferBibliographicInfo", () => {
 
   it("should handle Substack", () => {
     const html = readFileSync(
-      "lib/domBibliographicInfoTestData/substack.html",
+      "lib/testData/domBibliographicInfoTestData/substack.html",
       "utf8"
     );
     const dom = new JSDOM(html);
@@ -124,7 +124,7 @@ describe("extractDate", () => {
 describe("inferAnchoredBibliographicInfo", () => {
   it("returns the info", () => {
     const html = readFileSync(
-      "lib/domBibliographicInfoTestData/pubmed.html",
+      "lib/testData/domBibliographicInfoTestData/pubmed.html",
       "utf8"
     );
     const dom = new JSDOM(html);

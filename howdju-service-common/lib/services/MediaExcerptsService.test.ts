@@ -116,6 +116,7 @@ describe("MediaExcerptsService", () => {
                   id: expect.any(String),
                   normalDescription: "the source description",
                   ...creatorInfo,
+                  creator: { id: user.id, longName: user.longName },
                 },
                 normalPincite: "the pincite",
                 ...creatorInfo,

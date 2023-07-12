@@ -6,7 +6,7 @@ import { requestMediaExcerptInfo } from "./requestMediaExcerptInfo";
 describe("requestMediaExcerptInfo", () => {
   it("returns MediaExcerptInfo", async () => {
     const html = readFileSync(
-      "lib/requestMediaExcerptInfoTestData/pubmed.html",
+      "lib/testData/requestMediaExcerptInfoTestData/pubmed.html",
       "utf8"
     );
     const get = jest.spyOn(axios, "get");

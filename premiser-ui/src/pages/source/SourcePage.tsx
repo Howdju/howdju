@@ -21,6 +21,7 @@ import { combineIds, combineSuggestionsKeys } from "../../viewModels";
 import { useAppDispatch, useAppEntitySelector, useAppSelector } from "@/hooks";
 import MediaExcerptCard from "@/components/mediaExcerpts/MediaExcerptCard";
 import SourceEntityCard from "@/components/sources/SourceEntityCard";
+import sourcePage from "./sourcePageSlice";
 
 const id = "source-page";
 const editorId = "sourcePageEditorId";
@@ -34,6 +35,7 @@ export default function SourcePage(props: Props) {
   const dispatch = useAppDispatch();
   const sourceId = props.match.params.sourceId;
   useEffect(() => {
+    dispatch(sourcePage.clearMediaExcerpts());
     dispatch(api.fetchSource(sourceId));
     dispatch(api.fetchSourceMediaExcerpts(sourceId));
   }, [dispatch, sourceId]);

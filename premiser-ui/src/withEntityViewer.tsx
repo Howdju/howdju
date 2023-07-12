@@ -62,7 +62,6 @@ export default function withEntityViewer<
       suggestionsKey,
       showStatusText,
     } as ComponentProps;
-    const AnyComponent = EntityComponent as any;
     return (
       <EntityViewer
         icon={iconName}
@@ -70,7 +69,7 @@ export default function withEntityViewer<
         iconLink={entity && entityLinkFn(entity as unknown as Entity)}
         className={className}
         component={component}
-        entity={<AnyComponent {...entityProps} />}
+        entity={<EntityComponent {...entityProps} />}
         menu={menu}
       />
     );

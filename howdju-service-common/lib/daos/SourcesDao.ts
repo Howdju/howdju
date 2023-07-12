@@ -46,12 +46,14 @@ export class SourcesDao {
       `,
       [source.description, normalDescription, creatorUserId, created]
     );
+    const creator = await this.usersDao.readUserBlurbForId(creatorUserId);
     return brandedParse(
       SourceRef,
       merge({}, source, {
         id: row.source_id,
         normalDescription,
         creatorUserId,
+        creator,
         created,
       })
     );

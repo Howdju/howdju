@@ -15,7 +15,7 @@ export const sourcePageSlice = createSlice({
   name: "sourcePage",
   initialState,
   reducers: {
-    clearPersorgStatements: () => initialState,
+    clearMediaExcerpts: () => initialState,
   },
   extraReducers(builder) {
     builder.addCase(api.fetchSourceMediaExcerpts, (state) => {

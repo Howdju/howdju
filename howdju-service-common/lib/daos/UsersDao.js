@@ -1,5 +1,5 @@
 const { toUser } = require("./orm");
-const { mapSingle } = require("./daosUtil");
+const { mapSingle, toIdString } = require("./daosUtil");
 const { BaseDao } = require("./BaseDao");
 
 exports.UsersDao = class UsersDao extends BaseDao {
@@ -72,7 +72,7 @@ exports.UsersDao = class UsersDao extends BaseDao {
         [userId]
       )
       .then(({ rows: [row] }) => ({
-        id: row.user_id,
+        id: toIdString(row.user_id),
         longName: row.long_name,
       }));
   }

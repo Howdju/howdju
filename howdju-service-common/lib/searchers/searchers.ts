@@ -1,9 +1,12 @@
+import { SourceOut } from "howdju-common";
+
 import { Database } from "../database";
 import {
   PersorgData,
   PropositionData,
   PropositionRow,
   SourceRow,
+  SourcesDao,
   WritData,
   WritQuoteData,
 } from "../daos";
@@ -15,11 +18,9 @@ import {
   ToWritMapperRow,
   ToWritQuoteMapperRow,
   ToPersorgMapperRow,
-  toSource,
 } from "../daos/orm";
-
 import { TextSearcher } from "./TextSearcher";
-import { SourceOut } from "howdju-common";
+import { toIdString } from "../daos/daosUtil";
 
 export const makePropositionTextSearcher = (database: Database) =>
   new TextSearcher<PropositionRow, PropositionData>(
@@ -65,12 +66,17 @@ export const makePersorgsNameSearcher = (database: Database) =>
   );
 export type PersorgsNameSearcher = ReturnType<typeof makePersorgsNameSearcher>;
 
-export const makeSourcesDescriptionSearcher = (database: Database) =>
+export const makeSourcesDescriptionSearcher = (
+  database: Database,
+  sourcesDao: SourcesDao
+) =>
   new TextSearcher<SourceRow, SourceOut>(
     database,
     "sources",
     "description",
-    toSource,
+    function ({ source_id }: SourceRow) {
+      return sourcesDao.readSourceForId(toIdString(source_id));
+    },
     "source_id"
   );
 export type SourcesDescriptionSearcher = ReturnType<

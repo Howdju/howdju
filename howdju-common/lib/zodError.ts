@@ -210,7 +210,7 @@ export type ZodFormattedError<T, U = string> = {
   ? V extends object
     ?
         | {
-            [k: number]: ZodFormattedError<NonNullable<V>, U>;
+            [k: number]: ZodFormattedError<V, U>;
           }
         | undefined
     : never
