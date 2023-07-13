@@ -40,6 +40,7 @@ export function* callApiForResource<A extends AnyApiAction>(action: A) {
     normalizationSchema,
     canSkipRehydrate,
     cancelKey,
+    logCancellation,
   } = action.payload;
   const responseMeta = {
     normalizationSchema,
@@ -71,8 +72,11 @@ export function* callApiForResource<A extends AnyApiAction>(action: A) {
   } catch (error) {
     return yield* put(responseActionCreator(error, responseMeta));
   } finally {
-    if (yield* cancelled()) {
-      logger.debug(`Canceled ${action.type}`);
+    if (logCancellation) {
+      const didCancel = yield* cancelled();
+      if (didCancel) {
+        logger.debug(`Canceled ${action.type}`);
+      }
     }
   }
 }

@@ -38,40 +38,6 @@ interface Props {
 
 /** A list of chips supporting clicking on two icons on either side. */
 export default function ChipsList(props: Props) {
-  const onClickChip: ListClickCallback<Chip> = (chip, index, event) => {
-    if (props.onClickChip) {
-      props.onClickChip(chip.label, index, event);
-    }
-  };
-
-  const onKeyDownChip: ListKeyDownCallback<Chip> = (chip, index, event) => {
-    if (onRemoveChip && includes(deleteKeys, event.key)) {
-      // In some browsers the delete key goes back in history, so prevent that
-      event.preventDefault();
-      onRemoveChip(chip.label, index, event);
-    }
-  };
-
-  const onClickAvatar: ListClickCallback<Chip> = (chip, index, event) => {
-    event.stopPropagation();
-    if (props.onClickAvatar) {
-      props.onClickAvatar(chip.label, index, event);
-    } else if (props.onClickChip) {
-      props.onClickChip(chip.label, index, event);
-    }
-  };
-
-  const onClickRemove: ListClickCallback<Chip> = (chip, index, event) => {
-    // Currently has no effect because of react-md treating Chips as buttons, but it's what we are trying to do...
-    event.stopPropagation();
-
-    if (props.onRemoveChip) {
-      props.onRemoveChip(chip.label, index, event);
-    } else if (props.onClickChip) {
-      props.onClickChip(chip.label, index, event);
-    }
-  };
-
   const {
     chips,
     extraChildren,
@@ -79,10 +45,45 @@ export default function ChipsList(props: Props) {
     removable = false,
     className,
     removeIconName = "clear",
-    // ignore
-    onRemoveChip,
+    onClickChip: onClickChipProp,
+    onClickAvatar: onClickAvatarProp,
+    onRemoveChip: onRemoveChipProp,
     ...rest
   } = props;
+
+  const onKeyDown: ListKeyDownCallback<Chip> = (chip, index, event) => {
+    if (onRemoveChipProp && includes(deleteKeys, event.key)) {
+      // In some browsers the delete key goes back in history, so prevent that
+      event.preventDefault();
+      onRemoveChipProp(chip.label, index, event);
+    }
+  };
+
+  const onClickRemove: ListClickCallback<Chip> = (chip, index, event) => {
+    // Currently has no effect because of react-md treating Chips as buttons, but it's what we are trying to do...
+    event.stopPropagation();
+
+    if (onRemoveChipProp) {
+      onRemoveChipProp(chip.label, index, event);
+    } else if (onClickChipProp) {
+      onClickChipProp(chip.label, index, event);
+    }
+  };
+
+  const onClickChip: ListClickCallback<Chip> = (chip, index, event) => {
+    if (onClickChipProp) {
+      onClickChipProp(chip.label, index, event);
+    }
+  };
+
+  const onClickAvatar: ListClickCallback<Chip> = (chip, index, event) => {
+    event.stopPropagation();
+    if (onClickAvatarProp) {
+      onClickAvatarProp(chip.label, index, event);
+    } else if (onClickChipProp) {
+      onClickChipProp(chip.label, index, event);
+    }
+  };
 
   return (
     <div {...rest} className={cn(className, "chips-list")}>
@@ -101,7 +102,7 @@ export default function ChipsList(props: Props) {
           ),
           rotateIcon: false,
           onClick: (event) => onClickChip(chip, index, event),
-          onKeyDown: (event) => onKeyDownChip(chip, index, event),
+          onKeyDown: (event) => onKeyDown(chip, index, event),
         };
 
         // react-md limitation: can't pass along a falsy avatar

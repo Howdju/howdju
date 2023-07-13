@@ -175,7 +175,12 @@ function makeExtension() {
     // TODO(399) use https://wiki.mozilla.org/WebExtensions and remove typecast
     return new Extension((window as any).browser);
   } else {
-    logger.warn("Unsupported extension environment.");
+    if (
+      process.env.NODE_ENV !== "development" &&
+      process.env.NODE_ENV !== "test"
+    ) {
+      logger.warn("Unsupported extension environment.");
+    }
     return new Extension(new FakeExtension());
   }
 }

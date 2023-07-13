@@ -174,124 +174,19 @@ describe("CreatePropositionPage", () => {
       expect(history.location.pathname).toMatch(pathToRegexp("/p/:id"));
     });
 
-    test("can create a MediaExcerpt-based proposition", async () => {
-      // Arrange
-      const user = setupUserEvent();
-
-      const quotation = "An important quotation.";
-      const sourceDescription = `“An insightful article” A Friendly Local Paper (2023-05-26)`;
-      const url = "https://www.news-paper.com";
-      const speakerName = "A. N. Author";
-
-      const history = createMemoryHistory();
-      const { location, match } = makeRouteComponentProps("create-proposition");
-
-      renderWithProviders(
-        <CreatePropositionPage
-          mode={"CREATE_PROPOSITION"}
-          history={history}
-          location={location}
-          match={match}
-        />,
-        { history }
-      );
-
-      const proposition: CreateProposition = {
-        text: "A bonny wee proposition.",
-      };
-      const createJustification: CreateJustification = {
-        target: {
-          type: "PROPOSITION",
-          entity: proposition,
-        },
-        polarity: "POSITIVE",
-        basis: {
-          type: "MEDIA_EXCERPT",
-          entity: {
-            localRep: {
-              quotation,
-            },
-            locators: { urlLocators: [{ url: { url } }] },
-            citations: [{ source: { description: sourceDescription } }],
-            speakers: [{ name: speakerName, isOrganization: false }],
-          },
-        },
-      };
-
-      const response: InferResponseBody<
-        typeof serviceRoutes.createJustification
-      > = {
-        isExtant: false,
-        justification: merge({}, createJustification, {
-          id: "1582",
-          target: { entity: { id: "9483" } },
-          basis: { entity: { id: "910" } },
-          rootTargetType: "PROPOSITION",
-          rootTarget: { id: "9483" },
-        }) as JustificationOut,
-      };
-      let requestBody;
-      server.use(
-        rest.post(`http://localhost/justifications`, async (req, res, ctx) => {
-          requestBody = await req.json();
-          return res(ctx.status(httpStatusCodes.OK), ctx.json(response));
-        }),
-        rest.get("http://localhost/search-propositions", (_req, res, ctx) => {
-          // delay so that we can cancel the request.
-          return res(ctx.delay(1), ctx.json([]));
-        }),
-        rest.get("http://localhost/search-sources", (_req, res, ctx) => {
-          // delay so that we can cancel the request.
-          return res(ctx.delay(1), ctx.json([]));
-        })
-      );
-
-      await user.type(
-        getElementByQuerySelector('textarea[name="proposition.text"]'),
-        proposition.text
-      );
-      const mediaExcerptRadio = getElementMatching(
-        'input[name="justification.basis.type"]',
-        (el) => /media excerpt/i.test(getTextContent(el.parentElement))
-      );
-      await user.click(mediaExcerptRadio);
-      await user.type(
-        document.querySelectorAll(".media-excerpt-editor-fields textarea")[0],
-        quotation
-      );
-
-      await user.click(
-        screen.getByRole("button", { name: /add URL locator/i })
-      );
-      await user.type(screen.getByLabelText(/URL/i), url);
-
-      await user.type(screen.getByLabelText(/description/i), sourceDescription);
-
-      await user.click(
-        getElementByQuerySelector(
-          '.media-excerpt-editor-fields .speakers [title="Add speaker"]'
-        )
-      );
-      await user.type(screen.getByLabelText(/name/i), speakerName);
-
-      // Act
-      await user.click(screen.getByRole("button", { name: /create/i }));
-
-      // Assert
-      jest.runAllTimers();
-      expect(requestBody).toMatchObject({
-        justification: createJustification,
-      });
-      // TODO(196): get path pattern from routesById instead.
-      expect(history.location.pathname).toMatch(pathToRegexp("/p/:id"));
-    });
-
     test("removing a tag removes it", async () => {
       // Arrange
       const user = setupUserEvent();
 
       const history = createMemoryHistory();
       const { location, match } = makeRouteComponentProps("submit");
+
+      server.use(
+        rest.get("http://localhost/search-tags", (_req, res, ctx) => {
+          // delay so that we can cancel the request.
+          return res(ctx.delay(1), ctx.json([]));
+        })
+      );
 
       renderWithProviders(
         <CreatePropositionPage
@@ -323,6 +218,13 @@ describe("CreatePropositionPage", () => {
       const history = createMemoryHistory();
       const { location, match } = makeRouteComponentProps("submit");
 
+      server.use(
+        rest.get("http://localhost/search-tags", (_req, res, ctx) => {
+          // delay so that we can cancel the request.
+          return res(ctx.delay(1), ctx.json([]));
+        })
+      );
+
       renderWithProviders(
         <CreatePropositionPage
           mode={"CREATE_PROPOSITION"}
@@ -332,6 +234,8 @@ describe("CreatePropositionPage", () => {
         />,
         { history }
       );
+
+      //
 
       const tagName = "TestTag";
       await user.type(screen.getByLabelText(/tag/i), tagName);
@@ -345,6 +249,136 @@ describe("CreatePropositionPage", () => {
         .getAllByText("String must contain at least 1 character(s)")
         .forEach((el) => expect(el).toBeInTheDocument());
     });
+
+    // TODO(464) address slow userEvent.type for source description
+    const MEDIA_EXCERPT_JUSTIFICATION_TEST_TIMEOUT = 7500;
+    test(
+      "can create a MediaExcerpt-justified proposition",
+      async () => {
+        // Arrange
+        const user = setupUserEvent();
+
+        const quotation = "An important quotation.";
+        const sourceDescription = `“An insightful article” A Friendly Local Paper (2023-05-26)`;
+        const url = "https://www.news-paper.com";
+        const speakerName = "A. N. Author";
+
+        const history = createMemoryHistory();
+        const { location, match } =
+          makeRouteComponentProps("create-proposition");
+
+        renderWithProviders(
+          <CreatePropositionPage
+            mode={"CREATE_PROPOSITION"}
+            history={history}
+            location={location}
+            match={match}
+          />,
+          { history }
+        );
+
+        const proposition: CreateProposition = {
+          text: "A bonny wee proposition.",
+        };
+        const createJustification: CreateJustification = {
+          target: {
+            type: "PROPOSITION",
+            entity: proposition,
+          },
+          polarity: "POSITIVE",
+          basis: {
+            type: "MEDIA_EXCERPT",
+            entity: {
+              localRep: {
+                quotation,
+              },
+              locators: { urlLocators: [{ url: { url } }] },
+              citations: [{ source: { description: sourceDescription } }],
+              speakers: [{ name: speakerName, isOrganization: false }],
+            },
+          },
+        };
+
+        const response: InferResponseBody<
+          typeof serviceRoutes.createJustification
+        > = {
+          isExtant: false,
+          justification: merge({}, createJustification, {
+            id: "1582",
+            target: { entity: { id: "9483" } },
+            basis: { entity: { id: "910" } },
+            rootTargetType: "PROPOSITION",
+            rootTarget: { id: "9483" },
+          }) as JustificationOut,
+        };
+        let requestBody;
+        server.use(
+          rest.post(
+            `http://localhost/justifications`,
+            async (req, res, ctx) => {
+              requestBody = await req.json();
+              return res(ctx.status(httpStatusCodes.OK), ctx.json(response));
+            }
+          ),
+          rest.get("http://localhost/search-propositions", (_req, res, ctx) => {
+            // delay so that we can cancel the request.
+            return res(ctx.delay(1), ctx.json([]));
+          }),
+          rest.get("http://localhost/search-sources", (_req, res, ctx) => {
+            // delay so that we can cancel the request.
+            return res(ctx.delay(1), ctx.json([]));
+          }),
+          rest.get("http://localhost/search-persorgs", (_req, res, ctx) => {
+            // delay so that we can cancel the request.
+            return res(ctx.delay(1), ctx.json([]));
+          })
+        );
+
+        await user.type(
+          getElementByQuerySelector('textarea[name="proposition.text"]'),
+          proposition.text
+        );
+        const mediaExcerptRadio = getElementMatching(
+          'input[name="justification.basis.type"]',
+          (el) => /media excerpt/i.test(getTextContent(el.parentElement))
+        );
+        await user.click(mediaExcerptRadio);
+        await user.type(
+          document.querySelectorAll(".media-excerpt-editor-fields textarea")[0],
+          quotation
+        );
+
+        await user.click(
+          screen.getByRole("button", { name: /add URL locator/i })
+        );
+        await user.type(screen.getByLabelText(/URL/i), url);
+
+        // TODO(462) this takes over a second to type
+        await user.type(
+          screen.getByLabelText(/description/i),
+          sourceDescription
+        );
+
+        await user.click(
+          getElementByQuerySelector(
+            '.media-excerpt-editor-fields .speakers [title="Add speaker"]'
+          )
+        );
+        await user.type(screen.getByLabelText(/name/i), speakerName);
+
+        // Act
+        await user.click(screen.getByRole("button", { name: /create/i }));
+
+        // Assert
+        jest.runAllTimers();
+        expect(requestBody).toMatchObject({
+          justification: createJustification,
+        });
+        // TODO(196): get path pattern from routesById instead.
+        expect(history.location.pathname).toMatch(pathToRegexp("/p/:id"));
+      },
+      MEDIA_EXCERPT_JUSTIFICATION_TEST_TIMEOUT
+    );
   });
 
   describe("(with real timers)", () => {
