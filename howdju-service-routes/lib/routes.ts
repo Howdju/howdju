@@ -144,7 +144,7 @@ export const serviceRoutes = {
         if (!searchText) {
           throw new InvalidRequestError("searchText is required.");
         }
-        const sources = await appProvider.sourcesDescriptionSearcher.search(
+        const sources = await appProvider.sourceDescriptionSearcher.search(
           searchText
         );
         return { body: { sources } };

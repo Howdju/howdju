@@ -6,7 +6,7 @@ import { endPoolAndDropDb, initDb, makeTestDbConfig } from "@/util/testUtil";
 import { Database, makePool } from "../database";
 import { makeTestProvider } from "@/initializers/TestProvider";
 import TestHelper from "@/initializers/TestHelper";
-import { SourcesDescriptionSearcher } from "./searchers";
+import { SourceDescriptionSearcher } from "./searchers";
 
 const dbConfig = makeTestDbConfig();
 
@@ -14,7 +14,7 @@ describe("sourcesDescriptionSearcher", () => {
   let dbName: string;
   let pool: Pool;
 
-  let searcher: SourcesDescriptionSearcher;
+  let searcher: SourceDescriptionSearcher;
   let testHelper: TestHelper;
   beforeEach(async () => {
     dbName = await initDb(dbConfig);
@@ -24,7 +24,7 @@ describe("sourcesDescriptionSearcher", () => {
 
     const provider = makeTestProvider(database);
 
-    searcher = provider.sourcesDescriptionSearcher;
+    searcher = provider.sourceDescriptionSearcher;
     testHelper = provider.testHelper;
   });
   afterEach(async () => {

@@ -1,7 +1,8 @@
-import { SourceOut } from "howdju-common";
+import { MediaExcerptOut, SourceOut } from "howdju-common";
 
 import { Database } from "../database";
 import {
+  MediaExcerptsDao,
   PersorgData,
   PropositionData,
   PropositionRow,
@@ -66,7 +67,7 @@ export const makePersorgsNameSearcher = (database: Database) =>
   );
 export type PersorgsNameSearcher = ReturnType<typeof makePersorgsNameSearcher>;
 
-export const makeSourcesDescriptionSearcher = (
+export const makeSourceDescriptionSearcher = (
   database: Database,
   sourcesDao: SourcesDao
 ) =>
@@ -79,6 +80,23 @@ export const makeSourcesDescriptionSearcher = (
     },
     "source_id"
   );
-export type SourcesDescriptionSearcher = ReturnType<
-  typeof makeSourcesDescriptionSearcher
+export type SourceDescriptionSearcher = ReturnType<
+  typeof makeSourceDescriptionSearcher
 >;
+
+export const makeMediaExcerptSearcher = (
+  database: Database,
+  mediaExerptsDao: MediaExcerptsDao
+) =>
+  new TextSearcher<{ media_excerpt_id: number }, MediaExcerptOut>(
+    database,
+    "media_excerpts",
+    "quotation",
+    function ({ media_excerpt_id }) {
+      return mediaExerptsDao.readMediaExcerptForId(
+        toIdString(media_excerpt_id)
+      );
+    },
+    "media_excerpt_id"
+  );
+export type MediaExcerptsSearcher = ReturnType<typeof makeMediaExcerptSearcher>;

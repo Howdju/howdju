@@ -169,15 +169,6 @@ statementSchema.define({
   justifications: justificationsSchema,
 });
 
-export const mainSearchResultsSchema = {
-  propositionTexts: propositionsSchema,
-  writQuoteQuoteTexts: writQuotesSchema,
-  writQuoteUrls: writQuotesSchema,
-  writTitles: writsSchema,
-  tags: tagsSchema,
-  persorgsFromName: persorgsSchema,
-};
-
 export const accountSettingsSchema = new schema.Entity<AccountSettings>(
   "accountSettings"
 );
@@ -211,6 +202,17 @@ export const mediaExcerptSchema = new schema.Entity<MediaExcerpt>(
   }
 );
 export const mediaExcerptsSchema = new schema.Array(mediaExcerptSchema);
+
+export const mainSearchResultSchema = {
+  mediaExcerpts: mediaExcerptsSchema,
+  persorgs: persorgsSchema,
+  propositions: propositionsSchema,
+  sources: sourcesSchema,
+  tags: tagsSchema,
+  writQuoteQuoteTexts: writQuotesSchema,
+  writQuoteUrls: writQuotesSchema,
+  writTitles: writsSchema,
+};
 
 /**
  * Converts a normalizr schema into a response payload.

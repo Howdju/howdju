@@ -1,9 +1,9 @@
 import { useEffect, useRef } from "react";
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
-import { denormalize, schema } from "normalizr";
+import { denormalize, schema, Schema } from "normalizr";
 
 import type { RootState, AppDispatch } from "./setupStore";
-import { EntityId, PersistedEntity } from "howdju-common";
+import { EntityId } from "howdju-common";
 
 // Use throughout your app instead of plain `useDispatch` and `useSelector`
 export const useAppDispatch: () => AppDispatch = useDispatch;
@@ -17,21 +17,24 @@ export function usePreviousValue<T>(value: T) {
   return ref.current;
 }
 
+type InferResult<S> = S extends schema.Entity<any>
+  ? EntityId
+  : S extends schema.Array<any>
+  ? EntityId[]
+  : S extends object
+  ? { [K in keyof S]: InferResult<S[K]> }
+  : never;
+type Denormalized<S> = S extends schema.Entity<infer U>
+  ? U | undefined
+  : S extends schema.Array<infer U>
+  ? U[]
+  : S extends object
+  ? { [K in keyof S]: Denormalized<S[K]> }
+  : never;
 /** Denormalizes an entity from the state. */
-export function useAppEntitySelector<T extends PersistedEntity>(
-  entityId: EntityId,
-  schema: schema.Entity<T>
-): T | undefined;
-/** Denormalizes a list of entities from the state. */
-export function useAppEntitySelector<T extends PersistedEntity>(
-  entityIds: EntityId[],
-  schema: schema.Array<T>
-): T[];
-export function useAppEntitySelector<T extends PersistedEntity>(
-  entityId: EntityId | EntityId[],
-  schema: schema.Entity<T> | schema.Array<T>
-) {
-  return useAppSelector((state) =>
-    denormalize(entityId, schema, state.entities)
-  );
+export function useAppEntitySelector<S extends Schema>(
+  result: InferResult<S>,
+  schema: S
+): Denormalized<S> {
+  return useAppSelector((state) => denormalize(result, schema, state.entities));
 }

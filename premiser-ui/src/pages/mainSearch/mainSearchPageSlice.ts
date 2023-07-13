@@ -1,17 +1,23 @@
-import { api } from "@/apiActions";
-import { createSlice } from "@reduxjs/toolkit";
 import { normalize } from "normalizr";
+import { createSlice } from "@reduxjs/toolkit";
+
+import { EntityId } from "howdju-common";
+
+import { api } from "@/apiActions";
 
 export const mainSearchPageSlice = createSlice({
   name: "mainSearchPage",
   initialState: {
     isFetching: false,
-    results: {
-      tags: [],
-      propositionTexts: [],
-      writQuoteQuoteTexts: [],
-      writQuoteUrls: [],
-      writTitles: [],
+    normalizedResult: {
+      mediaExcerpts: [] as EntityId[],
+      persorgs: [] as EntityId[],
+      propositions: [] as EntityId[],
+      sources: [] as EntityId[],
+      tags: [] as EntityId[],
+      writQuoteQuoteTexts: [] as EntityId[],
+      writQuoteUrls: [] as EntityId[],
+      writTitles: [] as EntityId[],
     },
   },
   reducers: {},
@@ -26,7 +32,7 @@ export const mainSearchPageSlice = createSlice({
           action.payload,
           action.meta.normalizationSchema
         );
-        state.results = result;
+        state.normalizedResult = result;
       }
     });
   },
