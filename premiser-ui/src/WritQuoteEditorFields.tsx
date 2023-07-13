@@ -116,6 +116,9 @@ const WritQuoteEditorFields = (props: Props) => {
         suggestionsKey={combineSuggestionsKeys(suggestionsKey, "writ")}
         onPropertyChange={onPropertyChange}
         wasSubmitAttempted={wasSubmitAttempted}
+        blurredFields={blurredFields?.writ}
+        dirtyFields={dirtyFields?.writ}
+        errors={errors?.writ}
       />
       {urls.map(
         (url, index, urls) =>

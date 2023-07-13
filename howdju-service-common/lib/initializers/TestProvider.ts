@@ -5,7 +5,7 @@ import { FakeTopicMessageSender } from "howdju-test-common";
 
 import { baseConfig } from "../config";
 import { Database } from "../database";
-import { daosInitializer } from "./daosInit";
+import { daosInitializer, DaosProvider } from "./daosInit";
 import { searchersInitializer } from "./searchersInit";
 import { servicesInitializer, ServicesProvider } from "./servicesInit";
 import { validatorsInitializer } from "./validatorsInit";
@@ -35,7 +35,7 @@ export class TestProvider {
     this.topicMessageSender = new FakeTopicMessageSender();
 
     assign(this, daosInitializer(this as unknown as DatabaseProvider));
-    assign(this, searchersInitializer(this as unknown as DatabaseProvider));
+    assign(this, searchersInitializer(this as unknown as DaosProvider));
     assign(this, validatorsInitializer(this as unknown as LoggerProvider));
     assign(this, servicesInitializer(this as unknown as AwsProvider));
     const servicesProvider = this as unknown as ServicesProvider;

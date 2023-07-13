@@ -144,6 +144,7 @@ export type JustificationSearchFilters = ToFilter<
 export const MediaExcerptSearchFilterKeys = [
   "creatorUserId",
   "speakerPersorgId",
+  "sourceId",
 ] as const;
 export type MediaExcerptSearchFilter = ToFilter<
   typeof MediaExcerptSearchFilterKeys

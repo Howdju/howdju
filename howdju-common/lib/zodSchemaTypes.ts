@@ -57,6 +57,7 @@ import {
   User,
   Writ,
   WritQuote,
+  UpdateSource,
 } from "./zodSchemas";
 
 /**
@@ -228,6 +229,8 @@ export type EntityName<T> = T extends Proposition
   : T extends UrlLocator
   ? "UrlLocator"
   : T extends Source
+  ? "Source"
+  : T extends UpdateSource
   ? "Source"
   : T extends Url
   ? "Url"

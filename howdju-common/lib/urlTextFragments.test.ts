@@ -222,7 +222,7 @@ describe("extractQuotationFromTextFragment", () => {
   });
   it("returns the full quotation from a text fragment with a text end if doc is provided from substack", () => {
     const html = readFileSync(
-      "lib/domBibliographicInfoTestData/substack.html",
+      "lib/testData/domBibliographicInfoTestData/substack.html",
       "utf8"
     );
     const dom = new JSDOM(html);
@@ -246,7 +246,7 @@ describe("extractQuotationFromTextFragment", () => {
   });
   it("returns the full quotation from a text fragment with a text end if doc is provided and initial textStart is after initial textEnd", () => {
     const html = readFileSync(
-      "lib/domBibliographicInfoTestData/pubmed.html",
+      "lib/testData/domBibliographicInfoTestData/pubmed.html",
       "utf8"
     );
     const dom = new JSDOM(html);

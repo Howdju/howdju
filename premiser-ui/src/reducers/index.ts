@@ -16,6 +16,7 @@ import { mainSearchPage } from "../pages/mainSearch/mainSearchPageSlice";
 import { justificationsSearchPage } from "@/pages/justificationsSearch/justificationsSearchPageSlice";
 import { tagPage } from "@/pages/tag/tagPageSlice";
 import { persorgPage } from "@/pages/persorg/persorgPageSlice";
+import { sourcePage } from "@/pages/source/sourcePageSlice";
 import { justificationsPage } from "@/pages/justifications/justificationsPageSlice";
 import { accountSettingsPage } from "@/pages/accountSettings/accountSettingsPageSlice";
 import { propositionUsagesPage } from "@/pages/propositionUsages/propositionUsagesPageSlice";
@@ -43,6 +44,7 @@ export default (history: History) =>
     mediaExcerptUsagesPage,
     registrationConfirmationPage,
     router: connectRouter(history),
+    sourcePage,
     tagPage,
     ui,
     widgets,

@@ -3,24 +3,32 @@ import { CircularProgress } from "react-md";
 
 import {
   AccountSettings,
+  CreateSourceInput,
   isTruthy,
   logger,
-  newProgrammingError,
   Persorg,
   Proposition,
+  Source,
+  UpdateSourceInput,
 } from "howdju-common";
 import { ComponentId, EditorId, SuggestionsKey } from "./types";
 import { useAppSelector } from "./hooks";
 import { EditorType } from "./reducers/editors";
 import { WithEditorProps } from "./editors/withEditor";
 import { defaultEditorId } from "./viewModels";
+import { camelCase } from "lodash";
 
+// TODO(460) infer this. Ideally we ensure that Editor and viewer both have a prop
+// named like lowerCamelCase(editorType) and that both resolve to the same
+// entity or model name.
 type EntityPropNameProps<ET extends EditorType> = ET extends "PROPOSITION"
   ? { proposition?: Proposition }
   : ET extends "PERSORG"
   ? { persorg?: Persorg }
   : ET extends "ACCOUNT_SETTINGS"
   ? { accountSettings?: AccountSettings }
+  : ET extends "SOURCE"
+  ? { source?: Source | CreateSourceInput | UpdateSourceInput }
   : never;
 
 interface EditorProps extends WithEditorProps {
@@ -74,23 +82,13 @@ export default function withEditableEntity<
     showStatusText = true,
     ...rest
   }: Props) {
-    let entity;
-    switch (editorType) {
-      case "PROPOSITION":
-        entity = (rest as any)["proposition"];
-        break;
-      case "ACCOUNT_SETTINGS":
-        entity = (rest as any)["accountSettings"];
-        break;
-      case "PERSORG":
-        entity = (rest as any)["persorg"];
-        break;
-      default:
-        throw newProgrammingError(
-          `Unsupported withEditableEntity editorType: ${editorType}`
-        );
+    const entityPropName = camelCase(editorType.toLowerCase());
+    if (!(entityPropName in rest)) {
+      logger.error(
+        `withEditableEntity: ${editorType} entity not found in props.`
+      );
     }
-
+    const entity = (rest as any)[entityPropName];
     const editorStates = useAppSelector((state) => state.editors[editorType]);
     const { editEntity = null, isSaving = undefined } =
       editorStates?.[editorId] || {};

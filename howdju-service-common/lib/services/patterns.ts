@@ -42,9 +42,7 @@ export async function readWriteReread<T>(
     }
     if (!(err instanceof DatabaseError)) {
       throw new Error(
-        `Thrown was not a DatabaseError (${err.constructor.name}): ${toJson(
-          err
-        )}`
+        `Thrown was not a DatabaseError (${err.constructor.name}): ${err.message}`
       );
     }
     if (err.code !== CONSTRAINT_VIOLATION_CODE) {

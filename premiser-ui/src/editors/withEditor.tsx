@@ -130,9 +130,9 @@ export type EntityEditorFieldsProps<EntityProp extends string, Schema> = {
    * TODO(341) allow EditorFields components to omit editorDispatch.
    */
   editorDispatch: EditorFieldsDispatch;
-  errors?: ModelErrors<Schema>;
-  blurredFields?: BlurredFields<Schema>;
-  dirtyFields?: DirtyFields<Schema>;
+  errors: ModelErrors<Schema> | undefined;
+  blurredFields: BlurredFields<Schema> | undefined;
+  dirtyFields: DirtyFields<Schema> | undefined;
   wasSubmitAttempted: boolean;
 } & EntityPropProps<EntityProp, Schema>;
 

@@ -452,6 +452,8 @@ export default function CreatePropositionPage({ mode, location }: Props) {
                   doShowTypeSelection={doShowTypeSelection}
                   onPropertyChange={onPropertyChange}
                   errors={errors.justification}
+                  blurredFields={blurredFields?.justification}
+                  dirtyFields={dirtyFields?.justification}
                   editorDispatch={editorDispatch}
                   wasSubmitAttempted={wasSubmitAttempted}
                   onSubmit={onSubmit}

@@ -1,2 +1,2 @@
-lib/standaloneAjv.js
-lib/domBibliographicInfoTestData/**
+/lib/standaloneAjv.js
+/lib/testData/

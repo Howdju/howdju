@@ -28,6 +28,7 @@ import PropositionUsagesPage from "./pages/propositionUsages/PropositionUsagesPa
 import RecentActivityPage from "./RecentActivityPage";
 import RegistrationConfirmationPage from "./pages/registration/RegistrationConfirmationPage";
 import RegistrationRequestPage from "./pages/registration/RegistrationRequestPage";
+import SourcePage from "./pages/source/SourcePage";
 import SubmitMediaExcerptPage from "./pages/SubmitMediaExcerptPage";
 import TagPage from "./pages/tag/TagPage";
 import TestErrorPage from "./TestErrorPage";
@@ -127,6 +128,9 @@ const routesById = {
   ),
   persorg: (
     <Route exact path="/persorgs/:persorgId/:slug?" component={PersorgPage} />
+  ),
+  source: (
+    <Route exact path="/sources/:sourceId/:slug?" component={SourcePage} />
   ),
   tag: <Route exact path="/tags/:tagId/:tagSlug?" component={TagPage} />,
   searchJustifications: (

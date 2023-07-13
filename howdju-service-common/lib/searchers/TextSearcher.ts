@@ -8,28 +8,19 @@ import { Database } from "../database";
 const emptyResults = Promise.resolve([]);
 
 export class TextSearcher<Row extends QueryResultRow, Data> {
-  database: Database;
-  tableName: string;
-  textColumnName: string;
-  rowMapper: (row: Row) => Data | undefined;
-  dedupColumnName: string;
   searchFullTextPhraseQuery: string;
   searchFullTextPlainQuery: string;
   searchContainingTextQuery: string;
 
   constructor(
-    database: Database,
-    tableName: string,
-    textColumnName: string,
-    rowMapper: (row: Row) => Data | undefined,
-    dedupColumnName: string
+    private database: Database,
+    private tableName: string,
+    private textColumnName: string,
+    private rowMapper: (
+      row: Row
+    ) => Promise<Data | undefined> | Data | undefined,
+    private dedupColumnName: string
   ) {
-    this.database = database;
-    this.tableName = tableName;
-    this.textColumnName = textColumnName;
-    this.rowMapper = rowMapper;
-    this.dedupColumnName = dedupColumnName;
-
     this.searchFullTextPhraseQuery = makeSearchFullTextPhraseQuery(
       tableName,
       textColumnName
@@ -103,7 +94,10 @@ export class TextSearcher<Row extends QueryResultRow, Data> {
       rawRows,
       containingRows
     ) as Row[];
-    return filterDefined(uniqueRows.map(this.rowMapper));
+    const mappedRows = await Promise.all(
+      uniqueRows.map((row) => this.rowMapper(row))
+    );
+    return filterDefined(mappedRows);
   }
 }
 

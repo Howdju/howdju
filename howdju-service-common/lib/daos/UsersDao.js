@@ -1,5 +1,5 @@
 const { toUser } = require("./orm");
-const { mapSingle } = require("./daosUtil");
+const { mapSingle, toIdString } = require("./daosUtil");
 const { BaseDao } = require("./BaseDao");
 
 exports.UsersDao = class UsersDao extends BaseDao {
@@ -62,6 +62,19 @@ exports.UsersDao = class UsersDao extends BaseDao {
         [userId]
       )
       .then(({ rows: [row] }) => toUser(row));
+  }
+
+  readUserBlurbForId(userId) {
+    return this.database
+      .query(
+        "readUserBlurbForId",
+        "select user_id, long_name from users where user_id = $1 and deleted is null",
+        [userId]
+      )
+      .then(({ rows: [row] }) => ({
+        id: toIdString(row.user_id),
+        longName: row.long_name,
+      }));
   }
 
   readUserForEmail(email) {

@@ -82,6 +82,9 @@ export default handleActions(
       api.fetchRecentMediaExcerpts.response,
       api.fetchRootPropositionStatements.response,
       api.fetchSentenceStatements.response,
+      api.fetchSource.response,
+      api.fetchSourceMediaExcerpts.response,
+      api.fetchMoreSourceMediaExcerpts.response,
       api.fetchSourceDescriptionSuggestions.response,
       api.fetchSpeakerStatements.response,
       api.fetchSpeakerMediaExcerpts.response,
@@ -92,6 +95,7 @@ export default handleActions(
       api.fetchWritQuote.response,
       api.fetchWritTitleSuggestions.response,
       api.updatePersorg.response,
+      api.updateSource.response,
       api.updateProposition.response,
       api.updateWritQuote.response
     )]: {

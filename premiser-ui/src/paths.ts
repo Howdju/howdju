@@ -4,7 +4,6 @@ import queryString from "query-string";
 
 import {
   ContextTrailItem,
-  CreatePersorgInput,
   EntityId,
   JustificationBasisSourceType,
   JustificationOut,
@@ -18,7 +17,6 @@ import {
   StatementRef,
   TagOut,
   toSlug,
-  UpdatePersorgInput,
   WritQuoteOut,
   WritRef,
 } from "howdju-common";
@@ -83,7 +81,7 @@ class Paths {
     }
   };
 
-  persorg = (persorg: CreatePersorgInput | UpdatePersorgInput | PersorgOut) =>
+  persorg = (persorg: PersorgOut) =>
     `/persorgs/${persorg.id}/${toSlug(persorg.name)}`;
 
   writQuote = (writQuote: WritQuoteOut) =>

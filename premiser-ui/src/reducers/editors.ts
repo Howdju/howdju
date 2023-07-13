@@ -66,6 +66,8 @@ import {
   CreateMediaExcerptInput,
   CreateMediaExcerpt,
   makeModelErrors,
+  CreateSourceInput,
+  UpdateSourceInput,
 } from "howdju-common";
 import { serviceRoutes, InferResponseBody } from "howdju-service-routes";
 
@@ -101,21 +103,22 @@ forEach(
 );
 
 export const EditorTypes = {
-  PROPOSITION: "PROPOSITION",
-  JUSTIFICATION_BASIS_COMPOUND: "JUSTIFICATION_BASIS_COMPOUND",
-  WRIT_QUOTE: "WRIT_QUOTE",
+  ACCOUNT_SETTINGS: "ACCOUNT_SETTINGS",
+  CONTENT_REPORT: "CONTENT_REPORT",
   COUNTER_JUSTIFICATION: "COUNTER_JUSTIFICATION",
-  /* e.g. new justification dialog */
-  NEW_JUSTIFICATION: "NEW_JUSTIFICATION",
+  JUSTIFICATION_BASIS_COMPOUND: "JUSTIFICATION_BASIS_COMPOUND",
   /* e.g. Proposition justification page */
   JUSTIFIED_SENTENCE: "JUSTIFIED_SENTENCE",
   LOGIN_CREDENTIALS: "LOGIN_CREDENTIALS",
-  REGISTRATION_REQUEST: "REGISTRATION_REQUEST",
-  REGISTRATION_CONFIRMATION: "REGISTRATION_CONFIRMATION",
-  PERSORG: "PERSORG",
-  ACCOUNT_SETTINGS: "ACCOUNT_SETTINGS",
-  CONTENT_REPORT: "CONTENT_REPORT",
   MEDIA_EXCERPT: "MEDIA_EXCERPT",
+  /* e.g. new justification dialog */
+  NEW_JUSTIFICATION: "NEW_JUSTIFICATION",
+  PERSORG: "PERSORG",
+  PROPOSITION: "PROPOSITION",
+  REGISTRATION_CONFIRMATION: "REGISTRATION_CONFIRMATION",
+  REGISTRATION_REQUEST: "REGISTRATION_REQUEST",
+  SOURCE: "SOURCE",
+  WRIT_QUOTE: "WRIT_QUOTE",
 } as const;
 export type EditorType = typeof EditorTypes[keyof typeof EditorTypes];
 
@@ -135,18 +138,20 @@ const UNABLE_TO_LOCATION_QUOTATION_MESSAGE =
  * Something we have an editor for.
  */
 export type EditorEntity =
-  | CreatePropositionInput
-  | CreateJustificationInput
+  | CreateContentReportInput
   | CreateCounterJustificationInput
+  | CreateJustificationInput
   | CreateJustifiedSentenceInput
+  | CreateMediaExcerptInput
+  | CreatePropositionInput
+  | CreateRegistrationRequestInput
+  | CreateRegistrationConfirmationInput
+  | CreateSourceInput
+  | UpdateWritInput
   | CreateWritQuoteInput
   | UpdateWritQuoteInput
-  | UpdateWritInput
   | UpdateAccountSettingsInput
-  | CreateRegistrationRequestInput
-  | CreateContentReportInput
-  | CreateRegistrationConfirmationInput
-  | CreateMediaExcerptInput;
+  | UpdateSourceInput;
 /**
  * @typeparam T the editor model type.
  * @typeparam U the request model type.
