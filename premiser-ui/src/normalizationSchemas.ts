@@ -204,13 +204,14 @@ export const mediaExcerptSchema = new schema.Entity<MediaExcerpt>(
 export const mediaExcerptsSchema = new schema.Array(mediaExcerptSchema);
 
 export const mainSearchResultSchema = {
-  propositionTexts: propositionsSchema,
+  mediaExcerpts: mediaExcerptsSchema,
+  persorgs: persorgsSchema,
+  propositions: propositionsSchema,
   sources: sourcesSchema,
+  tags: tagsSchema,
   writQuoteQuoteTexts: writQuotesSchema,
   writQuoteUrls: writQuotesSchema,
   writTitles: writsSchema,
-  tags: tagsSchema,
-  persorgsFromName: persorgsSchema,
 };
 
 /**

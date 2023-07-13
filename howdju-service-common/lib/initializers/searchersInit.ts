@@ -4,6 +4,7 @@ import {
   makeWritQuoteQuoteTextSearcher,
   makePersorgsNameSearcher,
   makeSourceDescriptionSearcher,
+  makeMediaExcerptSearcher,
 } from "../searchers/searchers";
 import { DaosProvider } from "./daosInit";
 
@@ -25,6 +26,10 @@ export function searchersInitializer(provider: DaosProvider) {
     provider.database,
     provider.sourcesDao
   );
+  const mediaExcerptsSearcher = makeMediaExcerptSearcher(
+    provider.database,
+    provider.mediaExcerptsDao
+  );
 
   provider.logger.debug("searchersInit complete");
 
@@ -34,5 +39,6 @@ export function searchersInitializer(provider: DaosProvider) {
     writQuotesQuoteTextSearcher,
     persorgsNameSearcher,
     sourceDescriptionSearcher,
+    mediaExcerptsSearcher,
   };
 }

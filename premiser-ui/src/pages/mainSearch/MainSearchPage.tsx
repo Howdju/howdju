@@ -1,12 +1,13 @@
 import React, { UIEvent, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { find, map } from "lodash";
-import { denormalize } from "normalizr";
 import { CircularProgress } from "react-md";
 import FlipMove from "react-flip-move";
 import { useLocation } from "react-router";
 
 import {
+  MediaExcerptView,
+  PersorgOut,
   PropositionOut,
   SourceOut,
   WritOut,
@@ -23,8 +24,10 @@ import { mainSearchResultSchema } from "../../normalizationSchemas";
 import config from "../../config";
 import { logger } from "../../logger";
 import TagsViewer from "../../TagsViewer";
-import { useAppSelector } from "@/hooks";
+import { useAppEntitySelector, useAppSelector } from "@/hooks";
 import SourceEntityCard from "@/components/sources/SourceEntityCard";
+import MediaExcerptCard from "@/components/mediaExcerpts/MediaExcerptCard";
+import PersorgEntityCard from "@/PersorgEntityCard";
 
 export default function MainSearchPage() {
   const location = useLocation();
@@ -36,23 +39,20 @@ export default function MainSearchPage() {
     dispatch(api.fetchMainSearchResults(searchText));
   }, [dispatch, searchText]);
 
-  const { isFetching } = useAppSelector((state) => state.mainSearchPage);
+  const { isFetching, normalizedResult } = useAppSelector(
+    (state) => state.mainSearchPage
+  );
 
   const {
-    tags,
-    propositionTexts,
+    mediaExcerpts,
+    persorgs,
+    propositions,
     sources,
+    tags,
     writQuoteQuoteTexts,
     writQuoteUrls,
     writTitles,
-  } = useAppSelector((state) =>
-    // TODO make generic
-    denormalize(
-      state.mainSearchPage.normalizedResult,
-      mainSearchResultSchema,
-      state.entities
-    )
-  );
+  } = useAppEntitySelector(normalizedResult, mainSearchResultSchema);
 
   const goToTag = (tagName: string, _index: number, _event: UIEvent) => {
     const tag = find(tags, (t) => t.name === tagName);
@@ -96,9 +96,9 @@ export default function MainSearchPage() {
         className="md-cell md-cell--12 md-grid md-grid--card-list--tablet"
         {...config.ui.flipMove}
       >
-        {map(propositionTexts, toPropositionCard)}
+        {map(propositions, toPropositionCard)}
       </FlipMove>
-      {!isFetching && propositionTexts.length < 1 && noResults}
+      {!isFetching && propositions.length < 1 && noResults}
 
       <h2 className="md-cell md-cell--12">Sources</h2>
       <FlipMove
@@ -107,7 +107,25 @@ export default function MainSearchPage() {
       >
         {map(sources, toSourceCard)}
       </FlipMove>
-      {!isFetching && propositionTexts.length < 1 && noResults}
+      {!isFetching && sources.length < 1 && noResults}
+
+      <h2 className="md-cell md-cell--12">Persorgs</h2>
+      <FlipMove
+        className="md-cell md-cell--12 md-grid md-grid--card-list--tablet"
+        {...config.ui.flipMove}
+      >
+        {map(persorgs, toPersorgCard)}
+      </FlipMove>
+      {!isFetching && persorgs.length < 1 && noResults}
+
+      <h2 className="md-cell md-cell--12">Media excerpts</h2>
+      <FlipMove
+        className="md-cell md-cell--12 md-grid md-grid--card-list--tablet"
+        {...config.ui.flipMove}
+      >
+        {map(mediaExcerpts, toMediaExcerptCard)}
+      </FlipMove>
+      {!isFetching && mediaExcerpts.length < 1 && noResults}
 
       <h2 className="md-cell md-cell--12">Writs</h2>
       <FlipMove
@@ -160,6 +178,30 @@ function toSourceCard(source: SourceOut) {
   return (
     <SourceEntityCard
       source={source}
+      id={id}
+      key={id}
+      className={smallCellClasses}
+    />
+  );
+}
+
+function toMediaExcerptCard(mediaExcerpt: MediaExcerptView) {
+  const id = `media-excerpt-card-${mediaExcerpt.id}`;
+  return (
+    <MediaExcerptCard
+      mediaExcerpt={mediaExcerpt}
+      id={id}
+      key={id}
+      className={smallCellClasses}
+    />
+  );
+}
+
+function toPersorgCard(persorg: PersorgOut) {
+  const id = `persorg-card-${persorg.id}`;
+  return (
+    <PersorgEntityCard
+      persorg={persorg}
       id={id}
       key={id}
       className={smallCellClasses}

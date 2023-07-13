@@ -10,9 +10,11 @@ export const mainSearchPageSlice = createSlice({
   initialState: {
     isFetching: false,
     normalizedResult: {
-      tags: [] as EntityId[],
-      propositionTexts: [] as EntityId[],
+      mediaExcerpts: [] as EntityId[],
+      persorgs: [] as EntityId[],
+      propositions: [] as EntityId[],
       sources: [] as EntityId[],
+      tags: [] as EntityId[],
       writQuoteQuoteTexts: [] as EntityId[],
       writQuoteUrls: [] as EntityId[],
       writTitles: [] as EntityId[],

@@ -208,6 +208,7 @@ export function servicesInitializer(provider: AwsProvider) {
     tagsService,
     provider.propositionsTextSearcher,
     provider.sourceDescriptionSearcher,
+    provider.mediaExcerptsSearcher,
     provider.writsTitleSearcher,
     provider.writQuotesQuoteTextSearcher,
     writQuotesService,

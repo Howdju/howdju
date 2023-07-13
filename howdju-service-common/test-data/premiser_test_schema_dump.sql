@@ -1835,6 +1835,13 @@ CREATE UNIQUE INDEX media_excerpt_citations_unq_idx ON public.media_excerpt_cita
 
 
 --
+-- Name: media_excerpt_quotation_english_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX media_excerpt_quotation_english_idx ON public.media_excerpts USING gin (to_tsvector('english'::regconfig, (quotation)::text));
+
+
+--
 -- Name: persorg_organization_unique_idx; Type: INDEX; Schema: public; Owner: -
 --
 
