@@ -1,30 +1,30 @@
 import React, { UIEvent, useEffect } from "react";
 import { useDispatch } from "react-redux";
-import find from "lodash/find";
-import map from "lodash/map";
+import { find, map } from "lodash";
 import { denormalize } from "normalizr";
 import { CircularProgress } from "react-md";
 import FlipMove from "react-flip-move";
+import { useLocation } from "react-router";
+
+import {
+  PropositionOut,
+  SourceOut,
+  WritOut,
+  WritQuoteOut,
+} from "howdju-common";
 
 import mainSearcher from "../../mainSearcher";
 import PropositionCard from "../../PropositionCard";
 import WritCard from "../../WritCard";
 import WritQuoteCard from "../../WritQuoteCard";
 import { smallCellClasses } from "../../CellList";
-import { RootState } from "@/setupStore";
 import { api, goto } from "../../actions";
-import {
-  writsSchema,
-  writQuotesSchema,
-  propositionsSchema,
-  tagsSchema,
-} from "../../normalizationSchemas";
+import { mainSearchResultSchema } from "../../normalizationSchemas";
 import config from "../../config";
 import { logger } from "../../logger";
 import TagsViewer from "../../TagsViewer";
-import { PropositionOut, WritOut, WritQuoteOut } from "howdju-common";
 import { useAppSelector } from "@/hooks";
-import { useLocation } from "react-router";
+import SourceEntityCard from "@/components/sources/SourceEntityCard";
 
 export default function MainSearchPage() {
   const location = useLocation();
@@ -36,17 +36,23 @@ export default function MainSearchPage() {
     dispatch(api.fetchMainSearchResults(searchText));
   }, [dispatch, searchText]);
 
-  const isFetching = useAppSelector((state) => state.mainSearchPage.isFetching);
-  const results = useAppSelector((state) => state.mainSearchPage.results);
-  const entities = useAppSelector((state) => state.entities);
+  const { isFetching } = useAppSelector((state) => state.mainSearchPage);
 
   const {
     tags,
     propositionTexts,
+    sources,
     writQuoteQuoteTexts,
     writQuoteUrls,
     writTitles,
-  } = denormalizeResults(results, entities);
+  } = useAppSelector((state) =>
+    // TODO make generic
+    denormalize(
+      state.mainSearchPage.normalizedResult,
+      mainSearchResultSchema,
+      state.entities
+    )
+  );
 
   const goToTag = (tagName: string, _index: number, _event: UIEvent) => {
     const tag = find(tags, (t) => t.name === tagName);
@@ -94,6 +100,15 @@ export default function MainSearchPage() {
       </FlipMove>
       {!isFetching && propositionTexts.length < 1 && noResults}
 
+      <h2 className="md-cell md-cell--12">Sources</h2>
+      <FlipMove
+        className="md-cell md-cell--12 md-grid md-grid--card-list--tablet"
+        {...config.ui.flipMove}
+      >
+        {map(sources, toSourceCard)}
+      </FlipMove>
+      {!isFetching && propositionTexts.length < 1 && noResults}
+
       <h2 className="md-cell md-cell--12">Writs</h2>
       <FlipMove
         className="md-cell md-cell--12 md-grid md-grid--card-list--tablet"
@@ -128,39 +143,23 @@ export default function MainSearchPage() {
   );
 }
 
-function denormalizeResults(
-  results: RootState["mainSearchPage"]["results"],
-  entities: RootState["entities"]
-) {
-  const {
-    tags,
-    propositionTexts,
-    writQuoteQuoteTexts,
-    writQuoteUrls,
-    writTitles,
-  } = results;
-  return {
-    tags: denormalize(tags, tagsSchema, entities),
-    propositionTexts: denormalize(
-      propositionTexts,
-      propositionsSchema,
-      entities
-    ),
-    writQuoteQuoteTexts: denormalize(
-      writQuoteQuoteTexts,
-      writQuotesSchema,
-      entities
-    ),
-    writQuoteUrls: denormalize(writQuoteUrls, writQuotesSchema, entities),
-    writTitles: denormalize(writTitles, writsSchema, entities),
-  };
-}
-
 function toPropositionCard(proposition: PropositionOut) {
   const id = `proposition-card-${proposition.id}`;
   return (
     <PropositionCard
       proposition={proposition}
+      id={id}
+      key={id}
+      className={smallCellClasses}
+    />
+  );
+}
+
+function toSourceCard(source: SourceOut) {
+  const id = `source-card-${source.id}`;
+  return (
+    <SourceEntityCard
+      source={source}
       id={id}
       key={id}
       className={smallCellClasses}

@@ -66,7 +66,7 @@ export const makePersorgsNameSearcher = (database: Database) =>
   );
 export type PersorgsNameSearcher = ReturnType<typeof makePersorgsNameSearcher>;
 
-export const makeSourcesDescriptionSearcher = (
+export const makeSourceDescriptionSearcher = (
   database: Database,
   sourcesDao: SourcesDao
 ) =>
@@ -79,6 +79,6 @@ export const makeSourcesDescriptionSearcher = (
     },
     "source_id"
   );
-export type SourcesDescriptionSearcher = ReturnType<
-  typeof makeSourcesDescriptionSearcher
+export type SourceDescriptionSearcher = ReturnType<
+  typeof makeSourceDescriptionSearcher
 >;

@@ -59,7 +59,7 @@ import {
   justificationSchema,
   justificationsSchema,
   justificationVoteSchema,
-  mainSearchResultsSchema,
+  mainSearchResultSchema,
   mediaExcerptSchema,
   mediaExcerptsSchema,
   persorgSchema,
@@ -1264,7 +1264,7 @@ export const api = {
       queryStringParams: {
         searchText,
       },
-      normalizationSchema: mainSearchResultsSchema,
+      normalizationSchema: mainSearchResultSchema,
     })
   ),
 

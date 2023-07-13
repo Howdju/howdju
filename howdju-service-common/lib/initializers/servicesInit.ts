@@ -205,9 +205,9 @@ export function servicesInitializer(provider: AwsProvider) {
   );
 
   const mainSearchService = new MainSearchService(
-    provider.logger,
     tagsService,
     provider.propositionsTextSearcher,
+    provider.sourceDescriptionSearcher,
     provider.writsTitleSearcher,
     provider.writQuotesQuoteTextSearcher,
     writQuotesService,
