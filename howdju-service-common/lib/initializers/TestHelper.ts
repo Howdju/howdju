@@ -5,9 +5,11 @@ import {
   CreateMediaExcerpt,
   CreatePersorg,
   CreateSource,
+  CreateUrl,
   CreateWritQuote,
   EntityId,
   Persisted,
+  UrlOut,
   User,
   utcNow,
   WritQuoteOut,
@@ -136,10 +138,16 @@ export default class TestHelper {
     return writQuote;
   }
 
-  async makeUrl({ userId }: { userId: string }) {
-    const createUrl = {
-      url: "https://www.poetryfoundation.org/poems/153876/what-if-a-much-of-a-which-of-a-wind",
-    };
+  async makeUrl(
+    { userId }: { userId: string },
+    overrides?: Partial<CreateUrl>
+  ): Promise<UrlOut> {
+    const createUrl = merge(
+      {
+        url: "https://www.poetryfoundation.org/poems/153876/what-if-a-much-of-a-which-of-a-wind",
+      },
+      overrides
+    );
     return await this.servicesProvider.urlsService.readOrCreateUrlAsUser(
       createUrl,
       userId,

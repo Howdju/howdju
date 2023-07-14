@@ -145,9 +145,7 @@ describe("MediaExcerptsService", () => {
         locators: {
           urlLocators: [
             {
-              url: {
-                url: "https://www.example.com",
-              },
+              url: { url: "https://www.example.com" },
               anchors: [
                 {
                   exactText: "exact text",
@@ -165,13 +163,15 @@ describe("MediaExcerptsService", () => {
             source: { description: "the source description" },
             pincite: "the pincite",
           },
-          {
-            source: { description: "the source description" },
-          },
+          { source: { description: "the source description" } },
         ],
         speakers: [{ name: "the speaker", isOrganization: false }],
       };
-      await service.readOrCreateMediaExcerpt({ authToken }, createMediaExcerpt);
+      const { mediaExcerpt: firstMediaExcerpt } =
+        await service.readOrCreateMediaExcerpt(
+          { authToken },
+          createMediaExcerpt
+        );
 
       // Act
       const { isExtant, mediaExcerpt } = await service.readOrCreateMediaExcerpt(
@@ -180,11 +180,225 @@ describe("MediaExcerptsService", () => {
       );
 
       // Assert
-      const readMediaExcerpt = await service.readMediaExcerptForId(
-        mediaExcerpt.id
-      );
-      expect(readMediaExcerpt).toEqual(expectToBeSameMomentDeep(mediaExcerpt));
+      expect(mediaExcerpt).toEqual(expectToBeSameMomentDeep(firstMediaExcerpt));
       expect(isExtant).toBe(true);
+    });
+    test("reads the media excerpt when Sources overlap and there are new locators", async () => {
+      const { authToken } = await testHelper.makeUser();
+      const createMediaExcerpt: CreateMediaExcerpt = {
+        localRep: {
+          quotation: "the text quote",
+        },
+        locators: {
+          urlLocators: [{ url: { url: "https://www.example.com" } }],
+        },
+        citations: [{ source: { description: "the source description" } }],
+        speakers: [{ name: "the speaker", isOrganization: false }],
+      };
+      const { mediaExcerpt: firstMediaExcerpt } =
+        await service.readOrCreateMediaExcerpt(
+          { authToken },
+          createMediaExcerpt
+        );
+
+      // Act
+      const { isExtant, mediaExcerpt: nextMediaExcerpt } =
+        await service.readOrCreateMediaExcerpt(
+          { authToken },
+          {
+            ...createMediaExcerpt,
+            locators: {
+              urlLocators: [{ url: { url: "https://www.example-2.com" } }],
+            },
+          }
+        );
+
+      // Assert
+      const readMediaExcerpt = await service.readMediaExcerptForId(
+        firstMediaExcerpt.id
+      );
+      expect(nextMediaExcerpt).toEqual(
+        expectToBeSameMomentDeep(readMediaExcerpt)
+      );
+      expect(isExtant).toBe(false);
+    });
+    test("reads the media excerpt when Sources overlap and there is a new locator", async () => {
+      const { authToken } = await testHelper.makeUser();
+      const createMediaExcerpt: CreateMediaExcerpt = {
+        localRep: {
+          quotation: "the text quote",
+        },
+        citations: [{ source: { description: "the source description" } }],
+        speakers: [{ name: "the speaker", isOrganization: false }],
+      };
+      const { mediaExcerpt: firstMediaExcerpt } =
+        await service.readOrCreateMediaExcerpt(
+          { authToken },
+          createMediaExcerpt
+        );
+
+      // Act
+      const { isExtant, mediaExcerpt: nextMediaExcerpt } =
+        await service.readOrCreateMediaExcerpt(
+          { authToken },
+          {
+            ...createMediaExcerpt,
+            locators: {
+              urlLocators: [{ url: { url: "https://www.example-2.com" } }],
+            },
+          }
+        );
+
+      // Assert
+      const readMediaExcerpt = await service.readMediaExcerptForId(
+        firstMediaExcerpt.id
+      );
+      expect(nextMediaExcerpt).toEqual(
+        expectToBeSameMomentDeep(readMediaExcerpt)
+      );
+      expect(isExtant).toBe(false);
+    });
+    test("reads the media excerpt when Sources overlap and locators are missing", async () => {
+      const { authToken } = await testHelper.makeUser();
+      const createMediaExcerpt: CreateMediaExcerpt = {
+        localRep: {
+          quotation: "the text quote",
+        },
+        locators: {
+          urlLocators: [{ url: { url: "https://www.example.com" } }],
+        },
+        citations: [{ source: { description: "the source description" } }],
+        speakers: [{ name: "the speaker", isOrganization: false }],
+      };
+      const { mediaExcerpt: firstMediaExcerpt } =
+        await service.readOrCreateMediaExcerpt(
+          { authToken },
+          createMediaExcerpt
+        );
+
+      // Act
+      const { isExtant, mediaExcerpt: nextMediaExcerpt } =
+        await service.readOrCreateMediaExcerpt(
+          { authToken },
+          { ...createMediaExcerpt, locators: undefined }
+        );
+
+      // Assert
+      expect(nextMediaExcerpt).toEqual(
+        expectToBeSameMomentDeep(firstMediaExcerpt)
+      );
+      expect(isExtant).toBe(true);
+    });
+    test("reads the media excerpt when URLs overlap and there are new Sources", async () => {
+      const { authToken } = await testHelper.makeUser();
+      const createMediaExcerpt: CreateMediaExcerpt = {
+        localRep: {
+          quotation: "the text quote",
+        },
+        locators: {
+          urlLocators: [{ url: { url: "https://www.example.com" } }],
+        },
+        citations: [{ source: { description: "the source description" } }],
+        speakers: [{ name: "the speaker", isOrganization: false }],
+      };
+      const { mediaExcerpt: firstMediaExcerpt } =
+        await service.readOrCreateMediaExcerpt(
+          { authToken },
+          createMediaExcerpt
+        );
+
+      // Act
+      const { isExtant, mediaExcerpt: nextMediaExcerpt } =
+        await service.readOrCreateMediaExcerpt(
+          { authToken },
+          {
+            ...createMediaExcerpt,
+            citations: [
+              { source: { description: "the source description 2" } },
+            ],
+          }
+        );
+
+      // Assert
+      const readMediaExcerpt = await service.readMediaExcerptForId(
+        firstMediaExcerpt.id
+      );
+      expect(nextMediaExcerpt).toEqual(
+        expectToBeSameMomentDeep(readMediaExcerpt)
+      );
+      expect(isExtant).toBe(false);
+    });
+    test("reads the media excerpt when URLs overlap and Sources are missing", async () => {
+      const { authToken } = await testHelper.makeUser();
+      const createMediaExcerpt: CreateMediaExcerpt = {
+        localRep: {
+          quotation: "the text quote",
+        },
+        locators: {
+          urlLocators: [{ url: { url: "https://www.example.com" } }],
+        },
+        citations: [{ source: { description: "the source description" } }],
+        speakers: [{ name: "the speaker", isOrganization: false }],
+      };
+      const { mediaExcerpt: firstMediaExcerpt } =
+        await service.readOrCreateMediaExcerpt(
+          { authToken },
+          createMediaExcerpt
+        );
+
+      // Act
+      const { isExtant, mediaExcerpt: nextMediaExcerpt } =
+        await service.readOrCreateMediaExcerpt(
+          { authToken },
+          { ...createMediaExcerpt, citations: undefined }
+        );
+
+      // Assert
+      expect(nextMediaExcerpt).toEqual(
+        expectToBeSameMomentDeep(firstMediaExcerpt)
+      );
+      expect(isExtant).toBe(true);
+    });
+    test("creates a new media excerpt when neither Citations nor Sources overlap", async () => {
+      const { authToken } = await testHelper.makeUser();
+      const createMediaExcerpt: CreateMediaExcerpt = {
+        localRep: {
+          quotation: "the text quote",
+        },
+        locators: {
+          urlLocators: [{ url: { url: "https://www.website-1.com" } }],
+        },
+        citations: [{ source: { description: "the source description" } }],
+        speakers: [{ name: "the speaker", isOrganization: false }],
+      };
+      const { mediaExcerpt: firstMediaExcerpt } =
+        await service.readOrCreateMediaExcerpt(
+          { authToken },
+          createMediaExcerpt
+        );
+
+      const nextCreateMediaExcerpt = {
+        ...createMediaExcerpt,
+        locators: {
+          urlLocators: [{ url: { url: "https://www.website-2.com" } }],
+        },
+        citations: [
+          { source: { description: "a different source description" } },
+        ],
+      };
+
+      // Act
+      const { isExtant, mediaExcerpt: nextMediaExcerpt } =
+        await service.readOrCreateMediaExcerpt(
+          { authToken },
+          nextCreateMediaExcerpt
+        );
+
+      // Assert
+      expect(nextMediaExcerpt).not.toEqual(
+        expectToBeSameMomentDeep(firstMediaExcerpt)
+      );
+      expect(isExtant).toBe(false);
     });
     test("re-uses related entities for concurrent attempts", async () => {
       // Arrange
@@ -246,6 +460,104 @@ describe("MediaExcerptsService", () => {
       for (const mediaExcerptResult of mediaExcerptResults) {
         expect(mediaExcerptResult.mediaExcerpt).toEqual(
           expectToBeSameMomentDeep(mediaExcerpt)
+        );
+      }
+    });
+    test("re-uses related entities for concurrent additions of UrlLocators", async () => {
+      // Arrange
+      const count = 5;
+      const { authToken } = await testHelper.makeUser();
+      const createMediaExcerpt: CreateMediaExcerpt = {
+        localRep: {
+          quotation: "the text quote",
+        },
+        citations: [
+          {
+            source: { description: "the source description" },
+          },
+        ],
+      };
+      const { mediaExcerpt: originalMediaExcerpt } =
+        await service.readOrCreateMediaExcerpt(
+          { authToken },
+          createMediaExcerpt
+        );
+
+      // Act
+
+      // Since these all share a citation with the previously created media excerpt,
+      // they will read the media excerpt and then attempt to add relations between
+      // it and the new URL. Some of them will double-write due to the
+      // lack of transactional isolation, and readMediaExcerpt will have more than
+      // one identical UrlLocator.
+      const mediaExcerptResults = await Promise.all(
+        Array.from({ length: count }).map(() =>
+          service.readOrCreateMediaExcerpt(
+            { authToken },
+            {
+              ...createMediaExcerpt,
+              locators: {
+                urlLocators: [{ url: { url: "http://www.website.com" } }],
+              },
+            }
+          )
+        )
+      );
+
+      // Assert
+      const readMediaExcerpt = await service.readMediaExcerptForId(
+        originalMediaExcerpt.id
+      );
+      for (const { mediaExcerpt } of mediaExcerptResults) {
+        expect(mediaExcerpt).toEqual(
+          expectToBeSameMomentDeep(readMediaExcerpt)
+        );
+      }
+    });
+    test("re-uses related entities for concurrent additions of Citations", async () => {
+      // Arrange
+      const count = 5;
+      const { authToken } = await testHelper.makeUser();
+      const createMediaExcerpt: CreateMediaExcerpt = {
+        localRep: {
+          quotation: "the text quote",
+        },
+        locators: { urlLocators: [{ url: { url: "http://www.website.com" } }] },
+      };
+      const { mediaExcerpt: originalMediaExcerpt } =
+        await service.readOrCreateMediaExcerpt(
+          { authToken },
+          createMediaExcerpt
+        );
+
+      // Act
+
+      // Since these all share a URL with the previously created media excerpt,
+      // they will read the media excerpt and then attempt to add relations between
+      // it and the new Source. Some of them will double-write due to the
+      // lack of transactional isolation, and readMediaExcerpt will have more than
+      // one identical Source.
+      const mediaExcerptResults = await Promise.all(
+        Array.from({ length: count }).map(() =>
+          service.readOrCreateMediaExcerpt(
+            { authToken },
+            {
+              ...createMediaExcerpt,
+              citations: [
+                { source: { description: "the source description" } },
+              ],
+            }
+          )
+        )
+      );
+
+      // Assert
+      const readMediaExcerpt = await service.readMediaExcerptForId(
+        originalMediaExcerpt.id
+      );
+      for (const { mediaExcerpt } of mediaExcerptResults) {
+        expect(mediaExcerpt).toEqual(
+          expectToBeSameMomentDeep(readMediaExcerpt)
         );
       }
     });

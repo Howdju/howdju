@@ -509,6 +509,8 @@ export const MediaExcerptCitation = z.object({
   source: Source,
   pincite: z.string().min(1).max(64).optional(),
   normalPincite: z.string().min(1).max(64).optional(),
+  created: momentObject,
+  creatorUserId: z.string(),
 });
 export type MediaExcerptCitation = z.output<typeof MediaExcerptCitation>;
 
@@ -519,6 +521,8 @@ export const CreateMediaExcerptCitation = MediaExcerptCitation.extend({
   // will be substituted for the mediaExcerptId.
   mediaExcerptId: true,
   normalPincite: true,
+  created: true,
+  creatorUserId: true,
 });
 export type CreateMediaExcerptCitation = z.output<
   typeof CreateMediaExcerptCitation

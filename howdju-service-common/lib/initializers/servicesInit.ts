@@ -150,7 +150,6 @@ export function servicesInitializer(provider: AwsProvider) {
   );
 
   const mediaExcerptsService = new MediaExcerptsService(
-    provider.logger,
     authService,
     provider.mediaExcerptsDao,
     sourcesService,
@@ -209,6 +208,7 @@ export function servicesInitializer(provider: AwsProvider) {
     provider.propositionsTextSearcher,
     provider.sourceDescriptionSearcher,
     provider.mediaExcerptsSearcher,
+    mediaExcerptsService,
     provider.writsTitleSearcher,
     provider.writQuotesQuoteTextSearcher,
     writQuotesService,

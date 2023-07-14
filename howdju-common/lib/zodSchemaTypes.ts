@@ -271,7 +271,9 @@ export type PersistRelated<T> = {
 
 /** Returns a type with some of T's properties persisted. */
 export type PartialPersist<T, Props extends keyof T> = Omit<T, Props> & {
-  [key in Props]: PersistRelated<T[key]>;
+  [key in Props]: T[key] extends Entity
+    ? Persisted<T[key]>
+    : PersistRelated<T[key]>;
 };
 
 /** A persisted entity that may be only a Ref.

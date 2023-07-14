@@ -1,4 +1,4 @@
-import { logger, toJson } from "howdju-common";
+import { logger, sleep, toJson } from "howdju-common";
 import { DatabaseError } from "pg";
 
 const CONSTRAINT_VIOLATION_CODE = "23505";
@@ -65,4 +65,36 @@ export async function readWriteReread<T>(
       isExtant: true,
     };
   }
+}
+
+/** Retries an action that can throw transaction errors. */
+export async function retryTransaction<T>(
+  maxAttempts: number,
+  action: () => Promise<T>,
+  maxSleepMs = 10
+): Promise<T> {
+  let attempt = 1;
+  while (attempt <= maxAttempts) {
+    try {
+      return await action();
+    } catch (e) {
+      if (
+        !(e instanceof DatabaseError) ||
+        e.message !==
+          "could not serialize access due to read/write dependencies among transactions"
+      ) {
+        throw e;
+      }
+      const sleepMs = Math.random() * maxSleepMs;
+      logger.info(
+        `Failed to readOrCreate MediaExcerpt (attempt ${attempt}/${maxAttempts}; sleeping ${sleepMs}): ${e.message})`
+      );
+      // Sleep a short random amount of time to avoid repeated conflicts with other transactions
+      await sleep(sleepMs);
+      attempt++;
+    }
+  }
+  throw new Error(
+    `Failed to create media excerpt after ${maxAttempts} attempts.`
+  );
 }
