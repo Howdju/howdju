@@ -27,6 +27,7 @@ export class MainSearchService {
   ) {}
 
   search(searchText: string) {
+    searchText = searchText.trim();
     if (!searchText) {
       return Bluebird.resolve({
         mediaExcerpts: [],
@@ -42,7 +43,6 @@ export class MainSearchService {
     // TODO(466) combine search clauses per entity.
     const isUrlSearch = isUrl(searchText);
     const isDomainSearch = isDomain(searchText);
-    console.log({ isUrlSearch, isDomainSearch });
     const mediaExcerpts = isDomainSearch
       ? this.mediaExcerptsService.readMediaExcerptsMatchingDomain(searchText)
       : isUrlSearch

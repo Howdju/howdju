@@ -223,8 +223,10 @@ export class MediaExcerptsDao {
    * us to select it here. We can indicate it with a sort of pill or other UI element. (Another
    * option would be to add the citations and URLs to the new MediaExcerpt, but then the user might
    * delete them, frustrating our logic here.)
+   *
+   * @visibleForTesting
    */
-  private async readEquivalentMediaExcerptIds(
+  async readEquivalentMediaExcerptIds(
     client: TxnClient,
     mediaExcerpt: CreateMediaExcerptDataIn,
     urls: UrlOut[],
@@ -968,7 +970,7 @@ export class MediaExcerptsDao {
             me.deleted is null
         and ul.deleted is null
         and u.deleted is null
-        and domain ilike '%' || $1
+        and (domain = $1 or domain ilike '%.' || $1)
     `,
       [domain]
     );

@@ -305,9 +305,9 @@ describe("MediaExcerptsDao", () => {
     });
   });
 
-  describe("readMediaExcerptsMatchingUrl", () => {
-    test("reads media excerpts having the same origin and path", async () => {
-      const { authToken } = await testHelper.makeUser();
+  describe("readEquivalentMediaExcerptIds", () => {
+    test("reads a media excerpt having the same canonical URL", async () => {
+      const { authToken, user } = await testHelper.makeUser();
       const localRep = {
         quotation: "I have no special talent. I am only passionately curious.",
       };
@@ -318,208 +318,269 @@ describe("MediaExcerptsDao", () => {
             localRep,
             locators: {
               urlLocators: [
-                { url: { url: "https://www.example.com/the-path" } },
+                {
+                  url: {
+                    url: "https://www.example.com/the-path",
+                    canonicalUrl: "https://www.example.com/canonicial-path",
+                  },
+                },
               ],
             },
             citations: [{ source: { description: "Just an example." } }],
           }
         );
-      const { mediaExcerpt: subPathMediaExcerpt } =
-        await mediaExcerptsService.readOrCreateMediaExcerpt(
-          { authToken },
-          {
-            localRep,
-            locators: {
-              urlLocators: [{ url: { url: "https://www.example.com/the" } }],
-            },
-            citations: [{ source: { description: "Just an example 1." } }],
-          }
-        );
-      const { mediaExcerpt: superPathMediaExcerpt } =
-        await mediaExcerptsService.readOrCreateMediaExcerpt(
-          { authToken },
-          {
-            localRep,
-            locators: {
-              urlLocators: [
-                {
-                  url: {
-                    url: "https://www.example.com/the-path-goes-ever-on-and-on",
-                  },
-                },
-              ],
-            },
-            citations: [{ source: { description: "Just an example 2." } }],
-          }
-        );
-      const { mediaExcerpt: samePathWithQueryFragmentMediaExcerpt } =
-        await mediaExcerptsService.readOrCreateMediaExcerpt(
-          { authToken },
-          {
-            localRep,
-            locators: {
-              urlLocators: [
-                {
-                  url: {
-                    url: "https://www.example.com/the-path?key=value#the-fragment",
-                  },
-                },
-              ],
-            },
-            citations: [{ source: { description: "Just an example 3." } }],
-          }
-        );
-      const { mediaExcerpt: samePathWithSlashMediaFragment } =
-        await mediaExcerptsService.readOrCreateMediaExcerpt(
-          { authToken },
-          {
-            localRep,
-            locators: {
-              urlLocators: [
-                { url: { url: "https://www.example.com/the-path/" } },
-              ],
-            },
-            citations: [{ source: { description: "Just an example 4." } }],
-          }
-        );
-      const { mediaExcerpt: differentProtocolMediaExcerpt } =
-        await mediaExcerptsService.readOrCreateMediaExcerpt(
-          { authToken },
-          {
-            localRep,
-            locators: {
-              urlLocators: [{ url: { url: "http://www.example.com/" } }],
-            },
-            citations: [{ source: { description: "Just an example 5." } }],
-          }
-        );
-      const { mediaExcerpt: differentTldMediaExcerpt } =
-        await mediaExcerptsService.readOrCreateMediaExcerpt(
-          { authToken },
-          {
-            localRep,
-            locators: {
-              urlLocators: [{ url: { url: "https://www.example.org/" } }],
-            },
-            citations: [{ source: { description: "Just an example 6." } }],
-          }
-        );
-      const { mediaExcerpt: differentPathMediaExcerpt } =
-        await mediaExcerptsService.readOrCreateMediaExcerpt(
-          { authToken },
-          {
-            localRep,
-            locators: {
-              urlLocators: [
-                { url: { url: "https://www.example.com/other-path" } },
-              ],
-            },
-            citations: [{ source: { description: "Just an example 7." } }],
-          }
-        );
+      const matchingUrl = await testHelper.makeUrl(
+        { userId: user.id },
+        {
+          url: "https://www.example.com/other-path",
+          canonicalUrl: "https://www.example.com/canonicial-path",
+        }
+      );
 
       // Act
-      const readMediaExcerpts = await dao.readMediaExcerptsMatchingUrl(
-        "https://www.example.com/the-path?otherKey=otherValue#other-fragment"
+      const readMediaExcerptIds = await dao.readEquivalentMediaExcerptIds(
+        database,
+        { localRep },
+        [matchingUrl],
+        []
       );
 
       // Assert
-
-      // Ensure they weren't equivalent.
-      expect(mediaExcerpt.id).not.toBeOneOf([
-        subPathMediaExcerpt.id,
-        superPathMediaExcerpt.id,
-        samePathWithQueryFragmentMediaExcerpt.id,
-        samePathWithSlashMediaFragment.id,
-        differentProtocolMediaExcerpt.id,
-        differentTldMediaExcerpt.id,
-        differentPathMediaExcerpt.id,
-      ]);
-      expect(readMediaExcerpts).toIncludeSameMembers(
-        expectToBeSameMomentDeep([
-          mediaExcerpt,
-          samePathWithSlashMediaFragment,
-          samePathWithQueryFragmentMediaExcerpt,
-        ])
-      );
+      expect(readMediaExcerptIds).toEqual([mediaExcerpt.id]);
     });
   });
 
+  describe("readMediaExcerptsMatchingUrl", () => {
+    test.each([
+      ["same URL", "https://www.example.com/the-path"],
+      [
+        "same URL with query and fragment",
+        "https://www.example.com/the-path?key=value#the-fragment",
+      ],
+      ["same URL with trailing slash", "https://www.example.com/the-path/"],
+    ])(
+      "reads media excerpts having the same origin and path: %s",
+      async (_name, url) => {
+        const { authToken } = await testHelper.makeUser();
+        const localRep = {
+          quotation:
+            "I have no special talent. I am only passionately curious.",
+        };
+        const { mediaExcerpt } =
+          await mediaExcerptsService.readOrCreateMediaExcerpt(
+            { authToken },
+            {
+              localRep,
+              locators: {
+                urlLocators: [{ url: { url } }],
+              },
+              // Re-use the test-case name in the Source description to maek
+              citations: [{ source: { description: `Just an example.` } }],
+            }
+          );
+        // Create some other media excerpts that should not be read.
+        await Promise.all(
+          Array.from({ length: 3 }).map((i) =>
+            mediaExcerptsService.readOrCreateMediaExcerpt(
+              { authToken },
+              {
+                localRep,
+                // URLs and source descriptions must differ or else they will be equivalent.
+                locators: {
+                  urlLocators: [
+                    { url: { url: `https://different.org/path-${i}` } },
+                  ],
+                },
+                citations: [
+                  { source: { description: `Just an example. ${i}` } },
+                ],
+              }
+            )
+          )
+        );
+
+        // Act
+        const readMediaExcerpts = await dao.readMediaExcerptsMatchingUrl(
+          "https://www.example.com/the-path?otherKey=otherValue#other-fragment"
+        );
+
+        // Assert
+        expect(readMediaExcerpts).toIncludeSameMembers([
+          expectToBeSameMomentDeep(mediaExcerpt),
+        ]);
+      }
+    );
+    test.each([
+      ["URL with path prefix", "https://www.example.com/the"],
+      [
+        "URL with path suffix",
+        "https://www.example.com/the-path-goes-ever-on-and-on",
+      ],
+      ["URL with different protocol", "http://www.example.com/the-path"],
+      ["URL with different TLD", "https://www.example.org/the-path"],
+      ["URL with different path", "https://www.example.com/other-path"],
+    ])(
+      "does not read media excerpts having a different origin or path: %s",
+      async (_name, url) => {
+        const { authToken } = await testHelper.makeUser();
+        const localRep = {
+          quotation:
+            "I have no special talent. I am only passionately curious.",
+        };
+        const { mediaExcerpt } =
+          await mediaExcerptsService.readOrCreateMediaExcerpt(
+            { authToken },
+            {
+              localRep,
+              locators: {
+                urlLocators: [{ url: { url } }],
+              },
+              citations: [{ source: { description: `Just an example.` } }],
+            }
+          );
+        // Create some other media excerpts that should not be read.
+        await Promise.all(
+          Array.from({ length: 3 }).map((i) =>
+            mediaExcerptsService.readOrCreateMediaExcerpt(
+              { authToken },
+              {
+                localRep,
+                // URLs and source descriptions must differ or else they will be equivalent.
+                locators: {
+                  urlLocators: [
+                    { url: { url: `https://different.org/path-${i}` } },
+                  ],
+                },
+                citations: [
+                  { source: { description: `Just an example. ${i}` } },
+                ],
+              }
+            )
+          )
+        );
+
+        // Act
+        const readMediaExcerpts = await dao.readMediaExcerptsMatchingUrl(
+          "https://www.example.com/the-path?otherKey=otherValue#other-fragment"
+        );
+
+        // Assert
+        expect(readMediaExcerpts).not.toInclude(
+          expectToBeSameMomentDeep(mediaExcerpt)
+        );
+      }
+    );
+  });
+
   describe("readMediaExcerptsMatchingDomain", () => {
-    test("reads media excerpts having the same domain or that are a subdomain.", async () => {
-      const { authToken } = await testHelper.makeUser();
-      const localRep = {
-        quotation: "I have no special talent. I am only passionately curious.",
-      };
-      const { mediaExcerpt: sameDomainMediaExcerpt } =
-        await mediaExcerptsService.readOrCreateMediaExcerpt(
-          { authToken },
-          {
-            localRep,
-            locators: {
-              urlLocators: [
-                { url: { url: "https://www.example.com/the-path" } },
-              ],
-            },
-            citations: [{ source: { description: "Just an example 1." } }],
-          }
-        );
-      const { mediaExcerpt: differentPathMediaExcerpt } =
-        await mediaExcerptsService.readOrCreateMediaExcerpt(
-          { authToken },
-          {
-            localRep,
-            locators: {
-              urlLocators: [
-                { url: { url: "https://www.example.com/different-path" } },
-              ],
-            },
-            citations: [{ source: { description: "Just an example 2." } }],
-          }
-        );
-      const { mediaExcerpt: subDomainMediaExcerpt } =
-        await mediaExcerptsService.readOrCreateMediaExcerpt(
-          { authToken },
-          {
-            localRep,
-            locators: {
-              urlLocators: [{ url: { url: "http://sub.www.example.com/" } }],
-            },
-            citations: [{ source: { description: "Just an example 3." } }],
-          }
-        );
-      const { mediaExcerpt: parentDomainMediaExcerpt } =
-        await mediaExcerptsService.readOrCreateMediaExcerpt(
-          { authToken },
-          {
-            localRep,
-            locators: {
-              urlLocators: [{ url: { url: "https://example.com/" } }],
-            },
-            citations: [{ source: { description: "Just an example 4." } }],
-          }
+    test.each([
+      ["same domain", "https://www.example.com/the-path"],
+      ["different path", "https://www.example.com/different-path"],
+      ["subdomain", "https://subdomain.www.example.com/the-path"],
+    ])(
+      "reads media excerpts having a matching domain: %s",
+      async (_name, url) => {
+        const { authToken } = await testHelper.makeUser();
+        const localRep = {
+          quotation:
+            "I have no special talent. I am only passionately curious.",
+        };
+        const { mediaExcerpt } =
+          await mediaExcerptsService.readOrCreateMediaExcerpt(
+            { authToken },
+            {
+              localRep,
+              locators: {
+                urlLocators: [{ url: { url } }],
+              },
+              citations: [{ source: { description: "Just an example." } }],
+            }
+          );
+        // Create some other media excerpts that should not be read.
+        await Promise.all(
+          Array.from({ length: 3 }).map((i) =>
+            mediaExcerptsService.readOrCreateMediaExcerpt(
+              { authToken },
+              {
+                localRep,
+                // URLs and source descriptions must differ or else they will be equivalent.
+                locators: {
+                  urlLocators: [
+                    { url: { url: `https://www.different.org/path-${i}` } },
+                  ],
+                },
+                citations: [
+                  { source: { description: `Just an example. ${i}` } },
+                ],
+              }
+            )
+          )
         );
 
-      // Act
-      const readMediaExcerpts = await dao.readMediaExcerptsMatchingDomain(
-        "www.example.com"
-      );
+        // Act
+        const readMediaExcerpts = await dao.readMediaExcerptsMatchingDomain(
+          "www.example.com"
+        );
 
-      // Assert
+        // Assert
+        expect(readMediaExcerpts).toIncludeSameMembers([
+          expectToBeSameMomentDeep(mediaExcerpt),
+        ]);
+      }
+    );
+    test.each([
+      ["parent domain", "https://example.com/the-path"],
+      ["prefixed domain", "https://test-www.example.com/the-path"],
+    ])(
+      "does not read media excerpts having non-matching domain: %s",
+      async (_name, url) => {
+        const { authToken } = await testHelper.makeUser();
+        const localRep = {
+          quotation:
+            "I have no special talent. I am only passionately curious.",
+        };
+        const { mediaExcerpt } =
+          await mediaExcerptsService.readOrCreateMediaExcerpt(
+            { authToken },
+            {
+              localRep,
+              locators: {
+                urlLocators: [{ url: { url } }],
+              },
+              citations: [{ source: { description: "Just an example." } }],
+            }
+          );
+        // Create some other media excerpts that should not be read.
+        await Promise.all(
+          Array.from({ length: 3 }).map((i) =>
+            mediaExcerptsService.readOrCreateMediaExcerpt(
+              { authToken },
+              {
+                localRep,
+                // URLs and source descriptions must differ or else they will be equivalent.
+                locators: {
+                  urlLocators: [
+                    { url: { url: `https://www.different.org/path-${i}` } },
+                  ],
+                },
+                citations: [
+                  { source: { description: `Just an example. ${i}` } },
+                ],
+              }
+            )
+          )
+        );
 
-      // Ensure they weren't equivalent.
-      expect(sameDomainMediaExcerpt.id).not.toBeOneOf([
-        differentPathMediaExcerpt.id,
-        subDomainMediaExcerpt.id,
-        parentDomainMediaExcerpt.id,
-      ]);
-      expect(readMediaExcerpts).toIncludeSameMembers(
-        expectToBeSameMomentDeep([
-          sameDomainMediaExcerpt,
-          differentPathMediaExcerpt,
-          subDomainMediaExcerpt,
-        ])
-      );
-    });
+        // Act
+        const readMediaExcerpts = await dao.readMediaExcerptsMatchingDomain(
+          "www.example.com"
+        );
+
+        // Assert
+        expect(readMediaExcerpts).not.toInclude(
+          expectToBeSameMomentDeep(mediaExcerpt)
+        );
+      }
+    );
   });
 });

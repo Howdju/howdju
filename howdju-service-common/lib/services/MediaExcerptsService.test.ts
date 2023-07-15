@@ -5,6 +5,7 @@ import {
   CreateMediaExcerpt,
   MediaExcerptSearchFilter,
   MomentConstructor,
+  sleep,
   SortDescription,
 } from "howdju-common";
 import { expectToBeSameMomentDeep, mockLogger } from "howdju-test-common";
@@ -589,8 +590,9 @@ describe("MediaExcerptsService", () => {
         name: "Name 2",
       });
       const mediaExcerpts = await Promise.all(
-        Array.from({ length: 10 }).map((_, i) =>
-          testHelper.makeMediaExcerpt(
+        Array.from({ length: 10 }).map(async (_, i) => {
+          await sleep(Math.random() * 1000);
+          return await testHelper.makeMediaExcerpt(
             { authToken },
             {
               localRep: {
@@ -599,8 +601,8 @@ describe("MediaExcerptsService", () => {
               },
               speakers: [i % 2 == 0 ? speaker1 : speaker2],
             }
-          )
-        )
+          );
+        })
       );
       // Media excerpts are created out of ID order above, but will be returned sorted by ID
       const filters: MediaExcerptSearchFilter = {
@@ -639,8 +641,9 @@ describe("MediaExcerptsService", () => {
         name: "Name 2",
       });
       const mediaExcerpts = await Promise.all(
-        Array.from({ length: 10 }).map((_, i) =>
-          testHelper.makeMediaExcerpt(
+        Array.from({ length: 10 }).map(async (_, i) => {
+          await sleep(Math.random() * 1000);
+          return await testHelper.makeMediaExcerpt(
             { authToken },
             {
               localRep: {
@@ -649,8 +652,8 @@ describe("MediaExcerptsService", () => {
               },
               speakers: [i % 2 == 0 ? speaker1 : speaker2],
             }
-          )
-        )
+          );
+        })
       );
       mediaExcerpts.sort((a, b) => toNumber(a.id) - toNumber(b.id));
       const filters: MediaExcerptSearchFilter = {

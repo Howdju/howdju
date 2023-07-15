@@ -22,6 +22,7 @@
     "bases": "^0.2.1",
     "dom-anchor-text-position": "^5.0.0",
     "dom-anchor-text-quote": "^4.0.2",
+    "is-valid-domain": "^0.1.6",
     "lodash": "^4.17.21",
     "moment": "^2.29.4",
     "random-seed": "^0.3.0",
@@ -32,6 +33,7 @@
   },
   "devDependencies": {
     "@types/bases": "^0.2.2",
+    "@types/is-valid-domain": "^0.0.1",
     "@types/lodash": "^4.14.186",
     "@types/random-seed": "^0.3.3",
     "@types/validator": "^13.7.10",
