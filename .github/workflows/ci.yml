@@ -74,6 +74,8 @@ jobs:
           if-no-files-found: error
       - name: Custom checks
         run: yarn run custom-check:all
+      - name: Check TODO format
+        run: yarn run check:todo-format
       - name: Check do-not-merge
         run: yarn run check:do-not-merge
 

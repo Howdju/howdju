@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 
 import { Proposition } from "howdju-common";
@@ -13,6 +13,8 @@ import { PropertyChanges } from "@/types";
 import ApiAutoComplete from "@/ApiAutoComplete";
 
 import "./MainSearchBox.scss";
+import { Button, DialogContainer } from "react-md";
+import { MaterialSymbol } from "react-material-symbols";
 
 const mainSearchSuggestionsKey = "mainSearch";
 
@@ -41,8 +43,18 @@ export default function MainSearchBox() {
     dispatch(goto.proposition(proposition));
   };
 
+  const [isMainSearchHelpDialogVisible, setIsMainSearchHelpDialogVisible] =
+    useState(false);
+  function showMainSearchHelpDialog() {
+    setIsMainSearchHelpDialogVisible(true);
+  }
+  function hideMainSearchHelpDialog() {
+    setIsMainSearchHelpDialogVisible(false);
+  }
+
   return (
     <form
+      id="main-search-box-form"
       className="main-search-box-form md-cell--12 md-cell--top"
       onSubmit={onSubmit}
     >
@@ -62,7 +74,43 @@ export default function MainSearchBox() {
         areaClassName="md-text-field--toolbar"
         singleLine={true}
         onSubmit={onSubmit}
+        rightControls={
+          <Button
+            className="show-main-search-help-dialog"
+            flat
+            onClick={showMainSearchHelpDialog}
+          >
+            <MaterialSymbol icon="help" />
+          </Button>
+        }
       />
+      <DialogContainer
+        id="main-search-help-dialog"
+        visible={isMainSearchHelpDialogVisible}
+        title="Search Help"
+        onHide={hideMainSearchHelpDialog}
+        className="main-search-help-dialog"
+      >
+        <p>
+          Supported search terms:
+          <ul>
+            <li>
+              Full-text: if you enter regular text, the search will be over
+              full-text of all supported entities.
+            </li>
+            <li>
+              URL: will search MediaExcerpts for those associated with the URL.
+            </li>
+            <li>
+              domain: will search MediaExcerpts for those associated with a URL
+              ending with the domain.
+            </li>
+          </ul>
+        </p>
+        <Button raised primary onClick={hideMainSearchHelpDialog}>
+          Close
+        </Button>
+      </DialogContainer>
     </form>
   );
 }

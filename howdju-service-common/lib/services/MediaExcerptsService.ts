@@ -1,6 +1,5 @@
-import { concat, merge, zip } from "lodash";
+import { concat, merge, uniqBy, uniqWith, zip } from "lodash";
 import { Moment } from "moment";
-import { DatabaseError } from "pg";
 
 import {
   ContinuationToken,
@@ -8,15 +7,14 @@ import {
   CreateMediaExcerptCitation,
   CreateUrlLocator,
   EntityId,
-  Logger,
   MediaExcerpt,
+  MediaExcerptCitationOut,
   MediaExcerptOut,
   MediaExcerptRef,
   MediaExcerptSearchFilter,
   newImpossibleError,
   PartialPersist,
   PersorgOut,
-  sleep,
   SortDescription,
   SourceOut,
   UrlOut,
@@ -35,11 +33,13 @@ import {
   createNextContinuationToken,
   decodeContinuationToken,
 } from "./pagination";
+import { retryTransaction } from "./patterns";
 
+// Must be greater than the number MediaExcerpts targeting the same URL or Source that we want
+// to succeed creating in parallel.
 const MAX_SUPPORTED_CONCURRENT_EQUIVALENT_MEDIA_EXCERPT_CREATIONS = 10;
 export class MediaExcerptsService {
   constructor(
-    private logger: Logger,
     private authService: AuthService,
     private mediaExcerptsDao: MediaExcerptsDao,
     private sourcesService: SourcesService,
@@ -136,7 +136,13 @@ export class MediaExcerptsService {
             mediaExcerpt,
             createUrlLocatorsWithUrl,
             now
-          )
+          ).then(({ urlLocators, isExtant }) => ({
+            urlLocators: uniqBy(
+              [...mediaExcerpt.locators.urlLocators, ...urlLocators],
+              (ul) => ul.id
+            ),
+            isExtant,
+          }))
         : { urlLocators: mediaExcerpt.locators.urlLocators, isExtant: false },
       isExtantMediaExcerpt
         ? this.readOrCreateMediaExcerptCitations(
@@ -144,7 +150,15 @@ export class MediaExcerptsService {
             mediaExcerpt,
             createCitationsWithSource,
             now
-          )
+          ).then(({ citations, isExtant }) => ({
+            citations: uniqWith(
+              [...mediaExcerpt.citations, ...citations],
+              (c1, c2) =>
+                c1.normalPincite === c2.normalPincite &&
+                c1.source.id === c2.source.id
+            ),
+            isExtant,
+          }))
         : { citations: mediaExcerpt.citations, isExtant: false },
       this.ensureMediaExcerptSpeakers(userId, mediaExcerpt, speakers, now),
     ]);
@@ -173,39 +187,16 @@ export class MediaExcerptsService {
     createUrlLocators: (CreateUrlLocator & { url: UrlOut })[],
     createCitations: (CreateMediaExcerptCitation & { source: SourceOut })[]
   ) {
-    // Must be greater than the number MediaExcerpts targeting the same URL or Source that we want
-    // to succeed creating in parallel.
-    const maxAttempts =
-      MAX_SUPPORTED_CONCURRENT_EQUIVALENT_MEDIA_EXCERPT_CREATIONS;
-    let attempt = 1;
-    while (attempt <= maxAttempts) {
-      try {
-        return await this.mediaExcerptsDao.readOrCreateMediaExcerpt(
+    return retryTransaction(
+      MAX_SUPPORTED_CONCURRENT_EQUIVALENT_MEDIA_EXCERPT_CREATIONS,
+      () =>
+        this.mediaExcerptsDao.readOrCreateMediaExcerpt(
           createMediaExcerpt,
           userId,
           created,
           createUrlLocators,
           createCitations
-        );
-      } catch (e) {
-        if (
-          !(e instanceof DatabaseError) ||
-          e.message !==
-            "could not serialize access due to read/write dependencies among transactions"
-        ) {
-          throw e;
-        }
-        const sleepMs = Math.random() * 10;
-        this.logger.info(
-          `Failed to readOrCreate MediaExcerpt (attempt ${attempt}/${maxAttempts}; sleeping ${sleepMs}): ${e.message})`
-        );
-        // Sleep a short random amount of time to avoid repeated conflicts with other transactions
-        await sleep(sleepMs);
-        attempt++;
-      }
-    }
-    throw new Error(
-      `Failed to create media excerpt after ${maxAttempts} attempts.`
+        )
     );
   }
 
@@ -229,30 +220,17 @@ export class MediaExcerptsService {
   private async readOrCreateUrlLocator(
     creatorUserId: EntityId,
     mediaExcerpt: MediaExcerptRef,
-    createUrlLocator: CreateUrlLocator,
+    createUrlLocator: PartialPersist<CreateUrlLocator, "url">,
     created: Moment
   ) {
-    const extantUrlLocator =
-      await this.mediaExcerptsDao.readEquivalentUrlLocator(
+    return retryTransaction(3, () =>
+      this.mediaExcerptsDao.readOrCreateUrlLocator(
         mediaExcerpt,
-        createUrlLocator
-      );
-    if (extantUrlLocator) {
-      return {
-        urlLocator: extantUrlLocator,
-        isExtant: true,
-      };
-    }
-    const urlLocator = await this.mediaExcerptsDao.createUrlLocator({
-      creatorUserId,
-      mediaExcerpt,
-      createUrlLocator,
-      created,
-    });
-    return {
-      urlLocator,
-      isExtant: false,
-    };
+        createUrlLocator,
+        creatorUserId,
+        created
+      )
+    );
   }
 
   private async readOrCreateMediaExcerptCitations(
@@ -260,7 +238,7 @@ export class MediaExcerptsService {
     mediaExcerpt: MediaExcerptOut,
     createCitations: PartialPersist<CreateMediaExcerptCitation, "source">[],
     created: Moment
-  ) {
+  ): Promise<{ citations: MediaExcerptCitationOut[]; isExtant: boolean }> {
     const result = await Promise.all(
       createCitations.map((c) =>
         this.readOrCreateMediaExcerptCitation(userId, mediaExcerpt, c, created)
@@ -277,27 +255,17 @@ export class MediaExcerptsService {
   private async readOrCreateMediaExcerptCitation(
     creatorUserId: EntityId,
     mediaExcerpt: MediaExcerptOut,
-    createCitation: CreateMediaExcerptCitation,
+    createCitation: PartialPersist<CreateMediaExcerptCitation, "source">,
     created: Moment
-  ) {
-    const extantCitation =
-      await this.mediaExcerptsDao.readEquivalentMediaExcerptCitation(
+  ): Promise<{ citation: MediaExcerptCitationOut; isExtant: boolean }> {
+    return retryTransaction(3, () =>
+      this.mediaExcerptsDao.readOrCreateMediaExcerptCitation(
         mediaExcerpt,
-        createCitation
-      );
-    if (extantCitation) {
-      return {
-        citation: extantCitation,
-        isExtant: true,
-      };
-    }
-    const citation = await this.mediaExcerptsDao.createMediaExcerptCitation({
-      creatorUserId,
-      mediaExcerpt,
-      createCitation,
-      created,
-    });
-    return { citation, isExtant: false };
+        createCitation,
+        creatorUserId,
+        created
+      )
+    );
   }
 
   private async ensureMediaExcerptSpeakers(
@@ -406,5 +374,13 @@ export class MediaExcerptsService {
       mediaExcerpts,
       continuationToken,
     };
+  }
+
+  readMediaExcerptsMatchingUrl(url: string) {
+    return this.mediaExcerptsDao.readMediaExcerptsMatchingUrl(url.trim());
+  }
+
+  readMediaExcerptsMatchingDomain(domain: string) {
+    return this.mediaExcerptsDao.readMediaExcerptsMatchingDomain(domain.trim());
   }
 }

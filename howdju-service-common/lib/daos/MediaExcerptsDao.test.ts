@@ -9,24 +9,28 @@ import { Database, makePool } from "../database";
 import { MediaExcerptsDao } from "../daos";
 import { makeTestProvider } from "@/initializers/TestProvider";
 import TestHelper from "@/initializers/TestHelper";
+import { MediaExcerptsService } from "..";
 
 const dbConfig = makeTestDbConfig();
 
 describe("MediaExcerptsDao", () => {
   let dbName: string;
   let pool: Pool;
+  let database: Database;
 
   let dao: MediaExcerptsDao;
+  let mediaExcerptsService: MediaExcerptsService;
   let testHelper: TestHelper;
   beforeEach(async () => {
     dbName = await initDb(dbConfig);
 
     pool = makePool(mockLogger, { ...dbConfig, database: dbName });
-    const database = new Database(mockLogger, pool);
+    database = new Database(mockLogger, pool);
 
     const provider = makeTestProvider(database);
 
     dao = provider.mediaExcerptsDao;
+    mediaExcerptsService = provider.mediaExcerptsService;
     testHelper = provider.testHelper;
   });
   afterEach(async () => {
@@ -104,7 +108,7 @@ describe("MediaExcerptsDao", () => {
   });
 
   describe("readEquivalentUrlLocator", () => {
-    test("returns an equivalent UrlLocator", async () => {
+    test("returns an equivalent UrlLocator with an anchor", async () => {
       const { authToken, user: creator } = await testHelper.makeUser();
       const mediaExcerpt = await testHelper.makeMediaExcerpt(
         { authToken },
@@ -113,7 +117,7 @@ describe("MediaExcerptsDao", () => {
         }
       );
       const url = await testHelper.makeUrl({ userId: creator.id });
-      const createUrlLocator: CreateUrlLocator = {
+      const createUrlLocator = {
         url,
         anchors: [
           {
@@ -133,10 +137,37 @@ describe("MediaExcerptsDao", () => {
       });
 
       // Act
-      const readUrlLocator = await dao.readEquivalentUrlLocator(
+      const readUrlLocator = await dao.readEquivalentUrlLocator({
         mediaExcerpt,
-        createUrlLocator
+        createUrlLocator,
+      });
+
+      // Assert
+      expect(readUrlLocator).toEqual(expectToBeSameMomentDeep(urlLocator));
+    });
+
+    test("returns an equivalent UrlLocator with no anchor", async () => {
+      const { authToken, user: creator } = await testHelper.makeUser();
+      const mediaExcerpt = await testHelper.makeMediaExcerpt(
+        { authToken },
+        {
+          localRep: { quotation: "the text quote" },
+        }
       );
+      const url = await testHelper.makeUrl({ userId: creator.id });
+      const createUrlLocator = { url };
+      const urlLocator = await dao.createUrlLocator({
+        creatorUserId: creator.id,
+        mediaExcerpt,
+        createUrlLocator,
+        created: utcNow(),
+      });
+
+      // Act
+      const readUrlLocator = await dao.readEquivalentUrlLocator({
+        mediaExcerpt,
+        createUrlLocator,
+      });
 
       // Assert
       expect(readUrlLocator).toEqual(expectToBeSameMomentDeep(urlLocator));
@@ -176,7 +207,7 @@ describe("MediaExcerptsDao", () => {
         createUrlLocator,
         created: utcNow(),
       });
-      const subsetUrlLocator: CreateUrlLocator = {
+      const subsetUrlLocator = {
         url,
         anchors: [
           {
@@ -190,10 +221,10 @@ describe("MediaExcerptsDao", () => {
       };
 
       // Act
-      const readUrlLocator = await dao.readEquivalentUrlLocator(
+      const readUrlLocator = await dao.readEquivalentUrlLocator({
         mediaExcerpt,
-        subsetUrlLocator
-      );
+        createUrlLocator: subsetUrlLocator,
+      });
 
       // Assert
       expect(readUrlLocator).toBeUndefined();
@@ -224,9 +255,12 @@ describe("MediaExcerptsDao", () => {
       );
 
       expect(
-        await dao.readEquivalentUrlLocator(mediaExcerpt, {
-          ...urlLocator,
-          anchors: undefined,
+        await dao.readEquivalentUrlLocator({
+          mediaExcerpt,
+          createUrlLocator: {
+            ...mediaExcerpt.locators.urlLocators[0],
+            anchors: undefined,
+          },
         })
       ).toBeUndefined();
     });
@@ -269,5 +303,284 @@ describe("MediaExcerptsDao", () => {
         })
       );
     });
+  });
+
+  describe("readEquivalentMediaExcerptIds", () => {
+    test("reads a media excerpt having the same canonical URL", async () => {
+      const { authToken, user } = await testHelper.makeUser();
+      const localRep = {
+        quotation: "I have no special talent. I am only passionately curious.",
+      };
+      const { mediaExcerpt } =
+        await mediaExcerptsService.readOrCreateMediaExcerpt(
+          { authToken },
+          {
+            localRep,
+            locators: {
+              urlLocators: [
+                {
+                  url: {
+                    url: "https://www.example.com/the-path",
+                    canonicalUrl: "https://www.example.com/canonicial-path",
+                  },
+                },
+              ],
+            },
+            citations: [{ source: { description: "Just an example." } }],
+          }
+        );
+      const matchingUrl = await testHelper.makeUrl(
+        { userId: user.id },
+        {
+          url: "https://www.example.com/other-path",
+          canonicalUrl: "https://www.example.com/canonicial-path",
+        }
+      );
+
+      // Act
+      const readMediaExcerptIds = await dao.readEquivalentMediaExcerptIds(
+        database,
+        { localRep },
+        [matchingUrl],
+        []
+      );
+
+      // Assert
+      expect(readMediaExcerptIds).toEqual([mediaExcerpt.id]);
+    });
+  });
+
+  describe("readMediaExcerptsMatchingUrl", () => {
+    test.each([
+      ["same URL", "https://www.example.com/the-path"],
+      [
+        "same URL with query and fragment",
+        "https://www.example.com/the-path?key=value#the-fragment",
+      ],
+      ["same URL with trailing slash", "https://www.example.com/the-path/"],
+    ])(
+      "reads media excerpts having the same origin and path: %s",
+      async (_name, url) => {
+        const { authToken } = await testHelper.makeUser();
+        const localRep = {
+          quotation:
+            "I have no special talent. I am only passionately curious.",
+        };
+        const { mediaExcerpt } =
+          await mediaExcerptsService.readOrCreateMediaExcerpt(
+            { authToken },
+            {
+              localRep,
+              locators: {
+                urlLocators: [{ url: { url } }],
+              },
+              // Re-use the test-case name in the Source description to maek
+              citations: [{ source: { description: `Just an example.` } }],
+            }
+          );
+        // Create some other media excerpts that should not be read.
+        await Promise.all(
+          Array.from({ length: 3 }).map((i) =>
+            mediaExcerptsService.readOrCreateMediaExcerpt(
+              { authToken },
+              {
+                localRep,
+                // URLs and source descriptions must differ or else they will be equivalent.
+                locators: {
+                  urlLocators: [
+                    { url: { url: `https://different.org/path-${i}` } },
+                  ],
+                },
+                citations: [
+                  { source: { description: `Just an example. ${i}` } },
+                ],
+              }
+            )
+          )
+        );
+
+        // Act
+        const readMediaExcerpts = await dao.readMediaExcerptsMatchingUrl(
+          "https://www.example.com/the-path?otherKey=otherValue#other-fragment"
+        );
+
+        // Assert
+        expect(readMediaExcerpts).toIncludeSameMembers([
+          expectToBeSameMomentDeep(mediaExcerpt),
+        ]);
+      }
+    );
+    test.each([
+      ["URL with path prefix", "https://www.example.com/the"],
+      [
+        "URL with path suffix",
+        "https://www.example.com/the-path-goes-ever-on-and-on",
+      ],
+      ["URL with different protocol", "http://www.example.com/the-path"],
+      ["URL with different TLD", "https://www.example.org/the-path"],
+      ["URL with different path", "https://www.example.com/other-path"],
+    ])(
+      "does not read media excerpts having a different origin or path: %s",
+      async (_name, url) => {
+        const { authToken } = await testHelper.makeUser();
+        const localRep = {
+          quotation:
+            "I have no special talent. I am only passionately curious.",
+        };
+        const { mediaExcerpt } =
+          await mediaExcerptsService.readOrCreateMediaExcerpt(
+            { authToken },
+            {
+              localRep,
+              locators: {
+                urlLocators: [{ url: { url } }],
+              },
+              citations: [{ source: { description: `Just an example.` } }],
+            }
+          );
+        // Create some other media excerpts that should not be read.
+        await Promise.all(
+          Array.from({ length: 3 }).map((i) =>
+            mediaExcerptsService.readOrCreateMediaExcerpt(
+              { authToken },
+              {
+                localRep,
+                // URLs and source descriptions must differ or else they will be equivalent.
+                locators: {
+                  urlLocators: [
+                    { url: { url: `https://different.org/path-${i}` } },
+                  ],
+                },
+                citations: [
+                  { source: { description: `Just an example. ${i}` } },
+                ],
+              }
+            )
+          )
+        );
+
+        // Act
+        const readMediaExcerpts = await dao.readMediaExcerptsMatchingUrl(
+          "https://www.example.com/the-path?otherKey=otherValue#other-fragment"
+        );
+
+        // Assert
+        expect(readMediaExcerpts).not.toInclude(
+          expectToBeSameMomentDeep(mediaExcerpt)
+        );
+      }
+    );
+  });
+
+  describe("readMediaExcerptsMatchingDomain", () => {
+    test.each([
+      ["same domain", "https://www.example.com/the-path"],
+      ["different path", "https://www.example.com/different-path"],
+      ["subdomain", "https://subdomain.www.example.com/the-path"],
+    ])(
+      "reads media excerpts having a matching domain: %s",
+      async (_name, url) => {
+        const { authToken } = await testHelper.makeUser();
+        const localRep = {
+          quotation:
+            "I have no special talent. I am only passionately curious.",
+        };
+        const { mediaExcerpt } =
+          await mediaExcerptsService.readOrCreateMediaExcerpt(
+            { authToken },
+            {
+              localRep,
+              locators: {
+                urlLocators: [{ url: { url } }],
+              },
+              citations: [{ source: { description: "Just an example." } }],
+            }
+          );
+        // Create some other media excerpts that should not be read.
+        await Promise.all(
+          Array.from({ length: 3 }).map((i) =>
+            mediaExcerptsService.readOrCreateMediaExcerpt(
+              { authToken },
+              {
+                localRep,
+                // URLs and source descriptions must differ or else they will be equivalent.
+                locators: {
+                  urlLocators: [
+                    { url: { url: `https://www.different.org/path-${i}` } },
+                  ],
+                },
+                citations: [
+                  { source: { description: `Just an example. ${i}` } },
+                ],
+              }
+            )
+          )
+        );
+
+        // Act
+        const readMediaExcerpts = await dao.readMediaExcerptsMatchingDomain(
+          "www.example.com"
+        );
+
+        // Assert
+        expect(readMediaExcerpts).toIncludeSameMembers([
+          expectToBeSameMomentDeep(mediaExcerpt),
+        ]);
+      }
+    );
+    test.each([
+      ["parent domain", "https://example.com/the-path"],
+      ["prefixed domain", "https://test-www.example.com/the-path"],
+    ])(
+      "does not read media excerpts having non-matching domain: %s",
+      async (_name, url) => {
+        const { authToken } = await testHelper.makeUser();
+        const localRep = {
+          quotation:
+            "I have no special talent. I am only passionately curious.",
+        };
+        const { mediaExcerpt } =
+          await mediaExcerptsService.readOrCreateMediaExcerpt(
+            { authToken },
+            {
+              localRep,
+              locators: {
+                urlLocators: [{ url: { url } }],
+              },
+              citations: [{ source: { description: "Just an example." } }],
+            }
+          );
+        // Create some other media excerpts that should not be read.
+        await Promise.all(
+          Array.from({ length: 3 }).map((i) =>
+            mediaExcerptsService.readOrCreateMediaExcerpt(
+              { authToken },
+              {
+                localRep,
+                // URLs and source descriptions must differ or else they will be equivalent.
+                locators: {
+                  urlLocators: [
+                    { url: { url: `https://www.different.org/path-${i}` } },
+                  ],
+                },
+                citations: [
+                  { source: { description: `Just an example. ${i}` } },
+                ],
+              }
+            )
+          )
+        );
+
+        // Act
+        const readMediaExcerpts = await dao.readMediaExcerptsMatchingDomain(
+          "www.example.com"
+        );
+
+        // Assert
+        expect(readMediaExcerpts).not.toInclude(
+          expectToBeSameMomentDeep(mediaExcerpt)
+        );
+      }
+    );
   });
 });
