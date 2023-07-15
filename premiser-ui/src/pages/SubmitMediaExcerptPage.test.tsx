@@ -106,41 +106,46 @@ describe("SubmitMediaExcerptPage", () => {
     );
   });
 
-  test("can submit a MediaExcept entered by input", async () => {
-    // Arrange
-    const user = setupUserEvent();
+  // TODO(464) address slow userEvent.type for source description
+  const MEDIA_EXCERPT_SUBMIT_TEST_TIMEOUT = 7500;
+  test(
+    "can submit a MediaExcept entered by input",
+    async () => {
+      // Arrange
+      const user = setupUserEvent();
 
-    const quotation = "An important conclusion.";
-    const url = "https://www.info.com";
-    const description = "A credible source";
-    const pincite = "page 123";
+      const quotation = "An important conclusion.";
+      const url = "https://www.info.com";
+      const description = "A credible source";
+      const pincite = "page 123";
 
-    const { location } = makeRouteComponentProps("media-excerpts/new");
-    const history = createMemoryHistory({ initialEntries: [location] });
+      const { location } = makeRouteComponentProps("media-excerpts/new");
+      const history = createMemoryHistory({ initialEntries: [location] });
 
-    renderWithProviders(<SubmitMediaExcerptPage />, {
-      history,
-    });
+      renderWithProviders(<SubmitMediaExcerptPage />, {
+        history,
+      });
 
-    const mediaExcerpt: CreateMediaExcerpt = {
-      localRep: {
-        quotation,
-      },
-      locators: {
-        urlLocators: [{ url: { url } }],
-      },
-      citations: [
-        {
-          source: {
-            description,
-          },
-          pincite,
+      const mediaExcerpt: CreateMediaExcerpt = {
+        localRep: {
+          quotation,
         },
-      ],
-    };
+        locators: {
+          urlLocators: [{ url: { url } }],
+        },
+        citations: [
+          {
+            source: {
+              description,
+            },
+            pincite,
+          },
+        ],
+      };
 
-    const response: InferResponseBody<typeof serviceRoutes.createMediaExcerpt> =
-      {
+      const response: InferResponseBody<
+        typeof serviceRoutes.createMediaExcerpt
+      > = {
         isExtant: false,
         mediaExcerpt: merge(
           {},
@@ -151,36 +156,38 @@ describe("SubmitMediaExcerptPage", () => {
           })
         ),
       };
-    let requestBody: CreateMediaExcerpt | undefined;
-    server.use(
-      rest.post(`http://localhost/media-excerpts`, async (req, res, ctx) => {
-        requestBody = await req.json();
-        return res(ctx.status(httpStatusCodes.OK), ctx.json(response));
-      }),
-      rest.get("http://localhost/search-sources", (_req, res, ctx) => {
-        // delay so that we can cancel the request.
-        return res(ctx.delay(1), ctx.json([]));
-      })
-    );
+      let requestBody: CreateMediaExcerpt | undefined;
+      server.use(
+        rest.post(`http://localhost/media-excerpts`, async (req, res, ctx) => {
+          requestBody = await req.json();
+          return res(ctx.status(httpStatusCodes.OK), ctx.json(response));
+        }),
+        rest.get("http://localhost/search-sources", (_req, res, ctx) => {
+          // delay so that we can cancel the request.
+          return res(ctx.delay(1), ctx.json([]));
+        })
+      );
 
-    await user.type(screen.getByLabelText(/Quote/i), quotation);
-    await user.type(screen.getByLabelText(/URL/i), url);
-    await user.type(screen.getByLabelText(/Description/i), description);
-    await user.type(screen.getByLabelText(/Pincite/i), pincite);
+      await user.type(screen.getByLabelText(/Quote/i), quotation);
+      await user.type(screen.getByLabelText(/URL/i), url);
+      await user.type(screen.getByLabelText(/Description/i), description);
+      await user.type(screen.getByLabelText(/Pincite/i), pincite);
 
-    // Act
-    await user.click(screen.getByRole("button", { name: /create/i }));
+      // Act
+      await user.click(screen.getByRole("button", { name: /create/i }));
 
-    // Assert
-    jest.runAllTimers();
-    await waitFor(() => {
-      expect(requestBody).toMatchObject({
-        mediaExcerpt,
+      // Assert
+      jest.runAllTimers();
+      await waitFor(() => {
+        expect(requestBody).toMatchObject({
+          mediaExcerpt,
+        });
       });
-    });
-    // TODO(196): get path pattern from routesById instead.
-    expect(history.location.pathname).toMatch(
-      pathToRegexp("/media-excerpts/:id")
-    );
-  });
+      // TODO(196): get path pattern from routesById instead.
+      expect(history.location.pathname).toMatch(
+        pathToRegexp("/media-excerpts/:id")
+      );
+    },
+    MEDIA_EXCERPT_SUBMIT_TEST_TIMEOUT
+  );
 });

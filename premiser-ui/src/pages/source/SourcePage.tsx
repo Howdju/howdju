@@ -3,17 +3,20 @@ import { toString } from "lodash";
 import {
   Button,
   CircularProgress,
+  Divider,
   DropdownMenu,
   FontIcon,
   ListItem,
   MenuButton,
 } from "react-md";
 import { RouteComponentProps } from "react-router";
+import { push } from "connected-react-router";
 
 import { EntityId, logger } from "howdju-common";
 
 import Helmet from "../../Helmet";
-import { api, editors } from "../../actions";
+import { api, editors, flows } from "../../actions";
+import app from "../../app/appSlice";
 import CellList, { largeCellClasses } from "../../CellList";
 import * as characters from "../../characters";
 import { mediaExcerptsSchema, sourceSchema } from "../../normalizationSchemas";
@@ -22,6 +25,7 @@ import { useAppDispatch, useAppEntitySelector, useAppSelector } from "@/hooks";
 import MediaExcerptCard from "@/components/mediaExcerpts/MediaExcerptCard";
 import SourceEntityCard from "@/components/sources/SourceEntityCard";
 import sourcePage from "./sourcePageSlice";
+import paths from "@/paths";
 
 const id = "source-page";
 const editorId = "sourcePageEditorId";
@@ -42,6 +46,7 @@ export default function SourcePage(props: Props) {
 
   const source = useAppEntitySelector(sourceId, sourceSchema);
   const {
+    isFetchingSource,
     mediaExcerptIds,
     isFetchingMediaExcerpts,
     mediaExcerptsContinuationToken,
@@ -58,6 +63,20 @@ export default function SourcePage(props: Props) {
     }
     dispatch(
       editors.beginEdit("SOURCE", combineIds(editorId, "source"), source)
+    );
+  }
+
+  function deleteSource() {
+    if (!source) {
+      logger.error("Cannot delete source because it has not been fetched yet.");
+      return;
+    }
+    dispatch(
+      flows.apiActionOnSuccess(
+        api.deleteSource(source.id),
+        app.addToast("Deleted Source"),
+        push(paths.home())
+      )
     );
   }
 
@@ -97,17 +116,27 @@ export default function SourcePage(props: Props) {
           leftIcon={<FontIcon>edit</FontIcon>}
           onClick={editSource}
         />,
+        <Divider key="divider" />,
+        <ListItem
+          primaryText="Delete"
+          key="delete"
+          leftIcon={<FontIcon>delete</FontIcon>}
+          onClick={deleteSource}
+        />,
       ]}
     />
   );
-
   return (
     <div id={id} className="md-grid">
       <Helmet>
         <title>{title} — Howdju</title>
       </Helmet>
       <h1 className="md-cell md-cell--12">Source {source?.id}</h1>
-      {source ? (
+      {isFetchingSource && (
+        <CircularProgress id="source-page--source--progress" />
+      )}
+      {!isFetchingSource && !source && <p>Not found.</p>}
+      {source && (
         <SourceEntityCard
           id={combineIds(id, "source")}
           editorId={combineIds(editorId, "source")}
@@ -116,8 +145,6 @@ export default function SourcePage(props: Props) {
           menu={menu}
           suggestionsKey={combineSuggestionsKeys(id, "source")}
         />
-      ) : (
-        <CircularProgress id="source-page--source--progress" />
       )}
 
       <h2 className="md-cell md-cell--12">Media excerpts</h2>

@@ -979,6 +979,19 @@ export class MediaExcerptsDao {
     );
     return mediaExcerpts.filter(isDefined);
   }
+
+  async deleteMediaExcerptCitationsForSourceId(
+    sourceId: EntityId,
+    deletedAt: Moment
+  ) {
+    await this.database.query(
+      "deleteMediaExcerptCitationsForSourceId",
+      `update media_excerpt_citations
+      set deleted = $1
+      where source_id = $2`,
+      [deletedAt, sourceId]
+    );
+  }
 }
 
 function makeFilterSubselects(filters: MediaExcerptSearchFilter | undefined) {
@@ -1013,8 +1026,8 @@ function makeFilterSubselects(filters: MediaExcerptSearchFilter | undefined) {
       case "sourceId": {
         const sql = `
           select media_excerpt_id
-          from media_excerpts join media_excerpt_citations using (media_excerpt_id)
-          where source_id = $1
+          from media_excerpts join media_excerpt_citations mec using (media_excerpt_id)
+          where mec.source_id = $1 and mec.deleted is null
         `;
         const args = [value];
         filterSubselects.push({ sql, args });

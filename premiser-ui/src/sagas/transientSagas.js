@@ -12,6 +12,7 @@ import map from "lodash/map";
 import { ui, str } from "../actions";
 import config from "../config";
 
+// TODO(470) replace with ExpiryMap
 const delayedHideTransientTaskByTransientId = {};
 
 function* tryCancelDelayedHideTransient(transientId) {

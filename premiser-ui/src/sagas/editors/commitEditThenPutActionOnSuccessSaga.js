@@ -9,6 +9,7 @@ export function* commitEditThenPutActionOnSuccess() {
       const { editorType, editorId } = action.payload;
       yield put(editors.commitEdit(editorType, editorId));
       let resultAction = null;
+      // TODO(469) add a race to timeout
       while (!resultAction) {
         const currResultAction = yield take(str(editors.commitEdit.result));
         if (

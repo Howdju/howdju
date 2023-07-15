@@ -11,7 +11,7 @@ import {
   utcNow,
 } from "howdju-common";
 
-import { SourcesDao } from "../daos";
+import { MediaExcerptsDao, SourcesDao } from "../daos";
 import { EntityWrapper } from "../types";
 import { readWriteReread } from "./patterns";
 import {
@@ -29,7 +29,8 @@ export class SourcesService {
     private config: ApiConfig,
     private authService: AuthService,
     private permissionsService: PermissionsService,
-    private sourcesDao: SourcesDao
+    private sourcesDao: SourcesDao,
+    private mediaExcerptsDao: MediaExcerptsDao
   ) {}
 
   async readSourceForId(sourceId: EntityId): Promise<SourceOut> {
@@ -83,7 +84,27 @@ export class SourcesService {
     return this.sourcesDao.updateSource(updateSource);
   }
 
-  async checkUpdateSourcePermission(userId: EntityId, source: SourceOut) {
+  async deleteSourceForId(userIdent: UserIdent, sourceId: EntityId) {
+    const userId = await this.authService.readUserIdForUserIdent(userIdent);
+    const source = await this.sourcesDao.readSourceForId(sourceId);
+    if (!source) {
+      throw new EntityNotFoundError("SOURCE", sourceId);
+    }
+
+    await this.checkUpdateSourcePermission(userId, source);
+
+    const deletedAt = utcNow();
+    await this.mediaExcerptsDao.deleteMediaExcerptCitationsForSourceId(
+      sourceId,
+      deletedAt
+    );
+    await this.sourcesDao.deleteSourceForId(sourceId, deletedAt);
+  }
+
+  private async checkUpdateSourcePermission(
+    userId: EntityId,
+    source: SourceOut
+  ) {
     const hasEditPermission = await this.permissionsService.userHasPermission(
       userId,
       "EDIT_ANY_ENTITY"

@@ -17,7 +17,8 @@ import {
 } from "./appSagas";
 import { logErrors } from "./logErrorsSaga";
 import {
-  goHomeIfDeletePropositionWhileViewing,
+  apiActionOnSuccess,
+  apiActionOnSuccessResponse,
   goTo,
   redirectAfterLogin,
   redirectHomeFromMissingRootTarget,
@@ -30,7 +31,6 @@ import { commitEditThenPutActionOnSuccess } from "./editors/commitEditThenPutAct
 import { fetchAndBeginEditOfNewJustificationFromBasisSource } from "./editors/fetchAndBeginEditOfNewJustificationFromBasisSourceSaga";
 import { editorCommitEdit } from "./editors/editorCommitEditSaga";
 import { beginEditOfMediaExcerptFromInfo } from "./editors/beginEditOfMediaExcerptFromInfoSaga";
-import { deleteJustificationRootTargetTranslator } from "./apiLikeSagas";
 import { postExtensionMessages } from "./extensionSagas";
 import { inferMediaExcerptInfo } from "./editors/inferMediaExcerptInfoSaga";
 import * as appSagas from "../app/appSagas";
@@ -61,15 +61,14 @@ export default () =>
     goTo(),
     redirectToLoginWhenUnauthenticated(),
     redirectAfterLogin(),
-    goHomeIfDeletePropositionWhileViewing(),
+    apiActionOnSuccess(),
+    apiActionOnSuccessResponse(),
     redirectHomeFromMissingRootTarget(),
     commitEditorThenView(),
     commitEditThenPutActionOnSuccess(),
     fetchAndBeginEditOfNewJustificationFromBasisSource(),
     redirectUnauthenticatedUserToLoginOnPagesNeedingAuthentication(),
     beginEditOfMediaExcerptFromInfo(),
-
-    deleteJustificationRootTargetTranslator(),
 
     editorCommitEdit(),
 
