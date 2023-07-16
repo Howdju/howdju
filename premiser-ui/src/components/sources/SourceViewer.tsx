@@ -2,7 +2,7 @@ import React from "react";
 import cn from "classnames";
 import { SourceOut } from "howdju-common";
 import { ComponentId } from "@/types";
-import { UserBlurbViewer } from "../users/UserBlurbViewer";
+import CreationInfo from "../creationInfo/CreationInfo";
 
 interface Props {
   id: ComponentId;
@@ -16,14 +16,15 @@ export default function SourceViewer({
   className,
   ...rest
 }: Props) {
+  if (!source) {
+    return null;
+  }
+  const { description, created, creator } = source;
   return (
     <div {...rest} id={id} className={cn(className, "source-viewer")}>
       <div className="source">
-        <div className="source-description">{source?.description}</div>
-        <div>
-          Created by <UserBlurbViewer user={source?.creator} /> on{" "}
-          {source?.created}
-        </div>
+        <div className="source-description">{description}</div>
+        <CreationInfo created={created} creator={creator} />
       </div>
     </div>
   );

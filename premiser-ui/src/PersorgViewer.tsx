@@ -2,6 +2,7 @@ import React from "react";
 import cn from "classnames";
 import { PersorgOut } from "howdju-common";
 import { ComponentId } from "./types";
+import CreationInfo from "./components/creationInfo/CreationInfo";
 
 interface Props {
   id: ComponentId;
@@ -35,7 +36,7 @@ export default function PersorgViewer({
           {!isOrganization && (
             <div className="persorg-known-for">{knownFor}</div>
           )}
-          <div className="persorg-created">Created: {created}</div>
+          <CreationInfo created={created} />
           {websiteUrl && (
             <a className="persorg-website-url" href={websiteUrl}>
               {websiteUrl}
