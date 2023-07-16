@@ -918,9 +918,8 @@ export class MediaExcerptsDao {
           ${whereSql}
         and (
           ${continuationWhereSql}
-        ) and (
-          ${filterWhereSql}
         )
+        ${filterWhereSql ? `and (${filterWhereSql})` : ""}
       ${orderBySql}
       ${countSql}
       `;

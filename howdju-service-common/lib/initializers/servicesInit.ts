@@ -145,6 +145,7 @@ export function servicesInitializer(provider: AwsProvider) {
 
   const sourcesService = new SourcesService(
     provider.appConfig,
+    provider.logger,
     authService,
     permissionsService,
     provider.sourcesDao,

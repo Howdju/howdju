@@ -2,7 +2,6 @@ import { z } from "zod";
 import { Schema, isSchema } from "joi";
 
 import {
-  requireArgs,
   formatZodError,
   AuthToken,
   newProgrammingError,
@@ -36,7 +35,7 @@ type EntityPropped<T, P extends string> = {
 };
 
 export abstract class EntityService<
-  CreateIn extends Entity,
+  CreateIn extends object,
   CreateOut extends Entity,
   UpdateIn extends PersistedEntity,
   UpdateOut extends PersistedEntity,
@@ -55,7 +54,7 @@ export abstract class EntityService<
     const userId = authToken
       ? await this.authService.readUserIdForAuthToken(authToken)
       : undefined;
-    if (entity.id) {
+    if ("id" in entity) {
       return await this.doReadOrCreate(entity, userId, now);
     }
     if (isRef(entity)) {
@@ -72,7 +71,7 @@ export abstract class EntityService<
       throw new EntityValidationError(error);
     }
     // If the entity lacks an ID, then it is an attempt to create.
-    if (!entity.id && !authToken) {
+    if (!("id" in entity) && !authToken) {
       throw new AuthenticationError("Must be logged in to create.");
     }
 

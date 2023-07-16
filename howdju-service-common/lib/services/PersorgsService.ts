@@ -112,7 +112,7 @@ export class PersorgsService extends EntityService<
       updatePersorg.id
     );
 
-    if (!hasPermission || !persorg.creator || userId !== persorg.creator.id) {
+    if (!hasPermission && persorg.creator && userId !== persorg.creator.id) {
       throw new AuthorizationError(
         makeModelErrors<UpdatePersorg>((p) =>
           p({

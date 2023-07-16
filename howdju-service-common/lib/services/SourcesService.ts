@@ -4,6 +4,7 @@ import { Moment } from "moment";
 import {
   CreateSource,
   EntityId,
+  Logger,
   makeModelErrors,
   momentAdd,
   SourceOut,
@@ -13,7 +14,7 @@ import {
 
 import { MediaExcerptsDao, SourcesDao } from "../daos";
 import { EntityWrapper } from "../types";
-import { readWriteReread } from "./patterns";
+import { readWriteReread, updateHandlingConstraints } from "./patterns";
 import {
   ApiConfig,
   AuthorizationError,
@@ -27,6 +28,7 @@ import { UserIdent } from "./types";
 export class SourcesService {
   constructor(
     private config: ApiConfig,
+    private logger: Logger,
     private authService: AuthService,
     private permissionsService: PermissionsService,
     private sourcesDao: SourcesDao,
@@ -81,7 +83,14 @@ export class SourcesService {
 
     await this.checkUpdateSourcePermission(userId, source);
 
-    return this.sourcesDao.updateSource(updateSource);
+    return await updateHandlingConstraints(
+      () => this.sourcesDao.updateSource(updateSource),
+      {
+        normal_description: makeModelErrors<UpdateSource>((e) =>
+          e.description("A Source with that description already exists.")
+        ),
+      }
+    );
   }
 
   async deleteSourceForId(userIdent: UserIdent, sourceId: EntityId) {

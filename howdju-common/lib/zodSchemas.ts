@@ -194,6 +194,7 @@ export const Persorg = Entity.extend({
 export type Persorg = z.infer<typeof Persorg>;
 
 export const CreatePersorg = Persorg.omit({
+  id: true,
   created: true,
   creatorUserId: true,
   creator: true,
@@ -203,10 +204,14 @@ export type CreatePersorg = z.infer<typeof CreatePersorg>;
 export const CreatePersorgInput = CreatePersorg;
 export type CreatePersorgInput = z.infer<typeof CreatePersorgInput>;
 
-export const UpdatePersorg = Persorg.merge(PersistedEntity);
+export const UpdatePersorg = Persorg.merge(PersistedEntity).omit({
+  created: true,
+  creatorUserId: true,
+  creator: true,
+});
 export type UpdatePersorg = z.infer<typeof UpdatePersorg>;
 
-export const UpdatePersorgInput = Persorg;
+export const UpdatePersorgInput = UpdatePersorg;
 export type UpdatePersorgInput = z.infer<typeof UpdatePersorgInput>;
 
 /** Represents an utterance of a proposition by a persorg. */

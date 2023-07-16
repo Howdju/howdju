@@ -1,7 +1,45 @@
-import { logger, sleep, toJson } from "howdju-common";
 import { DatabaseError } from "pg";
 
+import { logger, ModelErrors, sleep, toJson } from "howdju-common";
+
+import { EntityConflictError } from "../serviceErrors";
+
 const CONSTRAINT_VIOLATION_CODE = "23505";
+
+export function isConstraintViolationDatbaseError(
+  err: any
+): err is DatabaseError {
+  return err instanceof DatabaseError && err.code === CONSTRAINT_VIOLATION_CODE;
+}
+
+/**
+ * Performs an Entity update translating any database constraints to EntityConflictErrors.
+ *
+ * @param update A function that performs the update.
+ * @param constraintColumnErrors A map of column names to ModelErrors that should be thrown if the column's constraint is violated.
+ */
+export async function updateHandlingConstraints<T>(
+  update: () => Promise<T>,
+  constraintColumnErrors: Record<string, ModelErrors<any>>
+): Promise<T> {
+  try {
+    return await update();
+  } catch (err) {
+    if (!isConstraintViolationDatbaseError(err)) {
+      throw err;
+    }
+    for (const [columnName, modelErrors] of Object.entries(
+      constraintColumnErrors
+    )) {
+      // detail is like: 'Key (normal_description)=(embattled physicist...) already exists.',
+      if (err.detail?.includes(columnName)) {
+        throw new EntityConflictError(modelErrors);
+      }
+    }
+    logger.error("Unexpected constraint violation", err);
+    throw new Error("Unexpected constraint violation");
+  }
+}
 
 /**
  * Implements a read-write-reread pattern.
