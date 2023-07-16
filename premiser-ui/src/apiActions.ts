@@ -1083,6 +1083,13 @@ export const api = {
       normalizationSchema: { persorg: persorgSchema },
     })
   ),
+  deletePersorg: apiActionCreator(
+    "DELETE_PERSORG",
+    serviceRoutes.deletePersorg,
+    (persorgId: EntityId) => ({
+      pathParams: { persorgId: persorgId },
+    })
+  ),
 
   updateSource: apiActionCreator(
     "UPDATE_SOURCE",

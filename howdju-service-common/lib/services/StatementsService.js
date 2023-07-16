@@ -24,7 +24,7 @@ module.exports.StatementsService = class StatementsService extends (
       persorgsService,
       propositionsService,
     });
-    super(statementSchema, logger, authService);
+    super(statementSchema, authService);
     this.statementsDao = statementsDao;
     this.persorgsService = persorgsService;
     this.propositionsService = propositionsService;

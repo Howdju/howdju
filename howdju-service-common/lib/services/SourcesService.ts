@@ -91,6 +91,7 @@ export class SourcesService {
       throw new EntityNotFoundError("SOURCE", sourceId);
     }
 
+    // TODO(473) can't delete own if relied upon
     await this.checkUpdateSourcePermission(userId, source);
 
     const deletedAt = utcNow();
@@ -120,6 +121,7 @@ export class SourcesService {
         )
       );
     }
+    // TODO(473) disallow deletes if other users have already depended on it.
     if (
       utcNow().isAfter(
         momentAdd(source.created, this.config.modifyEntityGracePeriod)

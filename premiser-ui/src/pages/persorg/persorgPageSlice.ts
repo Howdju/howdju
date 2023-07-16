@@ -6,6 +6,7 @@ import { MediaExcerptOut, StatementOut } from "howdju-common";
 import { api } from "@/apiActions";
 
 const initialState = {
+  isFetchingPersorg: false,
   statements: [] as StatementOut[],
   isFetchingStatements: false,
   mediaExcerpts: [] as MediaExcerptOut[],
@@ -19,6 +20,12 @@ export const persorgPageSlice = createSlice({
     clearPersorgStatements: () => initialState,
   },
   extraReducers(builder) {
+    builder.addCase(api.fetchPersorg, (state) => {
+      state.isFetchingPersorg = true;
+    });
+    builder.addCase(api.fetchPersorg.response, (state) => {
+      state.isFetchingPersorg = false;
+    });
     builder.addCase(api.fetchSpeakerStatements, (state) => {
       state.isFetchingStatements = true;
     });

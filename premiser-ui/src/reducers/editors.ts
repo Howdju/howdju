@@ -31,7 +31,7 @@ import {
 import {
   apiErrorCodes,
   insertAt,
-  makePersorg,
+  makeCreatePersorg,
   makeUrl,
   newProgrammingError,
   removeAt,
@@ -501,7 +501,7 @@ const editorReducerByType: {
         return assign({}, state, {
           editEntity: {
             ...editEntity,
-            speakers: [makePersorg(), ...speakers],
+            speakers: [makeCreatePersorg(), ...speakers],
           },
         });
       },

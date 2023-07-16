@@ -120,7 +120,7 @@ export class JustificationsService extends EntityService<
     justificationsDao: JustificationsDao,
     permissionsDao: PermissionsDao
   ) {
-    super({ createSchema: CreateJustification }, logger, authService);
+    super({ createSchema: CreateJustification }, authService);
     requireArgs({
       config,
       logger,

@@ -188,13 +188,19 @@ export const Persorg = Entity.extend({
   twitterUrl: urlString({ domain: /twitter.com$/ }).optional(),
   /** The persorg's Wikipedia URL. */
   wikipediaUrl: urlString({ domain: /wikipedia.org$/ }).optional(),
+  created: momentObject,
+  creatorUserId: z.string(),
 });
 export type Persorg = z.infer<typeof Persorg>;
 
-export const CreatePersorg = Persorg;
+export const CreatePersorg = Persorg.omit({
+  created: true,
+  creatorUserId: true,
+  creator: true,
+});
 export type CreatePersorg = z.infer<typeof CreatePersorg>;
 
-export const CreatePersorgInput = Persorg;
+export const CreatePersorgInput = CreatePersorg;
 export type CreatePersorgInput = z.infer<typeof CreatePersorgInput>;
 
 export const UpdatePersorg = Persorg.merge(PersistedEntity);
@@ -241,7 +247,7 @@ export type SentenceType = Statement["sentenceType"];
 export const SentenceTypes = sentenceTypes.Enum;
 
 export type CreateStatementInput = Entity & {
-  speaker: Persorg;
+  speaker: CreatePersorgInput;
 } & (
     | {
         sentenceType: "PROPOSITION";
@@ -269,7 +275,7 @@ export const CreateStatementInput: z.ZodType<CreateStatementInput> = z.lazy(
 );
 
 export type CreateStatement = Entity & {
-  speaker: Persorg;
+  speaker: CreatePersorg;
 } & (
     | {
         sentenceType: "PROPOSITION";

@@ -85,6 +85,8 @@ describe("routeRequest", () => {
           ...PersorgRef.parse({ id: "92" }),
           isOrganization: false,
           name: "VIP",
+          created: moment(),
+          creatorUserId: "52",
         },
       },
     ];
@@ -130,6 +132,8 @@ describe("routeRequest", () => {
       ...PersorgRef.parse({ id: "92" }),
       isOrganization: false,
       name: "VIP",
+      created: moment(),
+      creatorUserId: "52",
     };
     const update = jest.fn().mockReturnValue(persorg);
     const userId = 54;

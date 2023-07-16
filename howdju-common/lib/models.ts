@@ -34,6 +34,7 @@ import {
   CreateJustificationTarget,
   CreateJustifiedSentenceInput,
   CreateMediaExcerptInput,
+  CreatePersorg,
   CreatePicRegionInput,
   CreatePropositionCompoundAtomInput,
   CreatePropositionCompoundInput,
@@ -59,7 +60,6 @@ import {
   JustificationRootTarget,
   JustificationRootTargetType,
   JustificationVotePolarity,
-  Persorg,
   PicRegion,
   PropositionTagVote,
   SourceExcerpt,
@@ -204,7 +204,7 @@ export const makeCreateUrlLocatorInput = (
   props?: Partial<CreateUrlLocatorInput>
 ): CreateUrlLocatorInput => merge({ url: makeCreateUrl() }, props);
 
-export const makePersorg = (): Persorg => ({
+export const makeCreatePersorg = (): CreatePersorg => ({
   isOrganization: false,
   name: "",
   knownFor: "",
@@ -281,7 +281,7 @@ export const makeCreateStatementInput = (
 ): CreateStatementInput =>
   merge(
     {
-      speaker: makePersorg(),
+      speaker: makeCreatePersorg(),
       sentenceType: "PROPOSITION",
       sentence: makeCreatePropositionInput(),
     },

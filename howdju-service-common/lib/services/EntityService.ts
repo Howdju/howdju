@@ -7,7 +7,6 @@ import {
   AuthToken,
   newProgrammingError,
   Entity,
-  Logger,
   utcNow,
   EntityRef,
   newImpossibleError,
@@ -43,20 +42,10 @@ export abstract class EntityService<
   UpdateOut extends PersistedEntity,
   P extends string
 > {
-  entitySchemas: EntitySchemas | Schema;
-  logger: any;
-  authService: AuthService;
-
   constructor(
-    entitySchemas: EntitySchemas | Schema,
-    logger: Logger,
-    authService: AuthService
-  ) {
-    requireArgs({ entitySchemas, logger, authService });
-    this.entitySchemas = entitySchemas;
-    this.logger = logger;
-    this.authService = authService;
-  }
+    private entitySchemas: EntitySchemas | Schema,
+    protected authService: AuthService
+  ) {}
 
   async readOrCreate(
     entity: CreateIn | EntityRef<CreateIn>,

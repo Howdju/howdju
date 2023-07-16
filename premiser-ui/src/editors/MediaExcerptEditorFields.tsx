@@ -8,7 +8,7 @@ import {
   extractQuotationFromTextFragment,
   MediaExcerptCitation,
   MediaExcerpt,
-  makePersorg,
+  makeCreatePersorg,
   makeCreateUrlLocatorInput,
   PersorgOut,
 } from "howdju-common";
@@ -87,7 +87,7 @@ export default function MediaExcerptEditorFields(props: Props) {
         editorId,
         mediaExcerpt?.speakers?.length ?? 0,
         combineNames(name, "speakers"),
-        makePersorg
+        makeCreatePersorg
       )
     );
   }

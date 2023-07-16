@@ -8,7 +8,6 @@ import {
   WritQuote,
   JustificationRootTargetType,
   Proposition,
-  Persorg,
   Url,
   PropositionCompoundAtom,
   Tag,
@@ -17,6 +16,7 @@ import {
   JustificationBasisSourceType,
   PersistedJustificationWithRootRef,
   MediaExcerptOut,
+  CreatePersorgInput,
 } from "howdju-common";
 
 import { EditorEntity, EditorType } from "./reducers/editors";
@@ -214,7 +214,7 @@ export const editors = {
     (
       editorType: EditorType,
       editorId: EditorId,
-      speaker: Persorg,
+      speaker: CreatePersorgInput,
       index: number
     ) => ({
       editorType,
@@ -228,7 +228,7 @@ export const editors = {
     (
       editorType: EditorType,
       editorId: EditorId,
-      speaker: Persorg,
+      speaker: CreatePersorgInput,
       index: number
     ) => ({
       editorType,

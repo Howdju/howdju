@@ -23,7 +23,6 @@ import {
   JustificationBasisSourceType,
   JustificationBasisSourceTypes,
   Tag,
-  Persorg,
   CreateJustifiedSentenceInput,
   CreateJustifiedSentence,
   JustificationBasisType,
@@ -31,6 +30,7 @@ import {
   CreateProposition,
   CreateJustification,
   PersorgOut,
+  CreatePersorgInput,
 } from "howdju-common";
 
 import Helmet from "./Helmet";
@@ -206,7 +206,7 @@ export default function CreatePropositionPage({ mode, location }: Props) {
   function onAddSpeakerClick() {
     dispatch(editors.addSpeaker(editorType, editorId));
   }
-  function onRemoveSpeakerClick(speaker: Persorg, index: number) {
+  function onRemoveSpeakerClick(speaker: CreatePersorgInput, index: number) {
     dispatch(editors.removeSpeaker(editorType, editorId, speaker, index));
   }
   function onPersorgAutocomplete(persorg: PersorgOut, index: number) {

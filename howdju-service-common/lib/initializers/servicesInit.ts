@@ -95,10 +95,11 @@ export function servicesInitializer(provider: AwsProvider) {
   );
 
   const persorgsService = new PersorgsService(
-    provider.logger,
+    provider.appConfig,
     authService,
     permissionsService,
-    provider.persorgsDao
+    provider.persorgsDao,
+    provider.mediaExcerptsDao
   );
 
   const statementsService = new StatementsService(

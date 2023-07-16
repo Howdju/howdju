@@ -480,6 +480,22 @@ export const serviceRoutes = {
       }
     ),
   },
+  deletePersorg: {
+    path: "persorgs/:persorgId",
+    method: httpMethods.DELETE,
+    request: handler(
+      Authed.merge(PathParams("persorgId")),
+      async (
+        appProvider: ServicesProvider,
+        { authToken, pathParams: { persorgId } }
+      ) => {
+        await prefixErrorPath(
+          appProvider.persorgsService.delete({ authToken }, persorgId),
+          "persorg"
+        );
+      }
+    ),
+  },
 
   /*
    * Sources
