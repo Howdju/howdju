@@ -812,7 +812,7 @@ export class MediaExcerptsDao {
       "deleteMediaExcerptSpeakersForSourceId",
       `update media_excerpt_speakers
       set deleted = $2
-      where speaker_persorg_id  = $1
+      where speaker_persorg_id = $1 and deleted is null
       `,
       [persorgId, deletedAt]
     );

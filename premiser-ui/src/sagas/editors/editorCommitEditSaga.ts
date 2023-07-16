@@ -356,6 +356,11 @@ export const UpdateSourceConfig = {
   inputTransformer: identity,
 };
 
+export const UpdatePersorgConfig = {
+  requestActionCreator: api.updatePersorg,
+  inputTransformer: identity,
+};
+
 export const editorCommitConfigs: Partial<
   Record<EditorType, EditorCommitConfig>
 > = {

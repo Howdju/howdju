@@ -73,8 +73,9 @@ export function formatZodError<T>(error: z.ZodError<T>): ModelErrors<T> {
 export function makeZodCustomIssuesError<T extends object>(
   issueDescriptors: IssueDescriptor<T>[]
 ): z.ZodError<T> {
-  const proxy = makeCallableProxy<T>();
-  const issues = issueDescriptors.map((d) => d(proxy)) as z.ZodIssue[];
+  const issues = issueDescriptors.map((d) =>
+    d(makeCallableProxy<T>())
+  ) as z.ZodIssue[];
   return new z.ZodError<T>(issues);
 }
 

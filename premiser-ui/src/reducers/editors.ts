@@ -68,6 +68,8 @@ import {
   makeModelErrors,
   CreateSourceInput,
   UpdateSourceInput,
+  CreatePersorgInput,
+  UpdatePersorgInput,
 } from "howdju-common";
 import { serviceRoutes, InferResponseBody } from "howdju-service-routes";
 
@@ -151,7 +153,9 @@ export type EditorEntity =
   | CreateWritQuoteInput
   | UpdateWritQuoteInput
   | UpdateAccountSettingsInput
-  | UpdateSourceInput;
+  | UpdateSourceInput
+  | CreatePersorgInput
+  | UpdatePersorgInput;
 /**
  * @typeparam T the editor model type.
  * @typeparam U the request model type.

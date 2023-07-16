@@ -3,12 +3,14 @@ import { CircularProgress } from "react-md";
 
 import {
   AccountSettings,
+  CreatePersorgInput,
   CreateSourceInput,
   isTruthy,
   logger,
   Persorg,
   Proposition,
   Source,
+  UpdatePersorgInput,
   UpdateSourceInput,
 } from "howdju-common";
 import { ComponentId, EditorId, SuggestionsKey } from "./types";
@@ -24,7 +26,7 @@ import { camelCase } from "lodash";
 type EntityPropNameProps<ET extends EditorType> = ET extends "PROPOSITION"
   ? { proposition?: Proposition }
   : ET extends "PERSORG"
-  ? { persorg?: Persorg }
+  ? { persorg?: Persorg | CreatePersorgInput | UpdatePersorgInput }
   : ET extends "ACCOUNT_SETTINGS"
   ? { accountSettings?: AccountSettings }
   : ET extends "SOURCE"

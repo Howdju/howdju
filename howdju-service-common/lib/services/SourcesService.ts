@@ -79,15 +79,19 @@ export class SourcesService {
       throw new EntityNotFoundError("SOURCE", updateSource.id);
     }
 
-    await this.checkUpdateSourcePermission(userId, source);
+    await this.checkModifyPermission(userId, source);
 
     return await updateHandlingConstraints(
-      () => this.sourcesDao.updateSource(updateSource),
-      {
-        normal_description: makeModelErrors<UpdateSource>((e) =>
-          e.description("A Source with that description already exists.")
-        ),
-      }
+      updateSource,
+      (s) => this.sourcesDao.updateSource(s),
+      [
+        {
+          test: (_source, detail) => detail.includes("normal_description"),
+          errors: makeModelErrors((e) =>
+            e.description("A Source with that description already exists.")
+          ),
+        },
+      ]
     );
   }
 
@@ -99,7 +103,7 @@ export class SourcesService {
     }
 
     // TODO(473) can't delete own if relied upon
-    await this.checkUpdateSourcePermission(userId, source);
+    await this.checkModifyPermission(userId, source);
 
     const deletedAt = utcNow();
     await this.mediaExcerptsDao.deleteMediaExcerptCitationsForSourceId(
@@ -109,10 +113,7 @@ export class SourcesService {
     await this.sourcesDao.deleteSourceForId(sourceId, deletedAt);
   }
 
-  private async checkUpdateSourcePermission(
-    userId: EntityId,
-    source: SourceOut
-  ) {
+  private async checkModifyPermission(userId: EntityId, source: SourceOut) {
     const hasEditPermission = await this.permissionsService.userHasPermission(
       userId,
       "EDIT_ANY_ENTITY"

@@ -129,6 +129,7 @@ export default function PersorgEditorFields(props: Props) {
           disabled={disabled}
           onPropertyChange={onPropertyChange}
           onSubmit={onSubmit}
+          {...errorProps((p) => p.knownFor)}
         />
       )}
       <Button flat onClick={onShowUrlsClick}>
@@ -144,6 +145,7 @@ export default function PersorgEditorFields(props: Props) {
           disabled={disabled}
           onPropertyChange={onPropertyChange}
           onSubmit={onSubmit}
+          {...errorProps((p) => p.websiteUrl)}
         />,
         <UrlTextField
           key="wikipedia"
@@ -156,6 +158,7 @@ export default function PersorgEditorFields(props: Props) {
           disabled={disabled}
           onPropertyChange={onPropertyChange}
           onSubmit={onSubmit}
+          {...errorProps((p) => p.wikipediaUrl)}
         />,
         <UrlTextField
           key="twitter"
@@ -168,6 +171,7 @@ export default function PersorgEditorFields(props: Props) {
           disabled={disabled}
           onPropertyChange={onPropertyChange}
           onSubmit={onSubmit}
+          {...errorProps((p) => p.twitterUrl)}
         />,
       ]}
     </div>
