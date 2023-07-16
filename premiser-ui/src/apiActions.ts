@@ -8,6 +8,7 @@ import { isEmpty, join, merge, toString } from "lodash";
 import queryString from "query-string";
 import { compile } from "path-to-regexp";
 import { JsonObject, Schema } from "type-fest";
+import { v4 as uuidv4 } from "uuid";
 
 import {
   ContextTrailItemInfo,
@@ -115,20 +116,6 @@ export type ApiResponseActionMeta<N, M> = {
   requestMeta: M;
 };
 
-/**
- * @typeparam N the type of the normalization schema
- */
-interface ResourceApiConfig<B, N> {
-  endpoint: string;
-  fetchInit?: {
-    method: HttpMethod;
-    body?: B;
-  };
-  canSkipRehydrate?: boolean;
-  cancelKey?: string;
-  normalizationSchema?: N;
-}
-
 /** Properties that may be present on API responses */
 export interface ApiResponseWrapper {
   /**
@@ -143,16 +130,6 @@ export interface ApiResponseWrapper {
   continuationToken?: string;
 }
 
-/**
- * The meta of an ApiAction
- *
- * @typeparam P the payload type.
- */
-export type ApiActionMeta<P> = {
-  apiConfig:
-    | ResourceApiConfig<any, any>
-    | ((p: P) => ResourceApiConfig<any, any>);
-};
 export type ApiAction<Route extends ServiceRoute> = PayloadAction<
   ApiConfig<Route>
 >;
@@ -218,6 +195,7 @@ type ApiConfig<Route extends ServiceRoute> = {
   fetchInit: {
     method: HttpMethod;
     body: JsonObject;
+    requestId: string;
   };
   canSkipRehydrate: boolean;
   cancelKey: string;
@@ -311,11 +289,12 @@ function apiActionCreator<
       fetchInit: {
         method: route.method,
         body,
+        requestId: uuidv4(),
       },
       normalizationSchema,
       canSkipRehydrate,
       cancelKey,
-    } as ResourceApiConfig<InferRequestBody<Route>, NormalizationSchema>;
+    } as ApiConfig<Route>;
     const baseMeta = {
       queryStringParams,
       pathParams,
@@ -1114,6 +1093,13 @@ export const api = {
       normalizationSchema: { source: sourceSchema },
     })
   ),
+  deleteSource: apiActionCreator(
+    "DELETE_SOURCE",
+    serviceRoutes.deleteSource,
+    (sourceId: EntityId) => ({
+      pathParams: { sourceId: sourceId },
+    })
+  ),
 
   fetchPropositionTextSuggestions: apiActionCreator(
     "FETCH_PROPOSITION_TEXT_SUGGESTIONS",
@@ -1366,4 +1352,8 @@ export const apiActionCreatorsByActionType = reduce(
     return result;
   },
   {}
+);
+
+export const allApiResponseActions = Object.values(api).map(
+  (actionCreator) => actionCreator.response
 );

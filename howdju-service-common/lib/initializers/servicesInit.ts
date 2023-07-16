@@ -146,7 +146,8 @@ export function servicesInitializer(provider: AwsProvider) {
     provider.appConfig,
     authService,
     permissionsService,
-    provider.sourcesDao
+    provider.sourcesDao,
+    provider.mediaExcerptsDao
   );
 
   const mediaExcerptsService = new MediaExcerptsService(

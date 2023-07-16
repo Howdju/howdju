@@ -13,6 +13,7 @@ import {
 } from "react-md";
 import { Link } from "react-router-dom";
 import { connect, ConnectedProps } from "react-redux";
+import { push } from "connected-react-router";
 
 import {
   EntityId,
@@ -43,11 +44,12 @@ import Tagger from "./Tagger";
 import { combineIds, combineSuggestionsKeys } from "./viewModels";
 import {
   api,
-  apiLike,
   editors,
+  flows,
   mapActionCreatorGroupToDispatchToProps,
   ui,
 } from "./actions";
+import app from "./app/appSlice";
 import { divideMenuItems } from "./util";
 import { contentReportEditorId } from "./content-report/ReportContentDialog";
 import { ComponentId, EditorId, MenuItems, SuggestionsKey } from "./types";
@@ -305,10 +307,18 @@ class JustificationRootTargetCard extends React.Component<Props> {
   };
 
   deleteRootTarget = () => {
-    this.props.apiLike.deleteJustificationRootTarget(
-      this.props.rootTargetType,
-      this.props.rootTarget.id
-    );
+    switch (this.props.rootTargetType) {
+      case "PROPOSITION":
+        this.props.flows.apiActionOnSuccess(
+          api.deleteProposition(this.props.rootTarget.id),
+          app.addToast("Deleted Proposition"),
+          push(paths.home())
+        );
+        break;
+      case "STATEMENT":
+        logger.error("deleting statements is unimplemented");
+        break;
+    }
   };
 
   onMouseOver = () => {
@@ -324,8 +334,8 @@ const connector = connect(
   null,
   mapActionCreatorGroupToDispatchToProps({
     api,
-    apiLike,
     editors,
+    flows,
     ui,
   })
 );

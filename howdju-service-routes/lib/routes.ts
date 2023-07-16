@@ -514,6 +514,22 @@ export const serviceRoutes = {
       }
     ),
   },
+  deleteSource: {
+    path: "sources/:sourceId",
+    method: httpMethods.DELETE,
+    request: handler(
+      Authed.merge(PathParams("sourceId")),
+      async (
+        appProvider: ServicesProvider,
+        { authToken, pathParams: { sourceId } }
+      ) => {
+        await prefixErrorPath(
+          appProvider.sourcesService.deleteSourceForId({ authToken }, sourceId),
+          "source"
+        );
+      }
+    ),
+  },
 
   /*
    * Root target justifications

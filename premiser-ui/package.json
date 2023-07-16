@@ -132,6 +132,7 @@
     "connected-react-router": "^6.9.1",
     "core-js": "^3.11.0",
     "dompurify": "^2.2.9",
+    "expiry-map": "^2.0.0",
     "history": "^4.10.1",
     "howdju-ajv-sourced": "workspace:howdju-ajv-sourced",
     "howdju-client-common": "workspace:howdju-client-common",

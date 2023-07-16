@@ -28,6 +28,7 @@ export function* resourceApiCalls() {
   yield takeEvery(actionTypes, callApiForResource);
 }
 
+// TODO(470) replace with ExpiryMap
 const cancelableResourceCallTasks: Record<string, FixedTask<any>> = {};
 
 export function* callApiForResource<A extends AnyApiAction>(action: A) {
@@ -42,9 +43,11 @@ export function* callApiForResource<A extends AnyApiAction>(action: A) {
     cancelKey,
     logCancellation,
   } = action.payload;
+  const { requestId } = fetchInit;
   const responseMeta = {
     normalizationSchema,
     requestMeta: "meta" in action ? action.meta : undefined,
+    requestId,
   };
   try {
     if (cancelKey) {

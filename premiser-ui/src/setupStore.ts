@@ -68,6 +68,8 @@ export const setupStore = (
             "payload.normalizationSchema",
             "meta.normalizationSchema",
             "payload.itemFactory",
+            // TODO(472) remove once we remove error-logging Saga.
+            "errors.loggedErrors",
           ],
         },
       }).concat([routerMiddleware(history), sagaMiddleware]),

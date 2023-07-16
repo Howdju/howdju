@@ -1,6 +1,7 @@
 import some from "lodash/some";
 import { put, takeEvery, select } from "redux-saga/effects";
 import { LOCATION_CHANGE, push, replace } from "connected-react-router";
+import ExpiryMap from "expiry-map";
 
 import {
   httpStatusCodes,
@@ -9,7 +10,6 @@ import {
 } from "howdju-common";
 
 import t, {
-  DELETE_PROPOSITION_SUCCESS_TOAST_MESSAGE,
   MISSING_PROPOSITION_REDIRECT_TOAST_MESSAGE,
   MISSING_STATEMENT_REDIRECT_TOAST_MESSAGE,
 } from "../texts";
@@ -18,27 +18,49 @@ import {
   selectAuthTokenExpiration,
   selectLoginRedirectLocation,
 } from "../selectors";
-import { api, app, goto, str } from "../actions";
-import { callApiResponse } from "../apiActions";
+import { api, app, flows, goto, str } from "../actions";
+import appSliceActions from "../app/appSlice";
+import { allApiResponseActions, callApiResponse } from "../apiActions";
 import { history } from "../history";
 import { isActivePath } from "../routes";
 import { tryWaitOnRehydrate } from "./appSagas";
 
-export function* goHomeIfDeletePropositionWhileViewing() {
+const pendingApiSuccessActions = new ExpiryMap(30_000);
+export function* apiActionOnSuccess() {
   yield takeEvery(
-    api.deleteProposition.response,
-    function* goHomeIfDeletePropositionWhileViewingWorker(action) {
-      if (!action.error) {
-        const routerLocation = history.location;
-        const noSlugPath = paths.proposition(
-          { id: action.meta.requestMeta.propositionId },
-          null,
-          true
-        );
-        if (routerLocation.pathname.startsWith(noSlugPath)) {
-          yield put(app.addToast(t(DELETE_PROPOSITION_SUCCESS_TOAST_MESSAGE)));
-          yield put(push(paths.home()));
-        }
+    flows.apiActionOnSuccess,
+    function* apiActionOnSuccessWorker(action) {
+      const { apiAction, onSuccessActions } = action.payload;
+      yield put(apiAction);
+      const { requestId } = apiAction.payload.fetchInit;
+      if (!requestId) {
+        return;
+      }
+      pendingApiSuccessActions.set(requestId, onSuccessActions);
+    }
+  );
+}
+export function* apiActionOnSuccessResponse() {
+  yield takeEvery(
+    allApiResponseActions,
+    function* apiActionOnSuccessResponseWorker(action) {
+      if (!("meta" in action && "requestMeta" in action.meta)) {
+        return;
+      }
+      const { requestId } = action.meta;
+      if (!requestId) {
+        return;
+      }
+      if (!pendingApiSuccessActions.has(requestId)) {
+        return;
+      }
+      const onSuccessActions = pendingApiSuccessActions.get(requestId);
+      pendingApiSuccessActions.delete(requestId);
+      if (action.error) {
+        return;
+      }
+      for (const onSuccessAction of onSuccessActions) {
+        yield put(onSuccessAction);
       }
     }
   );
@@ -89,6 +111,7 @@ export function* redirectAfterLogin() {
   );
 }
 
+// TODO(471) replace with push(paths.*)
 export function* goTo() {
   yield takeEvery(str(goto.login), function* goToLoginWorker() {
     yield put(push(paths.login()));
@@ -188,7 +211,7 @@ export function* redirectHomeFromMissingRootTarget() {
         }
         // startsWith because we don't have a slug
         if (routerLocation.pathname.startsWith(path)) {
-          yield put(app.addToast(t(messageKey)));
+          yield put(appSliceActions.addToast(t(messageKey)));
           yield put(push(paths.home()));
         }
       }

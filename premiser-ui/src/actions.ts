@@ -27,6 +27,8 @@ import {
   EditorId,
 } from "./types";
 import { createAction, actionTypeDelim } from "./actionHelpers";
+import { AnyAction } from "@reduxjs/toolkit";
+import { AnyApiAction } from "./apiActions";
 
 export { str } from "./actionHelpers";
 
@@ -403,6 +405,16 @@ export const flows = {
       editorType,
       editorId,
       onSuccessAction,
+    })
+  ),
+  apiActionOnSuccess: createAction(
+    "FLOWS/API_ACTION_ON_SUCCESS",
+    (
+      apiAction: AnyApiAction,
+      ...onSuccessActions: [AnyAction, ...AnyAction[]]
+    ) => ({
+      apiAction,
+      onSuccessActions,
     })
   ),
 };

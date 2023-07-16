@@ -8,6 +8,7 @@ import { str, errors } from "../actions";
 import { logger } from "../logger";
 import * as customHeaderKeys from "../customHeaderKeys";
 
+// TODO(472) remove error-logging Saga
 export function* logErrors() {
   yield takeEvery("*", function* logErrorsWorker(action) {
     if (!action.error) {

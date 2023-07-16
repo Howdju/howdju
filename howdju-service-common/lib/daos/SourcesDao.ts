@@ -64,7 +64,7 @@ export class SourcesDao {
       rows: [row],
     } = await this.db.query<SourceRow>(
       "readSourceForId",
-      `SELECT * FROM sources WHERE source_id = $1`,
+      `SELECT * FROM sources WHERE source_id = $1 and deleted is null`,
       [normalizeText(sourceId)]
     );
     if (!row) {
@@ -102,5 +102,15 @@ export class SourcesDao {
       [updateSource.description, normalDescription, updateSource.id]
     );
     return this.readSourceForId(updateSource.id);
+  }
+
+  async deleteSourceForId(sourceId: string, deletedAt: Moment) {
+    await this.db.query(
+      "deleteSourceForId",
+      `
+      update sources set deleted = $2 where source_id = $1
+      `,
+      [sourceId, deletedAt]
+    );
   }
 }

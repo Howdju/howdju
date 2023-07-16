@@ -25,6 +25,7 @@ export interface RequestOptions {
   endpoint: string;
   method: HttpMethod;
   body: string;
+  requestId?: string;
   headers: Record<string, string>;
 }
 
@@ -33,10 +34,13 @@ export function sendRequest({
   method,
   body,
   headers,
+  requestId,
 }: RequestOptions) {
   const controller = new AbortController();
 
-  const requestId = newId();
+  if (!requestId) {
+    requestId = newId();
+  }
   headers = { ...headers, [customHeaderKeys.REQUEST_ID]: requestId };
 
   // https://github.com/mzabriskie/axios#request-config

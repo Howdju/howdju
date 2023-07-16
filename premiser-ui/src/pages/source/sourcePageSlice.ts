@@ -6,6 +6,7 @@ import { ContinuationToken, EntityId } from "howdju-common";
 import { api } from "@/apiActions";
 
 const initialState = {
+  isFetchingSource: false,
   mediaExcerptIds: [] as EntityId[],
   isFetchingMediaExcerpts: false,
   mediaExcerptsContinuationToken: undefined as ContinuationToken | undefined,
@@ -18,6 +19,12 @@ export const sourcePageSlice = createSlice({
     clearMediaExcerpts: () => initialState,
   },
   extraReducers(builder) {
+    builder.addCase(api.fetchSource, (state) => {
+      state.isFetchingSource = true;
+    });
+    builder.addCase(api.fetchSource.response, (state) => {
+      state.isFetchingSource = false;
+    });
     builder.addCase(api.fetchSourceMediaExcerpts, (state) => {
       state.isFetchingMediaExcerpts = true;
     });

@@ -54,10 +54,7 @@ import { useAppDispatch } from "@/hooks";
 import { ServiceRoute } from "howdju-service-routes";
 
 export class CommitThenPutAction {
-  action: AnyAction;
-  constructor(action: AnyAction) {
-    this.action = action;
-  }
+  constructor(public action: AnyAction) {}
 }
 
 /** Editor fields can return one or more actions to dispatch. */
