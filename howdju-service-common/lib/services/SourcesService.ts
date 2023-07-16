@@ -4,7 +4,6 @@ import { Moment } from "moment";
 import {
   CreateSource,
   EntityId,
-  Logger,
   makeModelErrors,
   momentAdd,
   SourceOut,
@@ -28,7 +27,6 @@ import { UserIdent } from "./types";
 export class SourcesService {
   constructor(
     private config: ApiConfig,
-    private logger: Logger,
     private authService: AuthService,
     private permissionsService: PermissionsService,
     private sourcesDao: SourcesDao,

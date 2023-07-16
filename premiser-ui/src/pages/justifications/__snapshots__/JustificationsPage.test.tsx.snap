@@ -70,7 +70,7 @@ exports[`JustificationsPage Can add a compound-based justification 1`] = `
                             
                              
                             <span
-                              title="12 Jan 2023 8:23:00 AM"
+                              title="12 Jan 2023 8:23:00 AM -08:00"
                             >
                               12 hours ago
                             </span>
@@ -478,7 +478,7 @@ exports[`JustificationsPage Shows a justified proposition 1`] = `
                             
                              
                             <span
-                              title="12 Jan 2023 8:23:00 AM"
+                              title="12 Jan 2023 8:23:00 AM -08:00"
                             >
                               12 hours ago
                             </span>
