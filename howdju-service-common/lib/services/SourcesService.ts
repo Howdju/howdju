@@ -11,7 +11,7 @@ import {
   utcNow,
 } from "howdju-common";
 
-import { MediaExcerptsDao, SourcesDao } from "../daos";
+import { SourcesDao } from "../daos";
 import { EntityWrapper } from "../types";
 import { readWriteReread, updateHandlingConstraints } from "./patterns";
 import {
@@ -29,8 +29,7 @@ export class SourcesService {
     private config: ApiConfig,
     private authService: AuthService,
     private permissionsService: PermissionsService,
-    private sourcesDao: SourcesDao,
-    private mediaExcerptsDao: MediaExcerptsDao
+    private sourcesDao: SourcesDao
   ) {}
 
   async readSourceForId(sourceId: EntityId): Promise<SourceOut> {
@@ -106,10 +105,6 @@ export class SourcesService {
     await this.checkModifyPermission(userId, source);
 
     const deletedAt = utcNow();
-    await this.mediaExcerptsDao.deleteMediaExcerptCitationsForSourceId(
-      sourceId,
-      deletedAt
-    );
     await this.sourcesDao.deleteSourceForId(sourceId, deletedAt);
   }
 

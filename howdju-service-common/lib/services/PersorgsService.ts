@@ -21,7 +21,7 @@ import { persorgSchema } from "./validationSchemas";
 import { PermissionsService } from "./PermissionsService";
 import { AuthService } from "./AuthService";
 import { EntityService } from "./EntityService";
-import { MediaExcerptsDao, PersorgData, PersorgsDao } from "../daos";
+import { PersorgData, PersorgsDao } from "../daos";
 import { readWriteReread, updateHandlingConstraints } from "./patterns";
 import { UserIdent } from "./types";
 import { ApiConfig } from "..";
@@ -37,8 +37,7 @@ export class PersorgsService extends EntityService<
     private config: ApiConfig,
     authService: AuthService,
     private permissionsService: PermissionsService,
-    private persorgsDao: PersorgsDao,
-    private mediaExcerptsDao: MediaExcerptsDao
+    private persorgsDao: PersorgsDao
   ) {
     super(persorgSchema, authService);
   }
@@ -154,10 +153,6 @@ export class PersorgsService extends EntityService<
     await this.checkModifyPermission(userId, source);
 
     const deletedAt = utcNow();
-    await this.mediaExcerptsDao.deleteMediaExcerptSpeakersForPersorgId(
-      persorgId,
-      deletedAt
-    );
     await this.persorgsDao.deletePersorgForId(persorgId, deletedAt);
   }
 

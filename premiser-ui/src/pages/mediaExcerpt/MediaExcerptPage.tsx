@@ -1,6 +1,5 @@
 import React, { useEffect } from "react";
 import { RouteComponentProps } from "react-router";
-import { denormalize } from "normalizr";
 import {
   CircularProgress,
   Divider,
@@ -9,17 +8,20 @@ import {
   MenuButton,
 } from "react-md";
 import { MaterialSymbol } from "react-material-symbols";
+import { Link } from "react-router-dom";
+import { push } from "connected-react-router";
 
-import { EntityId, MediaExcerptView } from "howdju-common";
+import { EntityId, newUnimplementedError } from "howdju-common";
 
-import { useAppDispatch, useAppSelector } from "@/hooks";
+import { useAppDispatch, useAppEntitySelector, useAppSelector } from "@/hooks";
 import { api } from "@/apiActions";
 import { mediaExcerptSchema } from "@/normalizationSchemas";
 import { combineIds } from "@/viewModels";
 import MediaExcerptCard from "@/components/mediaExcerpts/MediaExcerptCard";
 import HowdjuHelmet from "@/Helmet";
 import paths from "@/paths";
-import { Link } from "react-router-dom";
+import { flows } from "@/actions";
+import app from "@/app/appSlice";
 
 interface MatchParams {
   mediaExcerptId: EntityId;
@@ -35,10 +37,20 @@ export default function MediaExcerptPage(props: Props) {
     dispatch(api.fetchMediaExcerpt(mediaExcerptId));
   }, [dispatch, mediaExcerptId]);
 
-  // eslint-disable-next-line @typescript-eslint/no-empty-function -- TODO(20) remove this.
-  function useInAppearance() {}
-  // eslint-disable-next-line @typescript-eslint/no-empty-function -- TODO(38) remove this.
-  function deleteMediaExcerpt() {}
+  function useInAppearance() {
+    throw newUnimplementedError("useInAppearance");
+  }
+  function deleteMediaExcerpt() {
+    dispatch(
+      flows.apiActionOnSuccess(
+        api.deleteMediaExcerpt(mediaExcerptId),
+        app.addToast("Deleted Media Excerpt."),
+        push(paths.home())
+      )
+    );
+  }
+
+  const { isFetching } = useAppSelector((state) => state.mediaExcerptPage);
 
   // TODO(17): pass props directly after upgrading react-md to a version with correct types
   const menuClassNameProps = { menuClassName: "context-menu" } as any;
@@ -83,17 +95,15 @@ export default function MediaExcerptPage(props: Props) {
     />
   );
 
-  const mediaExcerpt = useAppSelector(
-    (state) =>
-      denormalize(mediaExcerptId, mediaExcerptSchema, state.entities) as
-        | MediaExcerptView
-        | undefined
-  );
+  const mediaExcerpt = useAppEntitySelector(mediaExcerptId, mediaExcerptSchema);
 
   const title = `Media Excerpt ${mediaExcerptId}`;
 
   if (!mediaExcerpt) {
-    return <CircularProgress id={combineIds(id, "progress")} />;
+    if (isFetching) {
+      return <CircularProgress id={combineIds(id, "progress")} />;
+    }
+    return <div id={id}>Media Excerpt not found.</div>;
   }
   return (
     <div id={id} className="md-grid">

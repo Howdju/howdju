@@ -98,8 +98,7 @@ export function servicesInitializer(provider: AwsProvider) {
     provider.appConfig,
     authService,
     permissionsService,
-    provider.persorgsDao,
-    provider.mediaExcerptsDao
+    provider.persorgsDao
   );
 
   const statementsService = new StatementsService(
@@ -147,12 +146,13 @@ export function servicesInitializer(provider: AwsProvider) {
     provider.appConfig,
     authService,
     permissionsService,
-    provider.sourcesDao,
-    provider.mediaExcerptsDao
+    provider.sourcesDao
   );
 
   const mediaExcerptsService = new MediaExcerptsService(
+    provider.appConfig,
     authService,
+    permissionsService,
     provider.mediaExcerptsDao,
     sourcesService,
     persorgsService,

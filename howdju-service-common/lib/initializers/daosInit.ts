@@ -91,7 +91,8 @@ export function daosInitializer(provider: DatabaseProvider) {
     database,
     urlsDao,
     sourcesDao,
-    persorgsDao
+    persorgsDao,
+    usersDao
   );
   const justificationsDao = new JustificationsDao(
     logger,

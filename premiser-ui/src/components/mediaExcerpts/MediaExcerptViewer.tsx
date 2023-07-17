@@ -14,6 +14,7 @@ import MediaExcerptCitationViewer from "./MediaExcerptCitationViewer";
 import "./MediaExcerptViewer.scss";
 import paths from "@/paths";
 import Link from "@/Link";
+import CreationInfo from "../creationInfo/CreationInfo";
 
 interface Props {
   mediaExcerpt: MediaExcerptView;
@@ -25,6 +26,10 @@ export default function MediaExcerptViewer({ mediaExcerpt }: Props) {
       <CollapsibleTextViewer
         className="quotation"
         text={mediaExcerpt.localRep.quotation}
+      />
+      <CreationInfo
+        created={mediaExcerpt.created}
+        creator={mediaExcerpt.creator}
       />
       <ul className="url-locators">
         {mediaExcerpt.locators.urlLocators.map((urlLocator: UrlLocatorView) => (

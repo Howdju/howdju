@@ -28,6 +28,7 @@ import {
   removeQueryParamsAndFragment,
   MediaExcerptCitationOut,
   SourceRef,
+  DeleteMediaExcerptCitation,
 } from "howdju-common";
 
 import { Database, TxnClient } from "../database";
@@ -35,9 +36,9 @@ import { PersorgsDao } from "./PersorgsDao";
 import { SourcesDao } from "./SourcesDao";
 import { UrlsDao } from "./UrlsDao";
 import { toDbDirection } from "./daoModels";
-import { EntityNotFoundError, InvalidRequestError } from "..";
+import { EntityNotFoundError, InvalidRequestError, UsersDao } from "..";
 import { SqlClause } from "./daoTypes";
-import { renumberSqlArgs } from "./daosUtil";
+import { renumberSqlArgs, toIdString } from "./daosUtil";
 
 export type CreateMediaExcerptDataIn = Pick<
   PartialPersist<CreateMediaExcerpt, "localRep">,
@@ -45,25 +46,14 @@ export type CreateMediaExcerptDataIn = Pick<
 >;
 
 export class MediaExcerptsDao {
-  private logger: Logger;
-  private database: Database;
-  private urlsDao: UrlsDao;
-  private sourcesDao: SourcesDao;
-  private persorgsDao: PersorgsDao;
-
   constructor(
-    logger: Logger,
-    database: Database,
-    urlsDao: UrlsDao,
-    sourcesDao: SourcesDao,
-    persorgsDao: PersorgsDao
-  ) {
-    this.logger = logger;
-    this.database = database;
-    this.urlsDao = urlsDao;
-    this.sourcesDao = sourcesDao;
-    this.persorgsDao = persorgsDao;
-  }
+    private logger: Logger,
+    private database: Database,
+    private urlsDao: UrlsDao,
+    private sourcesDao: SourcesDao,
+    private persorgsDao: PersorgsDao,
+    private usersDao: UsersDao
+  ) {}
 
   async readMediaExcerptsForIds(ids: EntityId[]) {
     return await Promise.all(ids.map((id) => this.readMediaExcerptForId(id)));
@@ -76,16 +66,23 @@ export class MediaExcerptsDao {
       rows: [row],
     } = await this.database.query(
       "readMediaExceptForId",
-      `select * from media_excerpts where media_excerpt_id = $1`,
+      `
+      select *
+      from media_excerpts
+      where
+          media_excerpt_id = $1
+      and deleted is null
+      `,
       [mediaExcerptId]
     );
     if (!row) {
       return undefined;
     }
-    const [urlLocators, citations, speakers] = await Promise.all([
+    const [urlLocators, citations, speakers, creator] = await Promise.all([
       this.readUrlLocatorsForMediaExcerptId(mediaExcerptId),
       this.readCitationsForMediaExcerptId(mediaExcerptId),
       this.readSpeakersForMediaExcerptId(mediaExcerptId),
+      this.usersDao.readUserBlurbForId(row.creator_user_id),
     ]);
     return brandedParse(MediaExcerptRef, {
       id: row.media_excerpt_id,
@@ -100,13 +97,23 @@ export class MediaExcerptsDao {
       speakers,
       created: row.created,
       creatorUserId: row.creator_user_id,
+      creator,
     });
   }
 
   private async readSpeakersForMediaExcerptId(mediaExcerptId: EntityId) {
     const { rows } = await this.database.query(
       "readSpeakersForMediaExcerptId",
-      `select * from media_excerpt_speakers where media_excerpt_id = $1 and deleted is null`,
+      `
+      select mes.*
+      from
+        media_excerpt_speakers mes
+        join persorgs p on mes.speaker_persorg_id = p.persorg_id
+      where
+        media_excerpt_id = $1
+        and mes.deleted is null
+        and p.deleted is null
+        `,
       [mediaExcerptId]
     );
     return await Promise.all(
@@ -120,10 +127,18 @@ export class MediaExcerptsDao {
     const { rows } = await this.database.query(
       "readCitationsForMediaExcerptId",
       `
-      select *
-      from media_excerpt_citations
-        where media_excerpt_id = $1 and deleted is null
-      order by media_excerpt_id asc, source_id asc, normal_pincite asc`,
+      select mec.*
+      from
+             media_excerpt_citations mec
+        join sources s using (source_id)
+      where
+            mec.media_excerpt_id = $1
+        and mec.deleted is null
+        and s.deleted is null
+      order by
+          media_excerpt_id asc
+        , source_id asc
+        , normal_pincite asc`,
       [mediaExcerptId]
     );
     return await Promise.all(
@@ -149,7 +164,13 @@ export class MediaExcerptsDao {
   ): Promise<UrlLocatorOut[]> {
     const { rows } = await this.database.query(
       "readUrlLocatorsForMediaExcerptId",
-      `select * from url_locators where media_excerpt_id = $1 and deleted is null`,
+      `
+      select ul.*
+      from url_locators ul
+        join urls u using (url_id)
+      where media_excerpt_id = $1
+        and ul.deleted is null
+        and u.deleted is null`,
       [mediaExcerptId]
     );
     return await Promise.all(
@@ -162,11 +183,12 @@ export class MediaExcerptsDao {
           row.url_locator_id
         );
         return brandedParse(UrlLocatorRef, {
-          id: row.url_locator_id,
+          id: toIdString(row.url_locator_id),
+          mediaExcerptId: toIdString(row.media_excerpt_id),
           url,
           anchors,
           created: row.created,
-          creatorUserId: row.creator_user_id,
+          creatorUserId: toIdString(row.creator_user_id),
         });
       })
     );
@@ -320,29 +342,31 @@ export class MediaExcerptsDao {
         // Creating the UrlLocators and Citations in the serializable transaction will conflict
         // with having read them in the readEquivalentMediaExcerpts query above.
 
-        const urlLocators = await Promise.all(
-          createUrlLocators.map((createUrlLocator) =>
-            this.createUrlLocator({
-              client,
-              creatorUserId,
-              mediaExcerpt,
-              createUrlLocator,
-              created,
-            })
-          )
-        );
-
-        const citations = await Promise.all(
-          createCitations.map((createCitation) =>
-            this.createMediaExcerptCitation({
-              client,
-              creatorUserId,
-              mediaExcerpt,
-              createCitation,
-              created,
-            })
-          )
-        );
+        const [urlLocators, citations, creator] = await Promise.all([
+          await Promise.all(
+            createUrlLocators.map((createUrlLocator) =>
+              this.createUrlLocator({
+                client,
+                creatorUserId,
+                mediaExcerpt,
+                createUrlLocator,
+                created,
+              })
+            )
+          ),
+          await Promise.all(
+            createCitations.map((createCitation) =>
+              this.createMediaExcerptCitation({
+                client,
+                creatorUserId,
+                mediaExcerpt,
+                createCitation,
+                created,
+              })
+            )
+          ),
+          await this.usersDao.readUserBlurbForId(creatorUserId),
+        ]);
 
         return {
           mediaExcerpt: merge({}, mediaExcerpt, {
@@ -350,6 +374,7 @@ export class MediaExcerptsDao {
               urlLocators,
             },
             citations,
+            creator,
           }),
           isExtant: false,
         };
@@ -528,7 +553,8 @@ export class MediaExcerptsDao {
     return brandedParse(
       UrlLocatorRef,
       merge({}, createUrlLocator, {
-        id: row.url_locator_id,
+        id: toIdString(row.url_locator_id),
+        mediaExcerptId: mediaExcerpt.id,
         created: row.created,
         creatorUserId: row.creator_user_id,
         anchors,
@@ -573,6 +599,7 @@ export class MediaExcerptsDao {
     return brandedParse(UrlLocatorRef, {
       ...createUrlLocator,
       id,
+      mediaExcerptId: mediaExcerpt.id,
       anchors,
       created,
       creatorUserId,
@@ -993,6 +1020,48 @@ export class MediaExcerptsDao {
     return mediaExcerpts.filter(isDefined);
   }
 
+  async deleteMediaExcerpt(mediaExcerptId: string, deletedAt: Moment) {
+    await this.database.query(
+      "deleteMediaExcerpt",
+      `update media_excerpts
+        set deleted = $1
+        where media_excerpt_id = $2 and deleted is null`,
+      [deletedAt, mediaExcerptId]
+    );
+  }
+
+  deleteMediaExcerptCitation(
+    { mediaExcerptId, source, normalPincite }: DeleteMediaExcerptCitation,
+    deletedAt: Moment
+  ) {
+    const args = [deletedAt, mediaExcerptId, source.id];
+    if (normalPincite) {
+      args.push(normalPincite);
+    }
+    return this.database.query(
+      "deleteMediaExcerptCitation",
+      `
+      update media_excerpt_citations
+      set deleted = $1
+      where
+            media_excerpt_id = $2
+        and source_id = $3
+        and ${normalPincite ? `normal_pincite = $4` : `normal_pincite is null`}
+        and deleted is null`,
+      args
+    );
+  }
+
+  deleteUrlLocatorForId(urlLocatorId: string, deletedAt: Moment) {
+    return this.database.query(
+      "deleteUrlLocatorForId",
+      `update url_locators
+      set deleted = $1
+      where url_locator_id = $2 and deleted is null`,
+      [deletedAt, urlLocatorId]
+    );
+  }
+
   async deleteMediaExcerptCitationsForSourceId(
     sourceId: EntityId,
     deletedAt: Moment
@@ -1018,9 +1087,14 @@ function makeFilterSubselects(filters: MediaExcerptSearchFilter | undefined) {
     switch (filterName) {
       case "creatorUserId": {
         const sql = `
-          select media_excerpt_id
-          from media_excerpts
-          where creator_user_id = $1 and deleted is null
+          select me.media_excerpt_id
+          from
+               media_excerpts me
+          join users u on me.creator_user_id = u.user_id
+          where
+              me.creator_user_id = $1
+          and me.deleted is null
+          and u.deleted is null
         `;
         const args = [value];
         filterSubselects.push({ sql, args });
@@ -1029,8 +1103,10 @@ function makeFilterSubselects(filters: MediaExcerptSearchFilter | undefined) {
       case "speakerPersorgId": {
         const sql = `
           select media_excerpt_id
-          from media_excerpts join media_excerpt_speakers mes using (media_excerpt_id)
-          where speaker_persorg_id = $1 and mes.deleted is null
+          from media_excerpts
+            join media_excerpt_speakers mes using (media_excerpt_id)
+            join persorgs p on mes.speaker_persorg_id = p.persorg_id
+          where speaker_persorg_id = $1 and mes.deleted is null and p.deleted is null
         `;
         const args = [value];
         filterSubselects.push({ sql, args });
@@ -1039,8 +1115,13 @@ function makeFilterSubselects(filters: MediaExcerptSearchFilter | undefined) {
       case "sourceId": {
         const sql = `
           select media_excerpt_id
-          from media_excerpts join media_excerpt_citations mec using (media_excerpt_id)
-          where mec.source_id = $1 and mec.deleted is null
+          from media_excerpts
+            join media_excerpt_citations mec using (media_excerpt_id)
+            join sources s using (source_id)
+          where
+              mec.source_id = $1
+          and mec.deleted is null
+          and s.deleted is null
         `;
         const args = [value];
         filterSubselects.push({ sql, args });

@@ -46,7 +46,7 @@ import { map } from "lodash";
 import { CreatePropositionPageMode } from "./types";
 import { Location, LocationState } from "history";
 import { PrimaryContextTrailProvider } from "./components/contextTrail/PrimaryContextTrailProvider";
-import MediaExcerptPage from "./pages/MediaExcerptPage";
+import MediaExcerptPage from "./pages/mediaExcerpt/MediaExcerptPage";
 import MediaExcerptUsagesPage from "./pages/mediaExcerptUsages/MediaExcerptUsagesPage";
 
 const renderHomePath = (props: RouteProps) => {
