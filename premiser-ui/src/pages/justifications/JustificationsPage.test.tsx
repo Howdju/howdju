@@ -24,18 +24,15 @@ import {
   setupUserEvent,
   withFakeTimers,
   withMockServer,
-  withStaticFromNowMoment,
 } from "@/testUtils";
 import JustificationsPage from "./JustificationsPage";
 
-withFakeTimers();
+withFakeTimers({ now: new Date("2023-01-12T16:44:00-08:00") });
 const server = withMockServer();
 
-const created = moment("2023-01-12T08:23:00");
+const created = moment("2023-01-12T08:23:12-08:00");
 
 describe("JustificationsPage", () => {
-  withStaticFromNowMoment("2023-01-12T20:14:00");
-
   test("Shows a justified proposition", async () => {
     // Arrange
     const justifications: JustificationOut[] = [];

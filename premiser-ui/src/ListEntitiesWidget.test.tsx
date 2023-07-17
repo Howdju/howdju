@@ -6,7 +6,6 @@ import RecentPropositionsWidget from "./RecentPropositionsWidget";
 import {
   renderWithProviders,
   withFakeTimers,
-  withStaticFromNowMoment,
   withMockServer,
   setupUserEvent,
   progressToBeGone,
@@ -21,11 +20,10 @@ import { drop, take, toNumber } from "lodash";
 import moment from "moment";
 import { InferResponseBody, serviceRoutes } from "howdju-service-routes";
 
-const created = moment("2023-01-12T12:23:00");
-
-withFakeTimers();
-
+withFakeTimers({ now: new Date("2023-01-12T16:44:00-08:00") });
 const server = withMockServer();
+
+const created = moment("2023-01-12T12:23:00-08:00");
 const propositions = Array.from(Array(20).keys()).map((id) => ({
   ...PropositionRef.parse({ id: `proposition${id}` }),
   created,
@@ -33,8 +31,6 @@ const propositions = Array.from(Array(20).keys()).map((id) => ({
 }));
 const initialFetchCount = 7;
 const fetchCount = 8;
-
-withStaticFromNowMoment("2023-01-12T20:14:00");
 
 beforeEach(() => {
   server.use(
