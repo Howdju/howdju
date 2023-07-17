@@ -16,7 +16,6 @@ exports.AccountSettingsService = class AccountSettingsService extends (
         createSchema: CreateAccountSettings,
         updateSchema: UpdateAccountSettings,
       },
-      logger,
       authService
     );
     this.logger = logger;

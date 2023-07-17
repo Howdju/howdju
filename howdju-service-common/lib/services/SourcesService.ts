@@ -13,7 +13,7 @@ import {
 
 import { MediaExcerptsDao, SourcesDao } from "../daos";
 import { EntityWrapper } from "../types";
-import { readWriteReread } from "./patterns";
+import { readWriteReread, updateHandlingConstraints } from "./patterns";
 import {
   ApiConfig,
   AuthorizationError,
@@ -79,9 +79,20 @@ export class SourcesService {
       throw new EntityNotFoundError("SOURCE", updateSource.id);
     }
 
-    await this.checkUpdateSourcePermission(userId, source);
+    await this.checkModifyPermission(userId, source);
 
-    return this.sourcesDao.updateSource(updateSource);
+    return await updateHandlingConstraints(
+      updateSource,
+      (s) => this.sourcesDao.updateSource(s),
+      [
+        {
+          test: (_source, detail) => detail.includes("normal_description"),
+          errors: makeModelErrors((e) =>
+            e.description("A Source with that description already exists.")
+          ),
+        },
+      ]
+    );
   }
 
   async deleteSourceForId(userIdent: UserIdent, sourceId: EntityId) {
@@ -91,7 +102,8 @@ export class SourcesService {
       throw new EntityNotFoundError("SOURCE", sourceId);
     }
 
-    await this.checkUpdateSourcePermission(userId, source);
+    // TODO(473) can't delete own if relied upon
+    await this.checkModifyPermission(userId, source);
 
     const deletedAt = utcNow();
     await this.mediaExcerptsDao.deleteMediaExcerptCitationsForSourceId(
@@ -101,10 +113,7 @@ export class SourcesService {
     await this.sourcesDao.deleteSourceForId(sourceId, deletedAt);
   }
 
-  private async checkUpdateSourcePermission(
-    userId: EntityId,
-    source: SourceOut
-  ) {
+  private async checkModifyPermission(userId: EntityId, source: SourceOut) {
     const hasEditPermission = await this.permissionsService.userHasPermission(
       userId,
       "EDIT_ANY_ENTITY"
@@ -120,6 +129,7 @@ export class SourcesService {
         )
       );
     }
+    // TODO(473) disallow deletes if other users have already depended on it.
     if (
       utcNow().isAfter(
         momentAdd(source.created, this.config.modifyEntityGracePeriod)

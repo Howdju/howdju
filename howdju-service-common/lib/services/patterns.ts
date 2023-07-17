@@ -1,7 +1,62 @@
-import { logger, sleep, toJson } from "howdju-common";
 import { DatabaseError } from "pg";
 
+import { logger, ModelErrors, sleep, toJson } from "howdju-common";
+
+import { EntityConflictError } from "../serviceErrors";
+import { merge } from "lodash";
+
 const CONSTRAINT_VIOLATION_CODE = "23505";
+
+export function isConstraintViolationDatbaseError(
+  err: any
+): err is DatabaseError {
+  return err instanceof DatabaseError && err.code === CONSTRAINT_VIOLATION_CODE;
+}
+
+export interface ConstraintErrorHandler<M> {
+  test: (model: M, detail: string) => boolean;
+  errors: ModelErrors<M>;
+}
+export type ConstraintErrorHandlers<M> = [
+  ConstraintErrorHandler<M>,
+  ...ConstraintErrorHandler<M>[]
+];
+
+/**
+ * Performs an Entity update translating any database constraints to EntityConflictErrors.
+ *
+ * @param update A function that performs the update.
+ * @param constraintHandlers A list of ModelErrors that should be thrown if the column's constraint
+ * is violated. If the model passes the test, then the errors are included.
+ */
+export async function updateHandlingConstraints<M, T>(
+  model: M,
+  update: (model: M) => Promise<T>,
+  constraintHandlers: ConstraintErrorHandlers<M>
+): Promise<T> {
+  try {
+    return await update(model);
+  } catch (err) {
+    if (!isConstraintViolationDatbaseError(err)) {
+      throw err;
+    }
+    const modelErrors = {} as ModelErrors<M>;
+    for (const { test, errors } of constraintHandlers) {
+      if (!err.detail) {
+        logger.error(`Constraint violation without detail: ${toJson(err)}`);
+        continue;
+      }
+      if (test(model, err.detail)) {
+        merge(modelErrors, errors);
+      }
+    }
+    if (Object.keys(modelErrors).length > 0) {
+      throw new EntityConflictError(modelErrors);
+    }
+    logger.error(`No tests matched constraint violation error: ${toJson(err)}`);
+    throw new Error("Unhandlded constraint violation");
+  }
+}
 
 /**
  * Implements a read-write-reread pattern.

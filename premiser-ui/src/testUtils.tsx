@@ -12,7 +12,6 @@ import userEvent from "@testing-library/user-event";
 import { setupServer } from "msw/node";
 import { Saga } from "redux-saga";
 import { head } from "lodash";
-import moment, { Moment, MomentInput } from "moment";
 
 import { AppStore, RootState, sagaMiddleware, setupStore } from "./setupStore";
 
@@ -44,10 +43,10 @@ export function setupDefaultStore({
  *
  * TODO(219): should we do this in a Jest environment instead?
  */
-export function withFakeTimers() {
+export function withFakeTimers(config?: FakeTimersConfig) {
   beforeEach(() => {
     // Use fake timers so that we can ensure animations complete before snapshotting.
-    jest.useFakeTimers();
+    jest.useFakeTimers(config);
   });
   afterEach(() => {
     jest.runOnlyPendingTimers();
@@ -72,22 +71,6 @@ export function withMockServer() {
     server.close();
   });
   return server;
-}
-
-export function withStaticFromNowMoment(input: MomentInput) {
-  let fromNow: typeof moment.fn.fromNow;
-  beforeEach(() => {
-    // eslint-disable-next-line @typescript-eslint/unbound-method
-    fromNow = moment.fn.fromNow;
-    // Use deterministic time for relative time formatting
-    moment.fn.fromNow = jest.fn(function (this: Moment) {
-      const withoutSuffix = false;
-      return this.from(moment(input), withoutSuffix);
-    });
-  });
-  afterEach(() => {
-    moment.fn.fromNow = fromNow;
-  });
 }
 
 /** Render a React component with the redux store etc. */

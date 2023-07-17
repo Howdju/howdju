@@ -8,7 +8,7 @@
  */
 const config = {
   apiRoot: process.env.API_ROOT,
-  humanDateTimeFormat: "D MMM YYYY h:mm:ss A",
+  humanDateTimeFormat: "D MMM YYYY h:mm:ss A Z",
   isDev: process.env.NODE_ENV === "development",
   contentScriptAckDelayMs: 200,
   contentScriptAckTimeoutMs: 1000,

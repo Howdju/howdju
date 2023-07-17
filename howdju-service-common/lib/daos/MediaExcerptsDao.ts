@@ -804,6 +804,20 @@ export class MediaExcerptsDao {
     );
   }
 
+  async deleteMediaExcerptSpeakersForPersorgId(
+    persorgId: EntityId,
+    deletedAt: Moment
+  ) {
+    return await this.database.query(
+      "deleteMediaExcerptSpeakersForSourceId",
+      `update media_excerpt_speakers
+      set deleted = $2
+      where speaker_persorg_id = $1 and deleted is null
+      `,
+      [persorgId, deletedAt]
+    );
+  }
+
   async readMediaExcerpts(
     filters: MediaExcerptSearchFilter | undefined,
     sorts: SortDescription[],
@@ -904,9 +918,8 @@ export class MediaExcerptsDao {
           ${whereSql}
         and (
           ${continuationWhereSql}
-        ) and (
-          ${filterWhereSql}
         )
+        ${filterWhereSql ? `and (${filterWhereSql})` : ""}
       ${orderBySql}
       ${countSql}
       `;
@@ -1007,7 +1020,7 @@ function makeFilterSubselects(filters: MediaExcerptSearchFilter | undefined) {
         const sql = `
           select media_excerpt_id
           from media_excerpts
-          where creator_user_id = $1
+          where creator_user_id = $1 and deleted is null
         `;
         const args = [value];
         filterSubselects.push({ sql, args });
@@ -1016,8 +1029,8 @@ function makeFilterSubselects(filters: MediaExcerptSearchFilter | undefined) {
       case "speakerPersorgId": {
         const sql = `
           select media_excerpt_id
-          from media_excerpts join media_excerpt_speakers using (media_excerpt_id)
-          where speaker_persorg_id = $1
+          from media_excerpts join media_excerpt_speakers mes using (media_excerpt_id)
+          where speaker_persorg_id = $1 and mes.deleted is null
         `;
         const args = [value];
         filterSubselects.push({ sql, args });

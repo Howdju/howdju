@@ -128,6 +128,7 @@ describe("MediaExcerptsService", () => {
                 id: expect.any(String),
                 creator: { id: user.id },
                 created: expect.any(MomentConstructor),
+                creatorUserId: user.id,
                 normalName: "the speaker",
               },
             ],

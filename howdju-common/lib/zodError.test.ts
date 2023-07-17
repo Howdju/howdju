@@ -85,4 +85,52 @@ describe("makeModelErrors", () => {
       )
     );
   });
+  test("Returns correct error for multiple errors", () => {
+    type User = { name: string; title: string };
+    const error = makeModelErrors<User>(
+      (r) => r.name("Name is already in use."),
+      (r) => r.title("Title is already in use.")
+    );
+
+    expect(error).toEqual(
+      formatZodError(
+        new z.ZodError([
+          {
+            code: z.ZodIssueCode.custom,
+            path: ["name"],
+            message: "Name is already in use.",
+          },
+          {
+            code: z.ZodIssueCode.custom,
+            path: ["title"],
+            message: "Title is already in use.",
+          },
+        ])
+      )
+    );
+  });
+  test("Returns correct error for multiple errors on same field", () => {
+    type User = { username: string };
+    const error = makeModelErrors<User>(
+      (r) => r.username("Username must be a palindrome."),
+      (r) => r.username("Username must be lowercase.")
+    );
+
+    expect(error).toEqual(
+      formatZodError(
+        new z.ZodError([
+          {
+            code: z.ZodIssueCode.custom,
+            path: ["username"],
+            message: "Username must be a palindrome.",
+          },
+          {
+            code: z.ZodIssueCode.custom,
+            path: ["username"],
+            message: "Username must be lowercase.",
+          },
+        ])
+      )
+    );
+  });
 });

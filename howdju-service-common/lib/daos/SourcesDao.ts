@@ -101,7 +101,11 @@ export class SourcesDao {
       `,
       [updateSource.description, normalDescription, updateSource.id]
     );
-    return this.readSourceForId(updateSource.id);
+    const source = await this.readSourceForId(updateSource.id);
+    if (!source) {
+      throw Error(`Source ${updateSource.id} not found after update.`);
+    }
+    return source;
   }
 
   async deleteSourceForId(sourceId: string, deletedAt: Moment) {

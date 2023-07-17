@@ -915,7 +915,11 @@ export const toPersorg = wrapMapper(function toPersorgMapper(
       })
     : undefined;
 
-  return { ...persorg, creator };
+  return {
+    ...persorg,
+    creator,
+    creatorUserId: toIdString(row.creator_user_id),
+  };
 });
 
 export const toRegistrationRequest = wrapMapper(

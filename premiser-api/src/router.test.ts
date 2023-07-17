@@ -85,6 +85,8 @@ describe("routeRequest", () => {
           ...PersorgRef.parse({ id: "92" }),
           isOrganization: false,
           name: "VIP",
+          created: moment(),
+          creatorUserId: "52",
         },
       },
     ];

@@ -1,20 +1,21 @@
 import React, { useEffect } from "react";
-import get from "lodash/get";
 import { toString } from "lodash";
 import { denormalize } from "normalizr";
 import {
   CircularProgress,
+  Divider,
   DropdownMenu,
   FontIcon,
   ListItem,
   MenuButton,
 } from "react-md";
 import { RouteComponentProps } from "react-router";
+import { push } from "connected-react-router";
 
 import { EntityId, MediaExcerptOut, StatementOut } from "howdju-common";
 
 import Helmet from "../../Helmet";
-import { api, editors } from "../../actions";
+import { api, editors, flows } from "../../actions";
 import CellList, { largeCellClasses } from "../../CellList";
 import * as characters from "../../characters";
 import {
@@ -28,6 +29,8 @@ import StatementCard from "../../StatementCard";
 import { combineIds, combineSuggestionsKeys } from "../../viewModels";
 import { useAppDispatch, useAppSelector } from "@/hooks";
 import MediaExcerptCard from "@/components/mediaExcerpts/MediaExcerptCard";
+import app from "@/app/appSlice";
+import paths from "@/paths";
 
 const id = "persorg-page";
 const editorId = "persorgPageEditorId";
@@ -49,6 +52,7 @@ export default function PersorgPage(props: Props) {
   const entities = useAppSelector((state) => state.entities);
   const persorg = denormalize(persorgId, persorgSchema, entities);
   const {
+    isFetchingPersorg,
     statements: statementIds,
     isFetchingStatements,
     mediaExcerpts: mediaExcerptIds,
@@ -73,9 +77,22 @@ export default function PersorgPage(props: Props) {
         persorg
       )
     );
+  function deletePersorg() {
+    dispatch(
+      flows.apiActionOnSuccess(
+        api.deletePersorg(persorgId),
+        app.addToast("Deleted Persorg"),
+        push(paths.home())
+      )
+    );
+  }
 
-  const persorgName = get(persorg, "name", characters.ellipsis);
-  const title = `${persorgName}`;
+  const persorgName = persorg?.name
+    ? persorg.name
+    : isFetchingPersorg
+    ? characters.ellipsis
+    : undefined;
+  const title = `${persorgName ?? "Persorg not found"}`;
 
   const statementCards = statements.map((statement, index) => (
     <StatementCard
@@ -110,6 +127,13 @@ export default function PersorgPage(props: Props) {
           leftIcon={<FontIcon>edit</FontIcon>}
           onClick={editPersorg}
         />,
+        <Divider key="divider" />,
+        <ListItem
+          primaryText="Delete"
+          key="delete"
+          leftIcon={<FontIcon>delete</FontIcon>}
+          onClick={deletePersorg}
+        />,
       ]}
     />
   );
@@ -120,19 +144,27 @@ export default function PersorgPage(props: Props) {
         <title>{title} — Howdju</title>
       </Helmet>
       <h1 className="md-cell md-cell--12">{title}</h1>
-      <PersorgEntityCard
-        id={combineIds(id, "persorg")}
-        editorId={combineIds(editorId, "persorg")}
-        className="md-cell md-cell--12"
-        persorg={persorg}
-        menu={menu}
-        suggestionsKey={combineSuggestionsKeys(id, "persorg")}
-      />
+      {isFetchingPersorg && (
+        <div className="md-cell md-cell--12 cell--centered-contents">
+          <CircularProgress id="persorg-page--persorg--progress" />
+        </div>
+      )}
+      {!isFetchingPersorg && !persorg && <p>Not found.</p>}
+      {persorg && (
+        <PersorgEntityCard
+          id={combineIds(id, "persorg")}
+          editorId={combineIds(editorId, "persorg")}
+          className="md-cell md-cell--12"
+          persorg={persorg}
+          menu={menu}
+          suggestionsKey={combineSuggestionsKeys(id, "persorg")}
+        />
+      )}
 
       <h2 className="md-cell md-cell--12">Statements</h2>
       {isFetchingStatements && (
         <div className="md-cell md-cell--12 cell--centered-contents">
-          <CircularProgress id="tagged-propositions-page--progress" />
+          <CircularProgress id="persorg-page--statements--progress" />
         </div>
       )}
       {!isFetchingStatements && statementCards.length === 0 && (

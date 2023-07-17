@@ -1,8 +1,6 @@
 import { Moment } from "moment";
 
 import {
-  entityConflictCodes,
-  Logger,
   EntityId,
   CreatePersorg,
   UpdatePersorg,
@@ -10,19 +8,23 @@ import {
   makeModelErrors,
   authorizationErrorCodes,
   newUnimplementedError,
+  utcNow,
+  momentAdd,
 } from "howdju-common";
 
 import {
   AuthorizationError,
   EntityNotFoundError,
-  EntityConflictError,
+  EntityTooOldToModifyError,
 } from "../serviceErrors";
 import { persorgSchema } from "./validationSchemas";
 import { PermissionsService } from "./PermissionsService";
 import { AuthService } from "./AuthService";
 import { EntityService } from "./EntityService";
-import { PersorgData, PersorgsDao } from "../daos";
-import { readWriteReread } from "./patterns";
+import { MediaExcerptsDao, PersorgData, PersorgsDao } from "../daos";
+import { readWriteReread, updateHandlingConstraints } from "./patterns";
+import { UserIdent } from "./types";
+import { ApiConfig } from "..";
 
 export class PersorgsService extends EntityService<
   CreatePersorg,
@@ -31,19 +33,14 @@ export class PersorgsService extends EntityService<
   PersorgOut,
   "persorg"
 > {
-  logger: Logger;
-  permissionsService: PermissionsService;
-  persorgsDao: PersorgsDao;
   constructor(
-    logger: Logger,
+    private config: ApiConfig,
     authService: AuthService,
-    permissionsService: PermissionsService,
-    persorgsDao: PersorgsDao
+    private permissionsService: PermissionsService,
+    private persorgsDao: PersorgsDao,
+    private mediaExcerptsDao: MediaExcerptsDao
   ) {
-    super(persorgSchema, logger, authService);
-    this.logger = logger;
-    this.permissionsService = permissionsService;
-    this.persorgsDao = persorgsDao;
+    super(persorgSchema, authService);
   }
 
   async readPersorgForId(persorgId: EntityId) {
@@ -97,23 +94,18 @@ export class PersorgsService extends EntityService<
     userId: EntityId,
     now: Date | Moment
   ) {
-    const [doesConflict, hasPermission] = await Promise.all([
-      this.persorgsDao.hasEquivalentPersorgs(updatePersorg),
-      this.permissionsService.userHasPermission(userId, "EDIT_ANY_ENTITY"),
-    ]);
-
-    if (doesConflict) {
-      throw new EntityConflictError({
-        hasErrors: true,
-        modelErrors: [entityConflictCodes.ALREADY_EXISTS],
-      });
-    }
-
     const persorg: PersorgData = await this.persorgsDao.readPersorgForId(
       updatePersorg.id
     );
+    if (!persorg) {
+      throw new EntityNotFoundError("PERSORG", updatePersorg.id);
+    }
 
-    if (!hasPermission || !persorg.creator || userId !== persorg.creator.id) {
+    const hasPermission = await this.permissionsService.userHasPermission(
+      userId,
+      "EDIT_ANY_ENTITY"
+    );
+    if (!hasPermission && persorg.creator && userId !== persorg.creator.id) {
       throw new AuthorizationError(
         makeModelErrors<UpdatePersorg>((p) =>
           p({
@@ -126,13 +118,72 @@ export class PersorgsService extends EntityService<
       );
     }
 
-    const updatedPersorg = await this.persorgsDao.updatePersorg(
+    return await updateHandlingConstraints(
       updatePersorg,
-      now
+      (p) => this.persorgsDao.updatePersorg(p, now) as Promise<PersorgOut>,
+      [
+        {
+          test: (persorg, detail) =>
+            persorg.isOrganization && detail.includes("normal_name"),
+          errors: makeModelErrors((e) =>
+            e.name("An organization with that name already exists.")
+          ),
+        },
+        {
+          test: (persorg, detail) =>
+            !persorg.isOrganization && detail.includes("normal_name"),
+          errors: makeModelErrors(
+            (e) =>
+              e.name("A person with that name and known for already exist."),
+            (e) =>
+              e.knownFor("A person with that name and known for already exist.")
+          ),
+        },
+      ]
     );
-    if (!updatedPersorg) {
-      throw new EntityNotFoundError("PERSORG", updatePersorg.id);
+  }
+
+  async delete(userIdent: UserIdent, persorgId: EntityId) {
+    const userId = await this.authService.readUserIdForUserIdent(userIdent);
+
+    const source = await this.persorgsDao.readPersorgForId(persorgId);
+    if (!source) {
+      throw new EntityNotFoundError("SOURCE", persorgId);
     }
-    return updatedPersorg;
+
+    await this.checkModifyPermission(userId, source);
+
+    const deletedAt = utcNow();
+    await this.mediaExcerptsDao.deleteMediaExcerptSpeakersForPersorgId(
+      persorgId,
+      deletedAt
+    );
+    await this.persorgsDao.deletePersorgForId(persorgId, deletedAt);
+  }
+
+  private async checkModifyPermission(userId: EntityId, persorg: PersorgOut) {
+    const hasEditPermission = await this.permissionsService.userHasPermission(
+      userId,
+      "EDIT_ANY_ENTITY"
+    );
+    if (hasEditPermission) {
+      return;
+    }
+
+    if (persorg.creatorUserId !== userId) {
+      throw new AuthorizationError(
+        makeModelErrors<PersorgOut>((e) =>
+          e("Only a Persorg's creator may edit it.")
+        )
+      );
+    }
+    // TODO(473) disallow deletes if other users have already depended on it.
+    if (
+      utcNow().isAfter(
+        momentAdd(persorg.created, this.config.modifyEntityGracePeriod)
+      )
+    ) {
+      throw new EntityTooOldToModifyError(this.config.modifyEntityGracePeriod);
+    }
   }
 }

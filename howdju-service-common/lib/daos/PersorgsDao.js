@@ -11,8 +11,9 @@ exports.PersorgsDao = class PersorgsDao extends BaseDao {
 
   async createPersorg(persorg, creatorUserId, now) {
     const sql = `
-      insert into persorgs (is_organization, name, normal_name, known_for, normal_known_for, website_url, twitter_url, wikipedia_url, creator_user_id, created) 
-      values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) 
+      insert into persorgs
+        (is_organization, name, normal_name, known_for, normal_known_for, website_url, twitter_url, wikipedia_url, creator_user_id, created)
+      values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
       returning *
     `;
     const args = [
@@ -34,9 +35,9 @@ exports.PersorgsDao = class PersorgsDao extends BaseDao {
     return await this.queryOne(
       "readEquivalentPersorg",
       `
-        select * 
-        from persorgs 
-          where 
+        select *
+        from persorgs
+          where
                 is_organization = $1
             and normal_name = $2
             and normal_known_for = $3
@@ -70,8 +71,8 @@ exports.PersorgsDao = class PersorgsDao extends BaseDao {
     return await this.queryMany(
       "readPersorgs",
       `
-        select * 
-        from persorgs 
+        select *
+        from persorgs
         where deleted is null
         order by created
       `
@@ -82,10 +83,10 @@ exports.PersorgsDao = class PersorgsDao extends BaseDao {
     return await this.queryMany(
       "readPersorgsLikeName",
       `
-        select * 
-        from persorgs 
-          where normal_name ilike '%' || $1 || '%' 
-            and deleted is null 
+        select *
+        from persorgs
+          where normal_name ilike '%' || $1 || '%'
+            and deleted is null
         order by length(name), name
       `,
       [normalizeText(persorgName)]
@@ -96,9 +97,9 @@ exports.PersorgsDao = class PersorgsDao extends BaseDao {
     const equivalentPersorgs = await this.queryMany(
       "hasEquivalentPersorgs",
       `
-        select * from persorgs 
-        where 
-              normal_name = $1 
+        select * from persorgs
+        where
+              normal_name = $1
           and normal_known_for = $2
           and persorg_id <> $3
           and deleted is null`,
@@ -111,7 +112,7 @@ exports.PersorgsDao = class PersorgsDao extends BaseDao {
     return this.queryOne(
       "updatePersorg",
       `
-        update persorgs set 
+        update persorgs set
           is_organization = $2,
           name = $3,
           normal_name = $4,
@@ -136,6 +137,18 @@ exports.PersorgsDao = class PersorgsDao extends BaseDao {
         persorg.wikipediaUrl,
         now,
       ]
+    );
+  }
+
+  async deletePersorgForId(persorgId, deletedAt) {
+    return await this.queryOne(
+      "deletePersorgForId",
+      `
+        update persorgs set
+          deleted = $2
+          where persorg_id = $1 and deleted is null
+      `,
+      [persorgId, deletedAt]
     );
   }
 };
