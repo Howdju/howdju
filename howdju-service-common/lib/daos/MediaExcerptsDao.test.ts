@@ -477,8 +477,12 @@ describe("MediaExcerptsDao", () => {
         );
 
         // Act
-        const readMediaExcerpts = await dao.readMediaExcerptsMatchingUrl(
-          "https://www.example.com/the-path?otherKey=otherValue#other-fragment"
+        const readMediaExcerpts = await dao.readMediaExcerpts(
+          {
+            url: "https://www.example.com/the-path?otherKey=otherValue#other-fragment",
+          },
+          [],
+          5
         );
 
         // Assert
@@ -537,8 +541,12 @@ describe("MediaExcerptsDao", () => {
         );
 
         // Act
-        const readMediaExcerpts = await dao.readMediaExcerptsMatchingUrl(
-          "https://www.example.com/the-path?otherKey=otherValue#other-fragment"
+        const readMediaExcerpts = await dao.readMediaExcerpts(
+          {
+            url: "https://www.example.com/the-path?otherKey=otherValue#other-fragment",
+          },
+          [],
+          5
         );
 
         // Assert
@@ -595,8 +603,10 @@ describe("MediaExcerptsDao", () => {
         );
 
         // Act
-        const readMediaExcerpts = await dao.readMediaExcerptsMatchingDomain(
-          "www.example.com"
+        const readMediaExcerpts = await dao.readMediaExcerpts(
+          { domain: "www.example.com" },
+          [],
+          5
         );
 
         // Assert
@@ -649,8 +659,10 @@ describe("MediaExcerptsDao", () => {
         );
 
         // Act
-        const readMediaExcerpts = await dao.readMediaExcerptsMatchingDomain(
-          "www.example.com"
+        const readMediaExcerpts = await dao.readMediaExcerpts(
+          { domain: "www.example.com" },
+          [],
+          5
         );
 
         // Assert

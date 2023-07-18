@@ -13,6 +13,8 @@ import {
 import { MediaExcerptsService } from "./MediaExcerptsService";
 import { isDomain, isUrl } from "howdju-common";
 
+const MAX_EXCERPT_COUNT = 50;
+
 export class MainSearchService {
   constructor(
     private tagsService: TagsService,
@@ -44,9 +46,19 @@ export class MainSearchService {
     const isUrlSearch = isUrl(searchText);
     const isDomainSearch = isDomain(searchText);
     const mediaExcerpts = isDomainSearch
-      ? this.mediaExcerptsService.readMediaExcerptsMatchingDomain(searchText)
+      ? this.mediaExcerptsService.readMediaExcerpts(
+          { domain: searchText },
+          [],
+          undefined,
+          MAX_EXCERPT_COUNT
+        )
       : isUrlSearch
-      ? this.mediaExcerptsService.readMediaExcerptsMatchingUrl(searchText)
+      ? this.mediaExcerptsService.readMediaExcerpts(
+          { url: searchText },
+          [],
+          undefined,
+          MAX_EXCERPT_COUNT
+        )
       : this.mediaExcerptsSearcher.search(searchText);
     // TODO(466) unify entities into a singular search result.
     return Bluebird.props({

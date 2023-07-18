@@ -557,6 +557,12 @@ export type CreateMediaExcerptCitationInput = z.output<
   typeof CreateMediaExcerptCitationInput
 >;
 
+/**
+ * A model identifying MediaExcerptCitations for deletion.
+ *
+ * Since MediaExcerptCitation is a relation and not an Entity (and so has no singular unique ID), we
+ * need a model to uniquely identify it for deletion.
+ */
 export const DeleteMediaExcerptCitation = z.object({
   mediaExcerptId: z.string(),
   source: z.object({

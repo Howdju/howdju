@@ -29,6 +29,7 @@ import {
   MediaExcerptCitationOut,
   SourceRef,
   DeleteMediaExcerptCitation,
+  toJson,
 } from "howdju-common";
 
 import { Database, TxnClient } from "../database";
@@ -863,7 +864,7 @@ export class MediaExcerptsDao {
       orderBySqls.push(`${columnName} ${direction}`);
     });
 
-    const filterSubselects = makeFilterSubselects(filters);
+    const filterSubselects = this.makeFilterSubselects(filters);
     filterSubselects.forEach(({ sql, args: subselectArgs }) => {
       const renumberedSql = renumberSqlArgs(sql, args.length);
       whereSqls.push(`media_excerpt_id in (${renumberedSql})`);
@@ -923,7 +924,7 @@ export class MediaExcerptsDao {
       orderBySqls.push(`${columnName} ${direction}`);
     });
 
-    const filterSubselects = makeFilterSubselects(filters);
+    const filterSubselects = this.makeFilterSubselects(filters);
     const filterWhereSqls: string[] = [];
     filterSubselects.forEach(({ sql, args: subselectArgs }) => {
       const renumberedSql = renumberSqlArgs(sql, args.length);
@@ -954,65 +955,6 @@ export class MediaExcerptsDao {
       "readMoreMediaExcerpts",
       sql,
       args
-    );
-    const mediaExcerpts = await Promise.all(
-      rows.map((row) => this.readMediaExcerptForId(row.media_excerpt_id))
-    );
-    return mediaExcerpts.filter(isDefined);
-  }
-
-  /**
-   * Returns MediaExcerpts having URLs matching url.
-   *
-   * Matching means that the two are equal after removing the query parameters and fragment and
-   * ignoring the trailing slash. Both the `url` and `canonical_url` are considered.
-   */
-  async readMediaExcerptsMatchingUrl(url: string) {
-    url = removeQueryParamsAndFragment(url);
-    url = url.endsWith("/") ? url.slice(0, -1) : url;
-    const { rows } = await this.database.query(
-      "readMediaExcerptsMatchingUrl",
-      `
-        select
-          distinct media_excerpt_id
-        from
-          media_excerpts me
-          join url_locators ul using (media_excerpt_id)
-          join urls u using (url_id),
-          trim(trailing '/' from substring(u.url from '([^?#]*)')) origin_and_path,
-          trim(trailing '/' from substring(u.url from '([^?#]*)')) canonical_origin_and_path
-        where
-              me.deleted is null
-          and ul.deleted is null
-          and u.deleted is null
-          and (origin_and_path = $1 or canonical_origin_and_path = $1)
-      `,
-      [url]
-    );
-    const mediaExcerpts = await Promise.all(
-      rows.map((row) => this.readMediaExcerptForId(row.media_excerpt_id))
-    );
-    return mediaExcerpts.filter(isDefined);
-  }
-
-  async readMediaExcerptsMatchingDomain(domain: string) {
-    const { rows } = await this.database.query(
-      "readMediaExcerptsHavingDomain",
-      `
-      select
-        distinct media_excerpt_id
-      from
-        media_excerpts me
-        join url_locators ul using (media_excerpt_id)
-        join urls u using (url_id),
-        substring(u.url from '(?:.*://)?([^/?]*)') domain
-      where
-            me.deleted is null
-        and ul.deleted is null
-        and u.deleted is null
-        and (domain = $1 or domain ilike '%.' || $1)
-    `,
-      [domain]
     );
     const mediaExcerpts = await Promise.all(
       rows.map((row) => this.readMediaExcerptForId(row.media_excerpt_id))
@@ -1074,20 +1016,27 @@ export class MediaExcerptsDao {
       [deletedAt, sourceId]
     );
   }
-}
 
-function makeFilterSubselects(filters: MediaExcerptSearchFilter | undefined) {
-  const filterSubselects: SqlClause[] = [];
-  if (!filters) {
-    return filterSubselects;
-  }
-  let filterName: keyof MediaExcerptSearchFilter;
-  for (filterName in filters) {
-    const value = filters[filterName];
-    switch (filterName) {
-      case "creatorUserId": {
-        const sql = `
-          select me.media_excerpt_id
+  private makeFilterSubselects(filters: MediaExcerptSearchFilter | undefined) {
+    const filterSubselects: SqlClause[] = [];
+    if (!filters) {
+      return filterSubselects;
+    }
+    let filterName: keyof MediaExcerptSearchFilter;
+    for (filterName in filters) {
+      const value = filters[filterName];
+      if (!value) {
+        this.logger.error(
+          `makeFilterSubselects: filter value was mising for ${filterName} (filters ${toJson(
+            filters
+          )})`
+        );
+        continue;
+      }
+      switch (filterName) {
+        case "creatorUserId": {
+          const sql = `
+          select distinct me.media_excerpt_id
           from
                media_excerpts me
           join users u on me.creator_user_id = u.user_id
@@ -1096,25 +1045,25 @@ function makeFilterSubselects(filters: MediaExcerptSearchFilter | undefined) {
           and me.deleted is null
           and u.deleted is null
         `;
-        const args = [value];
-        filterSubselects.push({ sql, args });
-        break;
-      }
-      case "speakerPersorgId": {
-        const sql = `
-          select media_excerpt_id
+          const args = [value];
+          filterSubselects.push({ sql, args });
+          break;
+        }
+        case "speakerPersorgId": {
+          const sql = `
+          select distinct media_excerpt_id
           from media_excerpts
             join media_excerpt_speakers mes using (media_excerpt_id)
             join persorgs p on mes.speaker_persorg_id = p.persorg_id
           where speaker_persorg_id = $1 and mes.deleted is null and p.deleted is null
         `;
-        const args = [value];
-        filterSubselects.push({ sql, args });
-        break;
-      }
-      case "sourceId": {
-        const sql = `
-          select media_excerpt_id
+          const args = [value];
+          filterSubselects.push({ sql, args });
+          break;
+        }
+        case "sourceId": {
+          const sql = `
+          select distinct media_excerpt_id
           from media_excerpts
             join media_excerpt_citations mec using (media_excerpt_id)
             join sources s using (source_id)
@@ -1123,11 +1072,53 @@ function makeFilterSubselects(filters: MediaExcerptSearchFilter | undefined) {
           and mec.deleted is null
           and s.deleted is null
         `;
-        const args = [value];
-        filterSubselects.push({ sql, args });
-        break;
+          const args = [value];
+          filterSubselects.push({ sql, args });
+          break;
+        }
+        case "domain": {
+          const sql = `
+        select
+          distinct media_excerpt_id
+        from
+          media_excerpts me
+          join url_locators ul using (media_excerpt_id)
+          join urls u using (url_id),
+          substring(u.url from '(?:.*://)?([^/?]*)') domain
+        where
+              me.deleted is null
+          and ul.deleted is null
+          and u.deleted is null
+          and (domain = $1 or domain ilike '%.' || $1)
+      `;
+          const args = [value];
+          filterSubselects.push({ sql, args });
+          break;
+        }
+        case "url": {
+          let url = removeQueryParamsAndFragment(value);
+          url = url.endsWith("/") ? url.slice(0, -1) : url;
+          const sql = `
+          select
+            distinct media_excerpt_id
+          from
+            media_excerpts me
+            join url_locators ul using (media_excerpt_id)
+            join urls u using (url_id),
+            trim(trailing '/' from substring(u.url from '([^?#]*)')) origin_and_path,
+            trim(trailing '/' from substring(u.url from '([^?#]*)')) canonical_origin_and_path
+          where
+                me.deleted is null
+            and ul.deleted is null
+            and u.deleted is null
+            and (origin_and_path = $1 or canonical_origin_and_path = $1)
+        `;
+          const args = [url];
+          filterSubselects.push({ sql, args });
+          break;
+        }
       }
     }
+    return filterSubselects;
   }
-  return filterSubselects;
 }

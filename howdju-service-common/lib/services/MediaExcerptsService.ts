@@ -48,7 +48,9 @@ import { retryTransaction } from "./patterns";
 
 // Must be greater than the number MediaExcerpts targeting the same URL or Source that we want
 // to succeed creating in parallel.
-const MAX_SUPPORTED_CONCURRENT_EQUIVALENT_MEDIA_EXCERPT_CREATIONS = 10;
+const CREATE_MEDIA_EXCERPT_RETRIES = 10;
+const CREATE_URL_LOCATOR_RETRIES = 3;
+const CREATE_CITATION_RETRIES = 3;
 export class MediaExcerptsService {
   constructor(
     private config: ApiConfig,
@@ -205,16 +207,14 @@ export class MediaExcerptsService {
     createUrlLocators: (CreateUrlLocator & { url: UrlOut })[],
     createCitations: (CreateMediaExcerptCitation & { source: SourceOut })[]
   ) {
-    return retryTransaction(
-      MAX_SUPPORTED_CONCURRENT_EQUIVALENT_MEDIA_EXCERPT_CREATIONS,
-      () =>
-        this.mediaExcerptsDao.readOrCreateMediaExcerpt(
-          createMediaExcerpt,
-          userId,
-          createdAt,
-          createUrlLocators,
-          createCitations
-        )
+    return retryTransaction(CREATE_MEDIA_EXCERPT_RETRIES, () =>
+      this.mediaExcerptsDao.readOrCreateMediaExcerpt(
+        createMediaExcerpt,
+        userId,
+        createdAt,
+        createUrlLocators,
+        createCitations
+      )
     );
   }
 
@@ -241,7 +241,7 @@ export class MediaExcerptsService {
     createUrlLocator: PartialPersist<CreateUrlLocator, "url">,
     created: Moment
   ) {
-    return retryTransaction(3, () =>
+    return retryTransaction(CREATE_URL_LOCATOR_RETRIES, () =>
       this.mediaExcerptsDao.readOrCreateUrlLocator(
         mediaExcerpt,
         createUrlLocator,
@@ -276,7 +276,7 @@ export class MediaExcerptsService {
     createCitation: PartialPersist<CreateMediaExcerptCitation, "source">,
     created: Moment
   ): Promise<{ citation: MediaExcerptCitationOut; isExtant: boolean }> {
-    return retryTransaction(3, () =>
+    return retryTransaction(CREATE_CITATION_RETRIES, () =>
       this.mediaExcerptsDao.readOrCreateMediaExcerptCitation(
         mediaExcerpt,
         createCitation,
@@ -392,14 +392,6 @@ export class MediaExcerptsService {
       mediaExcerpts,
       continuationToken,
     };
-  }
-
-  readMediaExcerptsMatchingUrl(url: string) {
-    return this.mediaExcerptsDao.readMediaExcerptsMatchingUrl(url.trim());
-  }
-
-  readMediaExcerptsMatchingDomain(domain: string) {
-    return this.mediaExcerptsDao.readMediaExcerptsMatchingDomain(domain.trim());
   }
 
   async deleteMediaExcerpt(
