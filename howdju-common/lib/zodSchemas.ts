@@ -395,8 +395,11 @@ export const CreateUrlInput = CreateUrl;
 export type CreateUrlInput = z.infer<typeof CreateUrlInput>;
 
 export const UrlLocator = Entity.extend({
+  mediaExcerptId: z.string(),
   url: Url,
   anchors: z.array(DomAnchor).optional(),
+  created: momentObject,
+  creatorUserId: z.string(),
 });
 export type UrlLocator = z.output<typeof UrlLocator>;
 
@@ -449,7 +452,12 @@ export type SourceExcerptType = SourceExcerpt["type"];
 /** @deprecated See SourceExcerpt */
 export const SourceExcerptTypes = sourceExcerptTypes.Enum;
 
-export const CreateUrlLocator = UrlLocator.omit({ id: true }).extend({
+export const CreateUrlLocator = UrlLocator.omit({
+  id: true,
+  mediaExcerptId: true,
+  created: true,
+  creatorUserId: true,
+}).extend({
   url: CreateUrl,
   anchors: z.array(CreateDomAnchor).optional(),
 });
@@ -550,6 +558,23 @@ export type CreateMediaExcerptCitationInput = z.output<
 >;
 
 /**
+ * A model identifying MediaExcerptCitations for deletion.
+ *
+ * Since MediaExcerptCitation is a relation and not an Entity (and so has no singular unique ID), we
+ * need a model to uniquely identify it for deletion.
+ */
+export const DeleteMediaExcerptCitation = z.object({
+  mediaExcerptId: z.string(),
+  source: z.object({
+    id: z.string(),
+  }),
+  normalPincite: z.string().optional(),
+});
+export type DeleteMediaExcerptCitation = z.output<
+  typeof DeleteMediaExcerptCitation
+>;
+
+/**
  * A representation of an excerpt of some fixed media conveying speech. *
  *
  * Two MediaExcerpts are equivalent if they represent the same 'speech act'. A 'speech act' is a
@@ -634,6 +659,9 @@ export const MediaExcerpt = Entity.extend({
   citations: z.array(MediaExcerptCitation),
   /** Persorgs to whom users have attributed the speech in the source excerpt. */
   speakers: z.array(Persorg),
+  created: momentObject,
+  creatorUserId: z.string(),
+  creator: UserBlurb,
 });
 export type MediaExcerpt = z.output<typeof MediaExcerpt>;
 
@@ -1059,7 +1087,12 @@ export const CreateSourceExcerpt = z.discriminatedUnion("type", [
 /** @deprecated */
 export type CreateSourceExcerpt = z.infer<typeof CreateSourceExcerpt>;
 
-const CreateMediaExcerptBase = MediaExcerpt.omit({ id: true })
+const CreateMediaExcerptBase = MediaExcerpt.omit({
+  id: true,
+  created: true,
+  creatorUserId: true,
+  creator: true,
+})
   .merge(CreateModel)
   .extend({
     localRep: MediaExcerpt.shape.localRep.omit({ normalQuotation: true }),

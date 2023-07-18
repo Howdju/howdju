@@ -112,7 +112,9 @@ export class SourcesDao {
     await this.db.query(
       "deleteSourceForId",
       `
-      update sources set deleted = $2 where source_id = $1
+      update sources
+      set deleted = $2
+      where source_id = $1 and deleted is null
       `,
       [sourceId, deletedAt]
     );

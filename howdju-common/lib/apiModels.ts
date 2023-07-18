@@ -145,6 +145,14 @@ export const MediaExcerptSearchFilterKeys = [
   "creatorUserId",
   "speakerPersorgId",
   "sourceId",
+  "domain",
+  /**
+   * Returns MediaExcerpts having URLs matching url.
+   *
+   * Matching means that the two are equal after removing the query parameters and fragment and
+   * ignoring the trailing slash. Both the `url` and `canonical_url` are considered.
+   */
+  "url",
 ] as const;
 export type MediaExcerptSearchFilter = ToFilter<
   typeof MediaExcerptSearchFilterKeys

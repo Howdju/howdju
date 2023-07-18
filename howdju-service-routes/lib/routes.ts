@@ -956,6 +956,22 @@ export const serviceRoutes = {
       }
     ),
   },
+  deleteMediaExcerpt: {
+    path: "media-excerpts/:mediaExcerptId",
+    method: httpMethods.DELETE,
+    request: handler(
+      Authed.merge(PathParams("mediaExcerptId")),
+      async (
+        appProvider: ServicesProvider,
+        { authToken, pathParams: { mediaExcerptId } }
+      ) => {
+        await appProvider.mediaExcerptsService.deleteMediaExcerpt(
+          { authToken },
+          mediaExcerptId
+        );
+      }
+    ),
+  },
 
   /*
    * Auth

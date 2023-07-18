@@ -173,4 +173,16 @@ export class UrlsDao {
       )
       .then(({ rows: [row] }) => toUrl(row));
   }
+
+  deleteUrlForId(urlId: EntityId, deletedAt: Moment) {
+    return this.database.query(
+      "deleteUrlForId",
+      `
+        update urls
+        set deleted = $2
+        where url_id = $1 and deleted is null
+        `,
+      [urlId, deletedAt]
+    );
+  }
 }

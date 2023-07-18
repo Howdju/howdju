@@ -465,6 +465,13 @@ export const api = {
       normalizationSchema: { mediaExcerpt: mediaExcerptSchema },
     })
   ),
+  deleteMediaExcerpt: apiActionCreator(
+    "DELETE_MEDIA_EXCERPT",
+    serviceRoutes.deleteMediaExcerpt,
+    (mediaExcerptId: EntityId) => ({
+      pathParams: { mediaExcerptId },
+    })
+  ),
 
   /** @deprecated */
   fetchSourceExcerptParaphrase: apiActionCreator(

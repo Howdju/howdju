@@ -6,17 +6,21 @@ import {
   CreateMediaExcerpt,
   CreateMediaExcerptCitation,
   CreateUrlLocator,
+  DeleteMediaExcerptCitation,
   EntityId,
+  makeModelErrors,
   MediaExcerpt,
   MediaExcerptCitationOut,
   MediaExcerptOut,
   MediaExcerptRef,
   MediaExcerptSearchFilter,
+  momentAdd,
   newImpossibleError,
   PartialPersist,
   PersorgOut,
   SortDescription,
   SourceOut,
+  UrlLocatorOut,
   UrlOut,
   utcNow,
 } from "howdju-common";
@@ -27,7 +31,14 @@ import { MediaExcerptsDao } from "../daos";
 import { PersorgsService } from "./PersorgsService";
 import { UrlsService } from "./UrlsService";
 import { UserIdent } from "./types";
-import { EntityNotFoundError, RequestValidationError } from "..";
+import {
+  ApiConfig,
+  AuthorizationError,
+  EntityNotFoundError,
+  EntityTooOldToModifyError,
+  PermissionsService,
+  RequestValidationError,
+} from "..";
 import {
   createContinuationToken,
   createNextContinuationToken,
@@ -37,10 +48,14 @@ import { retryTransaction } from "./patterns";
 
 // Must be greater than the number MediaExcerpts targeting the same URL or Source that we want
 // to succeed creating in parallel.
-const MAX_SUPPORTED_CONCURRENT_EQUIVALENT_MEDIA_EXCERPT_CREATIONS = 10;
+const CREATE_MEDIA_EXCERPT_RETRIES = 10;
+const CREATE_URL_LOCATOR_RETRIES = 3;
+const CREATE_CITATION_RETRIES = 3;
 export class MediaExcerptsService {
   constructor(
+    private config: ApiConfig,
     private authService: AuthService,
+    private permissionsService: PermissionsService,
     private mediaExcerptsDao: MediaExcerptsDao,
     private sourcesService: SourcesService,
     private persorgsService: PersorgsService,
@@ -60,7 +75,7 @@ export class MediaExcerptsService {
     createMediaExcerpt: CreateMediaExcerpt
   ): Promise<{ isExtant: boolean; mediaExcerpt: MediaExcerptOut }> {
     const userId = await this.authService.readUserIdForUserIdent(userIdent);
-    const now = utcNow();
+    const createdAt = utcNow();
     const createCitations = createMediaExcerpt.citations ?? [];
 
     // Create entities that don't depend on the media excerpt's ID
@@ -75,17 +90,17 @@ export class MediaExcerptsService {
       this.sourcesService.readOrCreateSources(
         userId,
         createCitations.map((c) => c.source),
-        now
+        createdAt
       ),
       createMediaExcerpt.speakers
         ? this.persorgsService.readOrCreatePersorgs(
             userId,
             createMediaExcerpt.speakers,
-            now
+            createdAt
           )
         : { persorgs: [], isExtant: true },
       createUrls
-        ? this.urlsService.readOrCreateUrlsAsUser(createUrls, userId, now)
+        ? this.urlsService.readOrCreateUrlsAsUser(createUrls, userId, createdAt)
         : [],
     ]);
 
@@ -120,7 +135,7 @@ export class MediaExcerptsService {
       await this.readOrCreateMediaExcerptWithRetry(
         createMediaExcerpt,
         userId,
-        now,
+        createdAt,
         createUrlLocatorsWithUrl,
         createCitationsWithSource
       );
@@ -135,7 +150,7 @@ export class MediaExcerptsService {
             userId,
             mediaExcerpt,
             createUrlLocatorsWithUrl,
-            now
+            createdAt
           ).then(({ urlLocators, isExtant }) => ({
             urlLocators: uniqBy(
               [...mediaExcerpt.locators.urlLocators, ...urlLocators],
@@ -149,7 +164,7 @@ export class MediaExcerptsService {
             userId,
             mediaExcerpt,
             createCitationsWithSource,
-            now
+            createdAt
           ).then(({ citations, isExtant }) => ({
             citations: uniqWith(
               [...mediaExcerpt.citations, ...citations],
@@ -160,7 +175,12 @@ export class MediaExcerptsService {
             isExtant,
           }))
         : { citations: mediaExcerpt.citations, isExtant: false },
-      this.ensureMediaExcerptSpeakers(userId, mediaExcerpt, speakers, now),
+      this.ensureMediaExcerptSpeakers(
+        userId,
+        mediaExcerpt,
+        speakers,
+        createdAt
+      ),
     ]);
 
     const isExtant =
@@ -183,20 +203,18 @@ export class MediaExcerptsService {
   private async readOrCreateMediaExcerptWithRetry(
     createMediaExcerpt: CreateMediaExcerpt,
     userId: EntityId,
-    created: Moment,
+    createdAt: Moment,
     createUrlLocators: (CreateUrlLocator & { url: UrlOut })[],
     createCitations: (CreateMediaExcerptCitation & { source: SourceOut })[]
   ) {
-    return retryTransaction(
-      MAX_SUPPORTED_CONCURRENT_EQUIVALENT_MEDIA_EXCERPT_CREATIONS,
-      () =>
-        this.mediaExcerptsDao.readOrCreateMediaExcerpt(
-          createMediaExcerpt,
-          userId,
-          created,
-          createUrlLocators,
-          createCitations
-        )
+    return retryTransaction(CREATE_MEDIA_EXCERPT_RETRIES, () =>
+      this.mediaExcerptsDao.readOrCreateMediaExcerpt(
+        createMediaExcerpt,
+        userId,
+        createdAt,
+        createUrlLocators,
+        createCitations
+      )
     );
   }
 
@@ -223,7 +241,7 @@ export class MediaExcerptsService {
     createUrlLocator: PartialPersist<CreateUrlLocator, "url">,
     created: Moment
   ) {
-    return retryTransaction(3, () =>
+    return retryTransaction(CREATE_URL_LOCATOR_RETRIES, () =>
       this.mediaExcerptsDao.readOrCreateUrlLocator(
         mediaExcerpt,
         createUrlLocator,
@@ -258,7 +276,7 @@ export class MediaExcerptsService {
     createCitation: PartialPersist<CreateMediaExcerptCitation, "source">,
     created: Moment
   ): Promise<{ citation: MediaExcerptCitationOut; isExtant: boolean }> {
-    return retryTransaction(3, () =>
+    return retryTransaction(CREATE_CITATION_RETRIES, () =>
       this.mediaExcerptsDao.readOrCreateMediaExcerptCitation(
         mediaExcerpt,
         createCitation,
@@ -376,11 +394,90 @@ export class MediaExcerptsService {
     };
   }
 
-  readMediaExcerptsMatchingUrl(url: string) {
-    return this.mediaExcerptsDao.readMediaExcerptsMatchingUrl(url.trim());
+  async deleteMediaExcerpt(
+    userIdent: UserIdent,
+    mediaExcerptId: EntityId
+  ): Promise<MediaExcerptOut> {
+    const userId = await this.authService.readUserIdForUserIdent(userIdent);
+    const mediaExcerpt = await this.mediaExcerptsDao.readMediaExcerptForId(
+      mediaExcerptId
+    );
+    if (!mediaExcerpt) {
+      throw new EntityNotFoundError("MEDIA_EXCERPT", mediaExcerptId);
+    }
+
+    await this.checkModifyPermission(userId, mediaExcerpt);
+
+    const deletedAt = utcNow();
+    await this.mediaExcerptsDao.deleteMediaExcerpt(mediaExcerptId, deletedAt);
+    return mediaExcerpt;
   }
 
-  readMediaExcerptsMatchingDomain(domain: string) {
-    return this.mediaExcerptsDao.readMediaExcerptsMatchingDomain(domain.trim());
+  async deleteCitation(
+    userIdent: UserIdent,
+    deleteMediaExcerptCitation: DeleteMediaExcerptCitation
+  ) {
+    const userId = await this.authService.readUserIdForUserIdent(userIdent);
+    const mediaExcerpt = await this.mediaExcerptsDao.readMediaExcerptForId(
+      deleteMediaExcerptCitation.mediaExcerptId
+    );
+    if (!mediaExcerpt) {
+      throw new EntityNotFoundError(
+        "MEDIA_EXCERPT",
+        deleteMediaExcerptCitation.mediaExcerptId
+      );
+    }
+
+    await this.checkModifyPermission(userId, mediaExcerpt);
+
+    const deletedAt = utcNow();
+    await this.mediaExcerptsDao.deleteMediaExcerptCitation(
+      deleteMediaExcerptCitation,
+      deletedAt
+    );
+  }
+
+  async deleteUrlLocator(userIdent: UserIdent, urlLocator: UrlLocatorOut) {
+    const userId = await this.authService.readUserIdForUserIdent(userIdent);
+    const mediaExcerpt = await this.mediaExcerptsDao.readMediaExcerptForId(
+      urlLocator.mediaExcerptId
+    );
+    if (!mediaExcerpt) {
+      throw new EntityNotFoundError("MEDIA_EXCERPT", urlLocator.mediaExcerptId);
+    }
+
+    await this.checkModifyPermission(userId, mediaExcerpt);
+
+    const deletedAt = utcNow();
+    await this.mediaExcerptsDao.deleteUrlLocatorForId(urlLocator.id, deletedAt);
+  }
+
+  private async checkModifyPermission(
+    userId: EntityId,
+    mediaExcerpt: MediaExcerptOut
+  ) {
+    const hasEditPermission = await this.permissionsService.userHasPermission(
+      userId,
+      "EDIT_ANY_ENTITY"
+    );
+    if (hasEditPermission) {
+      return;
+    }
+
+    if (mediaExcerpt.creatorUserId !== userId) {
+      throw new AuthorizationError(
+        makeModelErrors<MediaExcerptOut>((e) =>
+          e("Only a Media Excerpt's creator may edit it.")
+        )
+      );
+    }
+    // TODO(473) disallow deletes if other users have already depended on it.
+    if (
+      utcNow().isAfter(
+        momentAdd(mediaExcerpt.created, this.config.modifyEntityGracePeriod)
+      )
+    ) {
+      throw new EntityTooOldToModifyError(this.config.modifyEntityGracePeriod);
+    }
   }
 }

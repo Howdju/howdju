@@ -6,7 +6,7 @@ import { expectToBeSameMomentDeep, mockLogger } from "howdju-test-common";
 
 import { endPoolAndDropDb, initDb, makeTestDbConfig } from "@/util/testUtil";
 import { Database, makePool } from "../database";
-import { MediaExcerptsDao } from "../daos";
+import { MediaExcerptsDao, SourcesDao, UrlsDao } from "../daos";
 import { makeTestProvider } from "@/initializers/TestProvider";
 import TestHelper from "@/initializers/TestHelper";
 import { MediaExcerptsService } from "..";
@@ -20,6 +20,8 @@ describe("MediaExcerptsDao", () => {
 
   let dao: MediaExcerptsDao;
   let mediaExcerptsService: MediaExcerptsService;
+  let sourcesDao: SourcesDao;
+  let urlsDao: UrlsDao;
   let testHelper: TestHelper;
   beforeEach(async () => {
     dbName = await initDb(dbConfig);
@@ -31,6 +33,8 @@ describe("MediaExcerptsDao", () => {
 
     dao = provider.mediaExcerptsDao;
     mediaExcerptsService = provider.mediaExcerptsService;
+    sourcesDao = provider.sourcesDao;
+    urlsDao = provider.urlsDao;
     testHelper = provider.testHelper;
   });
   afterEach(async () => {
@@ -38,7 +42,7 @@ describe("MediaExcerptsDao", () => {
   });
 
   describe("readMediaExcerptForId", () => {
-    test("reads a media excerpt for an ID", async () => {
+    test("reads a MediaExcerpt for an ID", async () => {
       const { authToken, user } = await testHelper.makeUser();
       const mediaExcerpt = await testHelper.makeMediaExcerpt({ authToken });
 
@@ -53,6 +57,10 @@ describe("MediaExcerptsDao", () => {
       expect(readMediaExcerpt).toEqual(
         expectToBeSameMomentDeep(
           merge({}, mediaExcerpt, {
+            creator: {
+              id: user.id,
+              longName: user.longName,
+            },
             localRep: {
               normalQuotation: "the text quote",
             },
@@ -103,8 +111,73 @@ describe("MediaExcerptsDao", () => {
 
       expect(readMediaExcerpt).toBeUndefined();
     });
-    test.todo("doesn't read a deleted media excerpt");
-    test.todo("allows recreating a deleted media excerpt");
+    test("doesn't read a deleted MediaExcerpt", async () => {
+      const { authToken } = await testHelper.makeUser();
+      const mediaExcerpt = await testHelper.makeMediaExcerpt({ authToken });
+      const deletedAt = utcNow();
+      await dao.deleteMediaExcerpt(mediaExcerpt.id, deletedAt);
+
+      const readMediaExcerpt = await dao.readMediaExcerptForId(mediaExcerpt.id);
+
+      expect(readMediaExcerpt).toBeUndefined();
+    });
+
+    test("reads a MediaExcerpt after deleting one of its Citations", async () => {
+      const { authToken } = await testHelper.makeUser();
+      const mediaExcerpt = await testHelper.makeMediaExcerpt({ authToken });
+      const deletedAt = utcNow();
+      await dao.deleteMediaExcerptCitation(
+        mediaExcerpt.citations[0],
+        deletedAt
+      );
+
+      const readMediaExcerpt = await dao.readMediaExcerptForId(mediaExcerpt.id);
+
+      expect(readMediaExcerpt).toBeDefined();
+    });
+
+    test("reads a MediaExcerpt after deleting one of its Sources", async () => {
+      const { authToken } = await testHelper.makeUser();
+      const mediaExcerpt = await testHelper.makeMediaExcerpt({ authToken });
+      const deletedAt = utcNow();
+      await sourcesDao.deleteSourceForId(
+        mediaExcerpt.citations[0].source.id,
+        deletedAt
+      );
+
+      // Act
+      const readMediaExcerpt = await dao.readMediaExcerptForId(mediaExcerpt.id);
+
+      expect(readMediaExcerpt).toBeDefined();
+    });
+    test("reads a MediaExcerpt after deleting one of its UrlLocators", async () => {
+      const { authToken } = await testHelper.makeUser();
+      const mediaExcerpt = await testHelper.makeMediaExcerpt({ authToken });
+      const deletedAt = utcNow();
+      await dao.deleteUrlLocatorForId(
+        mediaExcerpt.locators.urlLocators[0].id,
+        deletedAt
+      );
+
+      // Act
+      const readMediaExcerpt = await dao.readMediaExcerptForId(mediaExcerpt.id);
+
+      expect(readMediaExcerpt).toBeDefined();
+    });
+    test("reads a MediaExcerpt after deleting one of its Urls", async () => {
+      const { authToken } = await testHelper.makeUser();
+      const mediaExcerpt = await testHelper.makeMediaExcerpt({ authToken });
+      const deletedAt = utcNow();
+      await urlsDao.deleteUrlForId(
+        mediaExcerpt.locators.urlLocators[0].url.id,
+        deletedAt
+      );
+
+      // Act
+      const readMediaExcerpt = await dao.readMediaExcerptForId(mediaExcerpt.id);
+
+      expect(readMediaExcerpt).toBeDefined();
+    });
   });
 
   describe("readEquivalentUrlLocator", () => {
@@ -300,6 +373,10 @@ describe("MediaExcerptsDao", () => {
           citations: [expect.objectContaining(citations[0])],
           created,
           creatorUserId,
+          creator: {
+            id: creator.id,
+            longName: creator.longName,
+          },
         })
       );
     });
@@ -400,8 +477,12 @@ describe("MediaExcerptsDao", () => {
         );
 
         // Act
-        const readMediaExcerpts = await dao.readMediaExcerptsMatchingUrl(
-          "https://www.example.com/the-path?otherKey=otherValue#other-fragment"
+        const readMediaExcerpts = await dao.readMediaExcerpts(
+          {
+            url: "https://www.example.com/the-path?otherKey=otherValue#other-fragment",
+          },
+          [],
+          5
         );
 
         // Assert
@@ -460,8 +541,12 @@ describe("MediaExcerptsDao", () => {
         );
 
         // Act
-        const readMediaExcerpts = await dao.readMediaExcerptsMatchingUrl(
-          "https://www.example.com/the-path?otherKey=otherValue#other-fragment"
+        const readMediaExcerpts = await dao.readMediaExcerpts(
+          {
+            url: "https://www.example.com/the-path?otherKey=otherValue#other-fragment",
+          },
+          [],
+          5
         );
 
         // Assert
@@ -518,8 +603,10 @@ describe("MediaExcerptsDao", () => {
         );
 
         // Act
-        const readMediaExcerpts = await dao.readMediaExcerptsMatchingDomain(
-          "www.example.com"
+        const readMediaExcerpts = await dao.readMediaExcerpts(
+          { domain: "www.example.com" },
+          [],
+          5
         );
 
         // Assert
@@ -572,8 +659,10 @@ describe("MediaExcerptsDao", () => {
         );
 
         // Act
-        const readMediaExcerpts = await dao.readMediaExcerptsMatchingDomain(
-          "www.example.com"
+        const readMediaExcerpts = await dao.readMediaExcerpts(
+          { domain: "www.example.com" },
+          [],
+          5
         );
 
         // Assert

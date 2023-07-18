@@ -3,10 +3,12 @@ import { merge, toNumber } from "lodash";
 
 import {
   CreateMediaExcerpt,
+  MediaExcerptOut,
   MediaExcerptSearchFilter,
   MomentConstructor,
   sleep,
   SortDescription,
+  utcNow,
 } from "howdju-common";
 import { expectToBeSameMomentDeep, mockLogger } from "howdju-test-common";
 
@@ -15,6 +17,7 @@ import { Database, makePool } from "../database";
 import { makeTestProvider } from "@/initializers/TestProvider";
 import TestHelper from "@/initializers/TestHelper";
 import { MediaExcerptsService } from "./MediaExcerptsService";
+import { SourcesDao, UrlsDao } from "../daos";
 
 const dbConfig = makeTestDbConfig();
 
@@ -23,6 +26,8 @@ describe("MediaExcerptsService", () => {
   let pool: Pool;
 
   let service: MediaExcerptsService;
+  let sourcesDao: SourcesDao;
+  let urlsDao: UrlsDao;
   let testHelper: TestHelper;
   beforeEach(async () => {
     dbName = await initDb(dbConfig);
@@ -33,6 +38,8 @@ describe("MediaExcerptsService", () => {
     const provider = makeTestProvider(database);
 
     service = provider.mediaExcerptsService;
+    sourcesDao = provider.sourcesDao;
+    urlsDao = provider.urlsDao;
     testHelper = provider.testHelper;
   });
   afterEach(async () => {
@@ -81,13 +88,18 @@ describe("MediaExcerptsService", () => {
 
       const creatorInfo = {
         creatorUserId: user.id,
-        created: expect.any(MomentConstructor),
+        created: mediaExcerpt.created,
       };
       expect(isExtant).toBe(false);
       expect(mediaExcerpt).toEqual(
         expectToBeSameMomentDeep(
           merge({}, createMediaExcerpt, {
             id: expect.any(String),
+            ...creatorInfo,
+            creator: {
+              id: user.id,
+              longName: user.longName,
+            },
             localRep: {
               normalQuotation: "the text quote",
             },
@@ -95,6 +107,7 @@ describe("MediaExcerptsService", () => {
               urlLocators: [
                 {
                   id: expect.any(String),
+                  mediaExcerptId: mediaExcerpt.id,
                   url: {
                     id: expect.any(String),
                     canonicalUrl: url.url,
@@ -132,7 +145,6 @@ describe("MediaExcerptsService", () => {
                 normalName: "the speaker",
               },
             ],
-            ...creatorInfo,
           })
         )
       );
@@ -404,7 +416,7 @@ describe("MediaExcerptsService", () => {
     });
     test("re-uses related entities for concurrent attempts", async () => {
       // Arrange
-      const count = 10;
+      const count = 8;
       const users = await Promise.all(
         Array.from({ length: count }).map((_, i) =>
           testHelper.makeUser({
@@ -563,6 +575,85 @@ describe("MediaExcerptsService", () => {
         );
       }
     });
+    test("allows recreating a deleted MediaExcerpt", async () => {
+      const { authToken } = await testHelper.makeUser();
+      const url = { url: "https://www.example.com" };
+      const createMediaExcerpt: CreateMediaExcerpt = {
+        localRep: {
+          quotation: "the text quote",
+        },
+        locators: {
+          urlLocators: [
+            {
+              url,
+              anchors: [
+                {
+                  exactText: "exact text",
+                  prefixText: "prefix text",
+                  suffixText: "suffix text",
+                  startOffset: 0,
+                  endOffset: 1,
+                },
+              ],
+            },
+          ],
+        },
+        citations: [
+          {
+            source: {
+              description: "the source description",
+            },
+            pincite: "the pincite",
+          },
+        ],
+        speakers: [{ name: "the speaker", isOrganization: false }],
+      };
+
+      const { mediaExcerpt } = await service.readOrCreateMediaExcerpt(
+        { authToken },
+        createMediaExcerpt
+      );
+
+      await service.deleteMediaExcerpt({ authToken }, mediaExcerpt.id);
+
+      // Act
+      const { isExtant, mediaExcerpt: recreatedMediaExcerpt } =
+        await service.readOrCreateMediaExcerpt(
+          { authToken },
+          createMediaExcerpt
+        );
+
+      // Assert
+      expect(isExtant).toBe(false);
+      expect(recreatedMediaExcerpt).toEqual(
+        expectToBeSameMomentDeep(
+          merge({}, mediaExcerpt, {
+            id: expect.any(String),
+            created: recreatedMediaExcerpt.created,
+            citations: mediaExcerpt.citations.map((citation) => ({
+              ...citation,
+              mediaExcerptId: recreatedMediaExcerpt.id,
+              created: recreatedMediaExcerpt.created,
+            })),
+            locators: {
+              urlLocators: mediaExcerpt.locators.urlLocators.map(
+                (urlLocator) => ({
+                  ...urlLocator,
+                  id: expect.any(String),
+                  mediaExcerptId: recreatedMediaExcerpt.id,
+                  created: recreatedMediaExcerpt.created,
+                  anchors: urlLocator.anchors?.map((anchor) => ({
+                    ...anchor,
+                    urlLocatorId: expect.any(String),
+                    created: recreatedMediaExcerpt.created,
+                  })),
+                })
+              ),
+            },
+          })
+        )
+      );
+    });
   });
 
   describe("readMediaExcerptForId", () => {
@@ -613,13 +704,8 @@ describe("MediaExcerptsService", () => {
       const count = 3;
       const continuationToken = undefined;
 
-      mediaExcerpts.sort((a, b) => toNumber(a.id) - toNumber(b.id));
-      const expectedMediaExcerpts = mediaExcerpts
-        .filter((me) => me.speakers[0].id === speaker1.id)
-        .slice(0, count);
-
       // Act
-      const { mediaExcerpts: mediaExcerptsOut } =
+      const { mediaExcerpts: initialMediaExcerpts } =
         await service.readMediaExcerpts(
           filters,
           sorts,
@@ -628,7 +714,11 @@ describe("MediaExcerptsService", () => {
         );
 
       // Assert
-      expect(mediaExcerptsOut).toIncludeSameMembers(
+      const expectedMediaExcerpts = mediaExcerpts
+        .sort((a, b) => toNumber(a.id) - toNumber(b.id))
+        .filter((me) => me.speakers[0].id === speaker1.id)
+        .slice(0, count);
+      expect(initialMediaExcerpts).toIncludeSameMembers(
         expectToBeSameMomentDeep(expectedMediaExcerpts)
       );
     });
@@ -677,7 +767,7 @@ describe("MediaExcerptsService", () => {
         .slice(count, 2 * count);
 
       // Act
-      const { mediaExcerpts: mediaExcerptsOut } =
+      const { mediaExcerpts: moreMediaExcerpts } =
         await service.readMediaExcerpts(
           filters,
           sorts,
@@ -686,9 +776,198 @@ describe("MediaExcerptsService", () => {
         );
 
       // Assert
-      expect(mediaExcerptsOut).toIncludeSameMembers(
+      expect(moreMediaExcerpts).toIncludeSameMembers(
         expectToBeSameMomentDeep(expectedMediaExcerpts)
       );
+    });
+
+    test("doesn't read deleted MediaExcerpts", async () => {
+      const { authToken } = await testHelper.makeUser();
+      const mediaExcerpts = await Promise.all(
+        Array.from({ length: 10 }).map(async (_, i) => {
+          await sleep(Math.random() * 1000);
+          return await testHelper.makeMediaExcerpt(
+            { authToken },
+            {
+              localRep: {
+                // Make quotaiton unique to avoid any equivalence.
+                quotation: `The most magical thing ${i}`,
+              },
+              speakers: [{ name: "Name 1", isOrganization: false }],
+            }
+          );
+        })
+      );
+      // Media excerpts are created out of ID order above, but will be returned sorted by ID
+      const filters: MediaExcerptSearchFilter | undefined = undefined;
+      const sorts: SortDescription[] = [];
+      const count = 3;
+
+      const { extant: expectedMediaExcerpts, toDelete } = mediaExcerpts
+        .sort((a, b) => toNumber(a.id) - toNumber(b.id))
+        .reduce(
+          (acc, me) => {
+            if (toNumber(me.id) % 2 === 0) {
+              acc.extant.push(me);
+            } else {
+              acc.toDelete.push(me);
+            }
+            return acc;
+          },
+          { extant: [] as MediaExcerptOut[], toDelete: [] as MediaExcerptOut[] }
+        );
+      await Promise.all(
+        toDelete.map((me) => service.deleteMediaExcerpt({ authToken }, me.id))
+      );
+
+      // Act
+      const { mediaExcerpts: initialMediaExcerpts, continuationToken } =
+        await service.readMediaExcerpts(
+          filters,
+          sorts,
+          /*continuationToken=*/ undefined,
+          count
+        );
+      const { mediaExcerpts: moreMediaExcerpts } =
+        await service.readMediaExcerpts(
+          undefined,
+          [],
+          continuationToken,
+          count
+        );
+
+      // Assert
+      expect(initialMediaExcerpts).toIncludeSameMembers(
+        expectToBeSameMomentDeep(expectedMediaExcerpts.slice(0, count))
+      );
+      expect(moreMediaExcerpts).toIncludeSameMembers(
+        expectToBeSameMomentDeep(expectedMediaExcerpts.slice(count, 2 * count))
+      );
+    });
+    test("doesn't read MediaExcerpts for a deleted Citation", async () => {
+      const { authToken } = await testHelper.makeUser();
+      const mediaExcerpt = await testHelper.makeMediaExcerpt(
+        { authToken },
+        {
+          localRep: {
+            // Make quotaiton unique to avoid any equivalence.
+            quotation: `The most important thing is to remember the most important thing`,
+          },
+          speakers: [{ name: "Name 1", isOrganization: false }],
+        }
+      );
+
+      await Promise.all(
+        mediaExcerpt.citations.map((citation) =>
+          service.deleteCitation({ authToken }, citation)
+        )
+      );
+
+      const sourceId = mediaExcerpt.citations[0].source.id;
+      const filters: MediaExcerptSearchFilter = { sourceId };
+      const sorts: SortDescription[] = [];
+      const count = 3;
+
+      // Act
+      const { mediaExcerpts } = await service.readMediaExcerpts(
+        filters,
+        sorts,
+        /*continuationToken=*/ undefined,
+        count
+      );
+
+      // Assert
+      expect(mediaExcerpts).toBeEmpty();
+    });
+    test("doesn't read MediaExcerpts for a deleted Source", async () => {
+      const { authToken } = await testHelper.makeUser();
+      const mediaExcerpt = await testHelper.makeMediaExcerpt(
+        { authToken },
+        {
+          localRep: {
+            // Make quotaiton unique to avoid any equivalence.
+            quotation: `The most important thing is to remember the most important thing`,
+          },
+          speakers: [{ name: "Name 1", isOrganization: false }],
+        }
+      );
+
+      const deletedAt = utcNow();
+      await Promise.all(
+        mediaExcerpt.citations.map((citation) =>
+          sourcesDao.deleteSourceForId(citation.source.id, deletedAt)
+        )
+      );
+
+      const sourceId = mediaExcerpt.citations[0].source.id;
+      const filters: MediaExcerptSearchFilter = { sourceId };
+      const sorts: SortDescription[] = [];
+      const count = 3;
+
+      // Act
+      const { mediaExcerpts } = await service.readMediaExcerpts(
+        filters,
+        sorts,
+        /*continuationToken=*/ undefined,
+        count
+      );
+
+      // Assert
+      expect(mediaExcerpts).toBeEmpty();
+    });
+
+    test("doesn't read MediaExcerpts for a deleted UrlLocator", async () => {
+      const { authToken } = await testHelper.makeUser();
+      const mediaExcerpt = await testHelper.makeMediaExcerpt({ authToken });
+
+      await Promise.all(
+        mediaExcerpt.locators.urlLocators.map((urlLocator) =>
+          service.deleteUrlLocator({ authToken }, urlLocator)
+        )
+      );
+
+      const url = mediaExcerpt.locators.urlLocators[0].url.url;
+      const filters: MediaExcerptSearchFilter = { url };
+      const sorts: SortDescription[] = [];
+      const count = 3;
+
+      // Act
+      const { mediaExcerpts } = await service.readMediaExcerpts(
+        filters,
+        sorts,
+        /*continuationToken=*/ undefined,
+        count
+      );
+
+      // Assert
+      expect(mediaExcerpts).toBeEmpty();
+    });
+    test("doesn't read MediaExcerpts for a deleted Url", async () => {
+      const { authToken } = await testHelper.makeUser();
+      const mediaExcerpt = await testHelper.makeMediaExcerpt({ authToken });
+
+      const deletedAt = utcNow();
+      await Promise.all(
+        mediaExcerpt.locators.urlLocators.map((urlLocator) =>
+          urlsDao.deleteUrlForId(urlLocator.url.id, deletedAt)
+        )
+      );
+
+      const url = mediaExcerpt.locators.urlLocators[0].url.url;
+      const filters: MediaExcerptSearchFilter = { url };
+      const sorts: SortDescription[] = [];
+      const count = 3;
+
+      // Act
+      const { mediaExcerpts } = await service.readMediaExcerpts(
+        filters,
+        sorts,
+        /*continuationToken=*/ undefined,
+        count
+      );
+
+      // Assert
+      expect(mediaExcerpts).toBeEmpty();
     });
   });
 });
