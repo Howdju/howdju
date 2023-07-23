@@ -9,7 +9,7 @@ export function* inferMediaExcerptInfo() {
   yield takeEvery(
     editors.inferMediaExcerptInfo,
     function* inferMediaExcerptInfoWorker(action) {
-      const { editorType, editorId, url, quotation } = action.payload;
+      const { editorType, editorId, url, index, quotation } = action.payload;
       try {
         const result = yield* call(
           callApiForResource,
@@ -20,6 +20,7 @@ export function* inferMediaExcerptInfo() {
             editors.inferMediaExcerptInfoFailed(
               editorType,
               editorId,
+              index,
               result.payload
             )
           );
@@ -30,6 +31,7 @@ export function* inferMediaExcerptInfo() {
           editors.inferMediaExcerptInfoSucceeded(
             editorType,
             editorId,
+            index,
             mediaExcerptInfo
           )
         );
@@ -38,6 +40,7 @@ export function* inferMediaExcerptInfo() {
           editors.inferMediaExcerptInfoFailed(
             editorType,
             editorId,
+            index,
             error as Error
           )
         );

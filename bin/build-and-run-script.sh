@@ -17,7 +17,7 @@ esbuild "${script_path}" --bundle --platform=node\
  --outfile="dist/${script_path}"
 echo "Running" "dist/${script_path}" "${@:2}"
 if [[ -n "${NODE_ARGS}" ]]; then
-  node "${NODE_ARGS}" "dist/${script_path}" "${@:2}"
+  node --experimental-abortcontroller "${NODE_ARGS}" "dist/${script_path}" "${@:2}"
 else
-  node "dist/${script_path}" "${@:2}"
+  node --experimental-abortcontroller "dist/${script_path}" "${@:2}"
 fi

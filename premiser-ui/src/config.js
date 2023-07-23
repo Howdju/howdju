@@ -15,7 +15,6 @@ const config = {
   isRegistrationEnabled: true,
   rehydrateTimeoutMs: 5000,
   commitEditThenViewResponseTimeoutMs: 5000,
-  commitEditThenPutActionOnSuccessTimeoutMs: 5000,
   transientHideDelay: 1500,
   authExpirationCheckFrequencyMs: 30 * 1000,
   reduxPersistWhitelist: ["auth", "ui.isMobileSiteDisabled"],

@@ -12,12 +12,6 @@ import { editors } from "@/actions";
 interface Props
   extends EntityEditorFieldsProps<"editModel", CreateUrlLocatorsInput> {
   editorDispatch: EditorFieldsDispatch;
-  /**
-   * An optional callback for when the user clicks the infer MediaExcerpt into button.
-   *
-   * If missing, the button is not shown.
-   */
-  onInferMediaExcerptInfo?: (url: string) => void;
   /** The max number of UrlLocators to allow. */
   maxUrlLocatorCount?: number;
 }
@@ -44,31 +38,29 @@ export default function CreateUrlLocatorsEditorFields({
   }
   const { urlLocators } = editModel;
 
-  function onInferMediaExcerptInfo(url: string) {
+  function onInferMediaExcerptInfo(url: string, index: number) {
     editorDispatch((editorType: EditorType, editorId: EditorId) =>
-      editors.inferMediaExcerptInfo(editorType, editorId, url)
+      editors.inferMediaExcerptInfo(editorType, editorId, url, index)
     );
   }
   return (
-    <div>
-      <UrlLocatorsEditorFields
-        id={combineIds(id, `urlLocators`)}
-        key={combineIds(id, `urlLocators`)}
-        name={combineNames(name, `urlLocators`)}
-        urlLocators={urlLocators}
-        errors={errors?.urlLocators}
-        dirtyFields={dirtyFields?.urlLocators}
-        blurredFields={blurredFields?.urlLocators}
-        editorDispatch={editorDispatch}
-        disabled={disabled}
-        suggestionsKey={suggestionsKey}
-        onPropertyChange={onPropertyChange}
-        wasSubmitAttempted={wasSubmitAttempted}
-        onInferMediaExcerptInfo={onInferMediaExcerptInfo}
-        maxUrlLocatorCount={maxUrlLocatorCount}
-        onBlur={onBlur}
-        onSubmit={onSubmit}
-      />
-    </div>
+    <UrlLocatorsEditorFields
+      id={combineIds(id, `urlLocators`)}
+      key={combineIds(id, `urlLocators`)}
+      name={combineNames(name, `urlLocators`)}
+      urlLocators={urlLocators}
+      errors={errors?.urlLocators}
+      dirtyFields={dirtyFields?.urlLocators}
+      blurredFields={blurredFields?.urlLocators}
+      editorDispatch={editorDispatch}
+      disabled={disabled}
+      suggestionsKey={suggestionsKey}
+      onPropertyChange={onPropertyChange}
+      wasSubmitAttempted={wasSubmitAttempted}
+      onInferMediaExcerptInfo={onInferMediaExcerptInfo}
+      maxUrlLocatorCount={maxUrlLocatorCount}
+      onBlur={onBlur}
+      onSubmit={onSubmit}
+    />
   );
 }

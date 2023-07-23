@@ -209,11 +209,9 @@ export type ZodFormattedError<T, U = string> = {
     }
   : T extends (infer V)[] | undefined
   ? V extends object
-    ?
-        | {
-            [k: number]: ZodFormattedError<V, U>;
-          }
-        | undefined
+    ? {
+        [k: number]: ZodFormattedError<V, U>;
+      }
     : never
   : T extends object
   ? {

@@ -91,7 +91,7 @@ export default function MediaExcerptEditorFields(props: Props) {
     );
   }
 
-  function onInferMediaExcerptInfo(url: string) {
+  function onInferMediaExcerptInfo(url: string, index: number) {
     const quotation = mediaExcerpt?.localRep?.quotation;
     let inferredQuotation: string | undefined;
     if (!quotation) {
@@ -110,6 +110,7 @@ export default function MediaExcerptEditorFields(props: Props) {
         editorType,
         editorId,
         url,
+        index,
         quotation || inferredQuotation
       )
     );

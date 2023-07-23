@@ -15,6 +15,8 @@ import { combineIds, combineNames } from "@/viewModels";
 import { EditorType } from "@/reducers/editors";
 import { editors } from "@/actions";
 
+import "./UrlLocatorsEditorFields.scss"
+
 interface Props
   extends EntityEditorFieldsProps<"urlLocators", CreateUrlLocatorInput[]> {
   editorDispatch: EditorFieldsDispatch;
@@ -23,7 +25,7 @@ interface Props
    *
    * If missing, the button is not shown.
    */
-  onInferMediaExcerptInfo?: (url: string) => void;
+  onInferMediaExcerptInfo?: (url: string, index: number) => void;
   /** The max number of UrlLocators to allow. */
   maxUrlLocatorCount?: number;
 }
@@ -105,7 +107,7 @@ export default function UrlLocatorsEditorFields({
                 <Button
                   key="infer-media-excerpt-info-button"
                   icon
-                  onClick={() => onInferMediaExcerptInfo(url.url)}
+                  onClick={() => onInferMediaExcerptInfo(url.url, index)}
                   disabled={disabled || !url.url}
                 >
                   <MaterialSymbol

@@ -73,7 +73,6 @@ import {
   CreateUrlLocatorsInput,
   CreateUrlLocator,
 } from "howdju-common";
-import { serviceRoutes, InferResponseBody } from "howdju-service-routes";
 
 import {
   api,
@@ -92,6 +91,7 @@ import {
 import { logger } from "@/logger";
 import { EditorId, ModelFactory, PropertyChanges } from "@/types";
 import { combineObjectKey } from "@/viewModels";
+import { PayloadOf } from "howdju-client-common";
 
 type BooleanObject = { [key: string]: boolean };
 const EditorActions: BooleanObject = {};
@@ -632,7 +632,12 @@ const editorReducerByType: {
         state.isFetching = true;
       }),
       [str(editors.inferMediaExcerptInfoSucceeded)]: produce(
-        (state, action) => {
+        (
+          state,
+          action: Action<
+            PayloadOf<typeof editors.inferMediaExcerptInfoSucceeded>
+          >
+        ) => {
           state.isFetching = false;
 
           const editEntity = state.editEntity;
@@ -643,32 +648,31 @@ const editorReducerByType: {
 
           const { urlLocators } = editEntity;
 
-          const { mediaExcerptInfo } = action.payload;
+          const { index, mediaExcerptInfo } = action.payload;
           const { anchors } = mediaExcerptInfo;
 
           if (anchors && urlLocators.length > 0) {
-            urlLocators[0].anchors = anchors;
+            urlLocators[index].anchors = anchors;
 
             // Remove the error if it exists
             if (
               state.errors &&
               "urlLocators" in state.errors &&
-              state.errors.urlLocators?.[0].anchors?._errors
+              state.errors.urlLocators?.[index]?.anchors?._errors
             ) {
-              state.errors.urlLocators[0].anchors._errors =
-                state.errors.urlLocators[0].anchors._errors.filter(
-                  (err) => err.message !== UNABLE_TO_LOCATE_QUOTATION_MESSAGE
-                );
+              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- we just checked that it exists
+              state.errors.urlLocators[index].anchors!._errors = [];
             }
           }
         }
       ),
-      [str(editors.inferMediaExcerptInfoFailed)]: produce((state) => {
+      [str(editors.inferMediaExcerptInfoFailed)]: produce((state, action) => {
         state.isFetching = false;
+        const { index } = action.payload;
         state.errors = merge(
           state.errors,
           makeModelErrors<CreateUrlLocatorsInput>((uli) =>
-            uli.urlLocators[0].url.url(
+            uli.urlLocators[index].url.url(
               UNABLE_TO_INFER_MEDIA_EXCERPT_INFO_MESSAGE
             )
           )
@@ -799,9 +803,7 @@ function inferMediaExcerptInfoSuccessHandler<T extends EditorEntity>(
   return produce(
     (
       state: EditorState<T>,
-      action: Action<
-        InferResponseBody<typeof serviceRoutes.inferMediaExcerptInfo>
-      >
+      action: Action<PayloadOf<typeof editors.inferMediaExcerptInfoSucceeded>>
     ) => {
       state.isFetching = false;
 
@@ -816,7 +818,7 @@ function inferMediaExcerptInfoSuccessHandler<T extends EditorEntity>(
       let mediaExcerptErrors: ModelErrors<CreateMediaExcerptInput> =
         mediaExcerptPath ? get(state.errors, mediaExcerptPath) : state.errors;
 
-      const { mediaExcerptInfo } = action.payload;
+      const { index, mediaExcerptInfo } = action.payload;
       const { quotation, sourceDescription, anchors, authors } =
         mediaExcerptInfo;
 
@@ -827,27 +829,25 @@ function inferMediaExcerptInfoSuccessHandler<T extends EditorEntity>(
       if (
         mediaExcerpt.citations &&
         mediaExcerpt.citations.length > 0 &&
-        !mediaExcerpt.citations[0].source.description
+        !mediaExcerpt.citations[index].source.description
       ) {
-        mediaExcerpt.citations[0].source.description = sourceDescription;
+        mediaExcerpt.citations[index].source.description = sourceDescription;
       }
       if (
         anchors &&
         mediaExcerpt.locators &&
         mediaExcerpt.locators.urlLocators.length > 0
       ) {
-        mediaExcerpt.locators.urlLocators[0].anchors = anchors;
+        mediaExcerpt.locators.urlLocators[index].anchors = anchors;
 
         // Remove the error if it exists
         if (
           mediaExcerptErrors?.locators &&
           "urlLocators" in mediaExcerptErrors.locators &&
-          mediaExcerptErrors.locators.urlLocators?.[0].anchors?._errors
+          mediaExcerptErrors.locators.urlLocators?.[index].anchors?._errors
         ) {
-          mediaExcerptErrors.locators.urlLocators[0].anchors._errors =
-            mediaExcerptErrors.locators.urlLocators[0].anchors._errors.filter(
-              (err) => err.message !== UNABLE_TO_LOCATE_QUOTATION_MESSAGE
-            );
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- we just checked that it exists
+          mediaExcerptErrors.locators.urlLocators[index].anchors!._errors = [];
         }
       }
 
@@ -855,7 +855,7 @@ function inferMediaExcerptInfoSuccessHandler<T extends EditorEntity>(
         mediaExcerptErrors = merge(
           mediaExcerptErrors,
           makeModelErrors<CreateMediaExcerptInput>((me) =>
-            me.locators.urlLocators[0].anchors(
+            me.locators.urlLocators[index].anchors(
               UNABLE_TO_LOCATE_QUOTATION_MESSAGE
             )
           )
@@ -870,12 +870,10 @@ function inferMediaExcerptInfoSuccessHandler<T extends EditorEntity>(
       if (
         mediaExcerptErrors?.locators &&
         "urlLocators" in mediaExcerptErrors.locators &&
-        mediaExcerptErrors.locators.urlLocators?.[0].url?.url?._errors
+        mediaExcerptErrors.locators.urlLocators?.[index].url?.url?._errors
       ) {
-        mediaExcerptErrors.locators.urlLocators[0].url.url._errors =
-          mediaExcerptErrors.locators.urlLocators[0].url.url._errors.filter(
-            (err) => err.message !== UNABLE_TO_INFER_MEDIA_EXCERPT_INFO_MESSAGE
-          );
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- we just checked that it exists
+        mediaExcerptErrors.locators.urlLocators[index].url!.url!._errors = [];
       }
 
       if (mediaExcerptPath) {
@@ -893,30 +891,37 @@ function inferMediaExcerptInfoSuccessHandler<T extends EditorEntity>(
 function inferMediaExcerptInfoFailureHandler<T extends EditorEntity>(
   mediaExcerptPath?: string
 ) {
-  return produce((state: EditorState<T>) => {
-    state.isFetching = false;
+  return produce(
+    (
+      state: EditorState<T>,
+      action: Action<PayloadOf<typeof editors.inferMediaExcerptInfoFailed>>
+    ) => {
+      state.isFetching = false;
 
-    let mediaExcerptErrors: ModelErrors<CreateMediaExcerptInput> =
-      mediaExcerptPath ? get(state.errors, mediaExcerptPath) : state.errors;
+      const { index } = action.payload;
 
-    mediaExcerptErrors = merge(
-      mediaExcerptErrors,
-      makeModelErrors<CreateMediaExcerptInput>((me) =>
-        me.locators.urlLocators[0].url.url(
-          UNABLE_TO_INFER_MEDIA_EXCERPT_INFO_MESSAGE
+      let mediaExcerptErrors: ModelErrors<CreateMediaExcerptInput> =
+        mediaExcerptPath ? get(state.errors, mediaExcerptPath) : state.errors;
+
+      mediaExcerptErrors = merge(
+        mediaExcerptErrors,
+        makeModelErrors<CreateMediaExcerptInput>((me) =>
+          me.locators.urlLocators[index].url.url(
+            UNABLE_TO_INFER_MEDIA_EXCERPT_INFO_MESSAGE
+          )
         )
-      )
-    );
+      );
 
-    if (mediaExcerptPath) {
-      if (!state.errors) {
-        state.errors = makeModelErrors<T>();
+      if (mediaExcerptPath) {
+        if (!state.errors) {
+          state.errors = makeModelErrors<T>();
+        }
+        set(state.errors, mediaExcerptPath, mediaExcerptErrors);
+      } else {
+        state.errors = mediaExcerptErrors as ModelErrors<T>;
       }
-      set(state.errors, mediaExcerptPath, mediaExcerptErrors);
-    } else {
-      state.errors = mediaExcerptErrors as ModelErrors<T>;
     }
-  });
+  );
 }
 
 function makePropositionTagReducer(
