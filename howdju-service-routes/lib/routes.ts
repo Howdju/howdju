@@ -1,5 +1,6 @@
 import { toNumber, split } from "lodash";
 import { Moment } from "moment";
+import { z } from "zod";
 
 import {
   decodeQueryStringObject,
@@ -42,6 +43,7 @@ import {
   MediaExcerptSearchFilterKeys,
   isDefined,
   UpdateSource,
+  CreateUrlLocator,
 } from "howdju-common";
 import {
   EntityNotFoundError,
@@ -969,6 +971,33 @@ export const serviceRoutes = {
           { authToken },
           mediaExcerptId
         );
+      }
+    ),
+  },
+  createUrlLocators: {
+    path: "media-excerpts/:mediaExcerptId/url-locators",
+    method: httpMethods.POST,
+    request: handler(
+      Authed.merge(
+        PathParams("mediaExcerptId").merge(
+          Body({ urlLocators: z.array(CreateUrlLocator) })
+        )
+      ),
+      async (
+        appProvider: ServicesProvider,
+        {
+          authToken,
+          pathParams: { mediaExcerptId },
+          body: { urlLocators: createUrlLocators },
+        }
+      ) => {
+        const { urlLocators, isExtant } =
+          await appProvider.mediaExcerptsService.createUrlLocators(
+            { authToken },
+            mediaExcerptId,
+            createUrlLocators
+          );
+        return { body: { urlLocators, isExtant } };
       }
     ),
   },

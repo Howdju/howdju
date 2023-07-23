@@ -70,7 +70,7 @@ export function formatZodError<T>(error: z.ZodError<T>): ModelErrors<T> {
  *   message. Otherwise the arg must be the props of a Zod custom issue (minus the code.).
  * @returns the Zod error.
  */
-export function makeZodCustomIssuesError<T extends object>(
+export function makeZodCustomIssuesError<T>(
   issueDescriptors: IssueDescriptor<T>[]
 ): z.ZodError<T> {
   const issues = issueDescriptors.map((d) =>
@@ -80,7 +80,7 @@ export function makeZodCustomIssuesError<T extends object>(
 }
 
 /** Helper that formats the result of calling zodCustomIssuesError. */
-export function makeModelErrors<T extends object>(
+export function makeModelErrors<T>(
   ...issueDescriptors: IssueDescriptor<T>[]
 ): ModelErrors<T> {
   return formatZodError(makeZodCustomIssuesError(issueDescriptors));

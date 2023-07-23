@@ -189,11 +189,12 @@ export const contextTrailItemsSchema = new schema.Array(
 export const urlLocatorSchema = new schema.Entity<UrlLocator>("urlLocators");
 export const sourceSchema = new schema.Entity<SourceOut>("sources");
 export const sourcesSchema = new schema.Array(sourceSchema);
+export const urlLocatorsSchema = new schema.Array(urlLocatorSchema);
 export const mediaExcerptSchema = new schema.Entity<MediaExcerpt>(
   "mediaExcerpts",
   {
     locators: {
-      urlLocators: new schema.Array(urlLocatorSchema),
+      urlLocators: urlLocatorsSchema,
     },
     citations: new schema.Array({
       source: sourceSchema,

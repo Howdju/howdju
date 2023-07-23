@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { RouteComponentProps } from "react-router";
 import {
   CircularProgress,
+  DialogContainer,
   Divider,
   DropdownMenu,
   ListItem,
@@ -11,7 +12,11 @@ import { MaterialSymbol } from "react-material-symbols";
 import { Link } from "react-router-dom";
 import { push } from "connected-react-router";
 
-import { EntityId, newUnimplementedError } from "howdju-common";
+import {
+  EntityId,
+  makeCreateUrlLocatorInput,
+  newUnimplementedError,
+} from "howdju-common";
 
 import { useAppDispatch, useAppEntitySelector, useAppSelector } from "@/hooks";
 import { api } from "@/apiActions";
@@ -20,8 +25,11 @@ import { combineIds } from "@/viewModels";
 import MediaExcerptCard from "@/components/mediaExcerpts/MediaExcerptCard";
 import HowdjuHelmet from "@/Helmet";
 import paths from "@/paths";
-import { flows } from "@/actions";
+import { editors, flows } from "@/actions";
 import app from "@/app/appSlice";
+import mediaExcerptPage from "./mediaExcerptPageSlice";
+import CreateUrlLocatorsEditor from "@/editors/CreateUrlLocatorsEditor";
+import { CommitThenPutAction } from "@/editors/withEditor";
 
 interface MatchParams {
   mediaExcerptId: EntityId;
@@ -29,6 +37,7 @@ interface MatchParams {
 type Props = RouteComponentProps<MatchParams>;
 
 const id = "media-excerpt-page";
+const createUrlLocatorsEditorId = "mediaExcerptPage-addUrls";
 
 export default function MediaExcerptPage(props: Props) {
   const dispatch = useAppDispatch();
@@ -36,6 +45,8 @@ export default function MediaExcerptPage(props: Props) {
   useEffect(() => {
     dispatch(api.fetchMediaExcerpt(mediaExcerptId));
   }, [dispatch, mediaExcerptId]);
+
+  const mediaExcerpt = useAppEntitySelector(mediaExcerptId, mediaExcerptSchema);
 
   function useInAppearance() {
     throw newUnimplementedError("useInAppearance");
@@ -50,7 +61,26 @@ export default function MediaExcerptPage(props: Props) {
     );
   }
 
-  const { isFetching } = useAppSelector((state) => state.mediaExcerptPage);
+  function showAddUrlLocatorsDialog() {
+    dispatch(mediaExcerptPage.showAddUrlLocatorsDialog());
+  }
+  function hideAddUrlLocatorsDialog() {
+    dispatch(mediaExcerptPage.hideAddUrlLocatorsDialog());
+  }
+
+  function onAddUrlLocatorsClick() {
+    dispatch(
+      editors.beginEdit("CREATE_URL_LOCATORS", createUrlLocatorsEditorId, {
+        mediaExcerptId,
+        urlLocators: [makeCreateUrlLocatorInput()],
+      })
+    );
+    showAddUrlLocatorsDialog();
+  }
+
+  const { isFetching, isAddUrlLocatorsDialogVisible } = useAppSelector(
+    (state) => state.mediaExcerptPage
+  );
 
   // TODO(17): pass props directly after upgrading react-md to a version with correct types
   const menuClassNameProps = { menuClassName: "context-menu" } as any;
@@ -76,7 +106,7 @@ export default function MediaExcerptPage(props: Props) {
           leftIcon={<MaterialSymbol icon="upgrade" />}
           onClick={useInAppearance}
         />,
-        <Divider key="divider" />,
+        <Divider key="divider-use" />,
         <ListItem
           primaryText="See usages"
           key="see-usages"
@@ -84,7 +114,14 @@ export default function MediaExcerptPage(props: Props) {
           component={Link}
           to={paths.mediaExcerptUsages(mediaExcerptId)}
         />,
-        <Divider key="divider" />,
+        <Divider key="divider-edit" />,
+        <ListItem
+          primaryText="Add URLs"
+          key="add-urls"
+          leftIcon={<MaterialSymbol icon="add_link" />}
+          onClick={onAddUrlLocatorsClick}
+        />,
+        <Divider key="divider-delete" />,
         <ListItem
           primaryText="Delete"
           key="delete"
@@ -94,8 +131,6 @@ export default function MediaExcerptPage(props: Props) {
       ]}
     />
   );
-
-  const mediaExcerpt = useAppEntitySelector(mediaExcerptId, mediaExcerptSchema);
 
   const title = `Media Excerpt ${mediaExcerptId}`;
 
@@ -117,6 +152,23 @@ export default function MediaExcerptPage(props: Props) {
         menu={menu}
         className="md-cell md-cell--12"
       />
+      <DialogContainer
+        id={combineIds(id, "add-url-dialog")}
+        visible={isAddUrlLocatorsDialogVisible}
+        title="Add URL locators"
+        onHide={hideAddUrlLocatorsDialog}
+        className="md-overlay--wide-dialog"
+      >
+        <CreateUrlLocatorsEditor
+          id="media-excerpt-page--create-url-locators-editor"
+          editorId={createUrlLocatorsEditorId}
+          showButtons={true}
+          submitButtonText="Add"
+          editorCommitBehavior={
+            new CommitThenPutAction(mediaExcerptPage.hideAddUrlLocatorsDialog())
+          }
+        />
+      </DialogContainer>
     </div>
   );
 }

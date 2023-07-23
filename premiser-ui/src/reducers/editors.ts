@@ -70,6 +70,8 @@ import {
   UpdateSourceInput,
   CreatePersorgInput,
   UpdatePersorgInput,
+  CreateUrlLocatorsInput,
+  CreateUrlLocator,
 } from "howdju-common";
 import { serviceRoutes, InferResponseBody } from "howdju-service-routes";
 
@@ -108,6 +110,7 @@ export const EditorTypes = {
   ACCOUNT_SETTINGS: "ACCOUNT_SETTINGS",
   CONTENT_REPORT: "CONTENT_REPORT",
   COUNTER_JUSTIFICATION: "COUNTER_JUSTIFICATION",
+  CREATE_URL_LOCATORS: "CREATE_URL_LOCATORS",
   JUSTIFICATION_BASIS_COMPOUND: "JUSTIFICATION_BASIS_COMPOUND",
   /* e.g. Proposition justification page */
   JUSTIFIED_SENTENCE: "JUSTIFIED_SENTENCE",
@@ -133,7 +136,7 @@ export type DirtyFields<T> = RecursiveObject<T, typeof dirtyProp, boolean>;
 
 const UNABLE_TO_INFER_MEDIA_EXCERPT_INFO_MESSAGE =
   "Unable to infer media excerpt info";
-const UNABLE_TO_LOCATION_QUOTATION_MESSAGE =
+const UNABLE_TO_LOCATE_QUOTATION_MESSAGE =
   "Unable to locate the quotation (it may have a typo or the content may be pay-walled.)";
 
 /**
@@ -155,7 +158,8 @@ export type EditorEntity =
   | UpdateAccountSettingsInput
   | UpdateSourceInput
   | CreatePersorgInput
-  | UpdatePersorgInput;
+  | UpdatePersorgInput
+  | CreateUrlLocatorsInput;
 /**
  * @typeparam T the editor model type.
  * @typeparam U the request model type.
@@ -615,6 +619,65 @@ const editorReducerByType: {
     defaultEditorState()
   ),
 
+  CREATE_URL_LOCATORS: handleActions<
+    EditorState<
+      CreateUrlLocatorsInput,
+      CreateUrlLocator[],
+      ModelErrors<CreateUrlLocatorsInput>
+    >,
+    any
+  >(
+    {
+      [str(editors.inferMediaExcerptInfo)]: produce((state) => {
+        state.isFetching = true;
+      }),
+      [str(editors.inferMediaExcerptInfoSucceeded)]: produce(
+        (state, action) => {
+          state.isFetching = false;
+
+          const editEntity = state.editEntity;
+          if (!editEntity) {
+            logger.error("Cannot infer media excerpt info for absent entity.");
+            return;
+          }
+
+          const { urlLocators } = editEntity;
+
+          const { mediaExcerptInfo } = action.payload;
+          const { anchors } = mediaExcerptInfo;
+
+          if (anchors && urlLocators.length > 0) {
+            urlLocators[0].anchors = anchors;
+
+            // Remove the error if it exists
+            if (
+              state.errors &&
+              "urlLocators" in state.errors &&
+              state.errors.urlLocators?.[0].anchors?._errors
+            ) {
+              state.errors.urlLocators[0].anchors._errors =
+                state.errors.urlLocators[0].anchors._errors.filter(
+                  (err) => err.message !== UNABLE_TO_LOCATE_QUOTATION_MESSAGE
+                );
+            }
+          }
+        }
+      ),
+      [str(editors.inferMediaExcerptInfoFailed)]: produce((state) => {
+        state.isFetching = false;
+        state.errors = merge(
+          state.errors,
+          makeModelErrors<CreateUrlLocatorsInput>((uli) =>
+            uli.urlLocators[0].url.url(
+              UNABLE_TO_INFER_MEDIA_EXCERPT_INFO_MESSAGE
+            )
+          )
+        );
+      }),
+    },
+    defaultEditorState()
+  ),
+
   [EditorTypes.WRIT_QUOTE]: handleActions<EditorState<any>, any, any>(
     {
       [str(editors.addUrl)]: (state) => {
@@ -783,7 +846,7 @@ function inferMediaExcerptInfoSuccessHandler<T extends EditorEntity>(
         ) {
           mediaExcerptErrors.locators.urlLocators[0].anchors._errors =
             mediaExcerptErrors.locators.urlLocators[0].anchors._errors.filter(
-              (err) => err.message !== UNABLE_TO_LOCATION_QUOTATION_MESSAGE
+              (err) => err.message !== UNABLE_TO_LOCATE_QUOTATION_MESSAGE
             );
         }
       }
@@ -793,7 +856,7 @@ function inferMediaExcerptInfoSuccessHandler<T extends EditorEntity>(
           mediaExcerptErrors,
           makeModelErrors<CreateMediaExcerptInput>((me) =>
             me.locators.urlLocators[0].anchors(
-              UNABLE_TO_LOCATION_QUOTATION_MESSAGE
+              UNABLE_TO_LOCATE_QUOTATION_MESSAGE
             )
           )
         );
