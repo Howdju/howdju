@@ -15,7 +15,7 @@ import { combineIds, combineNames } from "@/viewModels";
 import { EditorType } from "@/reducers/editors";
 import { editors } from "@/actions";
 
-import "./UrlLocatorsEditorFields.scss"
+import "./UrlLocatorsEditorFields.scss";
 
 interface Props
   extends EntityEditorFieldsProps<"urlLocators", CreateUrlLocatorInput[]> {
