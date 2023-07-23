@@ -315,11 +315,13 @@ export const editors = {
       editorType: EditorType,
       editorId: EditorId,
       url: string,
+      index: number,
       quotation?: string
     ) => ({
       editorType,
       editorId,
       url,
+      index,
       quotation,
     })
   ),
@@ -328,18 +330,26 @@ export const editors = {
     (
       editorType: EditorType,
       editorId: EditorId,
+      index: number,
       mediaExcerptInfo: MediaExcerptInfo
     ) => ({
       editorType,
       editorId,
+      index,
       mediaExcerptInfo,
     })
   ),
   inferMediaExcerptInfoFailed: createAction(
     "EDITORS/INFER_MEDIA_EXCERPT_INFO/FAILED",
-    (editorType: EditorType, editorId: EditorId, error: Error) => ({
+    (
+      editorType: EditorType,
+      editorId: EditorId,
+      index: number,
+      error: Error
+    ) => ({
       editorType,
       editorId,
+      index,
       error,
     })
   ),

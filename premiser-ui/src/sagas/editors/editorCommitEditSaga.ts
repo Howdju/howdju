@@ -361,6 +361,11 @@ export const UpdatePersorgConfig = {
   inputTransformer: identity,
 };
 
+export const CreateUrlLocatorsCommitConfig = {
+  requestActionCreator: api.createUrlLocators,
+  inputTransformer: identity,
+};
+
 export const editorCommitConfigs: Partial<
   Record<EditorType, EditorCommitConfig>
 > = {
@@ -409,6 +414,9 @@ export const editorCommitConfigs: Partial<
   },
   SOURCE: {
     UPDATE: UpdateSourceConfig,
+  },
+  CREATE_URL_LOCATORS: {
+    CREATE: CreateUrlLocatorsCommitConfig,
   },
 };
 

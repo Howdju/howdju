@@ -235,6 +235,41 @@ export class MediaExcerptsService {
     };
   }
 
+  async createUrlLocators(
+    userIdent: UserIdent,
+    mediaExcerptId: EntityId,
+    createUrlLocators: CreateUrlLocator[]
+  ) {
+    const userId = await this.authService.readUserIdForUserIdent(userIdent);
+    const mediaExcerpt = await this.mediaExcerptsDao.readMediaExcerptForId(
+      mediaExcerptId
+    );
+    if (!mediaExcerpt) {
+      throw new EntityNotFoundError("MEDIA_EXCERPT", mediaExcerptId);
+    }
+
+    await this.checkModifyPermission(userId, mediaExcerpt);
+
+    const createdAt = utcNow();
+    const urls = await this.urlsService.readOrCreateUrlsAsUser(
+      createUrlLocators.map((u) => u.url),
+      userId,
+      createdAt
+    );
+    const createUrlLocatorsWithUrl = zip(createUrlLocators, urls).map(
+      ([createUrlLocator, url]) => ({
+        ...createUrlLocator,
+        url,
+      })
+    );
+    return await this.readOrCreateUrlLocators(
+      userId,
+      mediaExcerpt,
+      createUrlLocatorsWithUrl,
+      createdAt
+    );
+  }
+
   private async readOrCreateUrlLocator(
     creatorUserId: EntityId,
     mediaExcerpt: MediaExcerptRef,

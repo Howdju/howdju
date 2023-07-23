@@ -1,7 +1,6 @@
-import React, { MouseEvent } from "react";
+import React from "react";
 import { Button } from "react-md";
 import { MaterialSymbol } from "react-material-symbols";
-import { isEmpty } from "lodash";
 
 import {
   CreateMediaExcerptInput,
@@ -9,7 +8,6 @@ import {
   MediaExcerptCitation,
   MediaExcerpt,
   makeCreatePersorg,
-  makeCreateUrlLocatorInput,
   PersorgOut,
 } from "howdju-common";
 import { toCreatePersorgInput } from "howdju-client-common";
@@ -27,9 +25,10 @@ import EntityViewer from "@/EntityViewer";
 import PersorgEditorFields from "@/PersorgEditorFields";
 import { editors } from "@/actions";
 import { EditorId } from "@/types";
+import UrlLocatorsEditorFields from "./UrlLocatorsEditorFields";
+import SourceEditorFields from "@/components/sources/SourceEditorFields";
 
 import "./MediaExcerptEditorFields.scss";
-import SourceEditorFields from "@/components/sources/SourceEditorFields";
 
 interface Props
   extends EntityEditorFieldsProps<"mediaExcerpt", CreateMediaExcerptInput> {
@@ -58,27 +57,6 @@ export default function MediaExcerptEditorFields(props: Props) {
     dirtyFields,
     blurredFields
   );
-
-  const onAddUrlLocator = (_event: MouseEvent<HTMLElement>) =>
-    editorDispatch((editorType: EditorType, editorId: string) =>
-      editors.addListItem(
-        editorType,
-        editorId,
-        0,
-        combineNames(name, "locators.urlLocators"),
-        makeCreateUrlLocatorInput
-      )
-    );
-
-  const onRemoveUrlLocator = (index: number) =>
-    editorDispatch((editorType: EditorType, editorId: string) =>
-      editors.removeListItem(
-        editorType,
-        editorId,
-        index,
-        combineNames(name, "locators.urlLocators")
-      )
-    );
 
   function onAddSpeaker() {
     editorDispatch((editorType: EditorType, editorId: EditorId) =>
@@ -113,7 +91,7 @@ export default function MediaExcerptEditorFields(props: Props) {
     );
   }
 
-  function onInferMediaExcerptInfo(url: string) {
+  function onInferMediaExcerptInfo(url: string, index: number) {
     const quotation = mediaExcerpt?.localRep?.quotation;
     let inferredQuotation: string | undefined;
     if (!quotation) {
@@ -132,6 +110,7 @@ export default function MediaExcerptEditorFields(props: Props) {
         editorType,
         editorId,
         url,
+        index,
         quotation || inferredQuotation
       )
     );
@@ -155,67 +134,21 @@ export default function MediaExcerptEditorFields(props: Props) {
 
       <fieldset className="url-locators">
         <legend>URLs</legend>
-        {mediaExcerpt?.locators?.urlLocators.map(({ url, anchors }, index) => (
-          <SingleLineTextField
-            {...errorProps((me) => me.locators?.urlLocators[index].url.url)}
-            id={combineIds(id, `locators.urlLocators[${index}].url.url`)}
-            key={combineIds(id, `locators.urlLocators[${index}].url.url`)}
-            name={combineNames(name, `locators.urlLocators[${index}].url.url`)}
-            aria-label="url"
-            type="url"
-            label="URL"
-            value={url.url}
-            rightIcon={
-              <>
-                {!isEmpty(anchors) && (
-                  <MaterialSymbol
-                    key="anchor-icon"
-                    className="url-anchor-icon"
-                    icon="my_location"
-                    size={16}
-                    title="Has a fragment taking you directly to the excerpt"
-                  />
-                )}
-                <Button
-                  key="infer-media-excerpt-info-button"
-                  icon
-                  onClick={() => onInferMediaExcerptInfo(url.url)}
-                  disabled={disabled || !url.url}
-                >
-                  <MaterialSymbol
-                    icon="plagiarism"
-                    size={22}
-                    title="Infer quotation and source description"
-                  />
-                </Button>
-                <Button
-                  key="delete-url-locator-button"
-                  icon
-                  onClick={() => onRemoveUrlLocator(index)}
-                  disabled={disabled}
-                >
-                  delete
-                </Button>
-              </>
-            }
-            rightIconStateful={false}
-            disabled={disabled || !isEmpty(anchors)}
-            onBlur={onBlur}
-            onPropertyChange={onPropertyChange}
-            onSubmit={onSubmit}
-          />
-        ))}
-        {(mediaExcerpt?.locators?.urlLocators?.length ?? 0) < 1 && (
-          <Button
-            iconEl={<MaterialSymbol icon="add_link" />}
-            raised
-            onClick={onAddUrlLocator}
-            title="Add URL locator"
-            disabled={disabled}
-          >
-            Add URL locator
-          </Button>
-        )}
+        <UrlLocatorsEditorFields
+          id={combineIds(id, `locators.urlLocators`)}
+          key={combineIds(id, `locators.urlLocators`)}
+          name={combineNames(name, `locators.urlLocators`)}
+          urlLocators={mediaExcerpt?.locators?.urlLocators}
+          errors={errors?.locators?.urlLocators}
+          dirtyFields={dirtyFields?.locators?.urlLocators}
+          blurredFields={blurredFields?.locators?.urlLocators}
+          editorDispatch={editorDispatch}
+          disabled={disabled}
+          suggestionsKey={suggestionsKey}
+          onPropertyChange={onPropertyChange}
+          wasSubmitAttempted={wasSubmitAttempted}
+          onInferMediaExcerptInfo={onInferMediaExcerptInfo}
+        />
       </fieldset>
       <fieldset>
         <legend>Citations</legend>

@@ -211,6 +211,27 @@ export default handleActions(
         );
       },
     },
+
+    [api.createUrlLocators.response]: {
+      next: (state, action) => {
+        const { entities } = normalize(
+          action.payload,
+          action.meta.normalizationSchema
+        );
+        const targetUpdates = makeUpdatesAddingUrlLocatorsToMediaExcerpts(
+          entities,
+          state
+        );
+        const newState = mergeWith(
+          {},
+          state,
+          entities,
+          targetUpdates,
+          unionArraysDistinctIdsCustomizer
+        );
+        return newState;
+      },
+    },
     [api.createCounterJustification.response]: {
       next: (state, action) => {
         const { entities } = normalize(
@@ -407,6 +428,28 @@ export function unionArraysDistinctIdsCustomizer(
     return union(filteredDestVals, filteredSrcVals);
   }
   return undefined; // tells lodash to use its default method
+}
+
+function makeUpdatesAddingUrlLocatorsToMediaExcerpts(entities, state) {
+  const updates = {};
+  forEach(entities.urlLocators, (urlLocator, id) => {
+    const mediaExcerptId = urlLocator.mediaExcerptId;
+    const mediaExcerpt = state.mediaExcerpts[mediaExcerptId];
+    if (!mediaExcerpt) {
+      return;
+    }
+    if (!updates.mediaExcerpts) {
+      updates.mediaExcerpts = {};
+    }
+    updates.mediaExcerpts[mediaExcerptId] = {
+      ...mediaExcerpt,
+      locators: {
+        ...mediaExcerpt.locators,
+        urlLocators: union(mediaExcerpt.locators.urlLocators, [id]),
+      },
+    };
+  });
+  return updates;
 }
 
 export function makeUpdatesAddingJustificationsToTargets(entities, state) {

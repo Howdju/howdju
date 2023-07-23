@@ -249,6 +249,10 @@ export default function withEditor<
             editorCommitBehavior.action
           )
         );
+      } else {
+        logger.error(
+          `Unrecognized editorCommitBehavior: ${toJson(editorCommitBehavior)}`
+        );
       }
     };
     const onSubmitClick = (_event: React.MouseEvent<HTMLElement>) => {

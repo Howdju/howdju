@@ -43,6 +43,7 @@ import {
   JustificationOut,
   CreateMediaExcerpt,
   UpdateSource,
+  CreateUrlLocatorsInput,
 } from "howdju-common";
 import {
   InferPathParams,
@@ -77,6 +78,7 @@ import {
   tagSchema,
   tagsSchema,
   tagVoteSchema,
+  urlLocatorsSchema,
   userSchema,
   writQuoteSchema,
   writQuotesSchema,
@@ -470,6 +472,16 @@ export const api = {
     serviceRoutes.deleteMediaExcerpt,
     (mediaExcerptId: EntityId) => ({
       pathParams: { mediaExcerptId },
+    })
+  ),
+
+  createUrlLocators: apiActionCreator(
+    "CREATE_URL_LOCATORS",
+    serviceRoutes.createUrlLocators,
+    ({ mediaExcerptId, urlLocators }: CreateUrlLocatorsInput) => ({
+      body: { urlLocators },
+      pathParams: { mediaExcerptId },
+      normalizationSchema: { urlLocators: urlLocatorsSchema },
     })
   ),
 
