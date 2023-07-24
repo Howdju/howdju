@@ -22,7 +22,6 @@
     "axios": "^1.4.0",
     "bcryptjs": "^2.4.3",
     "bluebird": "^3.5.0",
-    "cryptohat": "^1.0.1",
     "howdju-common": "workspace:howdju-common",
     "joi": "^17.4.0",
     "jsdom": "^21.1.2",

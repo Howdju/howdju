@@ -319,11 +319,17 @@ describe("ContextTrailsService", () => {
 
   async function makeUser() {
     const now = moment();
-    const creatorUserId = null;
+    const creatorUserId = undefined;
     const userData = {
       email: "user@domain.com",
       username: "the-username",
       isActive: true,
+      longName: "The User",
+      shortName: "User",
+      acceptedTerms: now,
+      affirmed13YearsOrOlder: now,
+      affirmedMajorityConsent: now,
+      affirmedNotGdpr: now,
     };
 
     const user = await usersDao.createUser(userData, creatorUserId, now);

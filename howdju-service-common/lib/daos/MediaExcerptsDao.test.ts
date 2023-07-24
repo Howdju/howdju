@@ -182,7 +182,7 @@ describe("MediaExcerptsDao", () => {
 
   describe("readEquivalentUrlLocator", () => {
     test("returns an equivalent UrlLocator with an anchor", async () => {
-      const { authToken, user: creator } = await testHelper.makeUser();
+      const { authToken, userBlurb: creator } = await testHelper.makeUser();
       const mediaExcerpt = await testHelper.makeMediaExcerpt(
         { authToken },
         {
@@ -203,7 +203,7 @@ describe("MediaExcerptsDao", () => {
         ],
       };
       const urlLocator = await dao.createUrlLocator({
-        creatorUserId: creator.id,
+        creator,
         mediaExcerpt,
         createUrlLocator,
         created: utcNow(),
@@ -220,7 +220,7 @@ describe("MediaExcerptsDao", () => {
     });
 
     test("returns an equivalent UrlLocator with no anchor", async () => {
-      const { authToken, user: creator } = await testHelper.makeUser();
+      const { authToken, userBlurb: creator } = await testHelper.makeUser();
       const mediaExcerpt = await testHelper.makeMediaExcerpt(
         { authToken },
         {
@@ -230,7 +230,7 @@ describe("MediaExcerptsDao", () => {
       const url = await testHelper.makeUrl({ userId: creator.id });
       const createUrlLocator = { url };
       const urlLocator = await dao.createUrlLocator({
-        creatorUserId: creator.id,
+        creator,
         mediaExcerpt,
         createUrlLocator,
         created: utcNow(),
@@ -275,7 +275,7 @@ describe("MediaExcerptsDao", () => {
         ],
       };
       await dao.createUrlLocator({
-        creatorUserId: creator.id,
+        creator,
         mediaExcerpt,
         createUrlLocator,
         created: utcNow(),

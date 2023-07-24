@@ -15,6 +15,7 @@ import { Database } from "../database";
 import { toSource } from "./orm";
 import { SourceRow } from "./dataTypes";
 import { UsersDao } from "./UsersDao";
+import { toIdString } from "./daosUtil";
 
 export class SourcesDao {
   constructor(private db: Database, private usersDao: UsersDao) {}
@@ -70,7 +71,9 @@ export class SourcesDao {
     if (!row) {
       return undefined;
     }
-    const creator = await this.usersDao.readUserBlurbForId(row.creator_user_id);
+    const creator = await this.usersDao.readUserBlurbForId(
+      toIdString(row.creator_user_id)
+    );
     return toSource(row, creator);
   }
 

@@ -210,7 +210,11 @@ function unprefix<T extends QueryResultRow, P extends string>(
   return hasPrefixedKey ? (unprefixed as UnprefixProperties<T, P>) : undefined;
 }
 
-function toUserMapper(row: UserRow & UserExternalIdsRow): UserData {
+function isExternalIdsRow(row: object): row is UserExternalIdsRow {
+  return "google_analytics_id" in row;
+}
+
+function toUserMapper(row: UserRow | (UserRow & UserExternalIdsRow)): UserData {
   const user = merge(
     UserRef.parse({
       id: toIdString(row.user_id),
@@ -222,8 +226,8 @@ function toUserMapper(row: UserRow & UserExternalIdsRow): UserData {
       shortName: row.short_name,
       created: row.created,
       isActive: row.is_active,
-      externalIds: toUserExternalIds(row),
-    }
+    },
+    isExternalIdsRow(row) ? { externalIds: toUserExternalIds(row) } : undefined
   );
 
   return user;
@@ -674,7 +678,10 @@ export const toPerspective = (row: any) =>
   };
 
 export const toUserHash = (row: UserHashRow): UserHashData =>
-  row && camelCaseKeysDeep(row);
+  row && {
+    userId: toIdString(row.user_id),
+    hash: row.hash,
+  };
 
 export const toJobHistory = (row: any) =>
   row && {

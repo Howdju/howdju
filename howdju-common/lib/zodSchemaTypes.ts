@@ -1,6 +1,6 @@
 import { Moment } from "moment";
 import { z } from "zod";
-import { UserOut, WritOut, WritQuoteOut } from "./apiModels";
+import { SourceOut, UserOut, WritOut, WritQuoteOut } from "./apiModels";
 import { newProgrammingError } from "./commonErrors";
 import { logger } from "./logger";
 
@@ -229,6 +229,8 @@ export type EntityName<T> = T extends Proposition
   : T extends UrlLocator
   ? "UrlLocator"
   : T extends Source
+  ? "Source"
+  : T extends SourceOut
   ? "Source"
   : T extends UpdateSource
   ? "Source"

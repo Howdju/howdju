@@ -19,13 +19,11 @@
   "dependencies": {
     "ajv": "^8.1.0",
     "ajv-formats": "^2.0.2",
-    "bases": "^0.2.1",
     "dom-anchor-text-position": "^5.0.0",
     "dom-anchor-text-quote": "^4.0.2",
     "is-valid-domain": "^0.1.6",
     "lodash": "^4.17.21",
     "moment": "^2.29.4",
-    "random-seed": "^0.3.0",
     "striptags": "alpha",
     "type-fest": "^3.12.0",
     "validator": "^13.7.0",

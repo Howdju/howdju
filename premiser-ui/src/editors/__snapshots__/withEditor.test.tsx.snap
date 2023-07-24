@@ -58,7 +58,7 @@ exports[`withEditor Exemplary component (RegistrationRequestEditor) submitting i
             aria-hidden="true"
             class="md-text-field-message md-text-field-message--inactive md-text-field-message--counter"
           >
-            0 / 128
+            0 / 512
           </div>
         </div>
       </div>

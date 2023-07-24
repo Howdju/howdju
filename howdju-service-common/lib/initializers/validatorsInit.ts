@@ -1,7 +1,6 @@
 import {
   WritValidator,
   WritQuoteValidator,
-  CredentialValidator,
   JustificationBasisCompoundValidator,
   JustificationBasisCompoundAtomValidator,
   SourceExcerptValidator,
@@ -49,12 +48,10 @@ export function validatorsInitializer(provider: LoggerProvider) {
     new JustificationBasisCompoundValidator(
       justificationBasisCompoundAtomValidator
     );
-  const credentialValidator = new CredentialValidator();
 
   provider.logger.debug("validatorsInit complete");
 
   return {
-    credentialValidator,
     justificationBasisCompoundValidator,
     propositionValidator,
     propositionCompoundValidator,

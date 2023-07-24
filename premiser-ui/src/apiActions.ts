@@ -44,6 +44,7 @@ import {
   CreateMediaExcerpt,
   UpdateSource,
   CreateUrlLocatorsInput,
+  UrlLocatorOut,
 } from "howdju-common";
 import {
   InferPathParams,
@@ -482,6 +483,16 @@ export const api = {
       body: { urlLocators },
       pathParams: { mediaExcerptId },
       normalizationSchema: { urlLocators: urlLocatorsSchema },
+    })
+  ),
+  deleteUrlLocator: apiActionCreator(
+    "DELETE_URL_LOCATOR",
+    serviceRoutes.deleteUrlLocator,
+    ({ id, mediaExcerptId }: UrlLocatorOut) => ({
+      config: {
+        pathParams: { mediaExcerptId, urlLocatorId: id },
+      },
+      meta: { mediaExcerptId, urlLocatorId: id },
     })
   ),
 

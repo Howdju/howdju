@@ -2,19 +2,19 @@ import React from "react";
 import { MaterialSymbol } from "react-material-symbols";
 
 import {
-  extractDomain,
   MediaExcerptView,
+  removeQueryParamsAndFragment,
   toUrlWithFragment,
   UrlLocatorView,
 } from "howdju-common";
 
 import CollapsibleTextViewer from "@/components/collapsableText/CollapsableTextViewer";
 import MediaExcerptCitationViewer from "./MediaExcerptCitationViewer";
-
-import "./MediaExcerptViewer.scss";
 import paths from "@/paths";
 import Link from "@/Link";
 import CreationInfo from "../creationInfo/CreationInfo";
+
+import "./MediaExcerptViewer.scss";
 
 interface Props {
   mediaExcerpt: MediaExcerptView;
@@ -34,7 +34,7 @@ export default function MediaExcerptViewer({ mediaExcerpt }: Props) {
       <ul className="url-locators">
         {mediaExcerpt.locators.urlLocators.map((urlLocator: UrlLocatorView) => (
           <li key={urlLocator.key} className="url">
-            {toAnchorElement(urlLocator)}
+            {toAnchorElement(mediaExcerpt, urlLocator)}
           </li>
         ))}
       </ul>
@@ -56,19 +56,32 @@ export default function MediaExcerptViewer({ mediaExcerpt }: Props) {
   );
 }
 
-function toAnchorElement(urlLocator: UrlLocatorView) {
+function toAnchorElement(
+  mediaExcerpt: MediaExcerptView,
+  urlLocator: UrlLocatorView
+) {
   const url = toUrlWithFragment(urlLocator);
-  const domain = extractDomain(urlLocator.url.url);
+  const displayUrl = removeQueryParamsAndFragment(urlLocator.url.url);
+  const anchorsIcon = urlLocator.anchors?.length ? (
+    <MaterialSymbol
+      icon="my_location"
+      size={13}
+      title="Has a fragment taking you directly to the excerpt"
+    />
+  ) : null;
+  const creationInfo =
+    urlLocator.creatorUserId !== mediaExcerpt.creatorUserId ||
+    urlLocator.created !== mediaExcerpt.created ? (
+      <CreationInfo
+        created={urlLocator.created}
+        creator={urlLocator.creator}
+        verb="added"
+      />
+    ) : null;
+
   return (
     <a href={url}>
-      {domain}{" "}
-      {urlLocator.anchors?.length ? (
-        <MaterialSymbol
-          icon="my_location"
-          size={13}
-          title="Has a fragment taking you directly to the excerpt"
-        />
-      ) : null}
+      {displayUrl} {anchorsIcon} {creationInfo}
     </a>
   );
 }

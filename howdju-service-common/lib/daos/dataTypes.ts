@@ -275,7 +275,10 @@ export interface UserHashRow {
   user_id: number;
   hash: string;
 }
-export type UserHashData = CamelCasedProperties<UserHashRow>;
+export interface UserHashData {
+  userId: string;
+  hash: string;
+}
 
 export interface JustificationScoreRow {
   justification_id: number;

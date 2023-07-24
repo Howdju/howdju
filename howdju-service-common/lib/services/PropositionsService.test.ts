@@ -1,24 +1,21 @@
 import { Pool } from "pg";
-import moment from "moment";
 
-import { mockLogger } from "howdju-test-common";
-
-import {
-  AuthService,
-  Database,
-  JustificationsService,
-  makePool,
-  makeTestProvider,
-  PropositionsService,
-  UsersDao,
-} from "..";
-
-import { endPoolAndDropDb, initDb, makeTestDbConfig } from "@/util/testUtil";
 import {
   CreateJustification,
   CreateProposition,
   PropositionCompound,
 } from "howdju-common";
+import { mockLogger } from "howdju-test-common";
+
+import {
+  Database,
+  JustificationsService,
+  makePool,
+  makeTestProvider,
+  PropositionsService,
+} from "..";
+import { endPoolAndDropDb, initDb, makeTestDbConfig } from "@/util/testUtil";
+import TestHelper from "@/initializers/TestHelper";
 
 describe("PropositionsService", () => {
   const dbConfig = makeTestDbConfig();
@@ -26,8 +23,7 @@ describe("PropositionsService", () => {
   let pool: Pool;
 
   let service: PropositionsService;
-  let usersDao: UsersDao;
-  let authService: AuthService;
+  let testHelper: TestHelper;
   let justificationsService: JustificationsService;
   beforeEach(async () => {
     dbName = await initDb(dbConfig);
@@ -38,8 +34,7 @@ describe("PropositionsService", () => {
     const provider = makeTestProvider(database);
 
     service = provider.propositionsService;
-    usersDao = provider.usersDao;
-    authService = provider.authService;
+    testHelper = provider.testHelper;
     justificationsService = provider.justificationsService;
   });
   afterEach(async () => {
@@ -48,7 +43,7 @@ describe("PropositionsService", () => {
 
   describe("deleteProposition", () => {
     test("can delete unused proposition", async () => {
-      const { authToken } = await makeUser();
+      const { authToken } = await testHelper.makeUser();
       const proposition: CreateProposition = {
         text: "Howdy",
       };
@@ -65,7 +60,7 @@ describe("PropositionsService", () => {
     });
 
     test("can delete proposition used in a compound-based justification", async () => {
-      const { authToken } = await makeUser();
+      const { authToken } = await testHelper.makeUser();
 
       const createJustification = makePropositionCompoundBasedJustification([
         "Socrates is a man",
@@ -87,21 +82,6 @@ describe("PropositionsService", () => {
       expect(deletedJustificationIds).toEqual([justification.id]);
     });
   });
-
-  async function makeUser() {
-    const now = moment();
-    const creatorUserId = null;
-    const userData = {
-      email: "user@domain.com",
-      username: "the-username",
-      isActive: true,
-    };
-
-    const user = await usersDao.createUser(userData, creatorUserId, now);
-    const { authToken } = await authService.createAuthToken(user, now);
-
-    return { user, authToken };
-  }
 });
 
 function makePropositionCompoundBasedJustification(

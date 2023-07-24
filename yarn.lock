@@ -9914,13 +9914,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"bases@npm:^0.2.1":
-  version: 0.2.1
-  resolution: "bases@npm:0.2.1"
-  checksum: f7f07455ae5146be71797d8b03319bbca268078fafe2b6c768be586ab22e06a85a5de412d405e46a64f1b83e0d1a9539879b697f75955df411c916c1874a8f30
-  languageName: node
-  linkType: hard
-
 "basic-auth@npm:~2.0.1":
   version: 2.0.1
   resolution: "basic-auth@npm:2.0.1"
@@ -11576,13 +11569,6 @@ __metadata:
   version: 1.0.0
   resolution: "crypto-random-string@npm:1.0.0"
   checksum: 6fc61a46c18547b49a93da24f4559c4a1c859f4ee730ecc9533c1ba89fa2a9e9d81f390c2789467afbbd0d1c55a6e96a71e4716b6cd3e77736ed5fced7a2df9a
-  languageName: node
-  linkType: hard
-
-"cryptohat@npm:^1.0.1":
-  version: 1.0.1
-  resolution: "cryptohat@npm:1.0.1"
-  checksum: 09fcdca5acd315cca2607033f80939ed8f81cad6d3b82b8f0d1ea573203b42413a72c0d234f0d88bb36252ab80ab2f931235bf103a00433ba68c920ad34b4d22
   languageName: node
   linkType: hard
 
@@ -16077,7 +16063,6 @@ __metadata:
     "@types/validator": ^13.7.10
     ajv: ^8.1.0
     ajv-formats: ^2.0.2
-    bases: ^0.2.1
     dom-anchor-text-position: ^5.0.0
     dom-anchor-text-quote: ^4.0.2
     eslint: ^8.27.0
@@ -16088,7 +16073,6 @@ __metadata:
     lodash: ^4.17.21
     moment: ^2.29.4
     prettier: 2.7.1
-    random-seed: ^0.3.0
     schema-dts: ^1.1.2
     strip-indent: ^4.0.0
     striptags: alpha
@@ -16250,7 +16234,6 @@ __metadata:
     axios: ^1.4.0
     bcryptjs: ^2.4.3
     bluebird: ^3.5.0
-    cryptohat: ^1.0.1
     eslint: ^8.27.0
     eslint-config-howdju: "workspace:eslint-config-howdju"
     howdju-common: "workspace:howdju-common"
@@ -18954,13 +18937,6 @@ __metadata:
   version: 1.0.1
   resolution: "json-stable-stringify-without-jsonify@npm:1.0.1"
   checksum: cff44156ddce9c67c44386ad5cddf91925fe06b1d217f2da9c4910d01f358c6e3989c4d5a02683c7a5667f9727ff05831f7aa8ae66c8ff691c556f0884d49215
-  languageName: node
-  linkType: hard
-
-"json-stringify-safe@npm:^5.0.1":
-  version: 5.0.1
-  resolution: "json-stringify-safe@npm:5.0.1"
-  checksum: 48ec0adad5280b8a96bb93f4563aa1667fd7a36334f79149abd42446d0989f2ddc58274b479f4819f1f00617957e6344c886c55d05a4e15ebb4ab931e4a6a8ee
   languageName: node
   linkType: hard
 
@@ -23678,15 +23654,6 @@ __metadata:
   version: 0.25.0
   resolution: "ramda@npm:0.25.0"
   checksum: 008abbcc69aefd89a2a4a0c9f4cf9f8da2ec490a0e1e261b4c88de8540ef0c383d469bfdf71b758b559377c71bfa8efea164fdb1779169359a86b46f7cb23cb1
-  languageName: node
-  linkType: hard
-
-"random-seed@npm:^0.3.0":
-  version: 0.3.0
-  resolution: "random-seed@npm:0.3.0"
-  dependencies:
-    json-stringify-safe: ^5.0.1
-  checksum: 0a82692fc8d830bc26259dad78a911969343c247afb4be5d578c30fd9fbe76c7ce3f6900422310fc90fe05d6baa12e84a1b9ff93b0b7fda757ecfa40645a1f72
   languageName: node
   linkType: hard
 
