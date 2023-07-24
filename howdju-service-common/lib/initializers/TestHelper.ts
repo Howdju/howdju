@@ -11,6 +11,8 @@ import {
   Persisted,
   UrlOut,
   User,
+  UserBlurb,
+  UserOut,
   utcNow,
   WritQuoteOut,
 } from "howdju-common";
@@ -88,9 +90,13 @@ export default class TestHelper {
     return persorg;
   }
 
-  async makeUser(overrides?: Partial<User>) {
+  async makeUser(overrides?: Partial<User>): Promise<{
+    user: UserOut;
+    authToken: AuthToken;
+    userBlurb: UserBlurb;
+  }> {
     const now = moment();
-    const creatorUserId = null;
+    const creatorUserId = undefined;
     const userData: CreateUserDataIn = merge(
       {
         email: "user@domain.com",
@@ -115,7 +121,11 @@ export default class TestHelper {
       (await this.servicesProvider.authService.createAuthToken(user, now)) as {
         authToken: AuthToken;
       };
-    return { user, authToken };
+    const userBlurb = {
+      id: user.id,
+      longName: user.longName,
+    };
+    return { user, authToken, userBlurb };
   }
 
   async makeWritQuote({

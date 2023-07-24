@@ -183,6 +183,7 @@ export class JustificationsDao {
         , rp.normal_text          as root_target_proposition_normal_text
         , rp.created              as root_target_proposition_created
         , rp.creator_user_id      as root_target_proposition_creator_user_id
+        , rpu.long_name           as root_target_proposition_creator_long_name
 
         , wq.writ_quote_id          as basis_writ_quote_writ_quote_id
         , wq.quote_text             as basis_writ_quote_quote_text
@@ -237,6 +238,7 @@ export class JustificationsDao {
           left join propositions rp on
                 ${tableAlias}.root_target_type = $1
             and ${tableAlias}.root_target_id = rp.proposition_id
+          left join users rpu on rp.creator_user_id = rpu.user_id
 
           left join writ_quotes wq on
                 ${tableAlias}.basis_type = $2
@@ -1272,6 +1274,8 @@ function mapJustificationRowsWithOrdering(
         root_target_created: row[prefix + "root_target_proposition_created"],
         root_target_creator_user_id:
           row[prefix + "root_target_proposition_creator_user_id"],
+        root_target_creator_long_name:
+          row[prefix + "root_target_proposition_creator_long_name"],
         target_type: row[prefix + "target_type"],
         target_id: row[prefix + "target_id"],
         basis_type: row[prefix + "basis_type"],

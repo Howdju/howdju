@@ -1,21 +1,26 @@
-import assign from "lodash/assign";
-import assignWith from "lodash/assignWith";
-import concat from "lodash/concat";
-import filter from "lodash/filter";
-import forEach from "lodash/forEach";
-import get from "lodash/get";
-import has from "lodash/has";
-import isArray from "lodash/isArray";
-import isNumber from "lodash/isNumber";
-import clone from "lodash/clone";
-import map from "lodash/map";
-import merge from "lodash/merge";
-import mergeWith from "lodash/mergeWith";
-import pickBy from "lodash/pickBy";
-import reject from "lodash/reject";
-import some from "lodash/some";
-import union from "lodash/union";
-import without from "lodash/without";
+import {
+  set,
+  assign,
+  assignWith,
+  concat,
+  filter,
+  forEach,
+  get,
+  has,
+  isArray,
+  isNumber,
+  clone,
+  map,
+  merge,
+  mergeWith,
+  pickBy,
+  reject,
+  some,
+  union,
+  without,
+  mapValues,
+  reduce,
+} from "lodash";
 import { normalize } from "normalizr";
 import { combineActions, handleActions } from "redux-actions";
 
@@ -29,6 +34,7 @@ import {
 } from "howdju-common";
 
 import { api } from "../actions";
+import { logger } from "@/logger";
 
 function composeCustomizers(...customizers) {
   return (oldEntity, newEntity, key, object, source) => {
@@ -218,7 +224,10 @@ export default handleActions(
           action.payload,
           action.meta.normalizationSchema
         );
-        const targetUpdates = makeUpdatesAddingUrlLocatorsToMediaExcerpts(
+        entities.urlLocators = mapValues(entities.urlLocators, (urlLocator) =>
+          urlLocatorCustomizer(undefined, urlLocator)
+        );
+        const mediaExcerptUpdates = makeUpdatesAddingUrlLocatorsToMediaExcerpts(
           entities,
           state
         );
@@ -226,12 +235,28 @@ export default handleActions(
           {},
           state,
           entities,
-          targetUpdates,
+          mediaExcerptUpdates,
           unionArraysDistinctIdsCustomizer
         );
         return newState;
       },
     },
+    [api.deleteUrlLocator.response]: {
+      next: (state, action) => {
+        const { urlLocatorId, mediaExcerptId } = action.meta.requestMeta;
+        return applyUpdates(
+          state,
+          removeEntityById("urlLocators", urlLocatorId),
+          removeRelation(
+            "mediaExcerpts",
+            mediaExcerptId,
+            "locators.urlLocators",
+            urlLocatorId
+          )
+        );
+      },
+    },
+
     [api.createCounterJustification.response]: {
       next: (state, action) => {
         const { entities } = normalize(
@@ -380,6 +405,76 @@ export default handleActions(
   },
   defaultState
 );
+
+/**
+ *  Iteratively applies updates to the state.
+ *
+ * If an updateMaker returns undefined or an empty object, it is ignored.
+ *
+ * @param {EntitiesState} state
+ * @param  {(EntitiesState) => Partial<EntitiesState>} updateMakers - one or more functions that take the current state and return an update
+ * @returns
+ */
+export function applyUpdates(state, ...updateMakers) {
+  return reduce(
+    updateMakers,
+    (state, updateMaker) => {
+      const update = updateMaker(state);
+      if (!update || Object.keys(update).length === 0) {
+        return state;
+      }
+      return merge({}, state, update);
+    },
+    state
+  );
+}
+
+export function removeEntityById(entitiesKey, id) {
+  return (state) => ({
+    [entitiesKey]: pickBy(state[entitiesKey], (_e, eId) => !idEqual(eId, id)),
+  });
+}
+
+/**
+ * Remove a relation from an entity.
+ *
+ * @param entitiesKey the entity's state key
+ * @param entityId the entity's ID
+ * @param relationPath the path to the relation. This must point to an array of IDs.
+ * @param relatedEntityId the ID of the related entity to remove
+ */
+export function removeRelation(
+  entitiesKey,
+  entityId,
+  relationPath,
+  relatedEntityId
+) {
+  return (state) => {
+    const entity = state[entitiesKey][entityId];
+    if (!entity) {
+      logger.warn(`No ${entitiesKey} entity found for ID ${entityId}`);
+      return state;
+    }
+    const relation = get(entity, relationPath);
+    if (!relation) {
+      logger.warn(
+        `No relation found at path ${relationPath} for ${entitiesKey} entity with ID ${entityId}`
+      );
+      return state;
+    }
+    const newEntity = { ...entity };
+    set(
+      newEntity,
+      relationPath,
+      filter(relation, (r) => !idEqual(r, relatedEntityId))
+    );
+    return {
+      [entitiesKey]: {
+        [entityId]: newEntity,
+      },
+    };
+  };
+}
 
 export function unionArraysDistinctIdsCustomizer(
   destVal,
@@ -571,9 +666,9 @@ function entityAssignWithCustomizer(oldEntity, newEntity, key, object, source) {
 function urlLocatorCustomizer(
   oldUrlLocator,
   newUrlLocator,
-  key,
-  object,
-  source
+  _key,
+  _object,
+  _source
 ) {
   return merge({}, oldUrlLocator, newUrlLocator, {
     key: newUrlLocator.id,

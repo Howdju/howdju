@@ -1,4 +1,3 @@
-export * from "./CredentialsValidator";
 export * from "./JustificationBasisCompoundAtomValidator";
 export * from "./JustificationBasisCompoundValidator";
 export * from "./JustificationVoteValidator";

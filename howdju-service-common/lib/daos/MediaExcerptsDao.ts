@@ -30,6 +30,7 @@ import {
   SourceRef,
   DeleteMediaExcerptCitation,
   toJson,
+  UserBlurb,
 } from "howdju-common";
 
 import { Database, TxnClient } from "../database";
@@ -166,23 +167,26 @@ export class MediaExcerptsDao {
     const { rows } = await this.database.query(
       "readUrlLocatorsForMediaExcerptId",
       `
-      select ul.*
+      select
+        ul.*
       from url_locators ul
         join urls u using (url_id)
       where media_excerpt_id = $1
         and ul.deleted is null
-        and u.deleted is null`,
+        and u.deleted is null
+        `,
       [mediaExcerptId]
     );
     return await Promise.all(
       rows.map(async (row) => {
-        const url = await this.urlsDao.readUrlForId(row.url_id);
+        const [url, anchors, creator] = await Promise.all([
+          this.urlsDao.readUrlForId(row.url_id),
+          this.readDomAnchorsForUrlLocatorId(row.url_locator_id),
+          this.usersDao.readUserBlurbForId(row.creator_user_id),
+        ]);
         if (!url) {
           throw new EntityNotFoundError("URL", row.url_id);
         }
-        const anchors = await this.readDomAnchorsForUrlLocatorId(
-          row.url_locator_id
-        );
         return brandedParse(UrlLocatorRef, {
           id: toIdString(row.url_locator_id),
           mediaExcerptId: toIdString(row.media_excerpt_id),
@@ -190,6 +194,7 @@ export class MediaExcerptsDao {
           anchors,
           created: row.created,
           creatorUserId: toIdString(row.creator_user_id),
+          creator,
         });
       })
     );
@@ -342,13 +347,13 @@ export class MediaExcerptsDao {
 
         // Creating the UrlLocators and Citations in the serializable transaction will conflict
         // with having read them in the readEquivalentMediaExcerpts query above.
-
-        const [urlLocators, citations, creator] = await Promise.all([
+        const creator = await this.usersDao.readUserBlurbForId(creatorUserId);
+        const [urlLocators, citations] = await Promise.all([
           await Promise.all(
             createUrlLocators.map((createUrlLocator) =>
               this.createUrlLocator({
                 client,
-                creatorUserId,
+                creator,
                 mediaExcerpt,
                 createUrlLocator,
                 created,
@@ -359,14 +364,13 @@ export class MediaExcerptsDao {
             createCitations.map((createCitation) =>
               this.createMediaExcerptCitation({
                 client,
-                creatorUserId,
+                creator,
                 mediaExcerpt,
                 createCitation,
                 created,
               })
             )
           ),
-          await this.usersDao.readUserBlurbForId(creatorUserId),
         ]);
 
         return {
@@ -424,7 +428,7 @@ export class MediaExcerptsDao {
   async readOrCreateUrlLocator(
     mediaExcerpt: MediaExcerptRef,
     createUrlLocator: PartialPersist<CreateUrlLocator, "url">,
-    creatorUserId: EntityId,
+    creator: UserBlurb,
     created: Moment
   ): Promise<{ urlLocator: UrlLocatorOut; isExtant: boolean }> {
     return await this.database.transaction(
@@ -443,7 +447,7 @@ export class MediaExcerptsDao {
 
         const urlLocator = await this.createUrlLocator({
           client,
-          creatorUserId,
+          creator,
           mediaExcerpt,
           createUrlLocator,
           created,
@@ -551,6 +555,7 @@ export class MediaExcerptsDao {
         anchors[parseInt(i)].creatorUserId = v;
       }
     });
+    const creator = await this.usersDao.readUserBlurbForId(row.creator_user_id);
     return brandedParse(
       UrlLocatorRef,
       merge({}, createUrlLocator, {
@@ -558,6 +563,7 @@ export class MediaExcerptsDao {
         mediaExcerptId: mediaExcerpt.id,
         created: row.created,
         creatorUserId: row.creator_user_id,
+        creator,
         anchors,
       })
     );
@@ -565,13 +571,13 @@ export class MediaExcerptsDao {
 
   async createUrlLocator({
     client = this.database,
-    creatorUserId,
+    creator,
     mediaExcerpt,
     createUrlLocator,
     created,
   }: {
     client?: TxnClient;
-    creatorUserId: EntityId;
+    creator: UserBlurb;
     mediaExcerpt: MediaExcerptRef;
     createUrlLocator: CreateUrlLocator;
     created: Moment;
@@ -585,13 +591,13 @@ export class MediaExcerptsDao {
       values ($1, $2, $3, $4)
       returning url_locator_id
       `,
-      [mediaExcerpt.id, createUrlLocator.url.id, creatorUserId, created]
+      [mediaExcerpt.id, createUrlLocator.url.id, creator.id, created]
     );
     const id = row.url_locator_id;
     const anchors = createUrlLocator.anchors
       ? await this.createDomAnchors({
           client,
-          creatorUserId,
+          creator,
           urlLocatorId: id,
           createDomAnchors: createUrlLocator.anchors,
           created,
@@ -603,19 +609,20 @@ export class MediaExcerptsDao {
       mediaExcerptId: mediaExcerpt.id,
       anchors,
       created,
-      creatorUserId,
+      creatorUserId: creator.id,
+      creator,
     });
   }
 
   private async createDomAnchors({
     client,
-    creatorUserId,
+    creator,
     urlLocatorId,
     createDomAnchors,
     created,
   }: {
     client?: TxnClient;
-    creatorUserId: EntityId;
+    creator: UserBlurb;
     urlLocatorId: EntityId;
     createDomAnchors: CreateDomAnchor[];
     created: Moment;
@@ -624,7 +631,7 @@ export class MediaExcerptsDao {
       createDomAnchors.map((createDomAnchor) =>
         this.createDomAnchor({
           client,
-          creatorUserId,
+          creator,
           urlLocatorId,
           createDomAnchor,
           created,
@@ -635,13 +642,13 @@ export class MediaExcerptsDao {
 
   private async createDomAnchor({
     client = this.database,
-    creatorUserId,
+    creator,
     urlLocatorId,
     createDomAnchor,
     created,
   }: {
     client?: TxnClient;
-    creatorUserId: EntityId;
+    creator: UserBlurb;
     urlLocatorId: EntityId;
     createDomAnchor: CreateDomAnchor;
     created: Moment;
@@ -665,18 +672,22 @@ export class MediaExcerptsDao {
         createDomAnchor.suffixText,
         createDomAnchor.startOffset,
         createDomAnchor.endOffset,
-        creatorUserId,
+        creator.id,
         created,
       ]
     );
 
-    return merge({}, createDomAnchor, { urlLocatorId, created, creatorUserId });
+    return merge({}, createDomAnchor, {
+      urlLocatorId,
+      created,
+      creatorUserId: creator.id,
+    });
   }
 
   async readOrCreateMediaExcerptCitation(
     mediaExcerpt: MediaExcerptRef,
     createCitation: PartialPersist<CreateMediaExcerptCitation, "source">,
-    creatorUserId: EntityId,
+    creator: UserBlurb,
     created: Moment
   ): Promise<{ citation: MediaExcerptCitationOut; isExtant: boolean }> {
     return this.database.transaction(
@@ -697,7 +708,7 @@ export class MediaExcerptsDao {
         }
         const citation = await this.createMediaExcerptCitation({
           client,
-          creatorUserId,
+          creator,
           mediaExcerpt,
           createCitation,
           created,
@@ -756,13 +767,13 @@ export class MediaExcerptsDao {
 
   private async createMediaExcerptCitation({
     client = this.database,
-    creatorUserId,
+    creator,
     mediaExcerpt,
     createCitation,
     created,
   }: {
     client?: TxnClient;
-    creatorUserId: EntityId;
+    creator: UserBlurb;
     mediaExcerpt: MediaExcerptRef;
     createCitation: PartialPersist<CreateMediaExcerptCitation, "source">;
     created: Moment;
@@ -784,7 +795,7 @@ export class MediaExcerptsDao {
         createCitation.source.id,
         createCitation.pincite,
         normalPincite,
-        creatorUserId,
+        creator.id,
         created,
       ]
     );
@@ -793,7 +804,7 @@ export class MediaExcerptsDao {
       // TODO(452) I think this should come branded.
       source: brandedParse(SourceRef, createCitation.source),
       created,
-      creatorUserId,
+      creatorUserId: creator.id,
       pincite,
       normalPincite,
     });
@@ -992,6 +1003,23 @@ export class MediaExcerptsDao {
         and deleted is null`,
       args
     );
+  }
+
+  async readMediaExcerptIdForUrlLocatorId(urlLocatorId: string) {
+    const {
+      rows: [row],
+    } = await this.database.query(
+      "readMediaExcerptIdForUrlLocatorId",
+      `select
+        media_excerpt_id
+        from url_locators
+        where url_locator_id = $1 and deleted is null`,
+      [urlLocatorId]
+    );
+    if (!row) {
+      return undefined;
+    }
+    return toIdString(row.media_excerpt_id);
   }
 
   deleteUrlLocatorForId(urlLocatorId: string, deletedAt: Moment) {

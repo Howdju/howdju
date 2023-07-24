@@ -44,7 +44,6 @@ export function servicesInitializer(provider: AwsProvider) {
   const authService = new AuthService(
     provider.appConfig,
     provider.logger,
-    provider.credentialValidator,
     provider.authDao,
     provider.usersDao
   );

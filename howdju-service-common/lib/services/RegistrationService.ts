@@ -9,7 +9,6 @@ import {
   ModelErrors,
   momentAdd,
   newImpossibleError,
-  randomBase36Number,
   RegistrationConfirmation,
   RegistrationRequest,
   utcNow,
@@ -34,6 +33,7 @@ import {
   CreateRegistrationRequestData,
   CreateUserDataIn,
 } from "../daos/dataTypes";
+import { randomBase64String } from "../crypto";
 
 export class RegistrationService {
   logger: Logger;
@@ -201,7 +201,7 @@ export class RegistrationService {
     // Although we persist the registration code as part of the registration request, we never want
     // to return it to a client or else they can complete their registration without having access
     // to the email they provided. So just keep them separate to avoid accidentally returning it.
-    const registrationCode = randomBase36Number(32);
+    const registrationCode = randomBase64String(32);
     await this.registrationRequestsDao.create(
       registrationRequest,
       registrationCode,

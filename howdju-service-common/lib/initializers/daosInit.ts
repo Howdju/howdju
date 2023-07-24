@@ -47,8 +47,8 @@ export function daosInitializer(provider: DatabaseProvider) {
 
   const accountSettingsDao = new AccountSettingsDao(logger, database);
   const actionsDao = new ActionsDao(database);
-  const authDao = new AuthDao(logger, database);
-  const usersDao = new UsersDao(logger, database);
+  const authDao = new AuthDao(database);
+  const usersDao = new UsersDao(database);
   const contentReportsDao = new ContentReportsDao(logger, database);
   const urlsDao = new UrlsDao(logger, database);
   const writsDao = new WritsDao(logger, database);

@@ -1,6 +1,7 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { RouteComponentProps } from "react-router";
 import {
+  Button,
   CircularProgress,
   DialogContainer,
   Divider,
@@ -30,6 +31,7 @@ import app from "@/app/appSlice";
 import mediaExcerptPage from "./mediaExcerptPageSlice";
 import CreateUrlLocatorsEditor from "@/editors/CreateUrlLocatorsEditor";
 import { CommitThenPutAction } from "@/editors/withEditor";
+import DeleteUrlLocatorsControl from "./DeleteUrlLocatorsControl";
 
 interface MatchParams {
   mediaExcerptId: EntityId;
@@ -47,6 +49,11 @@ export default function MediaExcerptPage(props: Props) {
   }, [dispatch, mediaExcerptId]);
 
   const mediaExcerpt = useAppEntitySelector(mediaExcerptId, mediaExcerptSchema);
+
+  const [
+    isDeleteUrlLocatorsDialogVisible,
+    setIsDeleteUrlLocatorsDialogVisible,
+  ] = useState(false);
 
   function useInAppearance() {
     throw newUnimplementedError("useInAppearance");
@@ -93,7 +100,7 @@ export default function MediaExcerptPage(props: Props) {
       position={DropdownMenu.Positions.TOP_RIGHT}
       menuItems={[
         <ListItem
-          primaryText="Use in Justification"
+          primaryText="Use in Justification…"
           key="use-in-justification"
           title="Create a new justification based on this media excerpt."
           leftIcon={<MaterialSymbol icon="vertical_align_top" />}
@@ -101,14 +108,14 @@ export default function MediaExcerptPage(props: Props) {
           to={paths.createJustification("MEDIA_EXCERPT", mediaExcerptId)}
         />,
         <ListItem
-          primaryText="Use in Appearance"
+          primaryText="Use in Appearance…"
           key="use-in-appearance"
           leftIcon={<MaterialSymbol icon="upgrade" />}
           onClick={useInAppearance}
         />,
         <Divider key="divider-use" />,
         <ListItem
-          primaryText="See usages"
+          primaryText="See usages…"
           key="see-usages"
           leftIcon={<MaterialSymbol icon="search" />}
           component={Link}
@@ -116,10 +123,16 @@ export default function MediaExcerptPage(props: Props) {
         />,
         <Divider key="divider-edit" />,
         <ListItem
-          primaryText="Add URLs"
+          primaryText="Add URLs…"
           key="add-urls"
           leftIcon={<MaterialSymbol icon="add_link" />}
           onClick={onAddUrlLocatorsClick}
+        />,
+        <ListItem
+          primaryText="Delete URLs…"
+          key="delete-urls"
+          leftIcon={<MaterialSymbol icon="link_off" />}
+          onClick={() => setIsDeleteUrlLocatorsDialogVisible(true)}
         />,
         <Divider key="divider-delete" />,
         <ListItem
@@ -153,7 +166,7 @@ export default function MediaExcerptPage(props: Props) {
         className="md-cell md-cell--12"
       />
       <DialogContainer
-        id={combineIds(id, "add-url-dialog")}
+        id={combineIds(id, "add-url-locators-dialog")}
         visible={isAddUrlLocatorsDialogVisible}
         title="Add URL locators"
         onHide={hideAddUrlLocatorsDialog}
@@ -168,6 +181,24 @@ export default function MediaExcerptPage(props: Props) {
             new CommitThenPutAction(mediaExcerptPage.hideAddUrlLocatorsDialog())
           }
         />
+      </DialogContainer>
+      <DialogContainer
+        id={combineIds(id, "delete-url-locators-dialog")}
+        visible={isDeleteUrlLocatorsDialogVisible}
+        title="Delete URL locators"
+        onHide={() => setIsDeleteUrlLocatorsDialogVisible(false)}
+        className="md-overlay--wide-dialog"
+      >
+        <DeleteUrlLocatorsControl mediaExcerpt={mediaExcerpt} />
+        <footer className="md-dialog-footer md-dialog-footer--inline">
+          <Button
+            raised
+            primary
+            onClick={() => setIsDeleteUrlLocatorsDialogVisible(false)}
+          >
+            Close
+          </Button>
+        </footer>
       </DialogContainer>
     </div>
   );

@@ -39,7 +39,7 @@ export class ContentReportsService {
   }
 
   async createContentReport(
-    authToken: AuthToken | undefined,
+    authToken: AuthToken,
     contentReport: CreateContentReport
   ) {
     const now = new Date();

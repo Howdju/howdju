@@ -20,8 +20,8 @@ import {
   PersorgOut,
   SortDescription,
   SourceOut,
-  UrlLocatorOut,
   UrlOut,
+  UserBlurb,
   utcNow,
 } from "howdju-common";
 
@@ -74,7 +74,7 @@ export class MediaExcerptsService {
     userIdent: UserIdent,
     createMediaExcerpt: CreateMediaExcerpt
   ): Promise<{ isExtant: boolean; mediaExcerpt: MediaExcerptOut }> {
-    const userId = await this.authService.readUserIdForUserIdent(userIdent);
+    const creator = await this.authService.readUserBlurbForUserIdent(userIdent);
     const createdAt = utcNow();
     const createCitations = createMediaExcerpt.citations ?? [];
 
@@ -88,19 +88,23 @@ export class MediaExcerptsService {
       urls,
     ] = await Promise.all([
       this.sourcesService.readOrCreateSources(
-        userId,
+        creator.id,
         createCitations.map((c) => c.source),
         createdAt
       ),
       createMediaExcerpt.speakers
         ? this.persorgsService.readOrCreatePersorgs(
-            userId,
+            creator.id,
             createMediaExcerpt.speakers,
             createdAt
           )
         : { persorgs: [], isExtant: true },
       createUrls
-        ? this.urlsService.readOrCreateUrlsAsUser(createUrls, userId, createdAt)
+        ? this.urlsService.readOrCreateUrlsAsUser(
+            createUrls,
+            creator.id,
+            createdAt
+          )
         : [],
     ]);
 
@@ -134,7 +138,7 @@ export class MediaExcerptsService {
     const { mediaExcerpt, isExtant: isExtantMediaExcerpt } =
       await this.readOrCreateMediaExcerptWithRetry(
         createMediaExcerpt,
-        userId,
+        creator.id,
         createdAt,
         createUrlLocatorsWithUrl,
         createCitationsWithSource
@@ -147,7 +151,7 @@ export class MediaExcerptsService {
     ] = await Promise.all([
       isExtantMediaExcerpt
         ? this.readOrCreateUrlLocators(
-            userId,
+            creator,
             mediaExcerpt,
             createUrlLocatorsWithUrl,
             createdAt
@@ -161,7 +165,7 @@ export class MediaExcerptsService {
         : { urlLocators: mediaExcerpt.locators.urlLocators, isExtant: false },
       isExtantMediaExcerpt
         ? this.readOrCreateMediaExcerptCitations(
-            userId,
+            creator,
             mediaExcerpt,
             createCitationsWithSource,
             createdAt
@@ -176,7 +180,7 @@ export class MediaExcerptsService {
           }))
         : { citations: mediaExcerpt.citations, isExtant: false },
       this.ensureMediaExcerptSpeakers(
-        userId,
+        creator.id,
         mediaExcerpt,
         speakers,
         createdAt
@@ -219,14 +223,14 @@ export class MediaExcerptsService {
   }
 
   private async readOrCreateUrlLocators(
-    creatorUserId: EntityId,
+    creator: UserBlurb,
     mediaExcerpt: MediaExcerptRef,
     urlLocators: PartialPersist<CreateUrlLocator, "url">[],
     created: Moment
   ) {
     const result = await Promise.all(
       urlLocators.map((u) =>
-        this.readOrCreateUrlLocator(creatorUserId, mediaExcerpt, u, created)
+        this.readOrCreateUrlLocator(creator, mediaExcerpt, u, created)
       )
     );
     return {
@@ -240,7 +244,7 @@ export class MediaExcerptsService {
     mediaExcerptId: EntityId,
     createUrlLocators: CreateUrlLocator[]
   ) {
-    const userId = await this.authService.readUserIdForUserIdent(userIdent);
+    const creator = await this.authService.readUserBlurbForUserIdent(userIdent);
     const mediaExcerpt = await this.mediaExcerptsDao.readMediaExcerptForId(
       mediaExcerptId
     );
@@ -248,12 +252,10 @@ export class MediaExcerptsService {
       throw new EntityNotFoundError("MEDIA_EXCERPT", mediaExcerptId);
     }
 
-    await this.checkModifyPermission(userId, mediaExcerpt);
-
     const createdAt = utcNow();
     const urls = await this.urlsService.readOrCreateUrlsAsUser(
       createUrlLocators.map((u) => u.url),
-      userId,
+      creator.id,
       createdAt
     );
     const createUrlLocatorsWithUrl = zip(createUrlLocators, urls).map(
@@ -263,7 +265,7 @@ export class MediaExcerptsService {
       })
     );
     return await this.readOrCreateUrlLocators(
-      userId,
+      creator,
       mediaExcerpt,
       createUrlLocatorsWithUrl,
       createdAt
@@ -271,7 +273,7 @@ export class MediaExcerptsService {
   }
 
   private async readOrCreateUrlLocator(
-    creatorUserId: EntityId,
+    creator: UserBlurb,
     mediaExcerpt: MediaExcerptRef,
     createUrlLocator: PartialPersist<CreateUrlLocator, "url">,
     created: Moment
@@ -280,21 +282,21 @@ export class MediaExcerptsService {
       this.mediaExcerptsDao.readOrCreateUrlLocator(
         mediaExcerpt,
         createUrlLocator,
-        creatorUserId,
+        creator,
         created
       )
     );
   }
 
   private async readOrCreateMediaExcerptCitations(
-    userId: EntityId,
+    creator: UserBlurb,
     mediaExcerpt: MediaExcerptOut,
     createCitations: PartialPersist<CreateMediaExcerptCitation, "source">[],
     created: Moment
   ): Promise<{ citations: MediaExcerptCitationOut[]; isExtant: boolean }> {
     const result = await Promise.all(
       createCitations.map((c) =>
-        this.readOrCreateMediaExcerptCitation(userId, mediaExcerpt, c, created)
+        this.readOrCreateMediaExcerptCitation(creator, mediaExcerpt, c, created)
       )
     );
     const citations = result.map((r) => r.citation);
@@ -306,7 +308,7 @@ export class MediaExcerptsService {
   }
 
   private async readOrCreateMediaExcerptCitation(
-    creatorUserId: EntityId,
+    creator: UserBlurb,
     mediaExcerpt: MediaExcerptOut,
     createCitation: PartialPersist<CreateMediaExcerptCitation, "source">,
     created: Moment
@@ -315,7 +317,7 @@ export class MediaExcerptsService {
       this.mediaExcerptsDao.readOrCreateMediaExcerptCitation(
         mediaExcerpt,
         createCitation,
-        creatorUserId,
+        creator,
         created
       )
     );
@@ -472,19 +474,36 @@ export class MediaExcerptsService {
     );
   }
 
-  async deleteUrlLocator(userIdent: UserIdent, urlLocator: UrlLocatorOut) {
+  async deleteUrlLocator(
+    userIdent: UserIdent,
+    mediaExcerptId: EntityId,
+    urlLocatorId: EntityId
+  ) {
     const userId = await this.authService.readUserIdForUserIdent(userIdent);
     const mediaExcerpt = await this.mediaExcerptsDao.readMediaExcerptForId(
-      urlLocator.mediaExcerptId
+      mediaExcerptId
     );
     if (!mediaExcerpt) {
-      throw new EntityNotFoundError("MEDIA_EXCERPT", urlLocator.mediaExcerptId);
+      throw new EntityNotFoundError("MEDIA_EXCERPT", mediaExcerptId);
     }
 
     await this.checkModifyPermission(userId, mediaExcerpt);
 
+    const urlLocatorMediaExcerptId =
+      await this.mediaExcerptsDao.readMediaExcerptIdForUrlLocatorId(
+        urlLocatorId
+      );
+    if (!urlLocatorMediaExcerptId) {
+      throw new EntityNotFoundError("URL_LOCATOR", urlLocatorId);
+    }
+    if (urlLocatorMediaExcerptId !== mediaExcerptId) {
+      throw new RequestValidationError(
+        `UrlLocator ${urlLocatorId} does not belong to MediaExcerpt ${mediaExcerptId}.`
+      );
+    }
+
     const deletedAt = utcNow();
-    await this.mediaExcerptsDao.deleteUrlLocatorForId(urlLocator.id, deletedAt);
+    await this.mediaExcerptsDao.deleteUrlLocatorForId(urlLocatorId, deletedAt);
   }
 
   private async checkModifyPermission(

@@ -22,8 +22,6 @@ import reject from "lodash/reject";
 import replace from "lodash/replace";
 import trim from "lodash/trim";
 import moment, { Moment, unitOfTime, Duration, TemplateFunction } from "moment";
-import { create as createRandomSeed } from "random-seed";
-import bases from "bases";
 
 import { newProgrammingError } from "./commonErrors";
 import { CamelCasedPropertiesDeep } from "type-fest";
@@ -491,14 +489,6 @@ export function normalizeQuotation(text: string) {
   text = cleanWhitespace(text);
   return text;
 }
-
-const randomSeed = createRandomSeed();
-
-export const randomBase36Number = (length: number) => {
-  const minValue = bases.fromBase("0".repeat(length), 36);
-  const maxValue = bases.fromBase("z".repeat(length), 36);
-  return bases.toBase(randomSeed.intBetween(minValue, maxValue), 36);
-};
 
 type InferKey<T> = T extends Partial<Record<infer K, any>> ? K : never;
 type InferValue<T> = T extends Partial<Record<any, infer V>> ? V : never;

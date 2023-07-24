@@ -8,9 +8,14 @@ interface Props {
   creator?: {
     longName?: string;
   };
+  verb?: string;
 }
 
-export default function CreationInfo({ created, creator }: Props) {
+export default function CreationInfo({
+  created,
+  creator,
+  verb = "created",
+}: Props) {
   const createdMoment = moment(created);
   const age = createdMoment.fromNow();
   const createdDate = createdMoment.format(config.humanDateTimeFormat);
@@ -20,7 +25,8 @@ export default function CreationInfo({ created, creator }: Props) {
   return (
     <div>
       <span className="entity-status-text">
-        created{creatorNameDescription} <span title={createdDate}>{age}</span>
+        {verb}
+        {creatorNameDescription} <span title={createdDate}>{age}</span>
       </span>
     </div>
   );

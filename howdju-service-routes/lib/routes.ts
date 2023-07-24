@@ -1001,6 +1001,23 @@ export const serviceRoutes = {
       }
     ),
   },
+  deleteUrlLocator: {
+    path: "media-excerpts/:mediaExcerptId/url-locators/:urlLocatorId",
+    method: httpMethods.DELETE,
+    request: handler(
+      Authed.merge(PathParams("mediaExcerptId", "urlLocatorId")),
+      async (
+        appProvider: ServicesProvider,
+        { authToken, pathParams: { mediaExcerptId, urlLocatorId } }
+      ) => {
+        await appProvider.mediaExcerptsService.deleteUrlLocator(
+          { authToken },
+          mediaExcerptId,
+          urlLocatorId
+        );
+      }
+    ),
+  },
 
   /*
    * Auth

@@ -119,6 +119,10 @@ describe("MediaExcerptsService", () => {
                       ...creatorInfo,
                     },
                   ],
+                  creator: {
+                    id: user.id,
+                    longName: user.longName,
+                  },
                   ...creatorInfo,
                 },
               ],
@@ -922,7 +926,11 @@ describe("MediaExcerptsService", () => {
 
       await Promise.all(
         mediaExcerpt.locators.urlLocators.map((urlLocator) =>
-          service.deleteUrlLocator({ authToken }, urlLocator)
+          service.deleteUrlLocator(
+            { authToken },
+            mediaExcerpt.id,
+            urlLocator.id
+          )
         )
       );
 

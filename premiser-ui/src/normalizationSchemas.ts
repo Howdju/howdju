@@ -5,7 +5,7 @@ import {
   ContextTrailItem,
   Justification,
   JustificationVote,
-  MediaExcerpt,
+  MediaExcerptOut,
   Persorg,
   PicRegion,
   Proposition,
@@ -190,7 +190,7 @@ export const urlLocatorSchema = new schema.Entity<UrlLocator>("urlLocators");
 export const sourceSchema = new schema.Entity<SourceOut>("sources");
 export const sourcesSchema = new schema.Array(sourceSchema);
 export const urlLocatorsSchema = new schema.Array(urlLocatorSchema);
-export const mediaExcerptSchema = new schema.Entity<MediaExcerpt>(
+export const mediaExcerptSchema = new schema.Entity<MediaExcerptOut>(
   "mediaExcerpts",
   {
     locators: {

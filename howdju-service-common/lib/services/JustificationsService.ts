@@ -291,7 +291,7 @@ export class JustificationsService extends EntityService<
 
   async readJustificationForId(
     justificationId: EntityId,
-    userId: EntityId
+    userId: EntityId | undefined
   ): Promise<JustificationView> {
     const justificationData =
       await this.justificationsDao.readJustificationForId(justificationId);
@@ -325,10 +325,7 @@ export class JustificationsService extends EntityService<
     );
   }
 
-  async deleteJustification(
-    authToken: AuthToken | undefined,
-    justificationId: EntityId
-  ) {
+  async deleteJustification(authToken: AuthToken, justificationId: EntityId) {
     const userId = await this.authService.readUserIdForAuthToken(authToken);
 
     const [hasPermission, justification] = await Promise.all([
@@ -454,7 +451,7 @@ export class JustificationsService extends EntityService<
       rootTargetType: JustificationRootTargetType;
       rootTarget: { id: EntityId };
     },
-    userId: EntityId
+    userId: EntityId | undefined
   ) {
     switch (justification.rootTargetType) {
       case JustificationRootTargetTypes.PROPOSITION:
@@ -475,7 +472,7 @@ export class JustificationsService extends EntityService<
 
   private async readJustificationTarget(
     justificationTarget: PersistOrRef<JustificationTarget>,
-    { userId }: { userId: EntityId }
+    { userId }: { userId: EntityId | undefined }
   ) {
     switch (justificationTarget.type) {
       case "PROPOSITION":

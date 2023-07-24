@@ -52,7 +52,7 @@ export type UserExternalIds = z.infer<typeof UserExternalIds>;
 
 /** A user of the system */
 export const User = Entity.extend({
-  email: z.string().email().max(128),
+  email: z.string().email().max(512),
   username: z
     .string()
     .regex(/[A-Za-z0-9_]+/)
@@ -74,9 +74,8 @@ export type User = z.infer<typeof User>;
  * Often included to show an entities creator.
  */
 export const UserBlurb = User.pick({
-  id: true,
   longName: true,
-});
+}).merge(PersistedEntity);
 export type UserBlurb = z.output<typeof UserBlurb>;
 
 /**
@@ -400,6 +399,7 @@ export const UrlLocator = Entity.extend({
   anchors: z.array(DomAnchor).optional(),
   created: momentObject,
   creatorUserId: z.string(),
+  creator: UserBlurb,
 });
 export type UrlLocator = z.output<typeof UrlLocator>;
 
@@ -457,6 +457,7 @@ export const CreateUrlLocator = UrlLocator.omit({
   mediaExcerptId: true,
   created: true,
   creatorUserId: true,
+  creator: true,
 }).extend({
   url: CreateUrl,
   anchors: z.array(CreateDomAnchor).optional(),
@@ -1432,6 +1433,7 @@ const EntityType = z.enum([
   "STATEMENT",
   "TAG_VOTE",
   "URL",
+  "URL_LOCATOR",
   "USER",
   "WRIT",
   "WRIT_QUOTE",
@@ -1548,13 +1550,16 @@ export type CreateRegistrationRequest = z.infer<
 export const CreateRegistrationRequestInput = CreateRegistrationRequest;
 export type CreateRegistrationRequestInput = CreateRegistrationRequest;
 
+export const Password = z.string().min(6).max(64);
+export type Password = z.infer<typeof Password>;
+
 export const RegistrationConfirmation = z.object({
   registrationCode: z.string().min(1).max(256),
   phoneNumber: User.shape.phoneNumber,
   username: User.shape.username,
   shortName: User.shape.shortName,
   longName: User.shape.longName,
-  password: z.string().min(6).max(64),
+  password: Password,
   doesAcceptTerms: CreateUser.shape.acceptedTerms,
   is13YearsOrOlder: CreateUser.shape.affirmed13YearsOrOlder,
   hasMajorityConsent: CreateUser.shape.affirmedMajorityConsent,
@@ -1568,7 +1573,7 @@ export type CreateRegistrationConfirmationInput = RegistrationConfirmation;
 
 export const PasswordResetRequest = Entity.extend({
   userId: z.string(),
-  email: z.string().email(),
+  email: User.shape.email,
   passwordResetCode: z.string(),
   expires: momentObject,
   isConsumed: z.boolean(),
@@ -1576,11 +1581,8 @@ export const PasswordResetRequest = Entity.extend({
 });
 export type PasswordResetRequest = z.infer<typeof PasswordResetRequest>;
 
-export const Password = z.string();
-export type Password = z.infer<typeof Password>;
-
 export const Credentials = z.object({
-  email: z.string(),
-  password: z.string(),
+  email: User.shape.email,
+  password: Password,
 });
 export type Credentials = z.infer<typeof Credentials>;

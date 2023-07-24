@@ -1,4 +1,3 @@
-const cryptohat = require("cryptohat");
 const moment = require("moment");
 const outdent = require("outdent");
 
@@ -10,11 +9,13 @@ const {
   utcNow,
   topicMessages,
 } = require("howdju-common");
+
 const {
   EntityNotFoundError,
   PasswordResetAlreadyConsumedError,
   PasswordResetExpiredError,
 } = require("../serviceErrors");
+const { randomBase64String } = require("../crypto");
 
 exports.PasswordResetService = class PasswordResetService {
   constructor(
@@ -50,7 +51,7 @@ exports.PasswordResetService = class PasswordResetService {
 
     // TODO delete previous unconsumed password resets?
 
-    const passwordResetCode = cryptohat(256, 36);
+    const passwordResetCode = randomBase64String(32);
     const duration = moment.duration(this.config.passwordResetDuration);
     const expires = momentAdd(now, duration);
     const isConsumed = false;

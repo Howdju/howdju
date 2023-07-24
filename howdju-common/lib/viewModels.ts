@@ -4,6 +4,7 @@ import {
   PropositionCompoundOut,
   PropositionOut,
   StatementOut,
+  UrlLocatorOut,
   WritQuoteOut,
 } from "./apiModels";
 
@@ -51,11 +52,10 @@ export type JustificationView = Omit<
         };
   };
 
-export type UrlLocatorView =
-  MediaExcerptOut["locators"]["urlLocators"][number] & {
-    /** A key uniquely identifying a url locator relative to others. */
-    key: string;
-  };
+export type UrlLocatorView = UrlLocatorOut & {
+  /** A key uniquely identifying a url locator relative to others. */
+  key: string;
+};
 export interface MediaExcerptView extends MediaExcerptOut {
   citations: (MediaExcerptOut["citations"][number] & {
     /** A key uniquely identifying a citation relative to others. */
