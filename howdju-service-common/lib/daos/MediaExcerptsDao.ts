@@ -179,16 +179,14 @@ export class MediaExcerptsDao {
     );
     return await Promise.all(
       rows.map(async (row) => {
-        const url = await this.urlsDao.readUrlForId(row.url_id);
+        const [url, anchors, creator] = await Promise.all([
+          this.urlsDao.readUrlForId(row.url_id),
+          this.readDomAnchorsForUrlLocatorId(row.url_locator_id),
+          this.usersDao.readUserBlurbForId(row.creator_user_id),
+        ]);
         if (!url) {
           throw new EntityNotFoundError("URL", row.url_id);
         }
-        const anchors = await this.readDomAnchorsForUrlLocatorId(
-          row.url_locator_id
-        );
-        const creator = await this.usersDao.readUserBlurbForId(
-          row.creator_user_id
-        );
         return brandedParse(UrlLocatorRef, {
           id: toIdString(row.url_locator_id),
           mediaExcerptId: toIdString(row.media_excerpt_id),

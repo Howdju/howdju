@@ -1550,13 +1550,16 @@ export type CreateRegistrationRequest = z.infer<
 export const CreateRegistrationRequestInput = CreateRegistrationRequest;
 export type CreateRegistrationRequestInput = CreateRegistrationRequest;
 
+export const Password = z.string().min(6).max(64);
+export type Password = z.infer<typeof Password>;
+
 export const RegistrationConfirmation = z.object({
   registrationCode: z.string().min(1).max(256),
   phoneNumber: User.shape.phoneNumber,
   username: User.shape.username,
   shortName: User.shape.shortName,
   longName: User.shape.longName,
-  password: z.string().min(6).max(64),
+  password: Password,
   doesAcceptTerms: CreateUser.shape.acceptedTerms,
   is13YearsOrOlder: CreateUser.shape.affirmed13YearsOrOlder,
   hasMajorityConsent: CreateUser.shape.affirmedMajorityConsent,
@@ -1578,11 +1581,8 @@ export const PasswordResetRequest = Entity.extend({
 });
 export type PasswordResetRequest = z.infer<typeof PasswordResetRequest>;
 
-export const Password = z.string();
-export type Password = z.infer<typeof Password>;
-
 export const Credentials = z.object({
   email: User.shape.email,
-  password: z.string().min(1).max(128),
+  password: Password,
 });
 export type Credentials = z.infer<typeof Credentials>;

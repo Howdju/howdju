@@ -1,11 +1,11 @@
-import get from "lodash/get";
-import toString from "lodash/toString";
+import { get, toString } from "lodash";
+import { Moment } from "moment";
+
+import { AuthToken, EntityId, utcNow } from "howdju-common";
 
 import { toUserHash } from "./orm";
-import { AuthToken, EntityId, utcNow } from "howdju-common";
 import { Database, UserHashRow } from "..";
 import { HashType } from "../hashTypes";
-import { Moment } from "moment";
 
 export class AuthDao {
   constructor(private database: Database) {}

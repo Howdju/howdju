@@ -1,4 +1,5 @@
 import bcrypt from "bcryptjs";
+import { Moment } from "moment";
 
 import {
   AuthToken,
@@ -19,7 +20,6 @@ import {
 import { HashType, HashTypes } from "../hashTypes";
 import { ApiConfig, AuthDao, UsersDao } from "..";
 import { UserIdent } from "./types";
-import { Moment } from "moment";
 import { randomBase64String } from "../crypto";
 
 export class AuthService {
