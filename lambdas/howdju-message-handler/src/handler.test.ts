@@ -21,8 +21,8 @@ describe("handler", () => {
       TOPIC_ARN
     );
     const params = {
-      from: "the-from",
-      to: "the-to",
+      from: "from@domain.com",
+      to: "to@domain.com",
       subject: "the-subject",
       bodyHtml: "the-body-html",
       bodyText: "the-body-text",

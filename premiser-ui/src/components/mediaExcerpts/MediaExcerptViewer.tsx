@@ -13,8 +13,10 @@ import MediaExcerptCitationViewer from "./MediaExcerptCitationViewer";
 import paths from "@/paths";
 import Link from "@/Link";
 import CreationInfo from "../creationInfo/CreationInfo";
+import config from "../../config";
 
 import "./MediaExcerptViewer.scss";
+import { Moment } from "moment";
 
 interface Props {
   mediaExcerpt: MediaExcerptView;
@@ -92,12 +94,13 @@ function toConfirmationStatus(urlLocator: UrlLocatorView) {
     case "FOUND": {
       const { earliestFoundAt, latestFoundAt, foundQuotation } =
         urlLocator.autoConfirmationStatus;
+      const timeDescription = toTimeDescription(earliestFoundAt, latestFoundAt);
       return (
         <MaterialSymbol
           icon="check_circle"
           className="auto-confirmation-icon found"
           size={13}
-          title={`Auto-confirmed between ${earliestFoundAt} ${latestFoundAt} (“${foundQuotation}”)`}
+          title={`Auto-confirmed ${timeDescription} (“${foundQuotation}”)`}
         />
       );
     }
@@ -109,24 +112,36 @@ function toConfirmationStatus(urlLocator: UrlLocatorView) {
         earliestNotFoundAt,
         latestNotFoundAt,
       } = urlLocator.autoConfirmationStatus;
+      const foundTimeDescription = toTimeDescription(
+        earliestFoundAt,
+        latestFoundAt
+      );
+      const notFoundTimeDescription = toTimeDescription(
+        earliestNotFoundAt,
+        latestNotFoundAt
+      );
       return (
         <MaterialSymbol
           icon="error"
           className="auto-confirmation-icon previously-found"
           size={13}
-          title={`Auto-confirmed previously between ${earliestFoundAt} and ${latestFoundAt}, but not found most recently betwen ${earliestNotFoundAt} and ${latestNotFoundAt} (“${foundQuotation}”)`}
+          title={`Auto-confirmed previously ${foundTimeDescription}, but not found most recently ${notFoundTimeDescription} (“${foundQuotation}”)`}
         />
       );
     }
     case "NEVER_FOUND": {
       const { earliestNotFoundAt, latestNotFoundAt } =
         urlLocator.autoConfirmationStatus;
+      const notFoundTimeDescription = toTimeDescription(
+        earliestNotFoundAt,
+        latestNotFoundAt
+      );
       return (
         <MaterialSymbol
           icon="cancel"
           className="auto-confirmation-icon never-found"
           size={13}
-          title={`Never auto-confirmed (starting from ${earliestNotFoundAt} until ${latestNotFoundAt}`}
+          title={`Never auto-confirmed (tried ${notFoundTimeDescription})`}
         />
       );
     }
@@ -140,4 +155,12 @@ function toConfirmationStatus(urlLocator: UrlLocatorView) {
         />
       );
   }
+}
+
+function toTimeDescription(earlierMoment: Moment, laterMoment: Moment) {
+  return !earlierMoment.isSame(laterMoment)
+    ? `between ${earlierMoment.format(
+        config.humanDateTimeFormat
+      )} and ${laterMoment.format(config.humanDateTimeFormat)}`
+    : `at ${earlierMoment.format(config.humanDateTimeFormat)}`;
 }

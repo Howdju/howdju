@@ -4,7 +4,9 @@ export const TopicMessage = z.discriminatedUnion("type", [
   z.object({
     type: z.literal("SEND_EMAIL"),
     params: z.object({
-      to: z.union([z.string(), z.array(z.string())]),
+      // Email senders must be preconfigured in AWS SES.
+      from: z.string().email().optional(),
+      to: z.union([z.string().email(), z.array(z.string().email())]),
       subject: z.string(),
       bodyHtml: z.string(),
       bodyText: z.string(),

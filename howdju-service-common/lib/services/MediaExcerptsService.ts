@@ -140,6 +140,16 @@ export class MediaExcerptsService {
         createUrlLocatorsWithUrl,
         createCitationsWithSource
       );
+    if (!isExtantMediaExcerpt) {
+      for (const urlLocator of mediaExcerpt.locators.urlLocators) {
+        await this.topicMessageSender.sendMessage({
+          type: "AUTO_CONFIRM_URL_LOCATOR",
+          params: {
+            urlLocatorId: urlLocator.id,
+          },
+        });
+      }
+    }
 
     const [
       { urlLocators, isExtant: isExtantUrlLocators },

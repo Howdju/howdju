@@ -29,6 +29,7 @@ import {
   DeleteMediaExcerptCitation,
   toJson,
   UserBlurb,
+  mergeCopy,
 } from "howdju-common";
 
 import { Database, TxnClient } from "../database";
@@ -585,32 +586,35 @@ export class MediaExcerptsDao {
         partialAnchors[parseInt(i)].creatorUserId = v;
       }
     });
-    // Technically partialAnchors is Pick<DomAnchor, "urlLocatorId" | "created" |
-    // "creatorUserId">[], but `merge` isn't smart enough to combine the types
-    // correctly. So just type it as the full DomAnchor.
-    const anchors = partialAnchors as DomAnchor[];
+    const anchors = createUrlLocator.anchors
+      ? mergeCopy(
+          createUrlLocator.anchors,
+          partialAnchors as unknown as Pick<
+            DomAnchor,
+            "urlLocatorId" | "created" | "creatorUserId"
+          >[]
+        )
+      : [];
     const [creator, autoConfirmationStatus] = await Promise.all([
       this.usersDao.readUserBlurbForId(row.creator_user_id),
       this.urlLocatorAutoConfirmationDao.readConfirmationStatusForUrlLocatorId(
         urlLocatorId
       ),
     ]);
-    return brandedParse(
-      UrlLocatorRef,
-      merge({}, createUrlLocator, {
-        id: urlLocatorId,
-        mediaExcerptId,
-        url: {
-          id: toIdString(row.url_id),
-          canonicalUrl: row.canonical_url,
-        },
-        anchors,
-        autoConfirmationStatus,
-        created: row.created,
-        creatorUserId: toIdString(row.creator_user_id),
-        creator,
-      })
-    );
+    const merged = mergeCopy(createUrlLocator, {
+      id: urlLocatorId,
+      mediaExcerptId,
+      url: {
+        id: toIdString(row.url_id),
+        canonicalUrl: row.canonical_url,
+      },
+      anchors,
+      autoConfirmationStatus,
+      created: row.created,
+      creatorUserId: toIdString(row.creator_user_id),
+      creator,
+    });
+    return brandedParse(UrlLocatorRef, merged);
   }
 
   async createUrlLocator({

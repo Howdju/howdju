@@ -28,7 +28,10 @@ export class AwsTopicMessageSender implements TopicMessageSender {
     const { MessageId } = response;
     const { type } = topicMessage;
     this.logger.info(
-      `Message sent to topic ${params.TopicArn} (${{ MessageId, type }})`
+      `Message sent to topic ${params.TopicArn} (${toJson({
+        MessageId,
+        type,
+      })})`
     );
   }
 }

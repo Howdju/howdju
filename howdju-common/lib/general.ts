@@ -556,12 +556,34 @@ export async function sleep(ms: number): Promise<void> {
  *  }
  *  ```
  */
-export function mergeCopy<TSource1 extends object, TSource2 extends object>(
-  source1: TSource1,
-  source2: TSource2
+export function mergeCopy<
+  Source1 extends Record<any, any>,
+  Source2 extends Record<any, any>
+>(
+  source1: Source1,
+  source2: Source2
+): MergeDeep<
+  Source1,
+  Source2,
+  { arrayMergeMode: "spread"; recurseIntoArrays: true }
+>;
+export function mergeCopy<Source1 extends any[], Source2 extends any[]>(
+  source1: Source1,
+  source2: Source2
+): MergeDeep<
+  Source1,
+  Source2,
+  { arrayMergeMode: "spread"; recurseIntoArrays: true }
+>;
+export function mergeCopy<Source1, Source2>(
+  source1: Source1,
+  source2: Source2
 ) {
-  return merge({}, source1, source2) as unknown as MergeDeep<
-    TSource1,
-    TSource2
-  >;
+  if (isArray(source1) !== isArray(source2)) {
+    throw newProgrammingError(
+      `mergeCopy requires two objects or two arrays: ${typeof source1} and ${typeof source2}`
+    );
+  }
+  const init = isArray(source1) ? [] : {};
+  return merge(init, source1, source2);
 }

@@ -15,13 +15,18 @@ export async function handler(
       message = fromJson(record.Sns.Message);
     } catch (err) {
       logger.exception(err, "Error parsing SNS record message as JSON");
+      continue;
     }
-    if (message) {
-      try {
-        await handleMessage(message);
-      } catch (err) {
-        logger.exception(err, `Error handling message ${{ event, context }}`);
-      }
+    const result = TopicMessage.safeParse(message);
+    if (!result.success) {
+      logger.error(`Error parsing TopicMessage: ${result.error.message}`);
+      continue;
+    }
+    logger.error(result.data);
+    try {
+      await handleMessage(result.data);
+    } catch (err) {
+      logger.exception(err, `Error handling message ${{ event, context }}`);
     }
   }
   logger.debug(`Handled ${event.Records.length} records`);

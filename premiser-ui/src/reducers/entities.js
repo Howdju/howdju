@@ -23,6 +23,7 @@ import {
 } from "lodash";
 import { normalize } from "normalizr";
 import { combineActions, handleActions } from "redux-actions";
+import moment from "moment";
 
 import {
   httpStatusCodes,
@@ -670,9 +671,39 @@ function urlLocatorCustomizer(
   _object,
   _source
 ) {
-  return merge({}, oldUrlLocator, newUrlLocator, {
-    key: newUrlLocator.id,
-  });
+  return applyCustomizations(
+    merge({}, oldUrlLocator, newUrlLocator, {
+      key: newUrlLocator.id,
+    }),
+    momentConversion("created"),
+    momentConversion("autoConfirmationStatus.latestFoundAt"),
+    momentConversion("autoConfirmationStatus.earliestFoundAt"),
+    momentConversion("autoConfirmationStatus.latestNotFoundAt"),
+    momentConversion("autoConfirmationStatus.earliestNotFoundAt")
+  );
+}
+
+/** Iteratively applies customizations to an entity. */
+export function applyCustomizations(entity, ...customizations) {
+  return reduce(
+    customizations,
+    (entity, customization) => {
+      const customized = customization(entity);
+      return customized || entity;
+    },
+    entity
+  );
+}
+
+/** Converts path to moment */
+function momentConversion(path) {
+  return (entity) => {
+    const value = get(entity, path);
+    if (value) {
+      return set(entity, path, moment(value));
+    }
+    return entity;
+  };
 }
 
 function persorgCustomizer(oldPersorg, newPersorg, key, object, source) {
