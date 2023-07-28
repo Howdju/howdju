@@ -5,7 +5,6 @@ import {
   CreateContentReport,
   formatZodError,
   Logger,
-  topicMessages,
   TopicMessageSender,
   User,
 } from "howdju-common";
@@ -70,7 +69,7 @@ export class ContentReportsService {
     const { email, username } = user;
     const { html: contentReportTableHtml, plainText: contentReportText } =
       this.makeContentReportEmailContent(contentReport);
-    const emailParams = {
+    const params = {
       to: this.appConfig.contentReportNotificationEmails,
       subject: "Howdju Content Report Notification",
       tags: { purpose: "content-report-notification" },
@@ -89,7 +88,7 @@ export class ContentReportsService {
           ${contentReportText}
         `,
     };
-    await this.topicMessageSender.sendMessage(topicMessages.email(emailParams));
+    await this.topicMessageSender.sendMessage({ type: "SEND_EMAIL", params });
   }
 
   private async sendContentReportConfirmationEmail(
@@ -99,7 +98,7 @@ export class ContentReportsService {
     const { email } = user;
     const { html: contentReportTableHtml, plainText: contentReportText } =
       this.makeContentReportEmailContent(contentReport);
-    const emailParams = {
+    const params = {
       to: email,
       subject: "Howdju Content Report Confirmation",
       tags: { purpose: "content-report-confirmation" },
@@ -118,7 +117,7 @@ export class ContentReportsService {
           ${contentReportText}
         `,
     };
-    await this.topicMessageSender.sendMessage(topicMessages.email(emailParams));
+    await this.topicMessageSender.sendMessage({ type: "SEND_EMAIL", params });
   }
 
   private makeContentReportEmailContent(contentReport: CreateContentReport) {

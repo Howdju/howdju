@@ -123,6 +123,9 @@ describe("MediaExcerptsService", () => {
                     id: user.id,
                     longName: user.longName,
                   },
+                  autoConfirmationStatus: {
+                    status: "NEVER_TRIED",
+                  },
                   ...creatorInfo,
                 },
               ],

@@ -1,3 +1,5 @@
+import { TopicMessage } from "./TopicMessage";
+
 export interface TopicMessageSender {
-  sendMessage(topicMessage: any): Promise<void>;
+  sendMessage(topicMessage: TopicMessage): Promise<void>;
 }

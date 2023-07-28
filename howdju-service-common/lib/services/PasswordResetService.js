@@ -7,7 +7,6 @@ const {
   momentAdd,
   newImpossibleError,
   utcNow,
-  topicMessages,
 } = require("howdju-common");
 
 const {
@@ -133,7 +132,7 @@ async function sendConfirmationEmail(self, email, passwordResetCode, duration) {
   const durationText = duration.format(self.config.durationFormatTemplate, {
     trim: self.config.durationFormatTrim,
   });
-  const emailParams = {
+  const params = {
     to: email,
     subject: "Howdju Password Reset",
     tags: { purpose: "reset-password" },
@@ -160,5 +159,5 @@ async function sendConfirmationEmail(self, email, passwordResetCode, duration) {
       expire after ${durationText}.
     `,
   };
-  await self.topicMessageSender.sendMessage(topicMessages.email(emailParams));
+  await self.topicMessageSender.sendMessage({ type: "SEND_EMAIL", params });
 }

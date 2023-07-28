@@ -1,7 +1,7 @@
 import { Pool } from "pg";
 import { merge, parseInt, toString } from "lodash";
 
-import { CreateUrlLocator, MomentConstructor, utcNow } from "howdju-common";
+import { MomentConstructor, utcNow } from "howdju-common";
 import { expectToBeSameMomentDeep, mockLogger } from "howdju-test-common";
 
 import { endPoolAndDropDb, initDb, makeTestDbConfig } from "@/util/testUtil";
@@ -204,14 +204,14 @@ describe("MediaExcerptsDao", () => {
       };
       const urlLocator = await dao.createUrlLocator({
         creator,
-        mediaExcerpt,
+        mediaExcerptId: mediaExcerpt.id,
         createUrlLocator,
         created: utcNow(),
       });
 
       // Act
       const readUrlLocator = await dao.readEquivalentUrlLocator({
-        mediaExcerpt,
+        mediaExcerptId: mediaExcerpt.id,
         createUrlLocator,
       });
 
@@ -227,18 +227,20 @@ describe("MediaExcerptsDao", () => {
           localRep: { quotation: "the text quote" },
         }
       );
+
       const url = await testHelper.makeUrl({ userId: creator.id });
       const createUrlLocator = { url };
+      const created = utcNow();
       const urlLocator = await dao.createUrlLocator({
         creator,
-        mediaExcerpt,
+        mediaExcerptId: mediaExcerpt.id,
         createUrlLocator,
-        created: utcNow(),
+        created,
       });
 
       // Act
       const readUrlLocator = await dao.readEquivalentUrlLocator({
-        mediaExcerpt,
+        mediaExcerptId: mediaExcerpt.id,
         createUrlLocator,
       });
 
@@ -255,7 +257,7 @@ describe("MediaExcerptsDao", () => {
         }
       );
       const url = await testHelper.makeUrl({ userId: creator.id });
-      const createUrlLocator: CreateUrlLocator = {
+      const createUrlLocator = {
         url,
         anchors: [
           {
@@ -276,7 +278,7 @@ describe("MediaExcerptsDao", () => {
       };
       await dao.createUrlLocator({
         creator,
-        mediaExcerpt,
+        mediaExcerptId: mediaExcerpt.id,
         createUrlLocator,
         created: utcNow(),
       });
@@ -295,7 +297,7 @@ describe("MediaExcerptsDao", () => {
 
       // Act
       const readUrlLocator = await dao.readEquivalentUrlLocator({
-        mediaExcerpt,
+        mediaExcerptId: mediaExcerpt.id,
         createUrlLocator: subsetUrlLocator,
       });
 
@@ -329,7 +331,7 @@ describe("MediaExcerptsDao", () => {
 
       expect(
         await dao.readEquivalentUrlLocator({
-          mediaExcerpt,
+          mediaExcerptId: mediaExcerpt.id,
           createUrlLocator: {
             ...mediaExcerpt.locators.urlLocators[0],
             anchors: undefined,

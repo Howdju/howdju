@@ -2,13 +2,7 @@ import { readFileSync } from "fs";
 import { JSDOM } from "jsdom";
 import stripIndent from "strip-indent";
 
-import {
-  brandedParse,
-  UrlLocatorRef,
-  UrlLocatorView,
-  UrlRef,
-  utcNow,
-} from "howdju-common";
+import { UrlLocator, utcNow } from "howdju-common";
 
 import {
   extractQuotationFromTextFragment,
@@ -17,12 +11,13 @@ import {
 
 describe("toUrlWithFragment", () => {
   it("should return the URL with the fragment", () => {
-    const urlLocator: UrlLocatorView = brandedParse(UrlLocatorRef, {
+    const urlLocator: UrlLocator = {
       id: "url-locator-id",
-      url: brandedParse(UrlRef, {
+      url: {
         id: "url-id",
         url: "https://example.com",
-      }),
+        canonicalUrl: "https://example.com",
+      },
       anchors: [
         {
           exactText: "the exact text",
@@ -35,18 +30,26 @@ describe("toUrlWithFragment", () => {
           creatorUserId: "creator-user-id",
         },
       ],
-    });
+      created: utcNow(),
+      creator: {
+        id: "creator-user-id",
+        longName: "Creator User",
+      },
+      mediaExcerptId: "the-media-excerpt-id",
+      creatorUserId: "creator-user-id",
+    };
     expect(toUrlWithFragment(urlLocator)).toBe(
       "https://example.com/#:~:text=the%20exact%20text"
     );
   });
   it("is compatible with an existing document fragment", () => {
-    const urlLocator: UrlLocatorView = brandedParse(UrlLocatorRef, {
+    const urlLocator: UrlLocator = {
       id: "url-locator-id",
-      url: brandedParse(UrlRef, {
+      url: {
         id: "url-id",
         url: "https://example.com#some-heading",
-      }),
+        canonicalUrl: "https://example.com",
+      },
       anchors: [
         {
           exactText: "the exact text",
@@ -59,18 +62,26 @@ describe("toUrlWithFragment", () => {
           creatorUserId: "creator-user-id",
         },
       ],
-    });
+      created: utcNow(),
+      creator: {
+        id: "creator-user-id",
+        longName: "Creator User",
+      },
+      mediaExcerptId: "the-media-excerpt-id",
+      creatorUserId: "creator-user-id",
+    };
     expect(toUrlWithFragment(urlLocator)).toBe(
       "https://example.com/#some-heading:~:text=the%20exact%20text"
     );
   });
   it("supports multiple anchors", () => {
-    const urlLocator: UrlLocatorView = brandedParse(UrlLocatorRef, {
+    const urlLocator: UrlLocator = {
       id: "url-locator-id",
-      url: brandedParse(UrlRef, {
+      url: {
         id: "url-id",
         url: "https://example.com",
-      }),
+        canonicalUrl: "https://example.com",
+      },
       anchors: [
         {
           exactText: "the exact text",
@@ -93,18 +104,26 @@ describe("toUrlWithFragment", () => {
           creatorUserId: "creator-user-id",
         },
       ],
-    });
+      created: utcNow(),
+      creator: {
+        id: "creator-user-id",
+        longName: "Creator User",
+      },
+      mediaExcerptId: "the-media-excerpt-id",
+      creatorUserId: "creator-user-id",
+    };
     expect(toUrlWithFragment(urlLocator)).toBe(
       "https://example.com/#:~:text=the%20exact%20text&text=the%20exact%20text%202"
     );
   });
   it("overwrites an existing text fragment", () => {
-    const urlLocator: UrlLocatorView = brandedParse(UrlLocatorRef, {
+    const urlLocator: UrlLocator = {
       id: "url-locator-id",
-      url: brandedParse(UrlRef, {
+      url: {
         id: "url-id",
         url: "https://example.com#:~:text=some%20previous%20fragment",
-      }),
+        canonicalUrl: "https://example.com",
+      },
       anchors: [
         {
           exactText: "the exact text",
@@ -117,18 +136,26 @@ describe("toUrlWithFragment", () => {
           creatorUserId: "creator-user-id",
         },
       ],
-    });
+      created: utcNow(),
+      creator: {
+        id: "creator-user-id",
+        longName: "Creator User",
+      },
+      mediaExcerptId: "the-media-excerpt-id",
+      creatorUserId: "creator-user-id",
+    };
     expect(toUrlWithFragment(urlLocator)).toBe(
       "https://example.com/#:~:text=the%20exact%20text"
     );
   });
   it("preserves a document fragment while overwriting an existing text fragment", () => {
-    const urlLocator: UrlLocatorView = brandedParse(UrlLocatorRef, {
+    const urlLocator: UrlLocator = {
       id: "url-locator-id",
-      url: brandedParse(UrlRef, {
+      url: {
         id: "url-id",
         url: "https://example.com#the-doc-fragment:~:text=some%20previous%20fragment",
-      }),
+        canonicalUrl: "https://example.com",
+      },
       anchors: [
         {
           exactText: "the exact text",
@@ -141,18 +168,26 @@ describe("toUrlWithFragment", () => {
           creatorUserId: "creator-user-id",
         },
       ],
-    });
+      created: utcNow(),
+      creator: {
+        id: "creator-user-id",
+        longName: "Creator User",
+      },
+      mediaExcerptId: "the-media-excerpt-id",
+      creatorUserId: "creator-user-id",
+    };
     expect(toUrlWithFragment(urlLocator)).toBe(
       "https://example.com/#the-doc-fragment:~:text=the%20exact%20text"
     );
   });
   it("encodes hyphens", () => {
-    const urlLocator: UrlLocatorView = brandedParse(UrlLocatorRef, {
+    const urlLocator: UrlLocator = {
       id: "url-locator-id",
-      url: brandedParse(UrlRef, {
+      url: {
         id: "url-id",
         url: "https://example.com",
-      }),
+        canonicalUrl: "https://example.com",
+      },
       anchors: [
         {
           exactText: "the - exact - text",
@@ -165,7 +200,14 @@ describe("toUrlWithFragment", () => {
           creatorUserId: "creator-user-id",
         },
       ],
-    });
+      created: utcNow(),
+      creator: {
+        id: "creator-user-id",
+        longName: "Creator User",
+      },
+      mediaExcerptId: "the-media-excerpt-id",
+      creatorUserId: "creator-user-id",
+    };
     expect(toUrlWithFragment(urlLocator)).toBe(
       "https://example.com/#:~:text=the%20%2D%20exact%20%2D%20text"
     );

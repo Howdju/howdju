@@ -34,7 +34,6 @@ import {
   Logger,
   SortDescription,
   JustificationTarget,
-  JustificationBasis,
   PersistOrRef,
   newUnimplementedError,
   CreateJustificationTarget,
@@ -498,7 +497,7 @@ export class JustificationsService extends EntityService<
   }
 
   private async readJustificationBasis(
-    justificationBasis: PersistOrRef<JustificationBasis>
+    justificationBasis: ReadJustificationDataOut["basis"]
   ) {
     switch (justificationBasis.type) {
       case "WRIT_QUOTE":
@@ -513,11 +512,6 @@ export class JustificationsService extends EntityService<
       case "MEDIA_EXCERPT":
         return await this.mediaExcerptsService.readMediaExcerptForId(
           justificationBasis.entity.id
-        );
-      case "SOURCE_EXCERPT":
-        // TODO(201): implement
-        throw newUnimplementedError(
-          "SOURCE_EXCERPT justifciation bases are not yet supported"
         );
 
       default:

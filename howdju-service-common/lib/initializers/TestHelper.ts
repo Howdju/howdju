@@ -8,6 +8,7 @@ import {
   CreateUrl,
   CreateWritQuote,
   EntityId,
+  MediaExcerptOut,
   Persisted,
   UrlOut,
   User,
@@ -53,7 +54,7 @@ export default class TestHelper {
   async makeMediaExcerpt(
     userIdent: UserIdent,
     overrides: Partial<CreateMediaExcerpt> = {}
-  ) {
+  ): Promise<MediaExcerptOut> {
     const createMediaExcerpt = merge({}, defaultMediaExcerpt, overrides);
     const { mediaExcerpt } =
       await this.servicesProvider.mediaExcerptsService.readOrCreateMediaExcerpt(

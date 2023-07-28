@@ -1,4 +1,4 @@
-import { CreateUrl, EntityId } from "howdju-common";
+import { CreateUrl, EntityId, UrlOut } from "howdju-common";
 import { UrlsDao } from "../daos";
 import { Moment } from "moment";
 import { readWriteReread } from "./patterns";
@@ -23,7 +23,7 @@ export class UrlsService {
     createUrl: CreateUrl,
     userId: EntityId,
     now: Moment
-  ) {
+  ): Promise<UrlOut> {
     const { entity: url } = await readWriteReread(
       () => this.urlsDao.readUrlForUrl(createUrl.url),
       () => this.urlsDao.createUrl(createUrl, userId, now)

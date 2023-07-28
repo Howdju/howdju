@@ -8,6 +8,7 @@ import {
   pickBy,
   toString,
   isNumber,
+  merge,
 } from "lodash";
 import cloneDeepWith from "lodash/cloneDeepWith";
 import forEach from "lodash/forEach";
@@ -24,7 +25,7 @@ import trim from "lodash/trim";
 import moment, { Moment, unitOfTime, Duration, TemplateFunction } from "moment";
 
 import { newProgrammingError } from "./commonErrors";
-import { CamelCasedPropertiesDeep } from "type-fest";
+import { CamelCasedPropertiesDeep, MergeDeep } from "type-fest";
 import { SortDescription, ToFilter } from "./apiModels";
 
 export interface MapValuesOptions {
@@ -526,4 +527,41 @@ export function filterDefined<T>(
  */
 export async function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(() => resolve(), ms));
+}
+
+/**
+ * Merge two values without mutating either.
+ *
+ * lodash's merge's types do not correctly merge the types of subarrays. type-fest's
+ * MergeDeep does support it, but attempting to extend lodash's merge's types to support this
+ * for three sources results in `Type instantiation is excessively deep and possibly infinite.
+ * ts(2589)`. So we provide this helper that only needs to merge two sources since the third
+ * one is an empty object to achieve the copy.
+ *
+ * This is how we could try to extend lodash's types in a `lodash.d.ts` file:
+ *
+ * ```
+ *  import { MergeDeep } from "type-fest";
+ *  declare module "lodash" {
+ *    interface LoDashStatic {
+ *      // ...
+ *      // This results in `Type instantiation is excessively deep and possibly infinite. ts(2589)`
+ *      merge<TObject, TSource1, TSource2>(
+ *        object: TObject,
+ *        source1: TSource1,
+ *        source2: TSource2
+ *      ): MergeDeep<MergeDeep<TObject, TSource1>, TSource2>;
+ *     // ...
+ *    }
+ *  }
+ *  ```
+ */
+export function mergeCopy<TSource1 extends object, TSource2 extends object>(
+  source1: TSource1,
+  source2: TSource2
+) {
+  return merge({}, source1, source2) as unknown as MergeDeep<
+    TSource1,
+    TSource2
+  >;
 }

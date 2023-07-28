@@ -17,6 +17,7 @@ import head from "lodash/head";
 import { Database } from "../database";
 import { Moment } from "moment";
 import { QueryResultRow } from "pg";
+import { toIdString } from "./daosUtil";
 
 export class UrlsDao {
   private logger: Logger;
@@ -159,19 +160,26 @@ export class UrlsDao {
     );
   }
 
-  createUrl(url: CreateUrl, userId: EntityId, now: Moment) {
+  async createUrl(url: CreateUrl, userId: EntityId, now: Moment) {
     const canonicalUrl = url.canonicalUrl || url.url;
-    return this.database
-      .query(
-        "createUrl",
-        `
+    const {
+      rows: [row],
+    } = await this.database.query(
+      "createUrl",
+      `
         insert into urls (url, canonical_url, creator_user_id, created)
         values ($1, $2, $3, $4)
         returning *
         `,
-        [url.url, canonicalUrl, userId, now]
-      )
-      .then(({ rows: [row] }) => toUrl(row));
+      [url.url, canonicalUrl, userId, now]
+    );
+    return {
+      id: toIdString(row.url_id),
+      url: row.url,
+      canonicalUrl: row.canonical_url,
+      creatorUserId: toIdString(row.creator_user_id),
+      created: row.created,
+    };
   }
 
   deleteUrlForId(urlId: EntityId, deletedAt: Moment) {

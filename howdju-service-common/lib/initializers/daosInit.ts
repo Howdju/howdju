@@ -30,6 +30,7 @@ import {
   UserPermissionsDao,
   UsersDao,
   UrlsDao,
+  UrlLocatorAutoConfirmationDao,
   WritQuoteUrlTargetsDao,
   VidSegmentsDao,
 } from "../daos";
@@ -86,13 +87,17 @@ export function daosInitializer(provider: DatabaseProvider) {
   const statementsDao = new StatementsDao(logger, database, propositionsDao);
   const persorgsDao = new PersorgsDao(logger, database);
   const sourcesDao = new SourcesDao(database, usersDao);
+  const urlLocatorAutoConfirmationDao = new UrlLocatorAutoConfirmationDao(
+    database
+  );
   const mediaExcerptsDao = new MediaExcerptsDao(
     logger,
     database,
     urlsDao,
     sourcesDao,
     persorgsDao,
-    usersDao
+    usersDao,
+    urlLocatorAutoConfirmationDao
   );
   const justificationsDao = new JustificationsDao(
     logger,
@@ -143,6 +148,7 @@ export function daosInitializer(provider: DatabaseProvider) {
     sourcesDao,
     tagsDao,
     urlsDao,
+    urlLocatorAutoConfirmationDao,
     userExternalIdsDao,
     userGroupsDao,
     userPermissionsDao,

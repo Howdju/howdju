@@ -17,6 +17,17 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
+-- Name: auto_confirmation_status; Type: TYPE; Schema: public; Owner: -
+--
+
+CREATE TYPE public.auto_confirmation_status AS ENUM (
+    'FOUND',
+    'NOT_FOUND',
+    'ERROR'
+);
+
+
+--
 -- Name: media_excerpt_type; Type: TYPE; Schema: public; Owner: -
 --
 
@@ -1000,6 +1011,41 @@ CREATE TABLE public.test (
 
 
 --
+-- Name: url_locator_auto_confirmation_results; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.url_locator_auto_confirmation_results (
+    url_locator_auto_confirmation_result_id bigint NOT NULL,
+    url_locator_id bigint,
+    url text NOT NULL,
+    quotation text NOT NULL,
+    complete_at timestamp without time zone NOT NULL,
+    status public.auto_confirmation_status NOT NULL,
+    found_quotation text,
+    error_message text
+);
+
+
+--
+-- Name: url_locator_auto_confirmation_url_locator_auto_confirmation_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.url_locator_auto_confirmation_url_locator_auto_confirmation_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: url_locator_auto_confirmation_url_locator_auto_confirmation_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.url_locator_auto_confirmation_url_locator_auto_confirmation_seq OWNED BY public.url_locator_auto_confirmation_results.url_locator_auto_confirmation_result_id;
+
+
+--
 -- Name: url_locators; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -1430,6 +1476,13 @@ ALTER TABLE ONLY public.tags ALTER COLUMN tag_id SET DEFAULT nextval('public.tag
 
 
 --
+-- Name: url_locator_auto_confirmation_results url_locator_auto_confirmation_result_id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.url_locator_auto_confirmation_results ALTER COLUMN url_locator_auto_confirmation_result_id SET DEFAULT nextval('public.url_locator_auto_confirmation_url_locator_auto_confirmation_seq'::regclass);
+
+
+--
 -- Name: url_locators url_locator_id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -1548,6 +1601,14 @@ ALTER TABLE ONLY public.statements
 
 ALTER TABLE ONLY public.dom_anchors
     ADD CONSTRAINT unique_anchor UNIQUE (url_locator_id, exact_text, prefix_text, suffix_text, start_offset, end_offset);
+
+
+--
+-- Name: url_locator_auto_confirmation_results url_locator_auto_confirmation_results_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.url_locator_auto_confirmation_results
+    ADD CONSTRAINT url_locator_auto_confirmation_results_pkey PRIMARY KEY (url_locator_auto_confirmation_result_id);
 
 
 --
@@ -1912,6 +1973,13 @@ CREATE UNIQUE INDEX unq_users_username ON public.users USING btree (username);
 
 
 --
+-- Name: url_locator_auto_confirmation_results_status_complete_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX url_locator_auto_confirmation_results_status_complete_idx ON public.url_locator_auto_confirmation_results USING btree (url_locator_id, status, complete_at DESC);
+
+
+--
 -- Name: urls_url_unique_idx; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -2066,6 +2134,14 @@ ALTER TABLE ONLY public.statements
 
 ALTER TABLE ONLY public.statements
     ADD CONSTRAINT statements_speaker_persorg_id_fkey FOREIGN KEY (speaker_persorg_id) REFERENCES public.persorgs(persorg_id);
+
+
+--
+-- Name: url_locator_auto_confirmation_results url_locator_auto_confirmation_results_url_locator_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.url_locator_auto_confirmation_results
+    ADD CONSTRAINT url_locator_auto_confirmation_results_url_locator_id_fkey FOREIGN KEY (url_locator_id) REFERENCES public.url_locators(url_locator_id);
 
 
 --

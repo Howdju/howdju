@@ -5,6 +5,7 @@
  * Where X is an Entity.
  */
 
+import { Moment } from "moment";
 import { ApiErrorCode } from "./codes";
 import { JustificationView } from "./viewModels";
 import { ModelErrors } from "./zodError";
@@ -31,6 +32,7 @@ import {
   WritQuote,
   UrlLocator,
   MediaExcerptCitation,
+  PersistedEntity,
 } from "./zodSchemas";
 import {
   EntityRef,
@@ -39,11 +41,50 @@ import {
   PersistRelated,
 } from "./zodSchemaTypes";
 
-export interface MediaExcerptOut extends Persisted<MediaExcerpt> {}
-export interface UrlLocatorOut extends Persisted<UrlLocator> {}
+export interface MediaExcerptOut
+  extends Omit<MediaExcerpt, "id">,
+    PersistedEntity {
+  citations: MediaExcerptCitationOut[];
+  locators: {
+    urlLocators: UrlLocatorOut[];
+  };
+  speakers: PersorgOut[];
+}
 
-export type SourceOut = Persisted<Source>;
-export type MediaExcerptCitationOut = PersistRelated<MediaExcerptCitation>;
+/** Conveys the status of a UrlLocator to a client. */
+export type UrlLocatorAutoConfirmationStatus =
+  | {
+      status: "NEVER_TRIED";
+    }
+  | {
+      status: "NEVER_FOUND";
+      earliestNotFoundAt: Moment;
+      latestNotFoundAt: Moment;
+    }
+  | {
+      status: "FOUND";
+      earliestFoundAt: Moment;
+      latestFoundAt: Moment;
+      foundQuotation: string;
+    }
+  | {
+      status: "PREVIOUSLY_FOUND";
+      earliestFoundAt: Moment;
+      latestFoundAt: Moment;
+      foundQuotation: string;
+      earliestNotFoundAt: Moment;
+      latestNotFoundAt: Moment;
+    };
+
+export interface UrlLocatorOut extends Omit<UrlLocator, "id">, PersistedEntity {
+  url: UrlOut;
+  autoConfirmationStatus: UrlLocatorAutoConfirmationStatus;
+}
+
+export type SourceOut = Omit<Source, "id"> & PersistedEntity;
+export type MediaExcerptCitationOut = MediaExcerptCitation & {
+  source: SourceOut;
+};
 
 /**
  * An out model representing errors for any CRUD action.
@@ -96,7 +137,7 @@ export type JustificationOut = PersistedJustificationWithRootRef & {
   vote?: JustificationVote;
 };
 
-export type UrlOut = Persisted<Url>;
+export type UrlOut = Url & PersistedEntity;
 
 export type JustificationRootTargetOut = PropositionOut | StatementOut;
 

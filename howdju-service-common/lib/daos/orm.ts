@@ -989,13 +989,13 @@ export const toContentReport = wrapMapper(function toContentReportMapper(
   };
 });
 
-export function toSource(row: SourceRow, creator?: UserBlurb): SourceOut {
+export function toSource(row: SourceRow, creator: UserBlurb): SourceOut {
   return brandedParse(SourceRef, {
     id: row.source_id,
     description: row.description,
     normalDescription: row.normal_description,
     created: row.created,
-    creatorUserId: row.creator_user_id,
+    creatorUserId: toIdString(row.creator_user_id),
     creator,
   });
 }

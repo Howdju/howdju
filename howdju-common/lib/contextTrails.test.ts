@@ -4,7 +4,12 @@ import {
   parseContextTrail,
   serializeContextTrail,
 } from "./contextTrails";
-import { JustificationRef } from "./zodSchemas";
+import { utcNow } from "./general";
+import {
+  JustificationRef,
+  PropositionCompoundRef,
+  PropositionRef,
+} from "./zodSchemas";
 import { brandedParse } from "./zodSchemaTypes";
 
 describe("serializeContextTrail", () => {
@@ -56,17 +61,47 @@ describe("parseContextTrail", () => {
 
 describe("nextContextTrailItem", () => {
   test("negates the polarity of a justification countering a positive-leaning justification", () => {
+    const proposition = brandedParse(PropositionRef, {
+      id: "1",
+      text: "the-proposition-text",
+      created: utcNow(),
+    });
+    const basis = {
+      type: "PROPOSITION_COMPOUND" as const,
+      entity: brandedParse(PropositionCompoundRef, {
+        id: "1",
+        created: utcNow(),
+        atoms: [
+          {
+            propositionCompoundId: "1",
+            entity: proposition,
+          },
+        ],
+      }),
+    };
     const justification = brandedParse(JustificationRef, {
       id: "1",
-      polarity: "POSITIVE",
+      polarity: "POSITIVE" as const,
+      created: utcNow(),
+      rootPolarity: "POSITIVE" as const,
+      rootTargetType: "PROPOSITION" as const,
+      target: { type: "PROPOSITION" as const, entity: proposition },
+      basis,
+      rootTarget: proposition,
     });
     const connectingEntityType = "JUSTIFICATION";
     const connectingEntity = brandedParse(JustificationRef, {
       id: "2",
       target: {
-        type: "JUSTIFICATION",
+        type: "JUSTIFICATION" as const,
         entity: justification,
       },
+      basis,
+      created: utcNow(),
+      polarity: "NEGATIVE" as const,
+      rootPolarity: "NEGATIVE" as const,
+      rootTargetType: "PROPOSITION" as const,
+      rootTarget: proposition,
     });
 
     expect(
@@ -79,17 +114,47 @@ describe("nextContextTrailItem", () => {
     });
   });
   test("negates the polarity of a justification countering a negative-leaning justification", () => {
+    const proposition = brandedParse(PropositionRef, {
+      id: "1",
+      text: "the-proposition-text",
+      created: utcNow(),
+    });
+    const basis = {
+      type: "PROPOSITION_COMPOUND" as const,
+      entity: brandedParse(PropositionCompoundRef, {
+        id: "1",
+        created: utcNow(),
+        atoms: [
+          {
+            propositionCompoundId: "1",
+            entity: proposition,
+          },
+        ],
+      }),
+    };
     const justification = brandedParse(JustificationRef, {
       id: "1",
-      polarity: "NEGATIVE",
+      polarity: "NEGATIVE" as const,
+      created: utcNow(),
+      rootPolarity: "NEGATIVE" as const,
+      rootTargetType: "PROPOSITION" as const,
+      target: { type: "PROPOSITION" as const, entity: proposition },
+      basis,
+      rootTarget: proposition,
     });
     const connectingEntityType = "JUSTIFICATION";
     const connectingEntity = brandedParse(JustificationRef, {
       id: "2",
       target: {
-        type: "JUSTIFICATION",
+        type: "JUSTIFICATION" as const,
         entity: justification,
       },
+      basis,
+      created: utcNow(),
+      polarity: "NEGATIVE" as const,
+      rootPolarity: "NEGATIVE" as const,
+      rootTargetType: "PROPOSITION" as const,
+      rootTarget: proposition,
     });
 
     expect(

@@ -1,4 +1,5 @@
 @import "@/colors";
+@import "@/flatui-colors";
 @import "@/components";
 
 .quotation {
@@ -67,5 +68,20 @@ ul.speakers {
       "record_voice_over",
       "Material Symbols Rounded"
     );
+  }
+}
+
+.material-symbols.auto-confirmation-icon {
+  &.found {
+    color: $emerald;
+  }
+  &.previously-found {
+    color: $sunflower;
+  }
+  &.never-found {
+    color: $pomegranate;
+  }
+  &.never-tried {
+    color: $asbestos;
   }
 }

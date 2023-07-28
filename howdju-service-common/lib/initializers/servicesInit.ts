@@ -1,9 +1,15 @@
+import { TopicMessage } from "howdju-common";
+import { TestTopicMessageSender } from "howdju-test-common";
+
 import {
   AccountSettingsService,
   ActionsService,
   AuthService,
+  AwsTopicMessageSender,
   ContentReportsService,
   ContextTrailsService,
+  DevTopicMessageConsumer,
+  DevTopicMessageSender,
   GroupsService,
   JustificationsService,
   JustificationBasisCompoundsService,
@@ -23,14 +29,15 @@ import {
   RootTargetJustificationsService,
   PropositionTagVotesService,
   PropositionTagsService,
+  SourcesService,
   StatementsService,
   TagsService,
+  UrlLocatorAutoConfirmationService,
   UrlsService,
   UsersService,
   VidSegmentsService,
   WritsService,
   WritQuotesService,
-  SourcesService,
 } from "../services";
 import { AwsProvider } from "./awsInit";
 
@@ -148,8 +155,13 @@ export function servicesInitializer(provider: AwsProvider) {
     provider.sourcesDao
   );
 
+  const devTopicQueue = [] as TopicMessage[];
+
+  const topicMessageSender = makeTopicMessageSender(provider, devTopicQueue);
+
   const mediaExcerptsService = new MediaExcerptsService(
     provider.appConfig,
+    topicMessageSender,
     authService,
     permissionsService,
     provider.mediaExcerptsDao,
@@ -157,6 +169,20 @@ export function servicesInitializer(provider: AwsProvider) {
     persorgsService,
     urlsService
   );
+
+  const urlLocatorAutoConfirmationService =
+    new UrlLocatorAutoConfirmationService(
+      mediaExcerptsService,
+      provider.urlLocatorAutoConfirmationDao
+    );
+
+  const devTopicMessageConsumer =
+    process.env.NODE_ENV === "development"
+      ? new DevTopicMessageConsumer(
+          devTopicQueue,
+          urlLocatorAutoConfirmationService
+        )
+      : undefined;
 
   const justificationsService = new JustificationsService(
     provider.appConfig,
@@ -219,7 +245,7 @@ export function servicesInitializer(provider: AwsProvider) {
   const registrationService = new RegistrationService(
     provider.logger,
     provider.appConfig,
-    provider.topicMessageSender,
+    topicMessageSender,
     usersService,
     authService,
     provider.registrationRequestsDao
@@ -228,7 +254,7 @@ export function servicesInitializer(provider: AwsProvider) {
   const passwordResetService = new PasswordResetService(
     provider.logger,
     provider.appConfig,
-    provider.topicMessageSender,
+    topicMessageSender,
     usersService,
     authService,
     provider.passwordResetRequestsDao
@@ -239,7 +265,7 @@ export function servicesInitializer(provider: AwsProvider) {
     provider.logger,
     authService,
     usersService,
-    provider.topicMessageSender,
+    topicMessageSender,
     provider.contentReportsDao
   );
 
@@ -259,6 +285,7 @@ export function servicesInitializer(provider: AwsProvider) {
     authService,
     contentReportsService,
     contextTrailsService,
+    devTopicMessageConsumer,
     groupsService,
     justificationsService,
     justificationBasisCompoundsService,
@@ -281,8 +308,27 @@ export function servicesInitializer(provider: AwsProvider) {
     statementsService,
     tagsService,
     urlsService,
+    urlLocatorAutoConfirmationService,
     usersService,
     writQuotesService,
     writsService,
   };
+}
+
+function makeTopicMessageSender(
+  provider: AwsProvider,
+  devTopicQueue: TopicMessage[]
+) {
+  if (process.env.NODE_ENV === "test") {
+    return new TestTopicMessageSender();
+  }
+  if (process.env.NODE_ENV === "development") {
+    return new DevTopicMessageSender(devTopicQueue);
+  }
+
+  const topicArn = provider.getConfigVal("MESSAGES_TOPIC_ARN");
+  if (!topicArn) {
+    throw new Error("MESSAGES_TOPIC_ARN env var must be present in prod.");
+  }
+  return new AwsTopicMessageSender(provider.logger, provider.sns, topicArn);
 }

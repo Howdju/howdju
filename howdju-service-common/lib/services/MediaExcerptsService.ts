@@ -9,17 +9,15 @@ import {
   DeleteMediaExcerptCitation,
   EntityId,
   makeModelErrors,
-  MediaExcerpt,
   MediaExcerptCitationOut,
   MediaExcerptOut,
-  MediaExcerptRef,
   MediaExcerptSearchFilter,
   momentAdd,
   newImpossibleError,
-  PartialPersist,
   PersorgOut,
   SortDescription,
   SourceOut,
+  TopicMessageSender,
   UrlOut,
   UserBlurb,
   utcNow,
@@ -53,13 +51,14 @@ const CREATE_URL_LOCATOR_RETRIES = 3;
 const CREATE_CITATION_RETRIES = 3;
 export class MediaExcerptsService {
   constructor(
-    private config: ApiConfig,
-    private authService: AuthService,
-    private permissionsService: PermissionsService,
-    private mediaExcerptsDao: MediaExcerptsDao,
-    private sourcesService: SourcesService,
-    private persorgsService: PersorgsService,
-    private urlsService: UrlsService
+    private readonly config: ApiConfig,
+    private readonly topicMessageSender: TopicMessageSender,
+    private readonly authService: AuthService,
+    private readonly permissionsService: PermissionsService,
+    private readonly mediaExcerptsDao: MediaExcerptsDao,
+    private readonly sourcesService: SourcesService,
+    private readonly persorgsService: PersorgsService,
+    private readonly urlsService: UrlsService
   ) {}
 
   async readMediaExcerptForId(id: EntityId): Promise<MediaExcerptOut> {
@@ -77,11 +76,10 @@ export class MediaExcerptsService {
     const creator = await this.authService.readUserBlurbForUserIdent(userIdent);
     const createdAt = utcNow();
     const createCitations = createMediaExcerpt.citations ?? [];
+    const createUrlLocators = createMediaExcerpt.locators?.urlLocators ?? [];
 
     // Create entities that don't depend on the media excerpt's ID
-    const createUrls = createMediaExcerpt.locators?.urlLocators.map(
-      (u) => u.url
-    );
+    const createUrls = createUrlLocators.map((u) => u.url);
     const [
       { sources, isExtant: isExtantSources },
       { persorgs: speakers, isExtant: isExtantPersorgs },
@@ -99,33 +97,32 @@ export class MediaExcerptsService {
             createdAt
           )
         : { persorgs: [], isExtant: true },
-      createUrls
-        ? this.urlsService.readOrCreateUrlsAsUser(
-            createUrls,
-            creator.id,
-            createdAt
-          )
-        : [],
+      this.urlsService.readOrCreateUrlsAsUser(
+        createUrls,
+        creator.id,
+        createdAt
+      ),
     ]);
 
     // Create entities that depend on the media excerpt's ID
-    const createUrlLocatorsWithUrl = zip(
-      createMediaExcerpt.locators?.urlLocators,
-      urls
-    ).map(([urlLocator, url]) => ({
-      ...urlLocator,
-      url: url,
-    }));
-    const createCitationsWithSource = zip(createCitations, sources).map(
-      ([createCitation, source]) => {
-        if (!createCitation) {
+    const createUrlLocatorsWithUrl = zip(createUrlLocators, urls).map(
+      ([urlLocator, url]) => {
+        if (!urlLocator || !url) {
           throw newImpossibleError(
-            `createCitation was undefined while zipping with sources even though they should have the same length.`
+            `createUrlLocators and urls must match in length because urls is based off of createUrlLocators.`
           );
         }
-        if (!source) {
+        return {
+          ...urlLocator,
+          url: url,
+        };
+      }
+    );
+    const createCitationsWithSource = zip(createCitations, sources).map(
+      ([createCitation, source]) => {
+        if (!createCitation || !source) {
           throw newImpossibleError(
-            `source was undefined while zipping with createCitations even though they should have the same length.`
+            `createCitations and sources must have the same length because sources was based off of createCitations.`
           );
         }
         return {
@@ -152,7 +149,7 @@ export class MediaExcerptsService {
       isExtantMediaExcerpt
         ? this.readOrCreateUrlLocators(
             creator,
-            mediaExcerpt,
+            mediaExcerpt.id,
             createUrlLocatorsWithUrl,
             createdAt
           ).then(({ urlLocators, isExtant }) => ({
@@ -166,7 +163,7 @@ export class MediaExcerptsService {
       isExtantMediaExcerpt
         ? this.readOrCreateMediaExcerptCitations(
             creator,
-            mediaExcerpt,
+            mediaExcerpt.id,
             createCitationsWithSource,
             createdAt
           ).then(({ citations, isExtant }) => ({
@@ -181,7 +178,7 @@ export class MediaExcerptsService {
         : { citations: mediaExcerpt.citations, isExtant: false },
       this.ensureMediaExcerptSpeakers(
         creator.id,
-        mediaExcerpt,
+        mediaExcerpt.id,
         speakers,
         createdAt
       ),
@@ -224,13 +221,13 @@ export class MediaExcerptsService {
 
   private async readOrCreateUrlLocators(
     creator: UserBlurb,
-    mediaExcerpt: MediaExcerptRef,
-    urlLocators: PartialPersist<CreateUrlLocator, "url">[],
+    mediaExcerptId: EntityId,
+    urlLocators: (CreateUrlLocator & { url: UrlOut })[],
     created: Moment
   ) {
     const result = await Promise.all(
       urlLocators.map((u) =>
-        this.readOrCreateUrlLocator(creator, mediaExcerpt, u, created)
+        this.readOrCreateUrlLocator(creator, mediaExcerptId, u, created)
       )
     );
     return {
@@ -259,14 +256,21 @@ export class MediaExcerptsService {
       createdAt
     );
     const createUrlLocatorsWithUrl = zip(createUrlLocators, urls).map(
-      ([createUrlLocator, url]) => ({
-        ...createUrlLocator,
-        url,
-      })
+      ([createUrlLocator, url]) => {
+        if (!createUrlLocator || !url) {
+          throw newImpossibleError(
+            `createUrlLocators and urls must match in length because urls is based off of createUrlLocators.`
+          );
+        }
+        return {
+          ...createUrlLocator,
+          url,
+        };
+      }
     );
     return await this.readOrCreateUrlLocators(
       creator,
-      mediaExcerpt,
+      mediaExcerptId,
       createUrlLocatorsWithUrl,
       createdAt
     );
@@ -274,29 +278,45 @@ export class MediaExcerptsService {
 
   private async readOrCreateUrlLocator(
     creator: UserBlurb,
-    mediaExcerpt: MediaExcerptRef,
-    createUrlLocator: PartialPersist<CreateUrlLocator, "url">,
+    mediaExcerptId: EntityId,
+    createUrlLocator: CreateUrlLocator & { url: UrlOut },
     created: Moment
   ) {
-    return retryTransaction(CREATE_URL_LOCATOR_RETRIES, () =>
-      this.mediaExcerptsDao.readOrCreateUrlLocator(
-        mediaExcerpt,
-        createUrlLocator,
-        creator,
-        created
-      )
+    const { isExtant, urlLocator } = await retryTransaction(
+      CREATE_URL_LOCATOR_RETRIES,
+      () =>
+        this.mediaExcerptsDao.readOrCreateUrlLocator(
+          mediaExcerptId,
+          createUrlLocator,
+          creator,
+          created
+        )
     );
+    if (!isExtant) {
+      await this.topicMessageSender.sendMessage({
+        type: "AUTO_CONFIRM_URL_LOCATOR",
+        params: {
+          urlLocatorId: urlLocator.id,
+        },
+      });
+    }
+    return { isExtant, urlLocator };
   }
 
   private async readOrCreateMediaExcerptCitations(
     creator: UserBlurb,
-    mediaExcerpt: MediaExcerptOut,
-    createCitations: PartialPersist<CreateMediaExcerptCitation, "source">[],
+    mediaExcerptId: EntityId,
+    createCitations: (CreateMediaExcerptCitation & { source: SourceOut })[],
     created: Moment
   ): Promise<{ citations: MediaExcerptCitationOut[]; isExtant: boolean }> {
     const result = await Promise.all(
       createCitations.map((c) =>
-        this.readOrCreateMediaExcerptCitation(creator, mediaExcerpt, c, created)
+        this.readOrCreateMediaExcerptCitation(
+          creator,
+          mediaExcerptId,
+          c,
+          created
+        )
       )
     );
     const citations = result.map((r) => r.citation);
@@ -309,13 +329,13 @@ export class MediaExcerptsService {
 
   private async readOrCreateMediaExcerptCitation(
     creator: UserBlurb,
-    mediaExcerpt: MediaExcerptOut,
-    createCitation: PartialPersist<CreateMediaExcerptCitation, "source">,
+    mediaExcerptId: EntityId,
+    createCitation: CreateMediaExcerptCitation & { source: SourceOut },
     created: Moment
   ): Promise<{ citation: MediaExcerptCitationOut; isExtant: boolean }> {
     return retryTransaction(CREATE_CITATION_RETRIES, () =>
       this.mediaExcerptsDao.readOrCreateMediaExcerptCitation(
-        mediaExcerpt,
+        mediaExcerptId,
         createCitation,
         creator,
         created
@@ -325,13 +345,13 @@ export class MediaExcerptsService {
 
   private async ensureMediaExcerptSpeakers(
     userId: EntityId,
-    mediaExcerpt: MediaExcerptOut,
+    mediaExcerptId: EntityId,
     persorgs: PersorgOut[],
     created: Moment
   ) {
     const result = await Promise.all(
       persorgs.map((c) =>
-        this.ensureMediaExcerptSpeaker(userId, mediaExcerpt, c, created)
+        this.ensureMediaExcerptSpeaker(userId, mediaExcerptId, c, created)
       )
     );
     const isExtant = result.every((r) => r.isExtant);
@@ -342,13 +362,13 @@ export class MediaExcerptsService {
 
   private async ensureMediaExcerptSpeaker(
     userId: EntityId,
-    mediaExcerpt: MediaExcerpt,
+    mediaExcerptId: EntityId,
     persorg: PersorgOut,
     created: Moment
   ) {
     const hasEquivalent =
       await this.mediaExcerptsDao.hasEquivalentMediaExcerptSpeaker(
-        mediaExcerpt,
+        mediaExcerptId,
         persorg
       );
     if (hasEquivalent) {
@@ -358,7 +378,7 @@ export class MediaExcerptsService {
     }
     await this.mediaExcerptsDao.createMediaExcerptSpeaker(
       userId,
-      mediaExcerpt,
+      mediaExcerptId,
       persorg,
       created
     );
@@ -533,5 +553,18 @@ export class MediaExcerptsService {
     ) {
       throw new EntityTooOldToModifyError(this.config.modifyEntityGracePeriod);
     }
+  }
+
+  async readUrlLocatorForId(id: EntityId) {
+    return await this.mediaExcerptsDao.readUrlLocatorForId(id);
+  }
+
+  async readMediaExcerptLocalRepForId(id: EntityId) {
+    const justMediaExcerpt =
+      await this.mediaExcerptsDao.readJustMediaExcerptForId(id);
+    if (!justMediaExcerpt) {
+      throw new EntityNotFoundError("MEDIA_EXCERPT", id);
+    }
+    return justMediaExcerpt.localRep;
   }
 }

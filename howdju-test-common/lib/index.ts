@@ -1,3 +1,3 @@
-export * from "./FakeTopicMessageSender";
+export * from "./TestTopicMessageSender";
 export * from "./mockLogger";
 export * from "./testUtil";

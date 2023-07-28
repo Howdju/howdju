@@ -1,17 +1,21 @@
-export const EMAIL_TOPIC_MESSAGE = "EMAIL_TOPIC_MESSAGE";
+import { z } from "zod";
 
-const email = (params: Record<string, any>) =>
-  new TopicMessage(EMAIL_TOPIC_MESSAGE, params);
-
-export const topicMessages = {
-  email,
-};
-
-export class TopicMessage {
-  type: string;
-  params: Record<string, any>;
-  constructor(type: string, params: Record<string, any>) {
-    this.type = type;
-    this.params = params;
-  }
-}
+export const TopicMessage = z.discriminatedUnion("type", [
+  z.object({
+    type: z.literal("SEND_EMAIL"),
+    params: z.object({
+      to: z.union([z.string(), z.array(z.string())]),
+      subject: z.string(),
+      bodyHtml: z.string(),
+      bodyText: z.string(),
+      tags: z.object({}).passthrough().optional(),
+    }),
+  }),
+  z.object({
+    type: z.literal("AUTO_CONFIRM_URL_LOCATOR"),
+    params: z.object({
+      urlLocatorId: z.string(),
+    }),
+  }),
+]);
+export type TopicMessage = z.infer<typeof TopicMessage>;

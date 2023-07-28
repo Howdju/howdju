@@ -1,6 +1,6 @@
 import { TopicMessage, TopicMessageSender } from "howdju-common";
 
-export class FakeTopicMessageSender implements TopicMessageSender {
+export class TestTopicMessageSender implements TopicMessageSender {
   topicMessages: TopicMessage[] = [];
 
   sendMessage(topicMessage: TopicMessage) {

@@ -1,10 +1,14 @@
-import { fromJson } from "howdju-common";
+import { Context, SNSEvent, Callback } from "aws-lambda";
 
-import { EMAIL_TOPIC_MESSAGE } from "howdju-common";
+import { fromJson, TopicMessage } from "howdju-common";
 
-const { logger, emailService } = require("./services");
+import { logger, emailService } from "./services";
 
-export async function handler(event, context, callback) {
+export async function handler(
+  event: SNSEvent,
+  context: Context,
+  callback: Callback
+) {
   for (const record of event.Records) {
     let message = null;
     try {
@@ -24,16 +28,15 @@ export async function handler(event, context, callback) {
   callback(null, "Success");
 }
 
-async function handleMessage(message) {
-  const { type } = message;
+async function handleMessage(message: TopicMessage) {
+  const { type, params } = message;
   switch (type) {
-    case EMAIL_TOPIC_MESSAGE: {
-      const { params } = message;
+    case "SEND_EMAIL": {
       await emailService.sendEmail(params);
       break;
     }
     default:
-      logger.error(`Unsupported message type ${message}`);
+      logger.error(`Unsupported TopicMessage type ${type}`);
       break;
   }
 }
