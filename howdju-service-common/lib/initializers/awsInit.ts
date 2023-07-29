@@ -1,8 +1,5 @@
 import AWS from "aws-sdk";
 
-import { FakeTopicMessageSender } from "howdju-test-common";
-import { AwsTopicMessageSender } from "..";
-
 import { LoggerProvider } from "./loggerInit";
 import { ValidatorsProvider } from "./validatorsInit";
 
@@ -12,23 +9,12 @@ export function awsInit(provider: LoggerProvider) {
   AWS.config.update({ region: provider.getConfigVal("DEFAULT_AWS_REGION") });
 
   const sns = new AWS.SNS({ apiVersion: "2010-03-31" });
-  const topicMessageSender = makeTopicMessageSender(provider, sns);
+  const sesv2 = new AWS.SESV2({ apiVersion: "2019-09-27" });
 
   provider.logger.debug("awsInit complete");
 
   return {
     sns,
-    topicMessageSender,
+    sesv2,
   };
-}
-
-function makeTopicMessageSender(provider: LoggerProvider, sns: AWS.SNS) {
-  if (["development", "test"].indexOf(process.env.NODE_ENV || "") > -1) {
-    return new FakeTopicMessageSender();
-  }
-  const topicArn = provider.getConfigVal("MESSAGES_TOPIC_ARN");
-  if (!topicArn) {
-    throw new Error("MESSAGES_TOPIC_ARN env var must be present in prod.");
-  }
-  return new AwsTopicMessageSender(provider.logger, sns, topicArn);
 }

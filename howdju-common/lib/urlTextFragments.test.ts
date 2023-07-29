@@ -2,37 +2,50 @@ import { readFileSync } from "fs";
 import { JSDOM } from "jsdom";
 import stripIndent from "strip-indent";
 
-import {
-  brandedParse,
-  UrlLocatorRef,
-  UrlLocatorView,
-  UrlRef,
-  utcNow,
-} from "howdju-common";
+import { mergeCopy, utcNow } from "howdju-common";
 
 import {
   extractQuotationFromTextFragment,
   toUrlWithFragment,
 } from "./urlTextFragments";
 
+const baseUrlLocator = {
+  id: "url-locator-id",
+  url: {
+    id: "url-id",
+    // missing URL
+    canonicalUrl: "https://example.com",
+  },
+  anchors: [
+    {
+      // missing exactText
+      prefixText: "the prefix text",
+      suffixText: "the suffix text",
+      startOffset: 0,
+      endOffset: 1,
+      urlLocatorId: "url-locator-id",
+      created: utcNow(),
+      creatorUserId: "creator-user-id",
+    },
+  ],
+  created: utcNow(),
+  creator: {
+    id: "creator-user-id",
+    longName: "Creator User",
+  },
+  mediaExcerptId: "the-media-excerpt-id",
+  creatorUserId: "creator-user-id",
+};
+
 describe("toUrlWithFragment", () => {
   it("should return the URL with the fragment", () => {
-    const urlLocator: UrlLocatorView = brandedParse(UrlLocatorRef, {
-      id: "url-locator-id",
-      url: brandedParse(UrlRef, {
-        id: "url-id",
+    const urlLocator = mergeCopy(baseUrlLocator, {
+      url: {
         url: "https://example.com",
-      }),
+      },
       anchors: [
         {
           exactText: "the exact text",
-          prefixText: "the prefix text",
-          suffixText: "the suffix text",
-          startOffset: 0,
-          endOffset: 1,
-          urlLocatorId: "url-locator-id",
-          created: utcNow(),
-          creatorUserId: "creator-user-id",
         },
       ],
     });
@@ -41,22 +54,13 @@ describe("toUrlWithFragment", () => {
     );
   });
   it("is compatible with an existing document fragment", () => {
-    const urlLocator: UrlLocatorView = brandedParse(UrlLocatorRef, {
-      id: "url-locator-id",
-      url: brandedParse(UrlRef, {
-        id: "url-id",
+    const urlLocator = mergeCopy(baseUrlLocator, {
+      url: {
         url: "https://example.com#some-heading",
-      }),
+      },
       anchors: [
         {
           exactText: "the exact text",
-          prefixText: "the prefix text",
-          suffixText: "the suffix text",
-          startOffset: 0,
-          endOffset: 1,
-          urlLocatorId: "url-locator-id",
-          created: utcNow(),
-          creatorUserId: "creator-user-id",
         },
       ],
     });
@@ -65,12 +69,10 @@ describe("toUrlWithFragment", () => {
     );
   });
   it("supports multiple anchors", () => {
-    const urlLocator: UrlLocatorView = brandedParse(UrlLocatorRef, {
-      id: "url-locator-id",
-      url: brandedParse(UrlRef, {
-        id: "url-id",
+    const urlLocator = mergeCopy(baseUrlLocator, {
+      url: {
         url: "https://example.com",
-      }),
+      },
       anchors: [
         {
           exactText: "the exact text",
@@ -99,22 +101,13 @@ describe("toUrlWithFragment", () => {
     );
   });
   it("overwrites an existing text fragment", () => {
-    const urlLocator: UrlLocatorView = brandedParse(UrlLocatorRef, {
-      id: "url-locator-id",
-      url: brandedParse(UrlRef, {
-        id: "url-id",
+    const urlLocator = mergeCopy(baseUrlLocator, {
+      url: {
         url: "https://example.com#:~:text=some%20previous%20fragment",
-      }),
+      },
       anchors: [
         {
           exactText: "the exact text",
-          prefixText: "the prefix text",
-          suffixText: "the suffix text",
-          startOffset: 0,
-          endOffset: 1,
-          urlLocatorId: "url-locator-id",
-          created: utcNow(),
-          creatorUserId: "creator-user-id",
         },
       ],
     });
@@ -123,22 +116,13 @@ describe("toUrlWithFragment", () => {
     );
   });
   it("preserves a document fragment while overwriting an existing text fragment", () => {
-    const urlLocator: UrlLocatorView = brandedParse(UrlLocatorRef, {
-      id: "url-locator-id",
-      url: brandedParse(UrlRef, {
-        id: "url-id",
+    const urlLocator = mergeCopy(baseUrlLocator, {
+      url: {
         url: "https://example.com#the-doc-fragment:~:text=some%20previous%20fragment",
-      }),
+      },
       anchors: [
         {
           exactText: "the exact text",
-          prefixText: "the prefix text",
-          suffixText: "the suffix text",
-          startOffset: 0,
-          endOffset: 1,
-          urlLocatorId: "url-locator-id",
-          created: utcNow(),
-          creatorUserId: "creator-user-id",
         },
       ],
     });
@@ -147,22 +131,13 @@ describe("toUrlWithFragment", () => {
     );
   });
   it("encodes hyphens", () => {
-    const urlLocator: UrlLocatorView = brandedParse(UrlLocatorRef, {
-      id: "url-locator-id",
-      url: brandedParse(UrlRef, {
-        id: "url-id",
+    const urlLocator = mergeCopy(baseUrlLocator, {
+      url: {
         url: "https://example.com",
-      }),
+      },
       anchors: [
         {
           exactText: "the - exact - text",
-          prefixText: "the prefix text",
-          suffixText: "the suffix text",
-          startOffset: 0,
-          endOffset: 1,
-          urlLocatorId: "url-locator-id",
-          created: utcNow(),
-          creatorUserId: "creator-user-id",
         },
       ],
     });

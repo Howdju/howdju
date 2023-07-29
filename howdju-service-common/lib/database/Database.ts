@@ -153,6 +153,7 @@ async function doQuery<R extends QueryResultRow>(
     throw e;
   }
   result.rows = mapValuesDeep(result.rows, (v) => (v === null ? undefined : v));
+  // TODO(481) detect duplicate fields. Error in dev and log an error in prod.
   if (process.env.DEBUG_PRINT_DB_QUERIES) {
     const dbResult = omit(result, ["fields", "_parsers", "_types"]);
     logger.silly(`Database result: ${toJson({ queryName, dbResult })}`);

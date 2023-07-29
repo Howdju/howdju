@@ -2,13 +2,14 @@ import React from "react";
 import { screen, waitFor } from "@testing-library/react";
 import { createMemoryHistory } from "history";
 import { rest } from "msw";
-import { merge } from "lodash";
 
 import {
   brandedParse,
   CreateMediaExcerpt,
   httpStatusCodes,
   MediaExcerptRef,
+  mergeCopy,
+  utcNow,
 } from "howdju-common";
 import { InferResponseBody, serviceRoutes } from "howdju-service-routes";
 
@@ -63,18 +64,61 @@ describe("SubmitMediaExcerptPage", () => {
       ],
     };
 
+    const creator = {
+      id: "1",
+      longName: "Test User",
+    };
     const response: InferResponseBody<typeof serviceRoutes.createMediaExcerpt> =
       {
         isExtant: false,
-        mediaExcerpt: merge(
-          {},
+        mediaExcerpt: mergeCopy(
           mediaExcerpt,
           brandedParse(MediaExcerptRef, {
             id: "1582",
-            locators: {
-              urlLocators: [{ url: { id: "1583" } }],
+            localRep: {
+              normalQuotation: quotation,
             },
-            citations: [{ source: { id: "1584" } }],
+            locators: {
+              urlLocators: [
+                {
+                  id: "1583",
+                  mediaExcerptId: "1582",
+                  url: {
+                    id: "1583",
+                    url: "https://www.info.com",
+                    canonicalUrl: "https://www.info.com",
+                  },
+                  autoConfirmationStatus: {
+                    status: "NEVER_TRIED" as const,
+                  },
+                  created: utcNow(),
+                  creatorUserId: "1",
+                  creator,
+                },
+              ],
+            },
+            citations: [
+              {
+                source: {
+                  id: "1584",
+                  description: "the-source-description",
+                  normalDescription: "the-source-description",
+                  created: utcNow(),
+                  creatorUserId: "1",
+                  creator,
+                },
+                mediaExcerptId: "1582",
+                created: utcNow(),
+                creatorUserId: "1",
+              },
+            ],
+            speakers: [],
+            created: utcNow(),
+            creatorUserId: "1",
+            creator: {
+              id: "1",
+              longName: "Test User",
+            },
           })
         ),
       };
@@ -143,16 +187,62 @@ describe("SubmitMediaExcerptPage", () => {
         ],
       };
 
+      const creator = {
+        id: "1",
+        longName: "Test User",
+      };
       const response: InferResponseBody<
         typeof serviceRoutes.createMediaExcerpt
       > = {
         isExtant: false,
-        mediaExcerpt: merge(
-          {},
+        mediaExcerpt: mergeCopy(
           mediaExcerpt,
           brandedParse(MediaExcerptRef, {
             id: "1582",
-            citations: [{ source: { id: "1584" } }],
+            localRep: {
+              normalQuotation: quotation,
+            },
+            locators: {
+              urlLocators: [
+                {
+                  id: "1583",
+                  mediaExcerptId: "1582",
+                  url: {
+                    id: "1583",
+                    url: "https://www.info.com",
+                    canonicalUrl: "https://www.info.com",
+                  },
+                  autoConfirmationStatus: {
+                    status: "NEVER_TRIED" as const,
+                  },
+                  created: utcNow(),
+                  creatorUserId: "1",
+                  creator,
+                },
+              ],
+            },
+            citations: [
+              {
+                source: {
+                  id: "1584",
+                  description: "the-source-description",
+                  normalDescription: "the-source-description",
+                  created: utcNow(),
+                  creatorUserId: "1",
+                  creator,
+                },
+                mediaExcerptId: "1582",
+                created: utcNow(),
+                creatorUserId: "1",
+              },
+            ],
+            speakers: [],
+            created: utcNow(),
+            creatorUserId: "1",
+            creator: {
+              id: "1",
+              longName: "Test User",
+            },
           })
         ),
       };

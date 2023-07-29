@@ -1,7 +1,7 @@
 import { assign } from "lodash";
 
 import { TopicMessageSender } from "howdju-common";
-import { FakeTopicMessageSender } from "howdju-test-common";
+import { TestTopicMessageSender } from "howdju-test-common";
 
 import { baseConfig } from "../config";
 import { Database } from "../database";
@@ -32,7 +32,7 @@ export class TestProvider {
 
   constructor(database: Database) {
     this.database = database;
-    this.topicMessageSender = new FakeTopicMessageSender();
+    this.topicMessageSender = new TestTopicMessageSender();
 
     assign(this, daosInitializer(this as unknown as DatabaseProvider));
     assign(this, searchersInitializer(this as unknown as DaosProvider));

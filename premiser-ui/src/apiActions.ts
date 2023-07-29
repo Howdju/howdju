@@ -65,6 +65,7 @@ import {
   mainSearchResultSchema,
   mediaExcerptSchema,
   mediaExcerptsSchema,
+  nullSchema,
   persorgSchema,
   persorgsSchema,
   propositionCompoundSchema,
@@ -176,6 +177,7 @@ type BaseApiActionConfig<Route extends ServiceRoute> = {
   /** The schema for normalizing the response entities. */
   normalizationSchema: Schema<
     InferResponseBodyEntities<Route>,
+    // TODO(482) determine more precise bounds for the normalization schema
     schema.Entity<any> | schema.Array<any>
   >;
   canSkipRehydrate?: boolean;
@@ -1325,8 +1327,8 @@ export const api = {
         url,
         quotation,
       },
-      // MediaExcerptInfos are not normalized
-      normalizationSchema: {},
+      // TODO(482) remove normalizationSchema once we can figure out how to type it.
+      normalizationSchema: { mediaExcerptInfo: nullSchema },
     })
   ),
 };

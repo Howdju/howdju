@@ -215,6 +215,9 @@ export const mainSearchResultSchema = {
   writTitles: writsSchema,
 };
 
+// TODO(482) remove this.
+export const nullSchema = new schema.Entity<null>("null");
+
 /**
  * Converts a normalizr schema into a response payload.
  *

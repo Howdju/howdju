@@ -14,12 +14,15 @@ export interface BibliographicInfo {
   authors?: CreatePersorgInput[];
 }
 
-/** Info to help construct a MediaExcerpt. */
-export interface MediaExcerptInfo extends BibliographicInfo {
-  /** The inferred quotation, if any were inferrable. */
-  quotation?: string;
+export type AnchoredBibliographicInfo = BibliographicInfo & {
   /** The DOM anchors, if any were inferrable. */
   anchors?: CreateDomAnchor[];
+};
+
+/** Info to help construct a MediaExcerpt. */
+export interface MediaExcerptInfo extends AnchoredBibliographicInfo {
+  /** The inferred quotation, if any were inferrable. */
+  quotation?: string;
   /** The URL that was passed in. */
   url: string;
 }
@@ -471,10 +474,6 @@ function getKnownForFromAuthor(author: NewsArticleAuthor): string | undefined {
   }
   return undefined;
 }
-
-export type AnchoredBibliographicInfo = BibliographicInfo & {
-  anchors?: CreateDomAnchor[];
-};
 
 /** Given a URL and quotation from it, infer bibliographic info and anchors for the quote. */
 export function inferAnchoredBibliographicInfo(

@@ -15,7 +15,6 @@ import {
   makeModelErrors,
   Logger,
   TopicMessageSender,
-  topicMessages,
   formatZodError,
 } from "howdju-common";
 
@@ -222,7 +221,7 @@ export class RegistrationService {
     const durationText = duration.format(this.config.durationFormatTemplate, {
       trim: this.config.durationFormatTrim,
     });
-    const emailParams = {
+    const params = {
       to: email,
       subject: "Howdju Registration",
       tags: { purpose: "confirm-registration" },
@@ -249,7 +248,7 @@ export class RegistrationService {
         If you did not register on howdju.com, you may ignore this email and the registration will expire.
       `,
     };
-    await this.topicMessageSender.sendMessage(topicMessages.email(emailParams));
+    await this.topicMessageSender.sendMessage({ type: "SEND_EMAIL", params });
   }
 
   private async sendExistingAccountNotificationEmail(
@@ -260,7 +259,7 @@ export class RegistrationService {
     const resetUrl = `${
       this.config.uiAuthority
     }${commonPaths.requestPasswordReset()}`;
-    const emailParams = {
+    const params = {
       to: email,
       subject: "Howdju Registration",
       tags: { purpose: "re-registration-error" },
@@ -285,7 +284,7 @@ export class RegistrationService {
         If you did not register on howdju.com, you may ignore this email.
       `,
     };
-    await this.topicMessageSender.sendMessage(topicMessages.email(emailParams));
+    await this.topicMessageSender.sendMessage({ type: "SEND_EMAIL", params });
   }
 
   private async checkRegistrationConfirmationConflicts(

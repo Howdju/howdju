@@ -25,6 +25,7 @@ export * from "./StatementsDao";
 export * from "./SourcesDao";
 export * from "./TagsDao";
 export * from "./UrlsDao";
+export * from "./UrlLocatorAutoConfirmationDao";
 export * from "./UserExternalIdsDao";
 export * from "./UserGroupsDao";
 export * from "./UserPermissionsDao";

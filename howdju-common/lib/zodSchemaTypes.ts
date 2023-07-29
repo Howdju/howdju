@@ -1,6 +1,12 @@
 import { Moment } from "moment";
 import { z } from "zod";
-import { SourceOut, UserOut, WritOut, WritQuoteOut } from "./apiModels";
+import {
+  MediaExcerptOut,
+  SourceOut,
+  UserOut,
+  WritOut,
+  WritQuoteOut,
+} from "./apiModels";
 import { newProgrammingError } from "./commonErrors";
 import { logger } from "./logger";
 
@@ -58,6 +64,8 @@ import {
   Writ,
   WritQuote,
   UpdateSource,
+  CreateUrl,
+  MediaExcerptRef,
 } from "./zodSchemas";
 
 /**
@@ -97,7 +105,7 @@ export type PersistedJustificationWithRootRef = Omit<
         }
       | {
           type: "MEDIA_EXCERPT";
-          entity: Persisted<MediaExcerpt>;
+          entity: MediaExcerptOut;
         }
       | { type: "WRIT_QUOTE"; entity: Persisted<WritQuote> };
   };
@@ -131,7 +139,7 @@ export type BasedJustificationWithRootRef = Omit<
       }
     | {
         type: "MEDIA_EXCERPT";
-        entity: Persisted<MediaExcerpt>;
+        entity: MediaExcerptOut | MediaExcerptRef;
       }
     | { type: "SOURCE_EXCERPT"; entity: Persisted<SourceExcerpt> }
     | { type: "WRIT_QUOTE"; entity: Persisted<WritQuote> };
@@ -234,6 +242,8 @@ export type EntityName<T> = T extends Proposition
   ? "Source"
   : T extends UpdateSource
   ? "Source"
+  : T extends CreateUrl
+  ? "Url"
   : T extends Url
   ? "Url"
   : never;
@@ -270,6 +280,9 @@ export type PersistRelated<T> = {
     ? PersistRelated<T[key]>
     : T[key];
 };
+
+export type ToPersistedEntity<E extends Entity> = Omit<E, "id"> &
+  PersistedEntity;
 
 /** Returns a type with some of T's properties persisted. */
 export type PartialPersist<T, Props extends keyof T> = Omit<T, Props> & {
@@ -359,12 +372,13 @@ export type ToInput<T> = T extends CreateJustification
  * TODO(339): use this in the places where we are doing `{...BlahRef.parse({id}), ...reset}`. E.g. orm.ts
  * TODO(339): can we type `val` to be a Partial of the actual schema? Maybe pass the schema instead of
  * the brand and use EntityName to lookup the brand: `brandedParse(Justification, {id, target, ...})`
- * TODO(458) generically type `val: T`. Try to make `T extends z.output<S>`?
+ * TODO(458) Try to make val's type `T extends z.output<S>`?
  */
 export function brandedParse<
+  T,
   S extends z.ZodTypeAny,
   B extends string | number | symbol
->(brandSchema: z.ZodBranded<S, B>, val: any) {
+>(brandSchema: z.ZodBranded<S, B>, val: T) {
   return {
     ...val,
     ...brandSchema.parse(val),

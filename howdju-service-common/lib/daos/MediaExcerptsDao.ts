@@ -10,7 +10,6 @@ import {
   DomAnchor,
   EntityId,
   Logger,
-  MediaExcerpt,
   MediaExcerptOut,
   MediaExcerptRef,
   newImpossibleError,
@@ -27,10 +26,10 @@ import {
   SourceOut,
   removeQueryParamsAndFragment,
   MediaExcerptCitationOut,
-  SourceRef,
   DeleteMediaExcerptCitation,
   toJson,
   UserBlurb,
+  mergeCopy,
 } from "howdju-common";
 
 import { Database, TxnClient } from "../database";
@@ -41,6 +40,7 @@ import { toDbDirection } from "./daoModels";
 import { EntityNotFoundError, InvalidRequestError, UsersDao } from "..";
 import { SqlClause } from "./daoTypes";
 import { renumberSqlArgs, toIdString } from "./daosUtil";
+import { UrlLocatorAutoConfirmationDao } from "./UrlLocatorAutoConfirmationDao";
 
 export type CreateMediaExcerptDataIn = Pick<
   PartialPersist<CreateMediaExcerpt, "localRep">,
@@ -49,12 +49,13 @@ export type CreateMediaExcerptDataIn = Pick<
 
 export class MediaExcerptsDao {
   constructor(
-    private logger: Logger,
-    private database: Database,
-    private urlsDao: UrlsDao,
-    private sourcesDao: SourcesDao,
-    private persorgsDao: PersorgsDao,
-    private usersDao: UsersDao
+    private readonly logger: Logger,
+    private readonly database: Database,
+    private readonly urlsDao: UrlsDao,
+    private readonly sourcesDao: SourcesDao,
+    private readonly persorgsDao: PersorgsDao,
+    private readonly usersDao: UsersDao,
+    private readonly urlLocatorAutoConfirmationDao: UrlLocatorAutoConfirmationDao
   ) {}
 
   async readMediaExcerptsForIds(ids: EntityId[]) {
@@ -64,6 +65,35 @@ export class MediaExcerptsDao {
   async readMediaExcerptForId(
     mediaExcerptId: EntityId
   ): Promise<MediaExcerptOut | undefined> {
+    const justMediaExcerpt = await this.readJustMediaExcerptForId(
+      mediaExcerptId
+    );
+    if (!justMediaExcerpt) {
+      return undefined;
+    }
+    const [urlLocators, citations, speakers, creator] = await Promise.all([
+      this.readUrlLocators({ mediaExcerptId }),
+      this.readCitationsForMediaExcerptId(mediaExcerptId),
+      this.readSpeakersForMediaExcerptId(mediaExcerptId),
+      this.usersDao.readUserBlurbForId(justMediaExcerpt?.creatorUserId),
+    ]);
+    return brandedParse(MediaExcerptRef, {
+      ...justMediaExcerpt,
+      locators: {
+        urlLocators,
+      },
+      citations,
+      speakers,
+      creator,
+    });
+  }
+
+  async readJustMediaExcerptForId(
+    mediaExcerptId: string
+  ): Promise<
+    | Pick<MediaExcerptOut, "id" | "localRep" | "created" | "creatorUserId">
+    | undefined
+  > {
     const {
       rows: [row],
     } = await this.database.query(
@@ -80,27 +110,15 @@ export class MediaExcerptsDao {
     if (!row) {
       return undefined;
     }
-    const [urlLocators, citations, speakers, creator] = await Promise.all([
-      this.readUrlLocatorsForMediaExcerptId(mediaExcerptId),
-      this.readCitationsForMediaExcerptId(mediaExcerptId),
-      this.readSpeakersForMediaExcerptId(mediaExcerptId),
-      this.usersDao.readUserBlurbForId(row.creator_user_id),
-    ]);
-    return brandedParse(MediaExcerptRef, {
+    return {
       id: row.media_excerpt_id,
       localRep: {
         quotation: row.quotation,
         normalQuotation: row.normal_quotation,
       },
-      locators: {
-        urlLocators,
-      },
-      citations,
-      speakers,
       created: row.created,
       creatorUserId: row.creator_user_id,
-      creator,
-    });
+    };
   }
 
   private async readSpeakersForMediaExcerptId(mediaExcerptId: EntityId) {
@@ -161,9 +179,15 @@ export class MediaExcerptsDao {
     );
   }
 
-  private async readUrlLocatorsForMediaExcerptId(
-    mediaExcerptId: EntityId
+  private async readUrlLocators(
+    filter: { mediaExcerptId: EntityId } | { urlLocatorId: EntityId }
   ): Promise<UrlLocatorOut[]> {
+    const whereColumn =
+      "mediaExcerptId" in filter ? "media_excerpt_id" : "url_locator_id";
+    const args =
+      "mediaExcerptId" in filter
+        ? [filter.mediaExcerptId]
+        : [filter.urlLocatorId];
     const { rows } = await this.database.query(
       "readUrlLocatorsForMediaExcerptId",
       `
@@ -171,19 +195,23 @@ export class MediaExcerptsDao {
         ul.*
       from url_locators ul
         join urls u using (url_id)
-      where media_excerpt_id = $1
+      where ${whereColumn} = $1
         and ul.deleted is null
         and u.deleted is null
         `,
-      [mediaExcerptId]
+      args
     );
     return await Promise.all(
       rows.map(async (row) => {
-        const [url, anchors, creator] = await Promise.all([
-          this.urlsDao.readUrlForId(row.url_id),
-          this.readDomAnchorsForUrlLocatorId(row.url_locator_id),
-          this.usersDao.readUserBlurbForId(row.creator_user_id),
-        ]);
+        const [url, anchors, creator, autoConfirmationStatus] =
+          await Promise.all([
+            this.urlsDao.readUrlForId(row.url_id),
+            this.readDomAnchorsForUrlLocatorId(row.url_locator_id),
+            this.usersDao.readUserBlurbForId(row.creator_user_id),
+            this.urlLocatorAutoConfirmationDao.readConfirmationStatusForUrlLocatorId(
+              row.url_locator_id
+            ),
+          ]);
         if (!url) {
           throw new EntityNotFoundError("URL", row.url_id);
         }
@@ -192,6 +220,7 @@ export class MediaExcerptsDao {
           mediaExcerptId: toIdString(row.media_excerpt_id),
           url,
           anchors,
+          autoConfirmationStatus,
           created: row.created,
           creatorUserId: toIdString(row.creator_user_id),
           creator,
@@ -304,7 +333,7 @@ export class MediaExcerptsDao {
     createUrlLocators: (CreateUrlLocator & { url: UrlOut })[],
     createCitations: (CreateMediaExcerptCitation & { source: SourceOut })[]
   ): Promise<{
-    mediaExcerpt: MediaExcerptOut;
+    mediaExcerpt: Omit<MediaExcerptOut, "speakers">;
     isExtant: boolean;
   }> {
     return await this.database.transaction(
@@ -354,7 +383,7 @@ export class MediaExcerptsDao {
               this.createUrlLocator({
                 client,
                 creator,
-                mediaExcerpt,
+                mediaExcerptId: mediaExcerpt.id,
                 createUrlLocator,
                 created,
               })
@@ -365,7 +394,7 @@ export class MediaExcerptsDao {
               this.createMediaExcerptCitation({
                 client,
                 creator,
-                mediaExcerpt,
+                mediaExcerptId: mediaExcerpt.id,
                 createCitation,
                 created,
               })
@@ -426,8 +455,8 @@ export class MediaExcerptsDao {
   }
 
   async readOrCreateUrlLocator(
-    mediaExcerpt: MediaExcerptRef,
-    createUrlLocator: PartialPersist<CreateUrlLocator, "url">,
+    mediaExcerptId: EntityId,
+    createUrlLocator: CreateUrlLocator & { url: UrlOut },
     creator: UserBlurb,
     created: Moment
   ): Promise<{ urlLocator: UrlLocatorOut; isExtant: boolean }> {
@@ -438,7 +467,7 @@ export class MediaExcerptsDao {
       async (client) => {
         const equivalentUrlLocator = await this.readEquivalentUrlLocator({
           client,
-          mediaExcerpt,
+          mediaExcerptId,
           createUrlLocator,
         });
         if (equivalentUrlLocator) {
@@ -448,7 +477,7 @@ export class MediaExcerptsDao {
         const urlLocator = await this.createUrlLocator({
           client,
           creator,
-          mediaExcerpt,
+          mediaExcerptId,
           createUrlLocator,
           created,
         });
@@ -459,18 +488,18 @@ export class MediaExcerptsDao {
 
   async readEquivalentUrlLocator({
     client = this.database,
-    mediaExcerpt,
+    mediaExcerptId,
     createUrlLocator,
   }: {
     client?: TxnClient;
-    mediaExcerpt: MediaExcerptRef;
-    createUrlLocator: PartialPersist<CreateUrlLocator, "url">;
+    mediaExcerptId: EntityId;
+    createUrlLocator: CreateUrlLocator & { url: UrlOut };
   }): Promise<UrlLocatorOut | undefined> {
     const anchorLength = createUrlLocator.anchors?.length ?? 0;
     const selects: string[] = [];
     const joins: string[] = [];
     const wheres: string[] = [];
-    const args: any[] = [mediaExcerpt.id, createUrlLocator.url.id];
+    const args: any[] = [mediaExcerptId, createUrlLocator.url.id];
     let argIndex = 3;
     createUrlLocator.anchors?.forEach((a, i) => {
       selects.push(`
@@ -506,6 +535,8 @@ export class MediaExcerptsDao {
             ul.url_locator_id
           , ul.created
           , ul.creator_user_id
+          , u.url_id
+          , u.canonical_url
           , (
             select count(*)
             from dom_anchors
@@ -532,10 +563,10 @@ export class MediaExcerptsDao {
       return undefined;
     }
 
-    const urlLocatorId = row.url_locator_id;
-    const anchors: Partial<DomAnchor>[] = new Array(anchorLength)
-      .fill(undefined)
-      .map(() => ({ urlLocatorId }));
+    const urlLocatorId = toIdString(row.url_locator_id);
+    const partialAnchors: Partial<
+      Pick<DomAnchor, "urlLocatorId" | "created" | "creatorUserId">
+    >[] = new Array(anchorLength).fill(undefined).map(() => ({ urlLocatorId }));
     Object.entries(row).map(([k, v]) => {
       const createdMatch = k.match(/^da(\d+)_created$/);
       if (createdMatch) {
@@ -543,7 +574,7 @@ export class MediaExcerptsDao {
         if (!i) {
           throw newImpossibleError("Regex can't match and also have no group.");
         }
-        anchors[parseInt(i)].created = v;
+        partialAnchors[parseInt(i)].created = v;
       }
 
       const creatorMatch = k.match(/^da(\d+)_creator_user_id$/);
@@ -552,36 +583,53 @@ export class MediaExcerptsDao {
         if (!i) {
           throw newImpossibleError("Regex can't match and also have no group.");
         }
-        anchors[parseInt(i)].creatorUserId = v;
+        partialAnchors[parseInt(i)].creatorUserId = v;
       }
     });
-    const creator = await this.usersDao.readUserBlurbForId(row.creator_user_id);
-    return brandedParse(
-      UrlLocatorRef,
-      merge({}, createUrlLocator, {
-        id: toIdString(row.url_locator_id),
-        mediaExcerptId: mediaExcerpt.id,
-        created: row.created,
-        creatorUserId: row.creator_user_id,
-        creator,
-        anchors,
-      })
-    );
+    const anchors = createUrlLocator.anchors
+      ? mergeCopy(
+          createUrlLocator.anchors,
+          partialAnchors as unknown as Pick<
+            DomAnchor,
+            "urlLocatorId" | "created" | "creatorUserId"
+          >[]
+        )
+      : [];
+    const [creator, autoConfirmationStatus] = await Promise.all([
+      this.usersDao.readUserBlurbForId(row.creator_user_id),
+      this.urlLocatorAutoConfirmationDao.readConfirmationStatusForUrlLocatorId(
+        urlLocatorId
+      ),
+    ]);
+    const merged = mergeCopy(createUrlLocator, {
+      id: urlLocatorId,
+      mediaExcerptId,
+      url: {
+        id: toIdString(row.url_id),
+        canonicalUrl: row.canonical_url,
+      },
+      anchors,
+      autoConfirmationStatus,
+      created: row.created,
+      creatorUserId: toIdString(row.creator_user_id),
+      creator,
+    });
+    return brandedParse(UrlLocatorRef, merged);
   }
 
   async createUrlLocator({
     client = this.database,
     creator,
-    mediaExcerpt,
+    mediaExcerptId,
     createUrlLocator,
     created,
   }: {
     client?: TxnClient;
     creator: UserBlurb;
-    mediaExcerpt: MediaExcerptRef;
-    createUrlLocator: CreateUrlLocator;
+    mediaExcerptId: EntityId;
+    createUrlLocator: CreateUrlLocator & { url: UrlOut };
     created: Moment;
-  }) {
+  }): Promise<UrlLocatorOut> {
     const {
       rows: [row],
     } = await client.query(
@@ -591,7 +639,7 @@ export class MediaExcerptsDao {
       values ($1, $2, $3, $4)
       returning url_locator_id
       `,
-      [mediaExcerpt.id, createUrlLocator.url.id, creator.id, created]
+      [mediaExcerptId, createUrlLocator.url.id, creator.id, created]
     );
     const id = row.url_locator_id;
     const anchors = createUrlLocator.anchors
@@ -606,8 +654,11 @@ export class MediaExcerptsDao {
     return brandedParse(UrlLocatorRef, {
       ...createUrlLocator,
       id,
-      mediaExcerptId: mediaExcerpt.id,
+      mediaExcerptId,
       anchors,
+      autoConfirmationStatus: {
+        status: "NEVER_TRIED",
+      },
       created,
       creatorUserId: creator.id,
       creator,
@@ -685,8 +736,8 @@ export class MediaExcerptsDao {
   }
 
   async readOrCreateMediaExcerptCitation(
-    mediaExcerpt: MediaExcerptRef,
-    createCitation: PartialPersist<CreateMediaExcerptCitation, "source">,
+    mediaExcerptId: EntityId,
+    createCitation: CreateMediaExcerptCitation & { source: SourceOut },
     creator: UserBlurb,
     created: Moment
   ): Promise<{ citation: MediaExcerptCitationOut; isExtant: boolean }> {
@@ -697,7 +748,7 @@ export class MediaExcerptsDao {
       async (client) => {
         const extantCitation = await this.readEquivalentMediaExcerptCitation({
           client,
-          mediaExcerpt,
+          mediaExcerptId,
           createCitation,
         });
         if (extantCitation) {
@@ -709,7 +760,7 @@ export class MediaExcerptsDao {
         const citation = await this.createMediaExcerptCitation({
           client,
           creator,
-          mediaExcerpt,
+          mediaExcerptId,
           createCitation,
           created,
         });
@@ -720,18 +771,18 @@ export class MediaExcerptsDao {
 
   private async readEquivalentMediaExcerptCitation({
     client = this.database,
-    mediaExcerpt,
+    mediaExcerptId,
     createCitation,
   }: {
     client: TxnClient;
-    mediaExcerpt: MediaExcerptRef;
-    createCitation: PartialPersist<CreateMediaExcerptCitation, "source">;
+    mediaExcerptId: EntityId;
+    createCitation: CreateMediaExcerptCitation & { source: SourceOut };
   }): Promise<MediaExcerptCitationOut | undefined> {
     const normalPincite =
       createCitation.pincite && normalizeText(createCitation.pincite);
     const args = normalPincite
-      ? [mediaExcerpt.id, createCitation.source.id, normalPincite]
-      : [mediaExcerpt.id, createCitation.source.id];
+      ? [mediaExcerptId, createCitation.source.id, normalPincite]
+      : [mediaExcerptId, createCitation.source.id];
     const { rows } = await client.query(
       "readEquivalentMediaExcerptCitation",
       `select * from media_excerpt_citations
@@ -743,7 +794,7 @@ export class MediaExcerptsDao {
 
     if (rows.length > 1) {
       this.logger.error("readEquivalentMediaExcerptCitation: multiple rows", {
-        mediaExcerptId: mediaExcerpt.id,
+        mediaExcerptId,
         sourceId: createCitation.source.id,
         normalPincite,
         rows,
@@ -755,9 +806,8 @@ export class MediaExcerptsDao {
 
     const row = rows[0];
     return {
-      mediaExcerptId: mediaExcerpt.id,
-      // TODO(452) I think this should come branded.
-      source: brandedParse(SourceRef, createCitation.source),
+      mediaExcerptId,
+      source: createCitation.source,
       pincite: row.pincite,
       normalPincite,
       created: row.created,
@@ -768,14 +818,14 @@ export class MediaExcerptsDao {
   private async createMediaExcerptCitation({
     client = this.database,
     creator,
-    mediaExcerpt,
+    mediaExcerptId,
     createCitation,
     created,
   }: {
     client?: TxnClient;
     creator: UserBlurb;
-    mediaExcerpt: MediaExcerptRef;
-    createCitation: PartialPersist<CreateMediaExcerptCitation, "source">;
+    mediaExcerptId: EntityId;
+    createCitation: CreateMediaExcerptCitation & { source: SourceOut };
     created: Moment;
   }): Promise<MediaExcerptCitationOut> {
     const pincite = createCitation.pincite;
@@ -791,7 +841,7 @@ export class MediaExcerptsDao {
         created
       ) values ($1, $2, $3, $4, $5, $6)`,
       [
-        mediaExcerpt.id,
+        mediaExcerptId,
         createCitation.source.id,
         createCitation.pincite,
         normalPincite,
@@ -800,9 +850,8 @@ export class MediaExcerptsDao {
       ]
     );
     return merge({}, createCitation, {
-      mediaExcerptId: mediaExcerpt.id,
-      // TODO(452) I think this should come branded.
-      source: brandedParse(SourceRef, createCitation.source),
+      mediaExcerptId,
+      source: createCitation.source,
       created,
       creatorUserId: creator.id,
       pincite,
@@ -811,7 +860,7 @@ export class MediaExcerptsDao {
   }
 
   async hasEquivalentMediaExcerptSpeaker(
-    mediaExcerpt: MediaExcerpt,
+    mediaExcerptId: EntityId,
     persorg: PersorgOut
   ) {
     const {
@@ -820,14 +869,14 @@ export class MediaExcerptsDao {
       "hasEquivalentMediaExcerptSpeaker",
       `select * from media_excerpt_speakers
       where media_excerpt_id = $1 and speaker_persorg_id = $2 and deleted is null`,
-      [mediaExcerpt.id, persorg.id]
+      [mediaExcerptId, persorg.id]
     );
     return !!row;
   }
 
   async createMediaExcerptSpeaker(
     userId: string,
-    mediaExcerpt: MediaExcerpt,
+    mediaExcerptId: EntityId,
     speaker: PersorgOut,
     created: Moment
   ) {
@@ -839,7 +888,7 @@ export class MediaExcerptsDao {
         creator_user_id,
         created
       ) values ($1, $2, $3, $4)`,
-      [mediaExcerpt.id, speaker.id, userId, created]
+      [mediaExcerptId, speaker.id, userId, created]
     );
   }
 
@@ -1148,5 +1197,10 @@ export class MediaExcerptsDao {
       }
     }
     return filterSubselects;
+  }
+
+  async readUrlLocatorForId(urlLocatorId: EntityId): Promise<UrlLocatorOut> {
+    const [urlLocator] = await this.readUrlLocators({ urlLocatorId });
+    return urlLocator;
   }
 }
