@@ -22,5 +22,5 @@ git push
 yarn run clean
 yarn run build
 
-node "${script_dir}"/zip-lambda.js
-node "${script_dir}"/upload-lambda.js
+"${script_dir}"/../../bin/build-and-run-script.sh "${script_dir}"/zip-lambda.js
+"${script_dir}"/../../bin/build-and-run-script.sh "${script_dir}"/upload-lambda.js

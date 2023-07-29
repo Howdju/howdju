@@ -1,6 +1,6 @@
 {
   "name": "howdju-message-handler",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "AWS Lambda function for handling SNS messages",
   "main": "src/index.js",
   "scripts": {
@@ -22,6 +22,7 @@
   "devDependencies": {
     "cli-progress": "^3.9.0",
     "cross-env": "^7.0.3",
+    "esbuild": "^0.18.17",
     "eslint": "^8.27.0",
     "eslint-config-howdju": "workspace:eslint-config-howdju",
     "howdju-ops": "workspace:howdju-ops",
