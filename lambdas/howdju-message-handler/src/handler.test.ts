@@ -4,17 +4,20 @@ import { Context, SNSEvent, Callback } from "aws-lambda";
 import { AwsTopicMessageSender } from "howdju-service-common";
 import { mockLogger } from "howdju-test-common";
 
-import { handler } from "./handler";
-import { emailService } from "./provider";
+import { Handler } from "./handler";
+import { provider } from "./provider";
 
-const sendEmailSpy = jest.spyOn(emailService, "sendEmail").mockImplementation();
+const sendEmailSpy = jest
+  .spyOn(provider.emailService, "sendEmail")
+  .mockImplementation();
 const TOPIC_ARN = "the-test-topic-arn";
 
 describe("handler", () => {
   it("handles a TopicMessageSender message", async () => {
     // Integration test of TopicMessageSender and handler
     const callback = jest.fn();
-    const mockSns = new MockSns(callback);
+    const handler = new Handler(provider);
+    const mockSns = new MockSns(handler, callback);
     const topicMessageSender = new AwsTopicMessageSender(
       mockLogger,
       mockSns as unknown as SNS,
@@ -37,7 +40,10 @@ describe("handler", () => {
 });
 
 class MockSns {
-  constructor(private readonly callback: Callback) {}
+  constructor(
+    private readonly handler: Handler,
+    private readonly callback: Callback
+  ) {}
 
   publish(params: SNS.Types.PublishInput) {
     const { TopicArn, Message } = params;
@@ -86,7 +92,7 @@ class MockSns {
 
     const promise = async () => {
       // Call the actual handler
-      await handler(event, context, this.callback);
+      await this.handler.handle(event, context, this.callback);
       return { MessageId: "the-message-id" };
     };
     return { promise };
