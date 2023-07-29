@@ -6,6 +6,8 @@
  */
 
 import { Moment } from "moment";
+import { MergeDeep } from "type-fest";
+
 import { ApiErrorCode } from "./codes";
 import { JustificationView } from "./viewModels";
 import { ModelErrors } from "./zodError";
@@ -32,24 +34,25 @@ import {
   WritQuote,
   UrlLocator,
   MediaExcerptCitation,
-  PersistedEntity,
 } from "./zodSchemas";
 import {
   EntityRef,
   Persisted,
   PersistedJustificationWithRootRef,
   PersistRelated,
+  ToPersistedEntity,
 } from "./zodSchemaTypes";
 
-export interface MediaExcerptOut
-  extends Omit<MediaExcerpt, "id">,
-    PersistedEntity {
-  citations: MediaExcerptCitationOut[];
-  locators: {
-    urlLocators: UrlLocatorOut[];
-  };
-  speakers: PersorgOut[];
-}
+export type MediaExcerptOut = MergeDeep<
+  ToPersistedEntity<MediaExcerpt>,
+  {
+    citations: MediaExcerptCitationOut[];
+    locators: {
+      urlLocators: UrlLocatorOut[];
+    };
+    speakers: PersorgOut[];
+  }
+>;
 
 /** Conveys the status of a UrlLocator to a client. */
 export type UrlLocatorAutoConfirmationStatus =
@@ -76,12 +79,12 @@ export type UrlLocatorAutoConfirmationStatus =
       latestNotFoundAt: Moment;
     };
 
-export interface UrlLocatorOut extends Omit<UrlLocator, "id">, PersistedEntity {
+export interface UrlLocatorOut extends ToPersistedEntity<UrlLocator> {
   url: UrlOut;
   autoConfirmationStatus: UrlLocatorAutoConfirmationStatus;
 }
 
-export type SourceOut = Omit<Source, "id"> & PersistedEntity;
+export type SourceOut = ToPersistedEntity<Source>;
 export type MediaExcerptCitationOut = MediaExcerptCitation & {
   source: SourceOut;
 };
@@ -137,7 +140,7 @@ export type JustificationOut = PersistedJustificationWithRootRef & {
   vote?: JustificationVote;
 };
 
-export type UrlOut = Url & PersistedEntity;
+export type UrlOut = ToPersistedEntity<Url>;
 
 export type JustificationRootTargetOut = PropositionOut | StatementOut;
 

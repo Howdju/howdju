@@ -6,14 +6,14 @@ import {
   MediaExcerptInfo,
 } from "howdju-common";
 
-import { getHtml } from "./getHtml";
+import { fetchUrl } from "./fetchUrl";
 
 /** Given a URL and quotation from it, return anchor info for it */
 export async function requestMediaExcerptInfo(
   url: string,
   quotation: string | undefined
 ): Promise<MediaExcerptInfo> {
-  const html = await getHtml(url);
+  const html = await fetchUrl(url);
   const dom = new JSDOM(html, { url });
 
   const extractedQuotation = extractQuotationFromTextFragment(url, {

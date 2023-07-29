@@ -5,7 +5,7 @@ import { AwsTopicMessageSender } from "howdju-service-common";
 import { mockLogger } from "howdju-test-common";
 
 import { handler } from "./handler";
-import { emailService } from "./services";
+import { emailService } from "./provider";
 
 const sendEmailSpy = jest.spyOn(emailService, "sendEmail").mockImplementation();
 const TOPIC_ARN = "the-test-topic-arn";

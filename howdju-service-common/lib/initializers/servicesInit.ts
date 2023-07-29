@@ -38,6 +38,7 @@ import {
   VidSegmentsService,
   WritsService,
   WritQuotesService,
+  EmailService,
 } from "../services";
 import { AwsProvider } from "./awsInit";
 
@@ -276,6 +277,7 @@ export function servicesInitializer(provider: AwsProvider) {
   );
 
   const mediaExcerptInfosService = new MediaExcerptInfosService();
+  const emailService = new EmailService(provider.logger, provider.sesv2);
 
   provider.logger.debug("servicesInit complete");
 
@@ -286,6 +288,7 @@ export function servicesInitializer(provider: AwsProvider) {
     contentReportsService,
     contextTrailsService,
     devTopicMessageConsumer,
+    emailService,
     groupsService,
     justificationsService,
     justificationBasisCompoundsService,

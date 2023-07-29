@@ -7,7 +7,7 @@ import { DownstreamServiceError } from "./serviceErrors";
 const DIRECT_REQUEST_TIMEOUT = 3000;
 const ZEN_ROWS_REQUEST_TIMEOUT = 5000;
 
-export async function getHtml(url: string): Promise<string> {
+export async function fetchUrl(url: string): Promise<string> {
   logger.info(`Requesting URL directly: ${url}`);
   try {
     const response = await axios.get(url, {

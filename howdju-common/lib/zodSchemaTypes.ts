@@ -281,6 +281,9 @@ export type PersistRelated<T> = {
     : T[key];
 };
 
+export type ToPersistedEntity<E extends Entity> = Omit<E, "id"> &
+  PersistedEntity;
+
 /** Returns a type with some of T's properties persisted. */
 export type PartialPersist<T, Props extends keyof T> = Omit<T, Props> & {
   [key in Props]: T[key] extends Entity

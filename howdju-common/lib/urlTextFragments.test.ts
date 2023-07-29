@@ -2,85 +2,76 @@ import { readFileSync } from "fs";
 import { JSDOM } from "jsdom";
 import stripIndent from "strip-indent";
 
-import { UrlLocator, utcNow } from "howdju-common";
+import { mergeCopy, utcNow } from "howdju-common";
 
 import {
   extractQuotationFromTextFragment,
   toUrlWithFragment,
 } from "./urlTextFragments";
 
+const baseUrlLocator = {
+  id: "url-locator-id",
+  url: {
+    id: "url-id",
+    // missing URL
+    canonicalUrl: "https://example.com",
+  },
+  anchors: [
+    {
+      // missing exactText
+      prefixText: "the prefix text",
+      suffixText: "the suffix text",
+      startOffset: 0,
+      endOffset: 1,
+      urlLocatorId: "url-locator-id",
+      created: utcNow(),
+      creatorUserId: "creator-user-id",
+    },
+  ],
+  created: utcNow(),
+  creator: {
+    id: "creator-user-id",
+    longName: "Creator User",
+  },
+  mediaExcerptId: "the-media-excerpt-id",
+  creatorUserId: "creator-user-id",
+};
+
 describe("toUrlWithFragment", () => {
   it("should return the URL with the fragment", () => {
-    const urlLocator: UrlLocator = {
-      id: "url-locator-id",
+    const urlLocator = mergeCopy(baseUrlLocator, {
       url: {
-        id: "url-id",
         url: "https://example.com",
-        canonicalUrl: "https://example.com",
       },
       anchors: [
         {
           exactText: "the exact text",
-          prefixText: "the prefix text",
-          suffixText: "the suffix text",
-          startOffset: 0,
-          endOffset: 1,
-          urlLocatorId: "url-locator-id",
-          created: utcNow(),
-          creatorUserId: "creator-user-id",
         },
       ],
-      created: utcNow(),
-      creator: {
-        id: "creator-user-id",
-        longName: "Creator User",
-      },
-      mediaExcerptId: "the-media-excerpt-id",
-      creatorUserId: "creator-user-id",
-    };
+    });
     expect(toUrlWithFragment(urlLocator)).toBe(
       "https://example.com/#:~:text=the%20exact%20text"
     );
   });
   it("is compatible with an existing document fragment", () => {
-    const urlLocator: UrlLocator = {
-      id: "url-locator-id",
+    const urlLocator = mergeCopy(baseUrlLocator, {
       url: {
-        id: "url-id",
         url: "https://example.com#some-heading",
-        canonicalUrl: "https://example.com",
       },
       anchors: [
         {
           exactText: "the exact text",
-          prefixText: "the prefix text",
-          suffixText: "the suffix text",
-          startOffset: 0,
-          endOffset: 1,
-          urlLocatorId: "url-locator-id",
-          created: utcNow(),
-          creatorUserId: "creator-user-id",
         },
       ],
-      created: utcNow(),
-      creator: {
-        id: "creator-user-id",
-        longName: "Creator User",
-      },
-      mediaExcerptId: "the-media-excerpt-id",
-      creatorUserId: "creator-user-id",
-    };
+    });
     expect(toUrlWithFragment(urlLocator)).toBe(
       "https://example.com/#some-heading:~:text=the%20exact%20text"
     );
   });
   it("supports multiple anchors", () => {
-    const urlLocator: UrlLocator = {
-      id: "url-locator-id",
+    const urlLocator = mergeCopy(baseUrlLocator, {
       url: {
-        id: "url-id",
         url: "https://example.com",
-        canonicalUrl: "https://example.com",
       },
       anchors: [
         {
@@ -104,110 +95,52 @@ describe("toUrlWithFragment", () => {
           creatorUserId: "creator-user-id",
         },
       ],
-      created: utcNow(),
-      creator: {
-        id: "creator-user-id",
-        longName: "Creator User",
-      },
-      mediaExcerptId: "the-media-excerpt-id",
-      creatorUserId: "creator-user-id",
-    };
+    });
     expect(toUrlWithFragment(urlLocator)).toBe(
       "https://example.com/#:~:text=the%20exact%20text&text=the%20exact%20text%202"
     );
   });
   it("overwrites an existing text fragment", () => {
-    const urlLocator: UrlLocator = {
-      id: "url-locator-id",
+    const urlLocator = mergeCopy(baseUrlLocator, {
       url: {
-        id: "url-id",
         url: "https://example.com#:~:text=some%20previous%20fragment",
-        canonicalUrl: "https://example.com",
       },
       anchors: [
         {
           exactText: "the exact text",
-          prefixText: "the prefix text",
-          suffixText: "the suffix text",
-          startOffset: 0,
-          endOffset: 1,
-          urlLocatorId: "url-locator-id",
-          created: utcNow(),
-          creatorUserId: "creator-user-id",
         },
       ],
-      created: utcNow(),
-      creator: {
-        id: "creator-user-id",
-        longName: "Creator User",
-      },
-      mediaExcerptId: "the-media-excerpt-id",
-      creatorUserId: "creator-user-id",
-    };
+    });
     expect(toUrlWithFragment(urlLocator)).toBe(
       "https://example.com/#:~:text=the%20exact%20text"
     );
   });
   it("preserves a document fragment while overwriting an existing text fragment", () => {
-    const urlLocator: UrlLocator = {
-      id: "url-locator-id",
+    const urlLocator = mergeCopy(baseUrlLocator, {
       url: {
-        id: "url-id",
         url: "https://example.com#the-doc-fragment:~:text=some%20previous%20fragment",
-        canonicalUrl: "https://example.com",
       },
       anchors: [
         {
           exactText: "the exact text",
-          prefixText: "the prefix text",
-          suffixText: "the suffix text",
-          startOffset: 0,
-          endOffset: 1,
-          urlLocatorId: "url-locator-id",
-          created: utcNow(),
-          creatorUserId: "creator-user-id",
         },
       ],
-      created: utcNow(),
-      creator: {
-        id: "creator-user-id",
-        longName: "Creator User",
-      },
-      mediaExcerptId: "the-media-excerpt-id",
-      creatorUserId: "creator-user-id",
-    };
+    });
     expect(toUrlWithFragment(urlLocator)).toBe(
       "https://example.com/#the-doc-fragment:~:text=the%20exact%20text"
     );
   });
   it("encodes hyphens", () => {
-    const urlLocator: UrlLocator = {
-      id: "url-locator-id",
+    const urlLocator = mergeCopy(baseUrlLocator, {
       url: {
-        id: "url-id",
         url: "https://example.com",
-        canonicalUrl: "https://example.com",
       },
       anchors: [
         {
           exactText: "the - exact - text",
-          prefixText: "the prefix text",
-          suffixText: "the suffix text",
-          startOffset: 0,
-          endOffset: 1,
-          urlLocatorId: "url-locator-id",
-          created: utcNow(),
-          creatorUserId: "creator-user-id",
         },
       ],
-      created: utcNow(),
-      creator: {
-        id: "creator-user-id",
-        longName: "Creator User",
-      },
-      mediaExcerptId: "the-media-excerpt-id",
-      creatorUserId: "creator-user-id",
-    };
+    });
     expect(toUrlWithFragment(urlLocator)).toBe(
       "https://example.com/#:~:text=the%20%2D%20exact%20%2D%20text"
     );

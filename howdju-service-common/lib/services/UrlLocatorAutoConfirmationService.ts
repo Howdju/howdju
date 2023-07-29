@@ -3,7 +3,7 @@ import * as textQuote from "dom-anchor-text-quote";
 
 import { toJson, utcNow } from "howdju-common";
 
-import { getHtml } from "../getHtml";
+import { fetchUrl } from "../fetchUrl";
 import { MediaExcerptsService } from "./MediaExcerptsService";
 import {
   UrlLocatorAutoConfirmationDao,
@@ -64,7 +64,7 @@ async function confirmQuotation(
 ): Promise<ConfirmationResult> {
   let html;
   try {
-    html = await getHtml(url);
+    html = await fetchUrl(url);
   } catch (err) {
     if (err instanceof Error) {
       return {
