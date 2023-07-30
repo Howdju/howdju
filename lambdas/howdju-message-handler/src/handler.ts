@@ -1,6 +1,6 @@
 import { Context, SNSEvent, Callback } from "aws-lambda";
 
-import { fromJson, TopicMessage } from "howdju-common";
+import { fromJson, toJson, TopicMessage } from "howdju-common";
 import { AppProvider } from "./LambdaProvider";
 
 import { provider } from "./provider";
@@ -33,7 +33,7 @@ export class Handler {
       } catch (err) {
         provider.logger.exception(
           err,
-          `Error handling message ${{ event, context }}`
+          `Error handling message ${toJson({ event, context, err })}`
         );
       }
     }

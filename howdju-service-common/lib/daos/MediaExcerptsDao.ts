@@ -1199,7 +1199,9 @@ export class MediaExcerptsDao {
     return filterSubselects;
   }
 
-  async readUrlLocatorForId(urlLocatorId: EntityId): Promise<UrlLocatorOut> {
+  async readUrlLocatorForId(
+    urlLocatorId: EntityId
+  ): Promise<UrlLocatorOut | undefined> {
     const [urlLocator] = await this.readUrlLocators({ urlLocatorId });
     return urlLocator;
   }

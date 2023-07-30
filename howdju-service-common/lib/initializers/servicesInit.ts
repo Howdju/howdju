@@ -173,6 +173,7 @@ export function servicesInitializer(provider: AwsProvider) {
 
   const urlLocatorAutoConfirmationService =
     new UrlLocatorAutoConfirmationService(
+      provider.logger,
       mediaExcerptsService,
       provider.urlLocatorAutoConfirmationDao
     );
