@@ -1,7 +1,7 @@
 import { JSDOM } from "jsdom";
 import * as textQuote from "dom-anchor-text-quote";
 
-import { toJson, utcNow } from "howdju-common";
+import { Logger, toJson, utcNow } from "howdju-common";
 
 import { fetchUrl } from "../fetchUrl";
 import { MediaExcerptsService } from "./MediaExcerptsService";
@@ -9,9 +9,11 @@ import {
   UrlLocatorAutoConfirmationDao,
   UrlLocatorAutoConfirmationResult,
 } from "../daos/UrlLocatorAutoConfirmationDao";
+import { EntityNotFoundError } from "..";
 
 export class UrlLocatorAutoConfirmationService {
   constructor(
+    private readonly logger: Logger,
     private readonly mediaExcerptsService: MediaExcerptsService,
     private readonly urlLocatorAutoConfirmationDao: UrlLocatorAutoConfirmationDao
   ) {}
@@ -19,10 +21,16 @@ export class UrlLocatorAutoConfirmationService {
   public async confirmUrlLocator(
     urlLocatorId: string
   ): Promise<UrlLocatorAutoConfirmationResult> {
+    const urlLocator = await this.mediaExcerptsService.readUrlLocatorForId(
+      urlLocatorId
+    );
+    if (!urlLocator) {
+      throw new EntityNotFoundError("URL_LOCATOR", urlLocatorId);
+    }
     const {
       url: { url },
       mediaExcerptId,
-    } = await this.mediaExcerptsService.readUrlLocatorForId(urlLocatorId);
+    } = urlLocator;
     const { quotation } =
       await this.mediaExcerptsService.readMediaExcerptLocalRepForId(
         mediaExcerptId
@@ -37,6 +45,7 @@ export class UrlLocatorAutoConfirmationService {
       quotation,
       completeAt: utcNow(),
     };
+    this.logger.info(`Auto confirmation result: ${toJson(result)}`);
     return await this.urlLocatorAutoConfirmationDao.create(result);
   }
 }
