@@ -17,7 +17,7 @@ export function toUrlWithFragmentFromQuotation(url: string, quotation: string) {
   }
 
   const hash =
-    // substring from 1 to remove the leading #.
+    // remove an existing text fragment
     fragmentDirectiveIndex > -1
       ? urlObj.hash.substring(0, fragmentDirectiveIndex)
       : urlObj.hash;
