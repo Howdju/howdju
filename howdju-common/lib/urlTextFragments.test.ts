@@ -200,6 +200,14 @@ describe("extractQuotationFromTextFragment", () => {
       )
     ).toBe("the exact text start…the exact text end");
   });
+
+  it("extracts the quotation from the text fragment with a document fragment", () => {
+    expect(
+      extractQuotationFromTextFragment(
+        "https://example.com#the-document-fragment:~:text=the%20exact%20text"
+      )
+    ).toBe("the exact text");
+  });
   it("returns the full quotation from a text fragment with a text end if doc is provided", () => {
     const dom = new JSDOM(
       `<html><body>Something eloquent about the exact text <a href="link">should include the whole text</a> to the text end and what not.</body></html>`

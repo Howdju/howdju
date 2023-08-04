@@ -685,7 +685,7 @@ function urlLocatorCustomizer(
 
 /** Iteratively applies customizations to an entity. */
 export function applyCustomizations(entity, ...customizations) {
-  return reduce(
+  const result = reduce(
     customizations,
     (entity, customization) => {
       const customized = customization(entity);
@@ -693,6 +693,7 @@ export function applyCustomizations(entity, ...customizations) {
     },
     entity
   );
+  return result;
 }
 
 /** Converts path to moment */
@@ -700,7 +701,8 @@ function momentConversion(path) {
   return (entity) => {
     const value = get(entity, path);
     if (value) {
-      return set(entity, path, moment(value));
+      const result = merge(entity, set({}, path, moment(value)));
+      return result;
     }
     return entity;
   };
@@ -713,7 +715,7 @@ function persorgCustomizer(oldPersorg, newPersorg, key, object, source) {
 }
 
 function mediaExcerptCustomizer(oldExcerpt, newExcerpt, key, object, source) {
-  return applyCustomizations(
+  const result = applyCustomizations(
     merge({}, oldExcerpt, newExcerpt, {
       // Create a key on citations. Since they aren't a normalizr entity, we can update them here.
       citations: newExcerpt?.citations.map((citation) => ({
@@ -723,6 +725,7 @@ function mediaExcerptCustomizer(oldExcerpt, newExcerpt, key, object, source) {
     }),
     momentConversion("created")
   );
+  return result;
 }
 
 function propositionCustomizer(

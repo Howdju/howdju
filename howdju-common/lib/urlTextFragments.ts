@@ -11,15 +11,19 @@ export function toUrlWithFragmentFromQuotation(url: string, quotation: string) {
     return url;
   }
   const urlObj = new URL(url);
-  if (urlObj.hash.includes(FRAGMENT_DIRECTIVE)) {
-    throw new Error(`URL should not already have a text fragment: ${url}`);
+  const fragmentDirectiveIndex = urlObj.hash.indexOf(FRAGMENT_DIRECTIVE);
+  if (fragmentDirectiveIndex > -1) {
+    logger.error(`URL should not already have a text fragment: ${url}`);
   }
 
+  const hash =
+    // substring from 1 to remove the leading #.
+    fragmentDirectiveIndex > -1
+      ? urlObj.hash.substring(0, fragmentDirectiveIndex)
+      : urlObj.hash;
+
   urlObj.hash =
-    urlObj.hash +
-    FRAGMENT_DIRECTIVE +
-    "text=" +
-    cleanTextFragmentParameter(quotation);
+    hash + FRAGMENT_DIRECTIVE + "text=" + cleanTextFragmentParameter(quotation);
   return urlObj.toString();
 }
 
@@ -102,8 +106,7 @@ export function extractQuotationFromTextFragment(
   options: ExtractQuotationFromTextFragmentOptions = defaultOptions
 ): string | undefined {
   const urlObj = new URL(url);
-  const hash = urlObj.hash.replace(/^#/, "");
-  const fragmentMatch = hash.match(/^:~:(.*)$/);
+  const fragmentMatch = urlObj.hash.match(/:~:(.*)$/);
   if (!fragmentMatch) {
     return undefined;
   }

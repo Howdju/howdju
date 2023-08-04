@@ -1,7 +1,7 @@
 import { Pool } from "pg";
 import { merge, parseInt, toString } from "lodash";
 
-import { MomentConstructor, utcNow } from "howdju-common";
+import { MomentConstructor, normalizeUrl, utcNow } from "howdju-common";
 import { expectToBeSameMomentDeep, mockLogger } from "howdju-test-common";
 
 import { endPoolAndDropDb, initDb, makeTestDbConfig } from "@/util/testUtil";
@@ -673,5 +673,64 @@ describe("MediaExcerptsDao", () => {
         );
       }
     );
+    describe("readPopularSourceDescriptions", () => {
+      test("reads popular source descriptions", async () => {
+        const url = normalizeUrl("https://www.example.com/the-path");
+        const { authToken } = await testHelper.makeUser();
+        await mediaExcerptsService.readOrCreateMediaExcerpt(
+          { authToken },
+          {
+            localRep: {
+              quotation: "The quotation 1",
+            },
+            locators: {
+              urlLocators: [{ url: { url } }],
+            },
+            citations: [
+              { source: { description: "The source description 1" } },
+            ],
+          }
+        );
+        await mediaExcerptsService.readOrCreateMediaExcerpt(
+          { authToken },
+          {
+            localRep: {
+              quotation: "The quotation 2",
+            },
+            locators: {
+              urlLocators: [{ url: { url } }],
+            },
+            citations: [
+              { source: { description: "The source description 1" } },
+              { source: { description: "The source description 2" } },
+            ],
+          }
+        );
+        await mediaExcerptsService.readOrCreateMediaExcerpt(
+          { authToken },
+          {
+            localRep: {
+              quotation: "The quotation 2",
+            },
+            locators: {
+              urlLocators: [
+                { url: { url: "https://www.example.com/other-path" } },
+              ],
+            },
+            citations: [
+              { source: { description: "The source description 3" } },
+            ],
+          }
+        );
+
+        const popularSourceDescriptions =
+          await dao.readPopularSourceDescriptions(url);
+
+        expect(popularSourceDescriptions).toEqual([
+          "The source description 1",
+          "The source description 2",
+        ]);
+      });
+    });
   });
 });
