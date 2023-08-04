@@ -4,9 +4,8 @@ import webpack from "webpack";
 import CssMinimizerPlugin from "css-minimizer-webpack-plugin";
 import TerserPlugin from "terser-webpack-plugin";
 
-import { utcTimestamp } from "howdju-common";
+import { gitSha, getApiRoot, utcTimestamp } from "howdju-ops";
 
-import { gitSha, getApiRoot } from "howdju-ops";
 import packageInfo from "../package.json";
 import projectConfig from "./project.config";
 import type HtmlWebpackPlugin from "html-webpack-plugin";

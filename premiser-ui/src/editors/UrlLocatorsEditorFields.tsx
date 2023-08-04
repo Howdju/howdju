@@ -1,11 +1,12 @@
-import React, { MouseEvent } from "react";
+import React, { MouseEvent, useState } from "react";
 import { MaterialSymbol } from "react-material-symbols";
-import { Button } from "react-md";
+import { Button, CircularProgress } from "react-md";
 import { isEmpty } from "lodash";
 
 import {
   CreateUrlLocatorInput,
   makeCreateUrlLocatorInput,
+  normalizeUrl,
 } from "howdju-common";
 
 import { makeErrorPropCreator } from "@/modelErrorMessages";
@@ -13,7 +14,9 @@ import SingleLineTextField from "@/SingleLineTextField";
 import { EditorFieldsDispatch, EntityEditorFieldsProps } from "./withEditor";
 import { combineIds, combineNames } from "@/viewModels";
 import { EditorType } from "@/reducers/editors";
-import { editors } from "@/actions";
+import { api, editors } from "@/actions";
+import { isValidUrl } from "@/util";
+import { useAppDispatch, useAppSelector } from "@/hooks";
 
 import "./UrlLocatorsEditorFields.scss";
 
@@ -46,6 +49,14 @@ export default function UrlLocatorsEditorFields({
   onInferMediaExcerptInfo,
   maxUrlLocatorCount = 1,
 }: Props) {
+  const [normalUrlsByName, setNormalUrlsByName] = useState(
+    {} as Record<string, string>
+  );
+  const urlStatesByName = useAppSelector(
+    (state) => state.urlLocatorsEditorFields.urlStatesByName
+  );
+  const dispatch = useAppDispatch();
+
   if (!urlLocators) {
     return null;
   }
@@ -74,6 +85,30 @@ export default function UrlLocatorsEditorFields({
     );
   }
 
+  function onBlurUrlLocatorUrl(name: string, value: string) {
+    if (!(name in normalUrlsByName)) {
+      const normalUrl = normalizeUrl(value);
+      setNormalUrlsByName({
+        ...normalUrlsByName,
+        [name]: normalUrl,
+      });
+      dispatch(api.fetchCanonicalUrl(name, value));
+    } else {
+      const normalUrl = normalUrlsByName[name];
+      const newNormalUrl = normalizeUrl(value);
+      if (newNormalUrl !== normalUrl) {
+        dispatch(api.fetchCanonicalUrl(name, value));
+        setNormalUrlsByName({
+          ...normalUrlsByName,
+          [name]: newNormalUrl,
+        });
+      }
+    }
+    if (onBlur) {
+      onBlur(name, value);
+    }
+  }
+
   const errorProps = makeErrorPropCreator(
     wasSubmitAttempted,
     errors,
@@ -82,58 +117,82 @@ export default function UrlLocatorsEditorFields({
   );
   return (
     <div>
-      {urlLocators.map(({ url, anchors }, index) => (
-        <SingleLineTextField
-          {...errorProps((ul) => ul[index].url.url)}
-          id={combineIds(id, `[${index}]url.url`)}
-          key={combineIds(id, `[${index}]url.url`)}
-          name={combineNames(name, `[${index}]url.url`)}
-          aria-label="url"
-          type="url"
-          label="URL"
-          value={url.url}
-          rightIcon={
-            <>
-              {!isEmpty(anchors) && (
-                <MaterialSymbol
-                  key="anchor-icon"
-                  className="url-anchor-icon"
-                  icon="my_location"
-                  size={16}
-                  title="Has a fragment taking you directly to the excerpt"
-                />
-              )}
-              {onInferMediaExcerptInfo && (
-                <Button
-                  key="infer-media-excerpt-info-button"
-                  icon
-                  onClick={() => onInferMediaExcerptInfo(url.url, index)}
-                  disabled={disabled || !url.url}
-                >
-                  <MaterialSymbol
-                    icon="plagiarism"
-                    size={22}
-                    title="Infer quotation and source description"
-                  />
-                </Button>
-              )}
-              <Button
-                key="delete-url-locator-button"
-                icon
-                onClick={() => onRemoveUrlLocator(index)}
-                disabled={disabled}
-              >
-                delete
-              </Button>
-            </>
-          }
-          rightIconStateful={false}
-          disabled={disabled || !isEmpty(anchors)}
-          onBlur={onBlur}
-          onPropertyChange={onPropertyChange}
-          onSubmit={onSubmit}
-        />
-      ))}
+      {urlLocators.map(({ url, anchors }, index) => {
+        const normalizedUrl = isValidUrl(url.url)
+          ? normalizeUrl(url.url)
+          : undefined;
+        const urlName = combineNames(name, `[${index}].url.url`);
+        const { isFetchingCanonicalUrl, canonicalUrl } =
+          urlStatesByName[urlName] || {};
+        return (
+          <div key={combineIds(id, `[${index}]`)}>
+            <SingleLineTextField
+              {...errorProps((ul) => ul[index].url.url)}
+              id={combineIds(id, `[${index}].url.url`)}
+              name={urlName}
+              aria-label="url"
+              type="url"
+              label="URL"
+              value={url.url}
+              rightIcon={
+                <>
+                  {!isEmpty(anchors) && (
+                    <MaterialSymbol
+                      key="anchor-icon"
+                      className="url-anchor-icon"
+                      icon="my_location"
+                      size={16}
+                      title="Has a fragment taking you directly to the excerpt"
+                    />
+                  )}
+                  {onInferMediaExcerptInfo && (
+                    <Button
+                      key="infer-media-excerpt-info-button"
+                      icon
+                      onClick={() => onInferMediaExcerptInfo(url.url, index)}
+                      disabled={disabled || !url.url}
+                    >
+                      <MaterialSymbol
+                        icon="plagiarism"
+                        size={22}
+                        title="Infer quotation and source description"
+                      />
+                    </Button>
+                  )}
+                  <Button
+                    key="delete-url-locator-button"
+                    icon
+                    onClick={() => onRemoveUrlLocator(index)}
+                    disabled={disabled}
+                  >
+                    delete
+                  </Button>
+                </>
+              }
+              rightIconStateful={false}
+              disabled={disabled || !isEmpty(anchors)}
+              onBlur={onBlurUrlLocatorUrl}
+              onPropertyChange={onPropertyChange}
+              onSubmit={onSubmit}
+            />
+            {normalizedUrl && normalizedUrl !== url.url && (
+              <div className="url-status">
+                Normalized to{" "}
+                <span className="url-status-url">{normalizedUrl}</span>
+              </div>
+            )}
+            {canonicalUrl && canonicalUrl !== url.url && (
+              <div className="url-status">
+                Canonical URL:{" "}
+                <span className="url-status-url">{canonicalUrl}</span>
+              </div>
+            )}
+            {isFetchingCanonicalUrl && (
+              <CircularProgress id="fetching-canonical-url" />
+            )}
+          </div>
+        );
+      })}
       {(urlLocators?.length ?? 0) < maxUrlLocatorCount && (
         <Button
           iconEl={<MaterialSymbol icon="add_link" />}

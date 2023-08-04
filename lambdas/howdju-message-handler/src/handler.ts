@@ -55,6 +55,11 @@ export class Handler {
         );
         break;
       }
+      case "CONFIRM_CANONICAL_URL": {
+        const { urlId } = params;
+        await this.provider.urlsService.confirmCanonicalUrl(urlId);
+        break;
+      }
     }
   }
 }

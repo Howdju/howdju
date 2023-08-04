@@ -110,7 +110,6 @@ describe("MediaExcerptsService", () => {
                   mediaExcerptId: mediaExcerpt.id,
                   url: {
                     id: expect.any(String),
-                    canonicalUrl: url.url,
                     ...creatorInfo,
                   },
                   anchors: [

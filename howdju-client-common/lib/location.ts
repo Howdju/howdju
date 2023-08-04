@@ -1,14 +1,13 @@
-import { isUndefined } from "lodash";
+import { isUrl, normalizeUrl } from "howdju-common";
 
 export function urlEquivalent(
   url1: string | undefined,
   url2: string | undefined
 ) {
-  if (isUndefined(url1) || isUndefined(url2)) {
+  if (!isUrl(url1) || !isUrl(url2)) {
     return false;
   }
-  // TODO something more sophisticated. E.g. ignore anchor in most cases, ignore query in many cases.
-  return url1 === url2;
+  return normalizeUrl(url1) === normalizeUrl(url2);
 }
 
 const canonicalUrlSelectorAttributes = [

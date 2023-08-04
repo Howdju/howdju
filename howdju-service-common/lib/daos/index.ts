@@ -1,6 +1,7 @@
 export * from "./AccountSettingsDao";
 export * from "./ActionsDao";
 export * from "./AuthDao";
+export * from "./CanonicalUrlsDao";
 export * from "./ContentReportsDao";
 export * from "./dataTypes";
 export * from "./JobHistoryDao";

@@ -3,7 +3,6 @@ import { MaterialSymbol } from "react-material-symbols";
 
 import {
   MediaExcerptView,
-  removeQueryParamsAndFragment,
   toUrlWithFragment,
   UrlLocatorView,
 } from "howdju-common";
@@ -63,7 +62,6 @@ function toAnchorElement(
   urlLocator: UrlLocatorView
 ) {
   const url = toUrlWithFragment(urlLocator);
-  const displayUrl = removeQueryParamsAndFragment(urlLocator.url.url);
   const anchorsIcon = urlLocator.anchors?.length ? (
     <MaterialSymbol
       icon="my_location"
@@ -84,7 +82,7 @@ function toAnchorElement(
 
   return (
     <a href={url}>
-      {displayUrl} {anchorsIcon} {confirmationStatus} {creationInfo}
+      {urlLocator.url.url} {anchorsIcon} {confirmationStatus} {creationInfo}
     </a>
   );
 }

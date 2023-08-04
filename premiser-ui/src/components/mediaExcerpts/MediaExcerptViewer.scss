@@ -73,7 +73,10 @@ ul.speakers {
 
 .material-symbols.auto-confirmation-icon {
   &.found {
-    color: $emerald;
+    color: $nephritis;
+  }
+  &.fuzzy-found {
+    color: $sunflower;
   }
   &.previously-found {
     color: $sunflower;

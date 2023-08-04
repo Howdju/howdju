@@ -29,7 +29,7 @@ export function toUrlWithFragment(
     );
   }
 
-  const hash =
+  const documentFragment =
     // substring from 1 to remove the leading #.
     fragmentDirectiveIndex > -1
       ? urlObj.hash.substring(1, fragmentDirectiveIndex)
@@ -45,12 +45,12 @@ export function toUrlWithFragment(
     }
     return `text=${parameters.join(",")}`;
   });
-  const fragmentHash = textDirectives?.length
-    ? `#${hash}:~:${textDirectives.join("&")}`
-    : hash
-    ? `#${hash}`
+  const newHash = textDirectives?.length
+    ? `#${documentFragment}:~:${textDirectives.join("&")}`
+    : documentFragment
+    ? `#${documentFragment}`
     : "";
-  urlObj.hash = fragmentHash;
+  urlObj.hash = newHash;
   return urlObj.toString();
 }
 

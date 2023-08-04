@@ -14,6 +14,7 @@ import WarningsToErrorsPlugin from "warnings-to-errors-webpack-plugin";
 import StatoscopeWebpackPlugin from "@statoscope/webpack-plugin";
 
 import { gitShaShort } from "howdju-ops";
+
 import packageInfo from "../package.json";
 import projectConfig from "./project.config";
 import { sassLoaderAdditionalData } from "./sass-loader-additional-data";
@@ -114,7 +115,7 @@ const baseWebpackConfig = {
         },
       },
       {
-        test: /node_modules\/@grrr\/(cookie-consent|utils)/,
+        test: /node_modules\/(@grrr\/(cookie-consent|utils)|normalize-url)/,
         resolve: {
           fullySpecified: false, // Allow cookie-consent's modules to import files without their extension
           // Support ES module extensions when resolving the file corresponding to an extensionless package

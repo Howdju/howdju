@@ -32,7 +32,7 @@ export type EditorId = string;
 /** A key for storing text field suggestions in the state. */
 export type SuggestionsKey = string;
 
-export type OnBlurCallback = (name: string) => void;
+export type OnBlurCallback = (name: string, value: string) => void;
 export type OnCheckboxBlurCallback =
   | ((event: FocusEvent<HTMLElement>) => void)
   | undefined;
@@ -43,7 +43,8 @@ export const toReactMdOnBlur = (
   return function (event: FocusEvent<HTMLElement>) {
     if (onBlurCallback) {
       if ("name" in event.target) {
-        onBlurCallback((event as FocusEvent<HTMLInputElement>).target.name);
+        const target = (event as FocusEvent<HTMLInputElement>).target;
+        onBlurCallback(target.name, target.value);
       } else {
         logger.error(
           "Unable to call blur callback because event did not target an HTMLInputElement"

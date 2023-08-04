@@ -24,6 +24,7 @@ import { propositionUsagesPage } from "@/pages/propositionUsages/propositionUsag
 import { mediaExcerptUsagesPage } from "@/pages/mediaExcerptUsages/mediaExcerptUsagesPageSlice";
 import { registrationConfirmationPage } from "@/pages/registration/registrationConfirmationPageSlice";
 import { primaryContextTrail } from "@/components/contextTrail/primaryContextTrailSlice";
+import { urlLocatorsEditorFields } from "@/editors/urlLocatorsEditorFieldsSlice";
 
 export default (history: History) =>
   combineReducers({
@@ -49,5 +50,6 @@ export default (history: History) =>
     sourcePage,
     tagPage,
     ui,
+    urlLocatorsEditorFields,
     widgets,
   });

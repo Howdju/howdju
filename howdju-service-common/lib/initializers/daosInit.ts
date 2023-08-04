@@ -2,6 +2,7 @@ import {
   AccountSettingsDao,
   ActionsDao,
   AuthDao,
+  CanonicalUrlsDao,
   ContentReportsDao,
   WritQuotesDao,
   WritsDao,
@@ -50,6 +51,7 @@ export function daosInitializer(provider: DatabaseProvider) {
   const actionsDao = new ActionsDao(database);
   const authDao = new AuthDao(database);
   const usersDao = new UsersDao(database);
+  const canonicalUrlsDao = new CanonicalUrlsDao(database);
   const contentReportsDao = new ContentReportsDao(logger, database);
   const urlsDao = new UrlsDao(logger, database);
   const writsDao = new WritsDao(logger, database);
@@ -126,6 +128,7 @@ export function daosInitializer(provider: DatabaseProvider) {
     accountSettingsDao,
     actionsDao,
     authDao,
+    canonicalUrlsDao,
     contentReportsDao,
     jobHistoryDao,
     justificationScoresDao,

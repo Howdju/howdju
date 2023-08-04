@@ -1373,4 +1373,21 @@ export const serviceRoutes = {
       }
     ),
   },
+
+  /** Canonical URLs */
+  readCanonicalUrl: {
+    path: "canonical-url",
+    method: httpMethods.GET,
+    request: handler(
+      Authed.merge(QueryStringParams("url")),
+      async (appProvider: ServicesProvider, { queryStringParams: { url } }) => {
+        if (!url) {
+          throw new InvalidRequestError("url is required.");
+        }
+        const canonicalUrl =
+          await appProvider.canonicalUrlsService.readOrFetchCanonicalUrl(url);
+        return { body: { canonicalUrl } };
+      }
+    ),
+  },
 } as const;

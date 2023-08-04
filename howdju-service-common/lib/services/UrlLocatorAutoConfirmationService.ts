@@ -97,8 +97,11 @@ async function confirmQuotation(
       status: "NOT_FOUND",
     };
   }
+
+  // TODO(491) add an INEXACT_FOUND option if foundQuotation !== quotation.
+  const foundQuotation = quotationRange.toString();
   return {
     status: "FOUND",
-    foundQuotation: quotationRange.toString(),
+    foundQuotation,
   };
 }

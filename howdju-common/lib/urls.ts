@@ -1,4 +1,7 @@
 import isValidDomain from "is-valid-domain";
+import normalizeUrlNpm, { Options as NormalizeUrlOptions } from "normalize-url";
+
+import { mergeCopy } from "./general";
 
 export function extractDomain(url: string | undefined) {
   url = url?.trim();
@@ -13,7 +16,7 @@ export function extractDomain(url: string | undefined) {
   }
 }
 
-export function isUrl(text: string | undefined) {
+export function isUrl(text: string | undefined): text is string {
   text = text?.trim();
   if (!text) {
     return false;
@@ -43,4 +46,20 @@ export function removeQueryParamsAndFragment(url: string) {
     return url.substring(0, j);
   }
   return url;
+}
+
+/**
+ * Normalizes a URL.
+ *
+ * - Add https scheme if the URL has no scheme
+ * - Remove text fragment
+ * - Remove common tracking query parameters
+ * - Remove trailing slash
+ * - Sorts query parameters alphabetically
+ */
+export function normalizeUrl(url: string, options?: NormalizeUrlOptions) {
+  return normalizeUrlNpm(
+    url,
+    mergeCopy({ defaultProtocol: "https", stripWWW: false }, options)
+  );
 }

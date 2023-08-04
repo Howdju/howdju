@@ -1331,6 +1331,17 @@ export const api = {
       normalizationSchema: { mediaExcerptInfo: nullSchema },
     })
   ),
+  fetchCanonicalUrl: apiActionCreator(
+    "FETCH_CANONICAL_URL",
+    serviceRoutes.readCanonicalUrl,
+    (urlKey: string, url: string) => ({
+      queryStringParams: {
+        url,
+      },
+      normalizationSchema: { canonicalUrl: nullSchema },
+      meta: { urlKey },
+    })
+  ),
 };
 
 export const cancelPersorgNameSuggestions = createAction(

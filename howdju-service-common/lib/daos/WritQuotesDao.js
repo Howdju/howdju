@@ -13,7 +13,7 @@ const {
   SourceExcerptTypes,
 } = require("howdju-common");
 
-const { toWritQuote, toWritQuoteUrl, toUrl } = require("./orm");
+const { toWritQuote, toWritQuoteUrl } = require("./orm");
 const { mapSingle, normalizeText, toIdString } = require("./daosUtil");
 const { DatabaseSortDirection } = require("./daoModels");
 
@@ -466,21 +466,20 @@ exports.WritQuotesDao = class WritQuotesDao {
       .then(({ rows: [{ has_changed }] }) => has_changed);
   }
 
-  readUrlsForWritQuoteId(writQuoteId) {
-    return this.database
-      .query(
-        "readUrlsForWritQuoteId",
-        `
-      select u.*
+  async readUrlsForWritQuoteId(writQuoteId) {
+    const { rows } = await this.database.query(
+      "readUrlsForWritQuoteId",
+      `
+      select u.url_id
       from urls u join writ_quote_urls wqu using (url_id)
         where
                 wqu.writ_quote_id = $1
             and u.deleted is null
             and wqu.deleted is null
       `,
-        [writQuoteId]
-      )
-      .then(({ rows }) => map(rows, toUrl));
+      [writQuoteId]
+    );
+    return this.urlsDao.readUrlsForIds(rows.map((row) => row.url_id));
   }
 
   isBasisToJustificationsHavingOtherUsersVotes(userId, writQuote) {

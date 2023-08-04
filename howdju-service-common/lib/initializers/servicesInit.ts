@@ -6,6 +6,7 @@ import {
   ActionsService,
   AuthService,
   AwsTopicMessageSender,
+  CanonicalUrlsService,
   ContentReportsService,
   ContextTrailsService,
   DevTopicMessageConsumer,
@@ -48,6 +49,9 @@ export type ServicesProvider = ReturnType<typeof servicesInitializer> &
 
 /** Initializes the services. */
 export function servicesInitializer(provider: AwsProvider) {
+  const devTopicQueue = [] as TopicMessage[];
+  const topicMessageSender = makeTopicMessageSender(provider, devTopicQueue);
+
   const actionsService = new ActionsService(provider.actionsDao);
   const authService = new AuthService(
     provider.appConfig,
@@ -62,7 +66,15 @@ export function servicesInitializer(provider: AwsProvider) {
   );
 
   const writsService = new WritsService(actionsService, provider.writsDao);
-  const urlsService = new UrlsService(provider.urlsDao);
+  const canonicalUrlsService = new CanonicalUrlsService(
+    provider.canonicalUrlsDao
+  );
+  const urlsService = new UrlsService(
+    provider.logger,
+    canonicalUrlsService,
+    provider.urlsDao,
+    topicMessageSender
+  );
   const writQuotesService = new WritQuotesService(
     provider.logger,
     provider.writQuoteValidator,
@@ -156,10 +168,6 @@ export function servicesInitializer(provider: AwsProvider) {
     provider.sourcesDao
   );
 
-  const devTopicQueue = [] as TopicMessage[];
-
-  const topicMessageSender = makeTopicMessageSender(provider, devTopicQueue);
-
   const mediaExcerptsService = new MediaExcerptsService(
     provider.appConfig,
     topicMessageSender,
@@ -182,7 +190,8 @@ export function servicesInitializer(provider: AwsProvider) {
     process.env.NODE_ENV === "development"
       ? new DevTopicMessageConsumer(
           devTopicQueue,
-          urlLocatorAutoConfirmationService
+          urlLocatorAutoConfirmationService,
+          urlsService
         )
       : undefined;
 
@@ -286,6 +295,7 @@ export function servicesInitializer(provider: AwsProvider) {
     accountSettingsService,
     actionsService,
     authService,
+    canonicalUrlsService,
     contentReportsService,
     contextTrailsService,
     devTopicMessageConsumer,

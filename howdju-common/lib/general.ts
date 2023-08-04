@@ -560,8 +560,8 @@ export function mergeCopy<
   Source1 extends Record<any, any>,
   Source2 extends Record<any, any>
 >(
-  source1: Source1,
-  source2: Source2
+  source1: Source1 | undefined,
+  source2: Source2 | undefined
 ): MergeDeep<
   Source1,
   Source2,
