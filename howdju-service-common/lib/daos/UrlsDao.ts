@@ -1,3 +1,5 @@
+import { Moment } from "moment";
+import { QueryResultRow } from "pg";
 import forEach from "lodash/forEach";
 import map from "lodash/map";
 
@@ -10,13 +12,11 @@ import {
   JustificationRootTargetType,
   CreateUrl,
   UrlOut,
+  isDefined,
 } from "howdju-common";
-import { toUrl } from "./orm";
 
-import head from "lodash/head";
+import { toUrl } from "./orm";
 import { Database } from "../database";
-import { Moment } from "moment";
-import { QueryResultRow } from "pg";
 import { toIdString } from "./daosUtil";
 
 export class UrlsDao {
@@ -28,19 +28,18 @@ export class UrlsDao {
     this.database = database;
   }
 
-  readUrlForUrl(url: string) {
-    return this.database
-      .query(
-        "readUrlForUrl",
-        "select * from urls where url = $1 and deleted is null",
-        [url]
-      )
-      .then(({ rows }) => {
-        if (rows.length > 1) {
-          this.logger.error(`${rows.length} equivalent URLs`, { url });
-        }
-        return toUrl(head(rows));
-      });
+  async readUrlForUrl(url: string) {
+    const {
+      rows: [row],
+    } = await this.database.query(
+      "readUrlForUrl",
+      "select url_id from urls where url = $1 and deleted is null",
+      [url]
+    );
+    if (!row) {
+      return undefined;
+    }
+    return this.readUrlForId(row.url_id);
   }
 
   async readUrlForId(id: EntityId) {
@@ -51,16 +50,30 @@ export class UrlsDao {
       "select * from urls where url_id = $1 and deleted is null",
       [id]
     );
-    return toUrl(row);
+    if (!row) {
+      return undefined;
+    }
+    return {
+      id: toIdString(row.url_id),
+      url: row.url,
+      canonicalUrl: row.canonical_url,
+      creatorUserId: toIdString(row.creator_user_id),
+      created: row.created,
+    };
   }
 
   async readUrlsForIds(ids: EntityId[]) {
+    const urls = await Promise.all(ids.map((id) => this.readUrlForId(id)));
+    return urls.filter(isDefined);
+  }
+
+  async readUrlsForCanonicalUrl(canonicalUrl: string) {
     const { rows } = await this.database.query(
-      "readUrlsForIds",
-      "select * from urls where url_id in ($1) and deleted is null",
-      [ids.join(",")]
+      "readForCanonicalUrl",
+      `select url_id from urls where canonical_url = $1 and deleted is null order by created asc`,
+      [canonicalUrl]
     );
-    return rows.map(toUrl);
+    return this.readUrlsForIds(rows.map((row) => row.url_id));
   }
 
   readUrlsByWritQuoteIdForRootTarget(
@@ -161,7 +174,6 @@ export class UrlsDao {
   }
 
   async createUrl(url: CreateUrl, userId: EntityId, now: Moment) {
-    const canonicalUrl = url.canonicalUrl || url.url;
     const {
       rows: [row],
     } = await this.database.query(
@@ -171,7 +183,7 @@ export class UrlsDao {
         values ($1, $2, $3, $4)
         returning *
         `,
-      [url.url, canonicalUrl, userId, now]
+      [url.url, url.canonicalUrl, userId, now]
     );
     return {
       id: toIdString(row.url_id),
@@ -180,6 +192,14 @@ export class UrlsDao {
       creatorUserId: toIdString(row.creator_user_id),
       created: row.created,
     };
+  }
+
+  setCanonicalUrlForId(urlId: string, canonicalUrl: string) {
+    return this.database.query(
+      "setCanonicalUrlForId",
+      `update urls set canonical_url = $2 where url_id = $1`,
+      [urlId, canonicalUrl]
+    );
   }
 
   deleteUrlForId(urlId: EntityId, deletedAt: Moment) {

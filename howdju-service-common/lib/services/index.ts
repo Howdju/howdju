@@ -2,6 +2,7 @@ export * from "./AccountSettingsService";
 export * from "./ActionsService";
 export * from "./AuthService";
 export * from "./AwsTopicMessageSender";
+export * from "./CanonicalUrlsService";
 export * from "./ContentReportsService";
 export * from "./ContextTrailsService";
 export * from "./DevTopicMessageConsumer";

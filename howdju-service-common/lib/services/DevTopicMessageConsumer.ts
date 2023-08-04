@@ -1,10 +1,13 @@
 import { TopicMessage } from "howdju-common";
+
 import { UrlLocatorAutoConfirmationService } from "./UrlLocatorAutoConfirmationService";
+import { UrlsService } from "./UrlsService";
 
 export class DevTopicMessageConsumer {
   constructor(
     private readonly devTopicMessageQueue: TopicMessage[],
-    private readonly urlLocatorAutoConfirmationService: UrlLocatorAutoConfirmationService
+    private readonly urlLocatorAutoConfirmationService: UrlLocatorAutoConfirmationService,
+    private readonly urlsService: UrlsService
   ) {
     setInterval(() => {
       for (const topicMessage of this.devTopicMessageQueue) {
@@ -20,10 +23,18 @@ export class DevTopicMessageConsumer {
       case "SEND_EMAIL":
         console.log(`Received TopicMessage: ${JSON.stringify(topicMessage)}`);
         break;
-      case "AUTO_CONFIRM_URL_LOCATOR":
+      case "AUTO_CONFIRM_URL_LOCATOR": {
+        const { urlLocatorId } = params;
         await this.urlLocatorAutoConfirmationService.confirmUrlLocator(
-          params.urlLocatorId
+          urlLocatorId
         );
+        break;
+      }
+      case "CONFIRM_CANONICAL_URL": {
+        const { urlId } = params;
+        await this.urlsService.confirmCanonicalUrl(urlId);
+        break;
+      }
     }
   }
 }

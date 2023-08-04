@@ -6,7 +6,8 @@ import { mergeCopy, utcNow } from "howdju-common";
 
 import {
   extractQuotationFromTextFragment,
-  toUrlWithFragment,
+  toUrlWithFragmentFromAnchors,
+  toUrlWithFragmentFromQuotation,
 } from "./urlTextFragments";
 
 const baseUrlLocator = {
@@ -37,7 +38,23 @@ const baseUrlLocator = {
   creatorUserId: "creator-user-id",
 };
 
-describe("toUrlWithFragment", () => {
+describe("toUrlWithFragmentFromQuotation", () => {
+  it("should add a quotation to a URL as a text fragment", () => {
+    expect(
+      toUrlWithFragmentFromQuotation("https://example.com", "a pithy quote")
+    ).toBe("https://example.com/#:~:text=a%20pithy%20quote");
+  });
+  it("should return the URL for an empty quotaiton", () => {
+    expect(
+      toUrlWithFragmentFromQuotation(
+        "https://example.com#document-fragment",
+        ""
+      )
+    ).toBe("https://example.com#document-fragment");
+  });
+});
+
+describe("toUrlWithFragmentFromAnchors", () => {
   it("should return the URL with the fragment", () => {
     const urlLocator = mergeCopy(baseUrlLocator, {
       url: {
@@ -49,7 +66,7 @@ describe("toUrlWithFragment", () => {
         },
       ],
     });
-    expect(toUrlWithFragment(urlLocator)).toBe(
+    expect(toUrlWithFragmentFromAnchors(urlLocator)).toBe(
       "https://example.com/#:~:text=the%20exact%20text"
     );
   });
@@ -64,7 +81,7 @@ describe("toUrlWithFragment", () => {
         },
       ],
     });
-    expect(toUrlWithFragment(urlLocator)).toBe(
+    expect(toUrlWithFragmentFromAnchors(urlLocator)).toBe(
       "https://example.com/#some-heading:~:text=the%20exact%20text"
     );
   });
@@ -96,7 +113,7 @@ describe("toUrlWithFragment", () => {
         },
       ],
     });
-    expect(toUrlWithFragment(urlLocator)).toBe(
+    expect(toUrlWithFragmentFromAnchors(urlLocator)).toBe(
       "https://example.com/#:~:text=the%20exact%20text&text=the%20exact%20text%202"
     );
   });
@@ -111,7 +128,7 @@ describe("toUrlWithFragment", () => {
         },
       ],
     });
-    expect(toUrlWithFragment(urlLocator)).toBe(
+    expect(toUrlWithFragmentFromAnchors(urlLocator)).toBe(
       "https://example.com/#:~:text=the%20exact%20text"
     );
   });
@@ -126,7 +143,7 @@ describe("toUrlWithFragment", () => {
         },
       ],
     });
-    expect(toUrlWithFragment(urlLocator)).toBe(
+    expect(toUrlWithFragmentFromAnchors(urlLocator)).toBe(
       "https://example.com/#the-doc-fragment:~:text=the%20exact%20text"
     );
   });
@@ -141,7 +158,7 @@ describe("toUrlWithFragment", () => {
         },
       ],
     });
-    expect(toUrlWithFragment(urlLocator)).toBe(
+    expect(toUrlWithFragmentFromAnchors(urlLocator)).toBe(
       "https://example.com/#:~:text=the%20%2D%20exact%20%2D%20text"
     );
   });

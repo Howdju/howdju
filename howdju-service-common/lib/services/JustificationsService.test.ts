@@ -808,7 +808,7 @@ function makePropositionCompoundBasedJustification(): CreateJustification {
 }
 
 function makeWritQuoteBasedJustification(
-  url = "https://www.trustworthy.news"
+  url = "https://www.trustworthy.news/"
 ): CreateJustification {
   return {
     target: {

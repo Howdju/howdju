@@ -89,6 +89,17 @@ CREATE TABLE public.actions (
 
 
 --
+-- Name: canonical_url_confirmations; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.canonical_url_confirmations (
+    url character varying(65536) NOT NULL,
+    canonical_url character varying(65536),
+    retrieved_at timestamp without time zone NOT NULL
+);
+
+
+--
 -- Name: writ_quotes; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -1088,7 +1099,7 @@ CREATE TABLE public.urls (
     creator_user_id integer,
     created timestamp without time zone,
     deleted timestamp without time zone,
-    canonical_url character varying(65536) NOT NULL,
+    canonical_url character varying(65536),
     CONSTRAINT urls_canonical_url_check CHECK (((canonical_url)::text <> ''::text)),
     CONSTRAINT urls_url_check CHECK (((url)::text <> ''::text))
 );
@@ -1641,6 +1652,20 @@ ALTER TABLE ONLY public.writ_quote_url_target_anchors
 
 ALTER TABLE ONLY public.writ_quote_url_targets
     ADD CONSTRAINT writ_quote_url_targets_pkey PRIMARY KEY (writ_quote_url_target_id);
+
+
+--
+-- Name: canonical_url_confirmations_canonical_url_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX canonical_url_confirmations_canonical_url_idx ON public.canonical_url_confirmations USING btree (canonical_url);
+
+
+--
+-- Name: canonical_url_confirmations_url_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX canonical_url_confirmations_url_idx ON public.canonical_url_confirmations USING btree (url);
 
 
 --

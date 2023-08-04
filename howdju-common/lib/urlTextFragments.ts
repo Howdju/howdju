@@ -6,6 +6,23 @@ import striptags from "striptags";
 
 const FRAGMENT_DIRECTIVE = ":~:";
 
+export function toUrlWithFragmentFromQuotation(url: string, quotation: string) {
+  if (!quotation) {
+    return url;
+  }
+  const urlObj = new URL(url);
+  if (urlObj.hash.includes(FRAGMENT_DIRECTIVE)) {
+    throw new Error(`URL should not already have a text fragment: ${url}`);
+  }
+
+  urlObj.hash =
+    urlObj.hash +
+    FRAGMENT_DIRECTIVE +
+    "text=" +
+    cleanTextFragmentParameter(quotation);
+  return urlObj.toString();
+}
+
 /**
  * Returns a URL having a text fragment.
  *
@@ -14,7 +31,7 @@ const FRAGMENT_DIRECTIVE = ":~:";
  * @param useContext
  * @returns
  */
-export function toUrlWithFragment(
+export function toUrlWithFragmentFromAnchors(
   urlLocator: UrlLocator,
   // TODO(427) fix prefix/suffix to be Chrome-compatible.
   useContext = false
@@ -29,7 +46,7 @@ export function toUrlWithFragment(
     );
   }
 
-  const hash =
+  const documentFragment =
     // substring from 1 to remove the leading #.
     fragmentDirectiveIndex > -1
       ? urlObj.hash.substring(1, fragmentDirectiveIndex)
@@ -45,12 +62,12 @@ export function toUrlWithFragment(
     }
     return `text=${parameters.join(",")}`;
   });
-  const fragmentHash = textDirectives?.length
-    ? `#${hash}:~:${textDirectives.join("&")}`
-    : hash
-    ? `#${hash}`
+  const newHash = textDirectives?.length
+    ? `${documentFragment}${FRAGMENT_DIRECTIVE}${textDirectives.join("&")}`
+    : documentFragment
+    ? `${documentFragment}`
     : "";
-  urlObj.hash = fragmentHash;
+  urlObj.hash = newHash;
   return urlObj.toString();
 }
 

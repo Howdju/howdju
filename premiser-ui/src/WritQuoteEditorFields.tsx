@@ -143,7 +143,7 @@ const WritQuoteEditorFields = (props: Props) => {
                 </Button>
               }
               rightIconStateful={false}
-              disabled={!!url.id || disabled || !!url.target}
+              disabled={!!url.id || disabled}
               onBlur={onBlur}
               onPropertyChange={onPropertyChange}
               onSubmit={onSubmit}

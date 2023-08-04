@@ -194,8 +194,7 @@ export const makeCreatePropositionCompoundAtomInput =
     entity: makeCreatePropositionInput(),
   });
 
-export const makeUrl = (props?: Partial<Url>): Url =>
-  merge({ url: "", canonicalUrl: "" }, props);
+export const makeUrl = (props?: Partial<Url>): Url => merge({ url: "" }, props);
 
 export const makeCreateUrl = (props?: Partial<CreateUrl>): CreateUrl =>
   merge({ url: "" }, props);

@@ -129,7 +129,7 @@ export default function ApiAutoComplete<T>({
   }
   function _onBlur(event: FocusEvent<HTMLTextAreaElement>) {
     if (onBlur) {
-      onBlur(event.target.name);
+      onBlur(event.target.name, event.target.value);
     }
   }
 

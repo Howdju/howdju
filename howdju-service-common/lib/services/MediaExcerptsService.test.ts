@@ -49,7 +49,7 @@ describe("MediaExcerptsService", () => {
   describe("readOrCreateMediaExcerpt", () => {
     test("creates a media excerpt", async () => {
       const { authToken, user } = await testHelper.makeUser();
-      const url = { url: "https://www.example.com" };
+      const url = { url: "https://www.example.com/" };
       const createMediaExcerpt: CreateMediaExcerpt = {
         localRep: {
           quotation: "the text quote",
@@ -110,7 +110,6 @@ describe("MediaExcerptsService", () => {
                   mediaExcerptId: mediaExcerpt.id,
                   url: {
                     id: expect.any(String),
-                    canonicalUrl: url.url,
                     ...creatorInfo,
                   },
                   anchors: [

@@ -382,13 +382,16 @@ export type UrlTarget = z.infer<typeof UrlTarget>;
 
 export const Url = Entity.extend({
   url: urlString(),
-  canonicalUrl: urlString(),
+  /** If the user provides the canonical URL, we will confirm it. */
+  canonicalUrl: urlString().optional(),
   /** @deprecated TODO(38) replace with UrlLocator.anchors */
   target: UrlTarget.optional(),
 });
 export type Url = z.infer<typeof Url>;
 
-export const CreateUrl = Url.extend({ canonicalUrl: urlString().optional() });
+export const CreateUrl = Url.omit({
+  target: true,
+});
 export type CreateUrl = z.infer<typeof CreateUrl>;
 export const CreateUrlInput = CreateUrl;
 export type CreateUrlInput = z.infer<typeof CreateUrlInput>;

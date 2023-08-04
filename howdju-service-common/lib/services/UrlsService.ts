@@ -1,10 +1,26 @@
-import { CreateUrl, EntityId, UrlOut } from "howdju-common";
-import { UrlsDao } from "../daos";
 import { Moment } from "moment";
+
+import {
+  CreateUrl,
+  EntityId,
+  Logger,
+  normalizeUrl,
+  TopicMessageSender,
+  UrlOut,
+} from "howdju-common";
+
+import { CanonicalUrlsService } from "./CanonicalUrlsService";
+import { UrlsDao } from "../daos";
 import { readWriteReread } from "./patterns";
+import { EntityNotFoundError } from "..";
 
 export class UrlsService {
-  constructor(private urlsDao: UrlsDao) {}
+  constructor(
+    private readonly logger: Logger,
+    private readonly canonicalUrlsService: CanonicalUrlsService,
+    private readonly urlsDao: UrlsDao,
+    private readonly topicMessageSender: TopicMessageSender
+  ) {}
 
   async readOrCreateUrlsAsUser(
     urls: CreateUrl[],
@@ -24,10 +40,41 @@ export class UrlsService {
     userId: EntityId,
     now: Moment
   ): Promise<UrlOut> {
-    const { entity: url } = await readWriteReread(
-      () => this.urlsDao.readUrlForUrl(createUrl.url),
-      () => this.urlsDao.createUrl(createUrl, userId, now)
+    const url = normalizeUrl(createUrl.url);
+    const { entity: urlOut, isExtant } = await readWriteReread(
+      () => this.urlsDao.readUrlForUrl(url),
+      () => this.urlsDao.createUrl({ ...createUrl, url }, userId, now)
     );
-    return url;
+    if (!isExtant) {
+      await this.topicMessageSender.sendMessage({
+        type: "CONFIRM_CANONICAL_URL",
+        params: {
+          urlId: urlOut.id,
+        },
+      });
+    }
+    return urlOut;
+  }
+
+  /** Confirm a URL's canonical URL. */
+  async confirmCanonicalUrl(urlId: EntityId) {
+    const url = await this.urlsDao.readUrlForId(urlId);
+    if (!url) {
+      throw new EntityNotFoundError("URL", urlId);
+    }
+
+    const canonicalUrl =
+      await this.canonicalUrlsService.readOrFetchCanonicalUrl(url.url);
+    if (canonicalUrl === url.canonicalUrl) {
+      this.logger.info(
+        `Url's (${url.id}) canonical URL already matched the read one: ${canonicalUrl}.`
+      );
+      return;
+    }
+
+    this.logger.info(
+      `Url ${urlId} has a new canonical URL: ${canonicalUrl} (previously: ${url.canonicalUrl}).`
+    );
+    await this.urlsDao.setCanonicalUrlForId(urlId, canonicalUrl);
   }
 }

@@ -16,7 +16,8 @@ function checkStandaloneSchemaValidationCode() {
 
   const fs = require("fs");
   const path = require("path");
-  const filePath = path.resolve(__dirname, `../lib/standaloneAjv.js`);
+  const packageRoot = findProjectRoot(__dirname);
+  const filePath = path.resolve(packageRoot, `lib/standaloneAjv.js`);
   const standaloneCode = fs.readFileSync(filePath, { encoding: "utf8" });
 
   if (makeStandaloneCode() !== standaloneCode) {
@@ -28,4 +29,17 @@ function checkStandaloneSchemaValidationCode() {
   }
 
   debug("Standalone schema validation is up-to-date.");
+}
+
+function findProjectRoot(currDir) {
+  const path = require("path");
+  const fs = require("fs");
+
+  while (currDir) {
+    if (fs.existsSync(path.join(currDir, "package.json"))) {
+      return currDir;
+    }
+    currDir = path.dirname(currDir);
+  }
+  return undefined;
 }

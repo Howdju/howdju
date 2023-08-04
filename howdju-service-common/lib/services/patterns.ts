@@ -122,6 +122,10 @@ export async function readWriteReread<T>(
   }
 }
 
+export function isDatabaseConstraintError(val: any): val is DatabaseError {
+  return val instanceof DatabaseError && val.code === CONSTRAINT_VIOLATION_CODE;
+}
+
 /** Retries an action that can throw transaction errors. */
 export async function retryTransaction<T>(
   maxAttempts: number,

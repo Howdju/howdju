@@ -3,8 +3,8 @@ import { MaterialSymbol } from "react-material-symbols";
 
 import {
   MediaExcerptView,
-  removeQueryParamsAndFragment,
-  toUrlWithFragment,
+  toUrlWithFragmentFromAnchors,
+  toUrlWithFragmentFromQuotation,
   UrlLocatorView,
 } from "howdju-common";
 
@@ -62,19 +62,17 @@ function toAnchorElement(
   mediaExcerpt: MediaExcerptView,
   urlLocator: UrlLocatorView
 ) {
-  const url = toUrlWithFragment(urlLocator);
-  const displayUrl = removeQueryParamsAndFragment(urlLocator.url.url);
-  const anchorsIcon = urlLocator.anchors?.length ? (
-    <MaterialSymbol
-      icon="my_location"
-      size={13}
-      title="Has a fragment taking you directly to the excerpt"
-    />
-  ) : null;
+  const url =
+    "foundQuotation" in urlLocator.autoConfirmationStatus
+      ? toUrlWithFragmentFromQuotation(
+          urlLocator.url.url,
+          urlLocator.autoConfirmationStatus.foundQuotation
+        )
+      : toUrlWithFragmentFromAnchors(urlLocator);
   const confirmationStatus = toConfirmationStatus(urlLocator);
   const creationInfo =
     urlLocator.creatorUserId !== mediaExcerpt.creatorUserId ||
-    urlLocator.created !== mediaExcerpt.created ? (
+    !urlLocator.created.isSame(mediaExcerpt.created) ? (
       <CreationInfo
         created={urlLocator.created}
         creator={urlLocator.creator}
@@ -84,7 +82,7 @@ function toAnchorElement(
 
   return (
     <a href={url}>
-      {displayUrl} {anchorsIcon} {confirmationStatus} {creationInfo}
+      {urlLocator.url.url} {confirmationStatus} {creationInfo}
     </a>
   );
 }
