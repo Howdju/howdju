@@ -251,7 +251,7 @@ describe("CreatePropositionPage", () => {
     });
 
     // TODO(464) address slow userEvent.type for source description
-    const MEDIA_EXCERPT_JUSTIFICATION_TEST_TIMEOUT = 7500;
+    const MEDIA_EXCERPT_JUSTIFICATION_TEST_TIMEOUT = 10_000;
     test(
       "can create a MediaExcerpt-justified proposition",
       async () => {
