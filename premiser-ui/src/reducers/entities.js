@@ -713,13 +713,16 @@ function persorgCustomizer(oldPersorg, newPersorg, key, object, source) {
 }
 
 function mediaExcerptCustomizer(oldExcerpt, newExcerpt, key, object, source) {
-  return merge({}, oldExcerpt, newExcerpt, {
-    // Create a key on citations. Since they aren't a normalizr entity, we can update them here.
-    citations: newExcerpt?.citations.map((citation) => ({
-      ...citation,
-      key: `${citation.source.id}-${citation.normalPincite}`,
-    })),
-  });
+  return applyCustomizations(
+    merge({}, oldExcerpt, newExcerpt, {
+      // Create a key on citations. Since they aren't a normalizr entity, we can update them here.
+      citations: newExcerpt?.citations.map((citation) => ({
+        ...citation,
+        key: `${citation.source.id}-${citation.normalPincite}`,
+      })),
+    }),
+    momentConversion("created")
+  );
 }
 
 function propositionCustomizer(

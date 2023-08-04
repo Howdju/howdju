@@ -58,8 +58,23 @@ export function removeQueryParamsAndFragment(url: string) {
  * - Sorts query parameters alphabetically
  */
 export function normalizeUrl(url: string, options?: NormalizeUrlOptions) {
+  const urlObj = new URL(url);
+  // According to https://en.wikipedia.org/wiki/URI_normalization#Normalization_process (linked from
+  // https://github.com/sindresorhus/normalize-url) a normalized URL's path should alwasy have a
+  // trailing slash. But normalize-url offers no option to force a trailing slash.
+  if (!urlObj.pathname.endsWith("/")) {
+    urlObj.pathname = urlObj.pathname + "/";
+  }
   return normalizeUrlNpm(
-    url,
-    mergeCopy({ defaultProtocol: "https", stripWWW: false }, options)
+    urlObj.toString(),
+    mergeCopy(
+      {
+        defaultProtocol: "https",
+        stripWWW: false,
+        removeTrailingSlash: false,
+        removeSingleSlash: false,
+      },
+      options
+    )
   );
 }

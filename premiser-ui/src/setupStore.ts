@@ -73,8 +73,9 @@ export const setupStore = (
           ],
           ignoredPaths: [
             // TODO(484) figure out how to handle timestamps in a way that is acceptable to redux.
-            /entities.urlLocators.[^.]+.autoConfirmationStatus.(earliest|latest)(Not)?FoundAt/,
+            /entities.mediaExcerpts.[^.]+.created/,
             /entities.urlLocators.[^.]+.created/,
+            /entities.urlLocators.[^.]+.autoConfirmationStatus.(earliest|latest)(Not)?FoundAt/,
           ],
         },
       }).concat([routerMiddleware(history), sagaMiddleware]),

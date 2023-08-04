@@ -136,15 +136,6 @@ export default function UrlLocatorsEditorFields({
               value={url.url}
               rightIcon={
                 <>
-                  {!isEmpty(anchors) && (
-                    <MaterialSymbol
-                      key="anchor-icon"
-                      className="url-anchor-icon"
-                      icon="my_location"
-                      size={16}
-                      title="Has a fragment taking you directly to the excerpt"
-                    />
-                  )}
                   {onInferMediaExcerptInfo && (
                     <Button
                       key="infer-media-excerpt-info-button"
@@ -181,7 +172,7 @@ export default function UrlLocatorsEditorFields({
                 <span className="url-status-url">{normalizedUrl}</span>
               </div>
             )}
-            {canonicalUrl && canonicalUrl !== url.url && (
+            {canonicalUrl && ![url.url, normalizedUrl].includes(canonicalUrl) && (
               <div className="url-status">
                 Canonical URL:{" "}
                 <span className="url-status-url">{canonicalUrl}</span>

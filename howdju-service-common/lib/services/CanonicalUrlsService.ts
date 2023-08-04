@@ -1,6 +1,6 @@
 import { JSDOM } from "jsdom";
 
-import { utcNow } from "howdju-common";
+import { normalizeUrl, utcNow } from "howdju-common";
 
 import { CanonicalUrlsDao } from "../daos";
 import { fetchUrl } from "../fetchUrl";
@@ -8,7 +8,8 @@ import { fetchUrl } from "../fetchUrl";
 export class CanonicalUrlsService {
   constructor(private readonly canonicalUrlsDao: CanonicalUrlsDao) {}
 
-  async readOrFetchCanonicalUrl(url: string) {
+  async readOrFetchCanonicalUrl(rawUrl: string) {
+    const url = normalizeUrl(rawUrl);
     const oldCanonicalUrl = await this.canonicalUrlsDao.read(url);
     if (oldCanonicalUrl) {
       return oldCanonicalUrl;

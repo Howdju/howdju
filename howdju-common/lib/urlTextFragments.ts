@@ -6,6 +6,23 @@ import striptags from "striptags";
 
 const FRAGMENT_DIRECTIVE = ":~:";
 
+export function toUrlWithFragmentFromQuotation(url: string, quotation: string) {
+  if (!quotation) {
+    return url;
+  }
+  const urlObj = new URL(url);
+  if (urlObj.hash.includes(FRAGMENT_DIRECTIVE)) {
+    throw new Error(`URL should not already have a text fragment: ${url}`);
+  }
+
+  urlObj.hash =
+    urlObj.hash +
+    FRAGMENT_DIRECTIVE +
+    "text=" +
+    cleanTextFragmentParameter(quotation);
+  return urlObj.toString();
+}
+
 /**
  * Returns a URL having a text fragment.
  *
@@ -14,7 +31,7 @@ const FRAGMENT_DIRECTIVE = ":~:";
  * @param useContext
  * @returns
  */
-export function toUrlWithFragment(
+export function toUrlWithFragmentFromAnchors(
   urlLocator: UrlLocator,
   // TODO(427) fix prefix/suffix to be Chrome-compatible.
   useContext = false
@@ -46,9 +63,9 @@ export function toUrlWithFragment(
     return `text=${parameters.join(",")}`;
   });
   const newHash = textDirectives?.length
-    ? `#${documentFragment}:~:${textDirectives.join("&")}`
+    ? `${documentFragment}${FRAGMENT_DIRECTIVE}${textDirectives.join("&")}`
     : documentFragment
-    ? `#${documentFragment}`
+    ? `${documentFragment}`
     : "";
   urlObj.hash = newHash;
   return urlObj.toString();

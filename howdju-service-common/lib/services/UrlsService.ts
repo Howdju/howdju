@@ -42,7 +42,7 @@ export class UrlsService {
   ): Promise<UrlOut> {
     const url = normalizeUrl(createUrl.url);
     const { entity: urlOut, isExtant } = await readWriteReread(
-      () => this.urlsDao.readUrlForUrl(createUrl.url),
+      () => this.urlsDao.readUrlForUrl(url),
       () => this.urlsDao.createUrl({ ...createUrl, url }, userId, now)
     );
     if (!isExtant) {

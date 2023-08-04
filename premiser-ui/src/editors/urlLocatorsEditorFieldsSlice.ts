@@ -32,6 +32,13 @@ export const urlLocatorsEditorFieldsSlice = createSlice({
         canonicalUrl: action.payload.canonicalUrl,
       };
     });
+    builder.addCase(api.createMediaExcerpt.response, (state, action) => {
+      if (!action.error) {
+        // Assume that any successful media excerpt creation should reset this state.
+        return initialState;
+      }
+      return state;
+    });
   },
 });
 
