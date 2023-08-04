@@ -286,7 +286,9 @@ export function servicesInitializer(provider: AwsProvider) {
     justificationsService
   );
 
-  const mediaExcerptInfosService = new MediaExcerptInfosService();
+  const mediaExcerptInfosService = new MediaExcerptInfosService(
+    provider.mediaExcerptsDao
+  );
   const emailService = new EmailService(provider.logger, provider.sesv2);
 
   provider.logger.debug("servicesInit complete");

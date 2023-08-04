@@ -120,6 +120,24 @@ export const sourceExcerptParaphraseSchema =
     },
   });
 
+export const urlLocatorSchema = new schema.Entity<UrlLocator>("urlLocators");
+export const sourceSchema = new schema.Entity<SourceOut>("sources");
+export const sourcesSchema = new schema.Array(sourceSchema);
+export const urlLocatorsSchema = new schema.Array(urlLocatorSchema);
+export const mediaExcerptSchema = new schema.Entity<MediaExcerptOut>(
+  "mediaExcerpts",
+  {
+    locators: {
+      urlLocators: urlLocatorsSchema,
+    },
+    citations: new schema.Array({
+      source: sourceSchema,
+    }),
+    speakers: new schema.Array(persorgSchema),
+  }
+);
+export const mediaExcerptsSchema = new schema.Array(mediaExcerptSchema);
+
 export const justificationTargetSchema = new schema.Union(
   {},
   (_value, parent) => parent.type
@@ -128,6 +146,7 @@ export const justificationBasisSchema = new schema.Union(
   {
     PROPOSITION_COMPOUND: propositionCompoundSchema,
     WRIT_QUOTE: writQuoteSchema,
+    MEDIA_EXCERPT: mediaExcerptSchema,
   },
   (_value, parent) => parent.type
 );
@@ -185,24 +204,6 @@ export const contextTrailItemsSchema = new schema.Array(
     connectingEntity: connectingEntitySchema,
   })
 );
-
-export const urlLocatorSchema = new schema.Entity<UrlLocator>("urlLocators");
-export const sourceSchema = new schema.Entity<SourceOut>("sources");
-export const sourcesSchema = new schema.Array(sourceSchema);
-export const urlLocatorsSchema = new schema.Array(urlLocatorSchema);
-export const mediaExcerptSchema = new schema.Entity<MediaExcerptOut>(
-  "mediaExcerpts",
-  {
-    locators: {
-      urlLocators: urlLocatorsSchema,
-    },
-    citations: new schema.Array({
-      source: sourceSchema,
-    }),
-    speakers: new schema.Array(persorgSchema),
-  }
-);
-export const mediaExcerptsSchema = new schema.Array(mediaExcerptSchema);
 
 export const mainSearchResultSchema = {
   mediaExcerpts: mediaExcerptsSchema,

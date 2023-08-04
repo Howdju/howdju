@@ -1205,4 +1205,38 @@ export class MediaExcerptsDao {
     const [urlLocator] = await this.readUrlLocators({ urlLocatorId });
     return urlLocator;
   }
+
+  /**
+   * Returns Source descriptions co-appearing with url in MediaExcerpts.
+   *
+   * The descriptions are ordered by the number of times they appear in citations.
+   */
+  async readPopularSourceDescriptions(url: string, limit?: number) {
+    const { rows } = await this.database.query(
+      "readPopularSourceDescriptions",
+      `
+      select
+          s.source_id
+        , s.description
+        , count(*) as citation_count
+      from urls u
+        join url_locators ul using (url_id)
+        join media_excerpts me using (media_excerpt_id)
+        join media_excerpt_citations mec using (media_excerpt_id)
+        join sources s using (source_id)
+      where
+            u.url = $1
+        and u.deleted is null
+        and ul.deleted is null
+        and me.deleted is null
+        and mec.deleted is null
+        and s.deleted is null
+      group by s.source_id, s.description
+      order by citation_count desc
+      ${limit ? `limit ${limit}` : ""}
+    `,
+      [url]
+    );
+    return rows.map(({ description }) => description);
+  }
 }
