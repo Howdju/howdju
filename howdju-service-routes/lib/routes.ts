@@ -1376,7 +1376,7 @@ export const serviceRoutes = {
 
   /** Canonical URLs */
   readCanonicalUrl: {
-    path: "canonical-url",
+    path: "canonical-urls",
     method: httpMethods.GET,
     request: handler(
       Authed.merge(QueryStringParams("url")),

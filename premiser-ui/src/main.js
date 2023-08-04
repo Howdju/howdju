@@ -2,10 +2,6 @@
 /// <reference path="../../howdju-common/lib/dom-anchor-text-position.d.ts" />
 /// <reference path="../../howdju-common/lib/dom-anchor-text-quote.d.ts" />
 
-// Babel runtime dependencies
-import "core-js/stable";
-import "regenerator-runtime/runtime";
-
 // Must come before react
 import "react-hot-loader";
 

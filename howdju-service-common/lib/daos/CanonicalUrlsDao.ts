@@ -19,7 +19,7 @@ export class CanonicalUrlsDao {
     } = await this.database.query(
       "CanonicalUrlsDao.read",
       `
-      select canonical_url, retrieved_at
+      select canonical_url
       from canonical_url_confirmations
         where url = $1 and canonical_url is not null
       order by retrieved_at desc
