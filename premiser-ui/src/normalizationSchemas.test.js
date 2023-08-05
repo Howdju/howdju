@@ -6,8 +6,12 @@ describe("normalizationSchemas", () => {
   describe("propositionSchema", () => {
     test("normalizes a proposition", () => {
       const json = { id: 1, text: "a proposition" };
-      const expected = { result: 1, entities: { propositions: { 1: json } } };
-      expect(normalize(json, propositionSchema)).toEqual(expected);
+      expect(normalize(json, propositionSchema)).toEqual({
+        result: 1,
+        entities: {
+          propositions: { 1: { ...json, key: 1, slug: "a-proposition" } },
+        },
+      });
     });
 
     test("normalizes a proposition with justifications", () => {
@@ -50,9 +54,11 @@ describe("normalizationSchemas", () => {
             1: {
               ...proposition1,
               justifications: map(proposition1.justifications, (j) => j.id),
+              key: 1,
+              slug: "a-proposition",
             },
-            2: proposition2,
-            3: proposition3,
+            2: { ...proposition2, key: 2, slug: "another-proposition" },
+            3: { ...proposition3, key: 3, slug: "yet-another-proposition" },
           },
           justifications: {
             1: {

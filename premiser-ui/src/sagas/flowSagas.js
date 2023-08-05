@@ -1,4 +1,4 @@
-import some from "lodash/some";
+import { some } from "lodash";
 import { put, takeEvery, select } from "redux-saga/effects";
 import { LOCATION_CHANGE, push, replace } from "connected-react-router";
 import ExpiryMap from "expiry-map";

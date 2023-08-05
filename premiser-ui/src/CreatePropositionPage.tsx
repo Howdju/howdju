@@ -20,7 +20,6 @@ import queryString from "query-string";
 import {
   JustificationBasisTypes,
   makeCreateJustifiedSentenceInput,
-  JustificationBasisSourceType,
   JustificationBasisSourceTypes,
   Tag,
   CreateJustifiedSentenceInput,
@@ -31,6 +30,7 @@ import {
   CreateJustification,
   PersorgOut,
   CreatePersorgInput,
+  isJustificationBasisSourceType,
 } from "howdju-common";
 
 import Helmet from "./Helmet";
@@ -144,19 +144,19 @@ export default function CreatePropositionPage({ mode, location }: Props) {
                 );
                 return;
               }
-              if (!(basisSourceType in JustificationBasisSourceTypes)) {
+              if (!isJustificationBasisSourceType(basisSourceType)) {
                 logger.error(
                   `basisSourceType must be one of ${keys(
                     JustificationBasisSourceTypes
                   ).join(", ")}`
                 );
+                return;
               }
-              // Then fetch the stuff for editing
               dispatch(
                 flows.fetchAndBeginEditOfNewJustificationFromBasisSource(
                   editorType,
                   editorId,
-                  basisSourceType as JustificationBasisSourceType,
+                  basisSourceType,
                   basisSourceId
                 )
               );

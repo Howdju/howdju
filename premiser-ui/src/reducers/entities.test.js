@@ -327,6 +327,8 @@ describe("reducers", () => {
               propositions: {
                 [targetProposition.id]: {
                   ...targetProposition,
+                  key: "1",
+                  slug: "target-proposition",
                   justifications: [
                     ...targetProposition.justifications,
                     justification.id,
@@ -394,6 +396,8 @@ describe("reducers", () => {
               propositions: {
                 [rootProposition.id]: {
                   ...rootProposition,
+                  key: "1",
+                  slug: undefined,
                   justifications: [targetJustification.id],
                 },
               },
@@ -477,6 +481,8 @@ describe("reducers", () => {
               propositions: {
                 [rootProposition.id]: {
                   ...rootProposition,
+                  key: "1",
+                  slug: undefined,
                   justifications: [targetJustification.id],
                 },
               },

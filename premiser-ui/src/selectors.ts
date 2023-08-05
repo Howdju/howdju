@@ -1,3 +1,5 @@
+import { EntityId } from "howdju-common";
+import { denormalize, schema, Schema } from "normalizr";
 import { EditorType } from "./reducers/editors";
 import { RootState } from "./setupStore";
 import { EditorId } from "./types";
@@ -31,3 +33,23 @@ export const selectPasswordResetRequestPage = (state: RootState) =>
 export const selectPasswordResetConfirmationPage = (state: RootState) =>
   state.ui.passwordResetConfirmationPage;
 export const selectPrivacyConsent = (state: RootState) => state.privacyConsent;
+
+export type InferResult<S> = S extends schema.Entity<any>
+  ? EntityId
+  : S extends schema.Array<any>
+  ? EntityId[]
+  : S extends object
+  ? { [K in keyof S]: InferResult<S[K]> }
+  : never;
+export type Denormalized<S> = S extends schema.Entity<infer U>
+  ? U | undefined
+  : S extends schema.Array<infer U>
+  ? U[]
+  : S extends object
+  ? { [K in keyof S]: Denormalized<S[K]> }
+  : never;
+export const denormalizedEntity = <S extends Schema>(
+  state: RootState,
+  result: InferResult<S>,
+  schema: S
+) => denormalize(result, schema, state.entities) as Denormalized<S>;

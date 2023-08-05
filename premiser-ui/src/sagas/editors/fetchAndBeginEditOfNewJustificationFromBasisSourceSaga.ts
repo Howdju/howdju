@@ -1,5 +1,5 @@
 import { Action } from "redux-actions";
-import { put, call, takeEvery } from "typed-redux-saga";
+import { put, call, takeEvery, select } from "typed-redux-saga";
 
 import {
   JustificationBasisSourceTypes,
@@ -27,6 +27,13 @@ import { api, editors, flows, str } from "@/actions";
 import { callApiForResource } from "@/sagas/resourceApiSagas";
 import { EditorType } from "@/reducers/editors";
 import { EditorId } from "@/types";
+import { denormalizedEntity } from "@/selectors";
+import {
+  mediaExcerptSchema,
+  propositionCompoundSchema,
+  propositionSchema,
+  writQuoteSchema,
+} from "@/normalizationSchemas";
 
 export function* fetchAndBeginEditOfNewJustificationFromBasisSource() {
   yield* takeEvery(
@@ -51,9 +58,9 @@ export function* fetchAndBeginEditOfNewJustificationFromBasisSource() {
       if (fetchResponseAction.error) {
         return;
       }
-      const alternatives = extractBasisSourceFromFetchResponseAction(
+      const alternatives = yield* extractBasisSourceFromFetchResponseAction(
         basisSourceType,
-        fetchResponseAction
+        basisSourceId
       );
 
       let type: JustificationBasisType;
@@ -152,17 +159,10 @@ type JustificationBasisAlternatives =
       mediaExcerpt: MediaExcerptOut;
     };
 
-function extractBasisSourceFromFetchResponseAction(
+function* extractBasisSourceFromFetchResponseAction(
   basisType: JustificationBasisSourceType,
-  fetchResponseAction: Action<{
-    propositionCompound: PropositionCompoundOut;
-    writQuote: WritQuoteOut;
-    proposition: PropositionOut;
-    mediaExcerpt: MediaExcerptOut;
-  }>
-): JustificationBasisAlternatives {
-  const { propositionCompound, writQuote, proposition, mediaExcerpt } =
-    fetchResponseAction.payload;
+  basisId: EntityId
+): Generator<unknown, JustificationBasisAlternatives, unknown> {
   const alternatives = {
     propositionCompound: undefined,
     writQuote: undefined,
@@ -170,22 +170,46 @@ function extractBasisSourceFromFetchResponseAction(
     mediaExcerpt: undefined,
   };
   switch (basisType) {
-    case "PROPOSITION_COMPOUND":
+    case "PROPOSITION_COMPOUND": {
+      const propositionCompound = yield* select(
+        denormalizedEntity,
+        basisId,
+        propositionCompoundSchema
+      );
       return {
         ...alternatives,
         basisType,
         propositionCompound,
       };
-    case "WRIT_QUOTE":
+    }
+    case "WRIT_QUOTE": {
+      const writQuote = yield* select(
+        denormalizedEntity,
+        basisId,
+        writQuoteSchema
+      );
       return {
         ...alternatives,
         basisType,
         writQuote,
       };
-    case "PROPOSITION":
+    }
+    case "PROPOSITION": {
+      const proposition = yield* select(
+        denormalizedEntity,
+        basisId,
+        propositionSchema
+      );
       return { ...alternatives, basisType, proposition };
-    case "MEDIA_EXCERPT":
+    }
+    case "MEDIA_EXCERPT": {
+      const mediaExcerpt = yield* select(
+        denormalizedEntity,
+        basisId,
+        mediaExcerptSchema
+      );
       return { ...alternatives, basisType, mediaExcerpt };
+    }
     case "JUSTIFICATION_BASIS_COMPOUND":
     case "SOURCE_EXCERPT_PARAPHRASE":
       throw newUnimplementedError(`Unsupported basis type: ${basisType}`);
