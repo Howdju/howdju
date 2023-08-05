@@ -70,6 +70,12 @@ export const JustificationBasisSourceTypes = {
 export type JustificationBasisSourceType =
   typeof JustificationBasisSourceTypes[keyof typeof JustificationBasisSourceTypes];
 
+export function isJustificationBasisSourceType(
+  val: any
+): val is JustificationBasisSourceType {
+  return val in JustificationBasisSourceTypes;
+}
+
 /** @deprecated */
 export const JustificationBasisCompoundAtomTypes = {
   PROPOSITION: "PROPOSITION",

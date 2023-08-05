@@ -894,7 +894,12 @@ export class JustificationsDao {
         continue;
       }
       const mediaExcerptId = justification.basis.entity.id;
-      justificationsByBasisMediaExcerptId.set(mediaExcerptId, justification);
+      if (!justificationsByBasisMediaExcerptId.has(mediaExcerptId)) {
+        justificationsByBasisMediaExcerptId.set(mediaExcerptId, []);
+      }
+      justificationsByBasisMediaExcerptId
+        .get(mediaExcerptId)
+        .push(justification);
       mediaExcerptIds.add(mediaExcerptId);
     }
     const mediaExcerpts = await this.mediaExcerptsDao.readMediaExcerptsForIds(
@@ -908,10 +913,11 @@ export class JustificationsDao {
       throw new EntityNotFoundError("MEDIA_EXCERPT", missingMediaExcerptIds);
     }
     for (const mediaExcerpt of mediaExcerpts) {
-      const justification = justificationsByBasisMediaExcerptId.get(
+      for (const justification of justificationsByBasisMediaExcerptId.get(
         mediaExcerpt.id
-      );
-      justification.basis.entity = mediaExcerpt;
+      )) {
+        justification.basis.entity = mediaExcerpt;
+      }
     }
   }
 

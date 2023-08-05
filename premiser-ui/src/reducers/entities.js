@@ -18,12 +18,10 @@ import {
   some,
   union,
   without,
-  mapValues,
   reduce,
 } from "lodash";
 import { normalize } from "normalizr";
 import { combineActions, handleActions } from "redux-actions";
-import moment from "moment";
 
 import {
   httpStatusCodes,
@@ -31,21 +29,10 @@ import {
   isTruthy,
   JustificationTargetTypes,
   newExhaustedEnumError,
-  toSlug,
 } from "howdju-common";
 
 import { api } from "../actions";
 import { logger } from "@/logger";
-
-function composeCustomizers(...customizers) {
-  return (oldEntity, newEntity, key, object, source) => {
-    let result = oldEntity;
-    forEach(customizers, (customizer) => {
-      result = customizer(result, newEntity, key, object, source);
-    });
-    return result;
-  };
-}
 
 const defaultState = {
   contextTrailItems: {},
@@ -117,22 +104,16 @@ export default handleActions(
             ["contextTrailItems"],
             ["justifications"],
             ["justificationVotes"],
-            ["mediaExcerpts", mediaExcerptCustomizer],
-            ["persorgs", persorgCustomizer],
+            ["mediaExcerpts"],
+            ["persorgs"],
             ["propositionCompounds"],
-            [
-              "propositions",
-              composeCustomizers(
-                entityAssignWithCustomizer,
-                propositionCustomizer
-              ),
-            ],
+            ["propositions", entityAssignWithCustomizer],
             ["propositionTagVotes"],
             ["sources"],
             ["sourceExcerptParaphrases"],
             ["statements", entityAssignWithCustomizer],
             ["tags"],
-            ["urlLocators", urlLocatorCustomizer],
+            ["urlLocators"],
             ["users"],
             ["writQuotes", stubSkippingCustomizer("quoteText")],
             ["writs", stubSkippingCustomizer("title")],
@@ -224,9 +205,6 @@ export default handleActions(
         const { entities } = normalize(
           action.payload,
           action.meta.normalizationSchema
-        );
-        entities.urlLocators = mapValues(entities.urlLocators, (urlLocator) =>
-          urlLocatorCustomizer(undefined, urlLocator)
         );
         const mediaExcerptUpdates = makeUpdatesAddingUrlLocatorsToMediaExcerpts(
           entities,
@@ -662,83 +640,6 @@ function entityAssignWithCustomizer(oldEntity, newEntity, key, object, source) {
     }
   });
   return updatedEntity;
-}
-
-function urlLocatorCustomizer(
-  oldUrlLocator,
-  newUrlLocator,
-  _key,
-  _object,
-  _source
-) {
-  return applyCustomizations(
-    merge({}, oldUrlLocator, newUrlLocator, {
-      key: newUrlLocator.id,
-    }),
-    momentConversion("created"),
-    momentConversion("autoConfirmationStatus.latestFoundAt"),
-    momentConversion("autoConfirmationStatus.earliestFoundAt"),
-    momentConversion("autoConfirmationStatus.latestNotFoundAt"),
-    momentConversion("autoConfirmationStatus.earliestNotFoundAt")
-  );
-}
-
-/** Iteratively applies customizations to an entity. */
-export function applyCustomizations(entity, ...customizations) {
-  const result = reduce(
-    customizations,
-    (entity, customization) => {
-      const customized = customization(entity);
-      return customized || entity;
-    },
-    entity
-  );
-  return result;
-}
-
-/** Converts path to moment */
-function momentConversion(path) {
-  return (entity) => {
-    const value = get(entity, path);
-    if (value) {
-      const result = merge(entity, set({}, path, moment(value)));
-      return result;
-    }
-    return entity;
-  };
-}
-
-function persorgCustomizer(oldPersorg, newPersorg, key, object, source) {
-  return merge({}, oldPersorg, newPersorg, {
-    key: newPersorg.id,
-  });
-}
-
-function mediaExcerptCustomizer(oldExcerpt, newExcerpt, key, object, source) {
-  const result = applyCustomizations(
-    merge({}, oldExcerpt, newExcerpt, {
-      // Create a key on citations. Since they aren't a normalizr entity, we can update them here.
-      citations: newExcerpt?.citations.map((citation) => ({
-        ...citation,
-        key: `${citation.source.id}-${citation.normalPincite}`,
-      })),
-    }),
-    momentConversion("created")
-  );
-  return result;
-}
-
-function propositionCustomizer(
-  oldProposition,
-  newProposition,
-  key,
-  object,
-  source
-) {
-  return merge({}, oldProposition, newProposition, {
-    key: newProposition.id,
-    slug: toSlug(newProposition.text),
-  });
 }
 
 function createEntityUpdate(state, payloadEntities, key, customizer) {

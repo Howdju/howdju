@@ -16,12 +16,15 @@ import {
   Statement,
   Tag,
   TagVote,
+  toSlug,
   UrlLocator,
   User,
   VidSegment,
   Writ,
   WritQuote,
 } from "howdju-common";
+import { applyCustomizations, momentConversion } from "./normalizationUtil";
+import { merge } from "lodash";
 
 export const userSchema = new schema.Entity<User>("users");
 
@@ -49,13 +52,29 @@ export const propositionSchema = new schema.Entity<Proposition>(
     recommendedTags: tagsSchema,
     propositionTagVotes: propositionTagVotesSchema,
     // justifications added below via justificationTargetSchema
+  },
+  {
+    processStrategy: (value) => ({
+      ...value,
+      key: value.id,
+      slug: toSlug(value.text),
+    }),
   }
 );
 export const propositionsSchema = new schema.Array(propositionSchema);
 
-export const persorgSchema = new schema.Entity<Persorg>("persorgs", {
-  creator: userSchema,
-});
+export const persorgSchema = new schema.Entity<Persorg>(
+  "persorgs",
+  {
+    creator: userSchema,
+  },
+  {
+    processStrategy: (value) => ({
+      ...value,
+      key: value.id,
+    }),
+  }
+);
 export const persorgsSchema = new schema.Array(persorgSchema);
 
 const sentenceSchema = new schema.Union(
@@ -120,7 +139,24 @@ export const sourceExcerptParaphraseSchema =
     },
   });
 
-export const urlLocatorSchema = new schema.Entity<UrlLocator>("urlLocators");
+export const urlLocatorSchema = new schema.Entity<UrlLocator>(
+  "urlLocators",
+  {},
+  {
+    processStrategy: (value) =>
+      applyCustomizations(
+        merge({}, value, {
+          key: value.id,
+        }),
+        momentConversion("created"),
+        momentConversion("autoConfirmationStatus.latestFoundAt"),
+        momentConversion("autoConfirmationStatus.earliestFoundAt"),
+        momentConversion("autoConfirmationStatus.latestNotFoundAt"),
+        momentConversion("autoConfirmationStatus.earliestNotFoundAt")
+      ),
+  }
+);
+
 export const sourceSchema = new schema.Entity<SourceOut>("sources");
 export const sourcesSchema = new schema.Array(sourceSchema);
 export const urlLocatorsSchema = new schema.Array(urlLocatorSchema);
@@ -134,6 +170,20 @@ export const mediaExcerptSchema = new schema.Entity<MediaExcerptOut>(
       source: sourceSchema,
     }),
     speakers: new schema.Array(persorgSchema),
+  },
+  {
+    processStrategy: (value: MediaExcerptOut) => {
+      return applyCustomizations(
+        merge({}, value, {
+          // Create a key on citations. Since they aren't a normalizr entity, we can update them here.
+          citations: value?.citations.map((citation) => ({
+            ...citation,
+            key: `${citation.source.id}-${citation.normalPincite}`,
+          })),
+        }),
+        momentConversion("created")
+      );
+    },
   }
 );
 export const mediaExcerptsSchema = new schema.Array(mediaExcerptSchema);
