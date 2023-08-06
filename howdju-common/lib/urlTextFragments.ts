@@ -1,8 +1,8 @@
 import * as textQuote from "dom-anchor-text-quote";
 import * as textPosition from "dom-anchor-text-position";
 
-import { isDefined, logger, UrlLocator } from "howdju-common";
-import striptags from "striptags";
+import { isDefined, logger, nodeIsAfter, UrlLocator } from "howdju-common";
+import { indexOf } from "lodash";
 
 const FRAGMENT_DIRECTIVE = ":~:";
 
@@ -169,9 +169,33 @@ export function extractQuotationFromTextFragment(
 }
 
 function getTextWithin(doc: Document, startText: string, endText: string) {
-  let startPosition = textQuote.toTextPosition(doc.body, { exact: startText });
-  if (!startPosition) {
+  // Some sites includes the content of the page in a script tag. E.g. substack's `body_html`. So
+  // use a hint at the beginning to try and find content in the body. (If we find this doens't work,
+  // we might need to use a binary search style approach until we either have exhausted ranges in
+  // the document or have found a range that isn't in a script tag.)
+  const { range } = getRangeOfText(doc, startText, endText, 0);
+  if (!range) {
     return undefined;
+  }
+  if (range.collapsed) {
+    return undefined;
+  }
+  return toPlainTextContent(range);
+}
+
+function getRangeOfText(
+  doc: Document,
+  startText: string,
+  endText: string,
+  hint?: number
+) {
+  let startPosition = textQuote.toTextPosition(
+    doc.body,
+    { exact: startText },
+    hint !== undefined ? { hint } : undefined
+  );
+  if (!startPosition) {
+    return { range: undefined, end: undefined };
   }
   let endPosition = textQuote.toTextPosition(
     doc.body,
@@ -179,7 +203,7 @@ function getTextWithin(doc: Document, startText: string, endText: string) {
     { hint: startPosition.end }
   );
   if (!endPosition) {
-    return undefined;
+    return { range: undefined, end: undefined };
   }
   // If the positions are invalid, try to find better positions.
   if (startPosition.start >= endPosition.end) {
@@ -217,7 +241,7 @@ function getTextWithin(doc: Document, startText: string, endText: string) {
     }
     // If the positions are still invalid, give up.
     if (startPosition.start >= endPosition.end) {
-      return undefined;
+      return { range: undefined, end: undefined };
     }
   }
 
@@ -225,14 +249,22 @@ function getTextWithin(doc: Document, startText: string, endText: string) {
     start: startPosition.start,
     end: endPosition.end,
   });
-  if (range.collapsed) {
-    return undefined;
+  return { range, end: endPosition.end };
+}
+
+function getNodeConstructor(node: Node) {
+  const Node = node.ownerDocument?.defaultView?.Node;
+  if (!Node) {
+    throw new Error(`Unable to obtain Node constructor from range.`);
   }
-  return toPlainTextContent(range);
+  return Node;
 }
 
 /**
- * Try to return the text content of an element, formatted as it would be in a browser.
+ * Try to return the contents of a range formatted as plain text.
+ *
+ * - Every time we encounter a text node, we add its textContent to the result.
+ * - Every time we encounter a paragraph, we add two newlines to the result.
  *
  * JSDOM doesn't implement innerText, so we must do this ourselves
  * (https://github.com/jsdom/jsdom/issues/1245). Another option might be to run headless Chrome.
@@ -241,13 +273,93 @@ function getTextWithin(doc: Document, startText: string, endText: string) {
  * https://developer.mozilla.org/en-US/docs/Web/API/Node/textContent#differences_from_innertext)
  */
 function toPlainTextContent(range: Range) {
-  // TODO vist nodes between start/end. add two new lines whenever leaving a paragraph and add text content of all leaf nodes.
-  const formatted = range
-    .toString()
-    .replace(/&nbsp;/, " ")
-    .replace(/\s*<\/p>\s*/gi, "</p>\n\n")
-    .trim();
-  return striptags(formatted);
+  const textParts = [] as string[];
+  const Node = getNodeConstructor(range.startContainer);
+  walkRangeNodes(range, {
+    enter: (node) => {
+      if (node.nodeType === Node.TEXT_NODE) {
+        let text;
+        if (node.isSameNode(range.startContainer)) {
+          if (node.isSameNode(range.endContainer)) {
+            text = node.textContent?.substring(
+              range.startOffset,
+              range.endOffset
+            );
+          } else {
+            text = node.textContent?.substring(range.startOffset);
+          }
+        } else if (node.isSameNode(range.endContainer)) {
+          text = node.textContent?.substring(0, range.endOffset);
+        } else {
+          text = node.textContent;
+        }
+        if (text) {
+          textParts.push(text);
+        }
+      }
+    },
+    leave: (node) => {
+      if (
+        node.nodeType === Node.ELEMENT_NODE &&
+        node.nodeName.toLowerCase() === "p"
+      ) {
+        textParts.push("\n\n");
+      }
+    },
+  });
+  return textParts.join("").replace(/\s+$/gm, "\n").trim();
+}
+
+function isTextNode(node: Node): node is Text {
+  return node.nodeType === getNodeConstructor(node).TEXT_NODE;
+}
+
+export function walkRangeNodes(
+  range: Range,
+  { enter, leave }: { enter: (node: Node) => void; leave: (node: Node) => void }
+) {
+  // If the startContainer is not a text node, then startOffset points to the first node of the
+  // range. If the startOffset is 0, it is ambiguous whether the range starts at the startContainer
+  // or at its first child. We assume that a startOffset of 0 includes the startContainer.
+
+  let node: Node | null =
+    isTextNode(range.startContainer) || range.startOffset == 0
+      ? range.startContainer
+      : range.startContainer.childNodes[range.startOffset];
+  while (node) {
+    enter(node);
+    if (node.firstChild) {
+      node = node.firstChild;
+      continue;
+    }
+    while (node && !node.nextSibling) {
+      leave(node);
+      if (node.isSameNode(range.endContainer)) {
+        return;
+      }
+      node = node.parentNode;
+    }
+    if (!node) {
+      logger.error(
+        `Unexpectedly reached the root node without encountering the range's endContainer.`
+      );
+      return;
+    }
+    leave(node);
+    node = node.nextSibling;
+    // If the endContainer is not a text node, then endOffset points to the last node of the range
+    // and we should skip any nodes after it.
+    if (
+      !isTextNode(range.endContainer) &&
+      node?.parentNode?.isSameNode(range.endContainer) &&
+      indexOf(node.parentNode.childNodes, node) > range.endOffset
+    ) {
+      return;
+    }
+    if (node && nodeIsAfter(node, range.endContainer)) {
+      return;
+    }
+  }
 }
 
 export type QuotationConfirmationResult =

@@ -32,7 +32,7 @@ declare module "dom-anchor-text-quote" {
   ): TextQuoteAnchor;
 
   function toTextPosition(
-    root,
+    root: Node,
     selector: Selector,
     options: Options = {}
   ): TextPositionAnchor | null;

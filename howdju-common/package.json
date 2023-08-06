@@ -25,7 +25,6 @@
     "lodash": "^4.17.21",
     "moment": "^2.29.4",
     "normalize-url": "^8.0.0",
-    "striptags": "alpha",
     "type-fest": "^3.12.0",
     "validator": "^13.7.0",
     "zod": "https://github.com/Howdju/zod.git#c2b02dc84a1e25614479aff0c1c26de27a406ea8"

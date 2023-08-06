@@ -1,3 +1,5 @@
+/// <reference path="../../howdju-test-common/lib/globals.d.ts" />
+
 export * from "./anchors";
 export * from "./arguments";
 export * from "./apiModels";
@@ -7,6 +9,7 @@ export * from "./commonPaths";
 export * from "./consts";
 export * from "./contextTrails";
 export * from "./domBibliographicInfo";
+export * from "./domCommon";
 export * from "./entities";
 export * from "./enums";
 export * from "./general";
