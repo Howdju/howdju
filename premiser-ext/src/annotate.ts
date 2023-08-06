@@ -5,14 +5,15 @@ import { logger, UrlTarget } from "howdju-common";
 import {
   getSelection,
   clearSelection,
+  selectionToMediaExcerptInfo,
+  targetToRanges,
+  isTextNode,
   getCommonAncestor,
   nodeIsBefore,
   normalizeNodes,
   isCoextensive,
   insertNodeAfter,
   insertNodeBefore,
-  selectionToMediaExcerptInfo,
-  targetToRanges,
 } from "howdju-client-common";
 
 import { getNodeData } from "./node-data";
@@ -180,10 +181,6 @@ function getNodesForRange(range: Range) {
   const endNode = range.endContainer as HTMLElement;
   const endOffset = range.endOffset;
   return getNodesFor(startNode, startOffset, endNode, endOffset);
-}
-
-function isTextNode(node: Node): node is Text {
-  return node.nodeType === Node.TEXT_NODE;
 }
 
 export function getNodesFor(

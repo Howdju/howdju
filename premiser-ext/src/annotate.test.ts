@@ -1,4 +1,4 @@
-import { getElementById } from "howdju-client-common";
+import { getElementById } from "howdju-test-common";
 
 import {
   getNodesFor,
@@ -12,37 +12,6 @@ import {
 } from "./annotate";
 import { Annotation, annotationIndexClassPrefix } from "./annotation";
 import { setNodeData } from "./node-data";
-
-expect.extend({
-  toBeEqualNode(received, expected) {
-    const pass = received.isEqualNode(expected);
-    if (pass) {
-      return {
-        message: () =>
-          `expected
-
-          ${received.outerHTML}
-
-          not to be equal node as
-
-          ${expected.outerHTML}`,
-        pass: true,
-      };
-    } else {
-      return {
-        message: () =>
-          `expected
-
-          ${received.outerHTML}
-
-          to be equal node as
-
-          ${expected.outerHTML}`,
-        pass: false,
-      };
-    }
-  },
-});
 
 beforeEach(() => {
   annotations.length = 0;

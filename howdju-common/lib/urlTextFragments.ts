@@ -75,7 +75,7 @@ export function toUrlWithFragmentFromAnchors(
   return urlObj.toString();
 }
 
-function cleanTextFragmentParameter(textParameter: string) {
+export function cleanTextFragmentParameter(textParameter: string) {
   return encodeTextFragmentParameter(textParameter.replace(/\n/g, ""));
 }
 
@@ -170,8 +170,15 @@ export function extractQuotationFromTextFragment(
 
 function getTextWithin(doc: Document, startText: string, endText: string) {
   let startPosition = textQuote.toTextPosition(doc.body, { exact: startText });
-  let endPosition = textQuote.toTextPosition(doc.body, { exact: endText });
-  if (!startPosition || !endPosition) {
+  if (!startPosition) {
+    return undefined;
+  }
+  let endPosition = textQuote.toTextPosition(
+    doc.body,
+    { exact: endText },
+    { hint: startPosition.end }
+  );
+  if (!endPosition) {
     return undefined;
   }
   // If the positions are invalid, try to find better positions.
@@ -221,7 +228,7 @@ function getTextWithin(doc: Document, startText: string, endText: string) {
   if (range.collapsed) {
     return undefined;
   }
-  return getFormattedText(range.toString());
+  return toPlainTextContent(range);
 }
 
 /**
@@ -233,10 +240,50 @@ function getTextWithin(doc: Document, startText: string, endText: string) {
  * (On the differences between textContent and innerText:
  * https://developer.mozilla.org/en-US/docs/Web/API/Node/textContent#differences_from_innertext)
  */
-function getFormattedText(textContent: string) {
-  const formatted = textContent
+function toPlainTextContent(range: Range) {
+  // TODO vist nodes between start/end. add two new lines whenever leaving a paragraph and add text content of all leaf nodes.
+  const formatted = range
+    .toString()
     .replace(/&nbsp;/, " ")
     .replace(/\s*<\/p>\s*/gi, "</p>\n\n")
     .trim();
   return striptags(formatted);
+}
+
+export type QuotationConfirmationResult =
+  | {
+      status: "NOT_FOUND";
+      foundQuotation?: undefined;
+      errorMessage?: undefined;
+    }
+  | {
+      status: "FOUND";
+      foundQuotation: string;
+      errorMessage?: undefined;
+    }
+  | {
+      status: "ERROR";
+      foundQuotation?: undefined;
+      errorMessage: string;
+    };
+
+export function confirmQuotationInDoc(
+  doc: Document,
+  quotation: string
+): QuotationConfirmationResult {
+  const quotationRange = textQuote.toRange(doc.body, {
+    exact: quotation,
+  });
+  if (!quotationRange) {
+    return {
+      status: "NOT_FOUND",
+    };
+  }
+
+  // TODO(491) add an INEXACT_FOUND option if foundQuotation !== quotation.
+  const foundQuotation = toPlainTextContent(quotationRange);
+  return {
+    status: "FOUND",
+    foundQuotation,
+  };
 }

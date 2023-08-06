@@ -1,5 +1,12 @@
-import { getCommonAncestor, isCoextensive, nodePositionCompare } from "./dom";
-import { getElementById } from "./testUtil";
+import { getElementById } from "howdju-test-common";
+
+import {
+  getCommonAncestor,
+  getNextLeafNode,
+  isCoextensive,
+  nodePositionCompare,
+  normalizeContentRange,
+} from "./dom";
 
 describe("getCommonAncestor", () => {
   test("gets an ancestor", () => {
@@ -56,3 +63,77 @@ describe("isCoextensive", () => {
     expect(isCoextensive(outer, inner)).toBe(false);
   });
 });
+
+describe("getNextLeafNode", () => {
+  test("gets the next leaf node", () => {
+    document.body.innerHTML = `<span id="first">first</span><span id="second">second</span>`;
+    const first = getElementById("first");
+    const second = getElementById("second");
+    const secondTextNode = getFirstChild(second);
+    expect(getNextLeafNode(first)).toBeEqualNode(secondTextNode);
+  });
+});
+
+describe("normalizeContentRange", () => {
+  test("moves a range's end to the first non-empty leaf node", () => {
+    document.body.innerHTML = `
+      <p id="first">The first paragraph</p>
+      <p id="second">The second paragraph</p>
+      <p id="third">The third paragraph</p>`;
+    const first = getElementById("first");
+    const second = getElementById("second");
+    const third = getElementById("third");
+    const range = document.createRange();
+    range.setStart(first, 0);
+    range.setEnd(third, 0);
+
+    const normalizedRange = normalizeContentRange(range);
+
+    const expectedRange = range.cloneRange();
+    const secondTextNode = getLastChild(second);
+    expectedRange.setEnd(secondTextNode, getTextContentLength(secondTextNode));
+    expect(normalizedRange).toBeEqualRange(expectedRange);
+  });
+  test("moves a range's start to the first non-empty leaf node", () => {
+    document.body.innerHTML = `
+      <p id="first">The first paragraph</p>
+      <p id="second">The second paragraph</p>
+      <p id="third">The third paragraph</p>`;
+    const first = getElementById("first");
+    const second = getElementById("second");
+    const third = getElementById("third");
+    const range = document.createRange();
+    const firstTextNode = getLastChild(first);
+    const thirdTextNode = getLastChild(third);
+    range.setStart(firstTextNode, getTextContentLength(firstTextNode));
+    range.setEnd(thirdTextNode, getTextContentLength(thirdTextNode));
+
+    const normalizedRange = normalizeContentRange(range);
+
+    const expectedRange = range.cloneRange();
+    const secondTextNode = getLastChild(second);
+    expectedRange.setStart(secondTextNode, 0);
+    expect(normalizedRange).toBeEqualRange(expectedRange);
+  });
+});
+
+function getTextContentLength(node: Node): number {
+  if (node.textContent) {
+    return node.textContent.length;
+  }
+  return 0;
+}
+
+function getFirstChild(node: Node) {
+  if (!node.firstChild) {
+    throw new Error(`No first child`);
+  }
+  return node.firstChild;
+}
+
+function getLastChild(node: Node) {
+  if (!node.lastChild) {
+    throw new Error(`No last child`);
+  }
+  return node.lastChild;
+}

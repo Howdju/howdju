@@ -219,6 +219,7 @@ export class MediaExcerptsDao {
           id: toIdString(row.url_locator_id),
           mediaExcerptId: toIdString(row.media_excerpt_id),
           url,
+          textFragmentUrl: row.text_fragment_url,
           anchors,
           autoConfirmationStatus,
           created: row.created,
@@ -1238,5 +1239,18 @@ export class MediaExcerptsDao {
       [url]
     );
     return rows.map(({ description }) => description);
+  }
+
+  updateTextFragmentUrlForUrlLocatorId(
+    urlLocatorId: EntityId,
+    textFragmentUrl: string
+  ) {
+    return this.database.query(
+      "updateTextFragmentUrlForUrlLocatorId",
+      `update url_locators
+      set text_fragment_url = $2
+      where url_locator_id = $1 and deleted is null`,
+      [urlLocatorId, textFragmentUrl]
+    );
   }
 }

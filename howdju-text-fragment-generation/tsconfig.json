@@ -1,0 +1,10 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "lib": ["DOM"],
+    "paths": {
+      // Support project-relative imports
+      "@/*": ["./src/*"]
+    }
+  }
+}

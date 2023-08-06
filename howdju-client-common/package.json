@@ -11,6 +11,7 @@
     "fix-format": "yarn run lint --fix && yarn run prettier --write --ignore-path .gitignore .",
     "lint": "eslint --ignore-path=.gitignore .",
     "test": "jest",
+    "test-inspect": "node --inspect-brk ../node_modules/.bin/jest --runInBand --watch",
     "typecheck": "tsc"
   },
   "dependencies": {
@@ -26,6 +27,7 @@
     "@types/chrome": "^0.0.233",
     "eslint": "^8.27.0",
     "eslint-config-howdju": "workspace:eslint-config-howdju",
+    "howdju-test-common": "workspace:howdju-test-common",
     "jest": "^29.3.1",
     "moment": "^2.29.4",
     "prettier": "2.7.1",

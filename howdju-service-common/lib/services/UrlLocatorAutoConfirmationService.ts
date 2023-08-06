@@ -1,15 +1,18 @@
-import { JSDOM } from "jsdom";
-import * as textQuote from "dom-anchor-text-quote";
-
-import { Logger, toJson, utcNow } from "howdju-common";
-
-import { fetchUrl } from "../fetchUrl";
-import { MediaExcerptsService } from "./MediaExcerptsService";
 import {
-  UrlLocatorAutoConfirmationDao,
-  UrlLocatorAutoConfirmationResult,
-} from "../daos/UrlLocatorAutoConfirmationDao";
+  Logger,
+  QuotationConfirmationResult,
+  toJson,
+  utcNow,
+} from "howdju-common";
+
+import { MediaExcerptsService } from "./MediaExcerptsService";
+import { UrlLocatorAutoConfirmationDao } from "../daos/UrlLocatorAutoConfirmationDao";
 import { EntityNotFoundError } from "..";
+import {
+  confirmQuotationInHtml,
+  generateTextFragmentUrlFromHtml,
+} from "../requestMediaExcerptInfo";
+import { fetchUrl } from "../fetchUrl";
 
 export class UrlLocatorAutoConfirmationService {
   constructor(
@@ -18,9 +21,7 @@ export class UrlLocatorAutoConfirmationService {
     private readonly urlLocatorAutoConfirmationDao: UrlLocatorAutoConfirmationDao
   ) {}
 
-  public async confirmUrlLocator(
-    urlLocatorId: string
-  ): Promise<UrlLocatorAutoConfirmationResult> {
+  public async confirmUrlLocator(urlLocatorId: string) {
     const urlLocator = await this.mediaExcerptsService.readUrlLocatorForId(
       urlLocatorId
     );
@@ -36,7 +37,22 @@ export class UrlLocatorAutoConfirmationService {
         mediaExcerptId
       );
 
-    const confirmationResult = await confirmQuotation(url, quotation);
+    // TODO confirm canonical while we have the HTML?
+    let html, errorMessage;
+    try {
+      html = await fetchUrl(url);
+    } catch (err) {
+      if (err instanceof Error) {
+        errorMessage = err.message;
+      }
+      errorMessage = toJson(err);
+    }
+    const confirmationResult = html
+      ? confirmQuotationInHtml(url, html, quotation)
+      : ({
+          status: "ERROR",
+          errorMessage,
+        } as QuotationConfirmationResult);
 
     const result = {
       ...confirmationResult,
@@ -46,62 +62,17 @@ export class UrlLocatorAutoConfirmationService {
       completeAt: utcNow(),
     };
     this.logger.info(`Auto confirmation result: ${toJson(result)}`);
-    return await this.urlLocatorAutoConfirmationDao.create(result);
-  }
-}
+    await this.urlLocatorAutoConfirmationDao.create(result);
 
-type ConfirmationResult =
-  | {
-      status: "NOT_FOUND";
-      foundQuotation?: undefined;
-      errorMessage?: undefined;
+    const textFragmentUrl = html
+      ? generateTextFragmentUrlFromHtml(url, html, quotation)
+      : undefined;
+    this.logger.info(`Inferred text fragment URL: ${textFragmentUrl}`);
+    if (textFragmentUrl) {
+      await this.mediaExcerptsService.updateTextFragmentUrlForUrlLocatorId(
+        urlLocatorId,
+        textFragmentUrl
+      );
     }
-  | {
-      status: "FOUND";
-      foundQuotation: string;
-      errorMessage?: undefined;
-    }
-  | {
-      status: "ERROR";
-      foundQuotation?: undefined;
-      errorMessage: string;
-    };
-
-async function confirmQuotation(
-  url: string,
-  quotation: string
-): Promise<ConfirmationResult> {
-  let html;
-  try {
-    html = await fetchUrl(url);
-  } catch (err) {
-    if (err instanceof Error) {
-      return {
-        status: "ERROR",
-        errorMessage: err.message,
-      };
-    }
-    return {
-      status: "ERROR",
-      errorMessage: toJson(err),
-    };
   }
-  const dom = new JSDOM(html, { url });
-  const doc = dom.window.document;
-
-  const quotationRange = textQuote.toRange(doc.body, {
-    exact: quotation,
-  });
-  if (!quotationRange) {
-    return {
-      status: "NOT_FOUND",
-    };
-  }
-
-  // TODO(491) add an INEXACT_FOUND option if foundQuotation !== quotation.
-  const foundQuotation = quotationRange.toString();
-  return {
-    status: "FOUND",
-    foundQuotation,
-  };
 }

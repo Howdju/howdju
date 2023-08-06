@@ -577,4 +577,14 @@ export class MediaExcerptsService {
     }
     return justMediaExcerpt.localRep;
   }
+
+  updateTextFragmentUrlForUrlLocatorId(
+    urlLocatorId: EntityId,
+    textFragmentUrl: string
+  ) {
+    return this.mediaExcerptsDao.updateTextFragmentUrlForUrlLocatorId(
+      urlLocatorId,
+      textFragmentUrl
+    );
+  }
 }

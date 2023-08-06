@@ -5,6 +5,7 @@ import stripIndent from "strip-indent";
 import { mergeCopy, utcNow } from "howdju-common";
 
 import {
+  confirmQuotationInDoc,
   extractQuotationFromTextFragment,
   toUrlWithFragmentFromAnchors,
   toUrlWithFragmentFromQuotation,
@@ -264,7 +265,26 @@ describe("extractQuotationFromTextFragment", () => {
       `Thimerosal is a preservative that has been used in manufacturing vaccines since the 1930s. Reports have indicated that infants can receive ethylmercury (in the form of thimerosal) at or above the U.S. Environmental Protection Agency guidelines for methylmercury exposure, depending on the exact vaccinations, schedule, and size of the infant. In this study we compared the systemic disposition and brain distribution of total and inorganic mercury in infant monkeys after thimerosal exposure with those exposed to MeHg. Monkeys were exposed to MeHg (via oral gavage) or vaccines containing thimerosal (via intramuscular injection) at birth and 1, 2, and 3 weeks of age. Total blood Hg levels were determined 2, 4, and 7 days after each exposure.`
     );
   });
+  it("converts paragraph breaks into linebreaks", () => {
+    const html = readFileSync(
+      "lib/testData/domBibliographicInfoTestData/seattletimes.html",
+      "utf8"
+    );
+    const dom = new JSDOM(html);
+    const doc = dom.window.document;
 
+    expect(
+      extractQuotationFromTextFragment(
+        "https://www.seattletimes.com/seattle-news/homeless/heres-why-people-think-seattle-will-reverse-course-on-homelessness/#:~:text=Despite%20that%2C%20Francine,here%2C%E2%80%9D%20she%20said.",
+        { doc }
+      )
+    ).toBe(
+      stripIndent(`
+      Despite that, Francine, who asked not to use her last name due to the stigma around addiction, thinks the homelessness crisis in Seattle will turn around.
+
+      “They have too much money out here,” she said.`).trim()
+    );
+  });
   it("extracts the quotation from the text fragment with a text end, prefix, and suffix", () => {
     expect(
       extractQuotationFromTextFragment(
@@ -284,5 +304,25 @@ describe("extractQuotationFromTextFragment", () => {
     expect(
       extractQuotationFromTextFragment("https://example.com#some-heading")
     ).toBeUndefined();
+  });
+});
+
+describe("confirmQuotationInDoc", () => {
+  test("Confirms a quotation", () => {
+    const html = readFileSync(
+      "lib/testData/domBibliographicInfoTestData/seattletimes.html",
+      "utf8"
+    );
+    const dom = new JSDOM(html);
+    const doc = dom.window.document;
+    const quotation = stripIndent(`
+      Many poll respondents said the reason they believe the homelessness crisis is worse now than it was three years ago is because they see it more.
+
+      “I see a lot more encampments around or RVs parked on the side of the road where they didn’t used to be,” said Drew Scoggins, a Northgate resident who responded to the poll.`).trim();
+
+    expect(confirmQuotationInDoc(doc, quotation)).toBe({
+      status: "FOUND",
+      foundQuotation: quotation,
+    });
   });
 });
