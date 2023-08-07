@@ -1,7 +1,7 @@
 import concat from "lodash/concat";
 import { isUndefined } from "lodash";
 
-import { logger, UrlTarget } from "howdju-common";
+import { logger, UrlTarget, nodeIsBefore } from "howdju-common";
 import {
   getSelection,
   clearSelection,
@@ -9,7 +9,6 @@ import {
   targetToRanges,
   isTextNode,
   getCommonAncestor,
-  nodeIsBefore,
   normalizeNodes,
   isCoextensive,
   insertNodeAfter,

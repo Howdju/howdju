@@ -80,7 +80,7 @@ describe("generateTextFragmentUrlFromHtml", () => {
       That change in where people living outside slept was good and bad, said Mary Steele, executive director of Compass Housing Alliance.
 
       “When people are visible, they’re easier for outreach folks to find them and to find them repeatedly,” Steele said. “Worse in that it has more of an impact on the neighborhood for sure.”`);
-    expect(generateTextFragmentUrlFromHtml(url, quotation, html)).toBe(
+    expect(generateTextFragmentUrlFromHtml(url, html, quotation)).toBe(
       "https://www.seattletimes.com/seattle-news/homeless/heres-why-people-think-seattle-will-reverse-course-on-homelessness/#:~:text=That%20change%20in,neighborhood%20for%20sure.%E2%80%9D"
     );
   });

@@ -37,7 +37,7 @@ export class UrlLocatorAutoConfirmationService {
         mediaExcerptId
       );
 
-    // TODO confirm canonical while we have the HTML?
+    // TODO(503) confirm canonical while we have the HTML?
     let html, errorMessage;
     try {
       html = await fetchUrl(url);

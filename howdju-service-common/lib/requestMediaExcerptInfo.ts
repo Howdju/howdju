@@ -60,15 +60,12 @@ export function generateTextFragmentUrlFromHtml(
   html: string,
   quotation: string
 ) {
-  // TODO do we need dangerously?
   const { window } = new JSDOM(html, { url, runScripts: "dangerously" });
 
   // Add the fragment generation utils to the JSDOM page.
   // See https://github.com/jsdom/jsdom/wiki/Don't-stuff-jsdom-globals-onto-the-Node-global#running-code-inside-the-jsdom-context
   const fragmentGenerationUtils = readFragmentGenerationScript();
-  const scriptEl = window.document.createElement("script");
-  scriptEl.textContent = fragmentGenerationUtils;
-  window.document.body.appendChild(scriptEl);
+  window.eval(fragmentGenerationUtils);
 
   // Select the quotation in the JSDOM page.
   const quotationRange = textQuote.toRange(window.document.body, {

@@ -1066,7 +1066,8 @@ CREATE TABLE public.url_locators (
     url_id bigint NOT NULL,
     creator_user_id bigint NOT NULL,
     created timestamp without time zone NOT NULL,
-    deleted timestamp without time zone
+    deleted timestamp without time zone,
+    text_fragment_url character varying(65536)
 );
 
 

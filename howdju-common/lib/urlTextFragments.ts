@@ -352,11 +352,15 @@ export function walkRangeNodes(
     if (
       !isTextNode(range.endContainer) &&
       node?.parentNode?.isSameNode(range.endContainer) &&
-      indexOf(node.parentNode.childNodes, node) > range.endOffset
+      indexOf(node.parentNode.childNodes, node) >= range.endOffset
     ) {
       return;
     }
-    if (node && nodeIsAfter(node, range.endContainer)) {
+    if (
+      node &&
+      !range.endContainer.contains(node) &&
+      nodeIsAfter(node, range.endContainer)
+    ) {
       return;
     }
   }

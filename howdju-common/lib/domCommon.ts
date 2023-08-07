@@ -10,6 +10,19 @@ export function nodeIsAfterOrSame(node1: Node, node2: Node) {
   return nodePositionCompare(node1, node2) >= 0;
 }
 
+/**
+ * Returns a number comparing the position of node1 to node2.
+ *
+ * There are five possibilities, and these are the return values:
+ *
+ * 1. The nodes are the same node (0)
+ * 2. node1 contains node2 (-1 because node1 starts before node2)
+ * 3. node2 contains node1 (1 because node1 starts after node2)
+ * 4. node1 ends before node2 (-1)
+ * 5. node1 begins after node2 (1)
+ *
+ * @returns -1 is node1 is before node2, 0 if they are the same node, and 1 if node1 is after node2.
+ */
 export function nodePositionCompare(node1: Node, node2: Node) {
   if (node1 === node2) {
     return 0;

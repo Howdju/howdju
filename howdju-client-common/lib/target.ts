@@ -8,8 +8,9 @@ import {
   logger,
   UrlTarget,
   makeDomAnchor,
+  nodeIsBefore,
 } from "howdju-common";
-import { nodeIsBefore, getPreviousLeafNode } from "./dom";
+import { getPreviousLeafNode } from "./dom";
 
 import { getCanonicalOrCurrentUrl } from "./location";
 
