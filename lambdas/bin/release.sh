@@ -22,5 +22,10 @@ git push
 yarn run clean
 yarn run build
 
-"${script_dir}"/../../bin/build-and-run-script.sh "${script_dir}"/zip-lambda.js
+extra_file=$1
+if [[ -n $extra_file ]]; then
+  "${script_dir}"/../../bin/build-and-run-script.sh "${script_dir}"/zip-lambda.js --extra-file=$extra_file
+else
+  "${script_dir}"/../../bin/build-and-run-script.sh "${script_dir}"/zip-lambda.js
+fi
 "${script_dir}"/../../bin/build-and-run-script.sh "${script_dir}"/upload-lambda.js

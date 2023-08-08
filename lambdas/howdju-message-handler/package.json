@@ -9,7 +9,7 @@
     "check-format": "yarn run prettier --check --ignore-path .gitignore .",
     "fix-format": "yarn run lint --fix && yarn run prettier --write --ignore-path .gitignore .",
     "lint": "eslint --ignore-path=.gitignore .",
-    "release": "../bin/release.sh",
+    "release": "../bin/release.sh ../../howdju-text-fragment-generation/dist/global-fragment-generation.js",
     "test": "jest",
     "test-inspect": "node --inspect-brk ../../node_modules/.bin/jest --runInBand --watch"
   },
