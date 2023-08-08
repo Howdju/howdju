@@ -37,15 +37,15 @@ export class UrlLocatorAutoConfirmationService {
         mediaExcerptId
       );
 
-    // TODO(503) confirm canonical while we have the HTML?
     let html, errorMessage;
     try {
       html = await fetchUrl(url);
     } catch (err) {
       if (err instanceof Error) {
         errorMessage = err.message;
+      } else {
+        errorMessage = toJson(err);
       }
-      errorMessage = toJson(err);
     }
     const confirmationResult = html
       ? confirmQuotationInHtml(url, html, quotation)

@@ -60,7 +60,7 @@ export function generateTextFragmentUrlFromHtml(
   html: string,
   quotation: string
 ) {
-  const { window } = new JSDOM(html, { url, runScripts: "dangerously" });
+  const { window } = new JSDOM(html, { url, runScripts: "outside-only" });
 
   // Add the fragment generation utils to the JSDOM page.
   // See https://github.com/jsdom/jsdom/wiki/Don't-stuff-jsdom-globals-onto-the-Node-global#running-code-inside-the-jsdom-context
@@ -76,11 +76,6 @@ export function generateTextFragmentUrlFromHtml(
     return undefined;
   }
   logger.info(`Found quotation in range: ${quotationRange.toString()}`);
-  const selection = window.document.getSelection();
-  if (!selection) {
-    logger.error(`Unable to get selection for ${url}`);
-    return undefined;
-  }
   window.quotationRange = quotationRange;
 
   // Run the fragment generation utils on the selection in the JSDOM page.

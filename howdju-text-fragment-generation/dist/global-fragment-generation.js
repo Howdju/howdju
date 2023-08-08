@@ -15159,6 +15159,235 @@
     }
   });
 
+  // ../node_modules/dom-seek/lib/index.js
+  var require_lib5 = __commonJS({
+    "../node_modules/dom-seek/lib/index.js"(exports) {
+      "use strict";
+      Object.defineProperty(exports, "__esModule", {
+        value: true
+      });
+      exports["default"] = seek;
+      var E_END = "Iterator exhausted before seek ended.";
+      var E_SHOW = "Argument 1 of seek must use filter NodeFilter.SHOW_TEXT.";
+      var E_WHERE = "Argument 2 of seek must be an integer or a Text Node.";
+      var DOCUMENT_POSITION_PRECEDING = 2;
+      var SHOW_TEXT = 4;
+      var TEXT_NODE = 3;
+      function seek(iter, where) {
+        if (iter.whatToShow !== SHOW_TEXT) {
+          var error;
+          try {
+            error = new DOMException(E_SHOW, "InvalidStateError");
+          } catch (_unused) {
+            error = new Error(E_SHOW);
+            error.code = 11;
+            error.name = "InvalidStateError";
+            error.toString = function() {
+              return "InvalidStateError: ".concat(E_SHOW);
+            };
+          }
+          throw error;
+        }
+        var count = 0;
+        var node = iter.referenceNode;
+        var predicates = null;
+        if (isInteger(where)) {
+          predicates = {
+            forward: function forward2() {
+              return count < where;
+            },
+            backward: function backward2() {
+              return count > where || !iter.pointerBeforeReferenceNode;
+            }
+          };
+        } else if (isText(where)) {
+          var forward = before(node, where) ? function() {
+            return false;
+          } : function() {
+            return node !== where;
+          };
+          var backward = function backward2() {
+            return node !== where || !iter.pointerBeforeReferenceNode;
+          };
+          predicates = {
+            forward,
+            backward
+          };
+        } else {
+          throw new TypeError(E_WHERE);
+        }
+        while (predicates.forward()) {
+          node = iter.nextNode();
+          if (node === null) {
+            throw new RangeError(E_END);
+          }
+          count += node.nodeValue.length;
+        }
+        if (iter.nextNode()) {
+          node = iter.previousNode();
+        }
+        while (predicates.backward()) {
+          node = iter.previousNode();
+          if (node === null) {
+            throw new RangeError(E_END);
+          }
+          count -= node.nodeValue.length;
+        }
+        if (!isText(iter.referenceNode)) {
+          throw new RangeError(E_END);
+        }
+        return count;
+      }
+      function isInteger(n3) {
+        if (typeof n3 !== "number")
+          return false;
+        return isFinite(n3) && Math.floor(n3) === n3;
+      }
+      function isText(node) {
+        return node.nodeType === TEXT_NODE;
+      }
+      function before(ref, node) {
+        return ref.compareDocumentPosition(node) & DOCUMENT_POSITION_PRECEDING;
+      }
+    }
+  });
+
+  // ../node_modules/dom-seek/index.js
+  var require_dom_seek2 = __commonJS({
+    "../node_modules/dom-seek/index.js"(exports, module) {
+      module.exports = require_lib5()["default"];
+    }
+  });
+
+  // ../node_modules/dom-anchor-text-position/lib/range-to-string.js
+  var require_range_to_string2 = __commonJS({
+    "../node_modules/dom-anchor-text-position/lib/range-to-string.js"(exports) {
+      "use strict";
+      Object.defineProperty(exports, "__esModule", {
+        value: true
+      });
+      exports["default"] = rangeToString;
+      function nextNode(node, skipChildren) {
+        if (!skipChildren && node.firstChild) {
+          return node.firstChild;
+        }
+        do {
+          if (node.nextSibling) {
+            return node.nextSibling;
+          }
+          node = node.parentNode;
+        } while (node);
+        return node;
+      }
+      function firstNode(range) {
+        if (range.startContainer.nodeType === Node.ELEMENT_NODE) {
+          var node = range.startContainer.childNodes[range.startOffset];
+          return node || nextNode(
+            range.startContainer,
+            true
+            /* skip children */
+          );
+        }
+        return range.startContainer;
+      }
+      function firstNodeAfter(range) {
+        if (range.endContainer.nodeType === Node.ELEMENT_NODE) {
+          var node = range.endContainer.childNodes[range.endOffset];
+          return node || nextNode(
+            range.endContainer,
+            true
+            /* skip children */
+          );
+        }
+        return nextNode(range.endContainer);
+      }
+      function forEachNodeInRange(range, cb) {
+        var node = firstNode(range);
+        var pastEnd = firstNodeAfter(range);
+        while (node !== pastEnd) {
+          cb(node);
+          node = nextNode(node);
+        }
+      }
+      function rangeToString(range) {
+        var text = "";
+        forEachNodeInRange(range, function(node) {
+          if (node.nodeType !== Node.TEXT_NODE) {
+            return;
+          }
+          var start = node === range.startContainer ? range.startOffset : 0;
+          var end = node === range.endContainer ? range.endOffset : node.textContent.length;
+          text += node.textContent.slice(start, end);
+        });
+        return text;
+      }
+    }
+  });
+
+  // ../node_modules/dom-anchor-text-position/lib/index.js
+  var require_lib6 = __commonJS({
+    "../node_modules/dom-anchor-text-position/lib/index.js"(exports) {
+      "use strict";
+      Object.defineProperty(exports, "__esModule", {
+        value: true
+      });
+      exports.fromRange = fromRange2;
+      exports.toRange = toRange4;
+      var _domSeek = _interopRequireDefault(require_dom_seek2());
+      var _rangeToString = _interopRequireDefault(require_range_to_string2());
+      function _interopRequireDefault(obj) {
+        return obj && obj.__esModule ? obj : { "default": obj };
+      }
+      var SHOW_TEXT = 4;
+      function fromRange2(root, range) {
+        if (root === void 0) {
+          throw new Error('missing required parameter "root"');
+        }
+        if (range === void 0) {
+          throw new Error('missing required parameter "range"');
+        }
+        var document2 = root.ownerDocument;
+        var prefix = document2.createRange();
+        var startNode = range.startContainer;
+        var startOffset = range.startOffset;
+        prefix.setStart(root, 0);
+        prefix.setEnd(startNode, startOffset);
+        var start = (0, _rangeToString["default"])(prefix).length;
+        var end = start + (0, _rangeToString["default"])(range).length;
+        return {
+          start,
+          end
+        };
+      }
+      function toRange4(root) {
+        var selector = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : {};
+        if (root === void 0) {
+          throw new Error('missing required parameter "root"');
+        }
+        var document2 = root.ownerDocument;
+        var range = document2.createRange();
+        var iter = document2.createNodeIterator(root, SHOW_TEXT);
+        var start = selector.start || 0;
+        var end = selector.end || start;
+        var startOffset = start - (0, _domSeek["default"])(iter, start);
+        var startNode = iter.referenceNode;
+        var remainder = end - start + startOffset;
+        var endOffset = remainder - (0, _domSeek["default"])(iter, remainder);
+        var endNode = iter.referenceNode;
+        range.setStart(startNode, startOffset);
+        range.setEnd(endNode, endOffset);
+        return range;
+      }
+    }
+  });
+
+  // ../node_modules/dom-anchor-text-position/index.js
+  var require_dom_anchor_text_position2 = __commonJS({
+    "../node_modules/dom-anchor-text-position/index.js"(exports, module) {
+      module.exports = require_lib6();
+    }
+  });
+
   // ../node_modules/lodash/_apply.js
   var require_apply = __commonJS({
     "../node_modules/lodash/_apply.js"(exports, module) {
@@ -21118,10 +21347,10 @@
 
   // ../howdju-common/lib/zodSchemas.ts
   function refineCreateMediaExcerpt(val, ctx) {
-    if ((0, import_lodash5.keys)(val.localRep).length < 1) {
+    if ((0, import_lodash6.keys)(val.localRep).length < 1) {
       ctx.addIssue({
         code: mod.ZodIssueCode.custom,
-        message: `At least one of ${(0, import_lodash5.keys)(
+        message: `At least one of ${(0, import_lodash6.keys)(
           MediaExcerpt.shape.localRep.shape
         )} is required.`
       });
@@ -21132,20 +21361,20 @@
         message: `At least one of locators or citations is required.`
       });
     }
-    if (val.locators && (0, import_lodash5.keys)(val.locators).length < 1) {
+    if (val.locators && (0, import_lodash6.keys)(val.locators).length < 1) {
       ctx.addIssue({
         code: mod.ZodIssueCode.custom,
-        message: `Locators must contain at least one of ${(0, import_lodash5.keys)(
+        message: `Locators must contain at least one of ${(0, import_lodash6.keys)(
           MediaExcerpt.shape.locators.shape
         )} is required.`
       });
     }
   }
-  var import_lodash5, Entity, CreateModel, PersistedEntity, UserExternalIds, User, UserBlurb, Proposition, UpdatePropositionInput, UpdateProposition, Tag, CreateTag, CreateTagInput, tagVotePolarities, PropositionTagVote, PropositionTagVotePolarities, CreatePropositionTagVote, CreatePropositionTagVoteInput, CreatePropositionInput, CreateProposition, Persorg, CreatePersorg, CreatePersorgInput, UpdatePersorg, UpdatePersorgInput, sentenceTypes, baseStatement, Statement, SentenceTypes, CreateStatementInput, CreateStatement, Writ, CreateWrit, CreateWritInput, UpdateWrit, UpdateWritInput, DomAnchor, CreateDomAnchor, UrlTarget, Url, CreateUrl, CreateUrlInput, UrlLocator, WritQuote, PicRegion, VidSegment, AudSegment, sourceExcerptTypes, SourceExcerpt, SourceExcerptTypes, CreateUrlLocator, CreateUrlLocatorInput, Source, CreateSource, CreateSourceInput, UpdateSource, UpdateSourceInput, MediaExcerptCitation, CreateMediaExcerptCitation, CreateMediaExcerptCitationInput, DeleteMediaExcerptCitation, MediaExcerpt, PropositionCompoundAtom, PropositionCompound, CreatePropositionCompoundAtomInput, UpdatePropositionCompoundAtomInput, CreatePropositionCompoundInput, CreatePropositionCompoundAtom, UpdatePropositionCompoundAtom, CreatePropositionCompound, UpdatePropositionCompoundInput, UpdatePropositionCompound, JustificationPolarity, JustificationPolarities, RelationPolarity2, JustificationRootPolarity, JustificationRootPolarities, JustificationBasisType, JustificationBasisTypes, justificationBaseShape, JustificationRootTargetType, JustificationRootTargetTypes, JustificationTargetType2, Justification, JustificationTargetTypes, PropositionRef, StatementRef, JustificationRef, JustificationVoteRef, PropositionCompoundRef, SourceExcerptRef, WritQuoteRef, WritRef, PersorgRef, TagRef, TagVoteRef, UrlRef, UserRef, PropositionTagVoteRef, RegistrationRequestRef, PasswordResetRequestRef, AccountSettingsRef, ContentReportRef, UrlLocatorRef, MediaExcerptRef, SourceRef, CreateWritQuoteInput, CreateWritQuote, UpdateWritQuoteInput, UpdateWritQuote, CreateVidSegmentInput, CreateVidSegment, CreateAudSegmentInput, CreateAudSegment, UpdateVidSegmentInput, UpdateVidSegment, CreatePicRegionInput, CreatePicRegion, UpdatePicRegionInput, UpdatePicRegion, CreateSourceExcerptInput, CreateSourceExcerpt, CreateMediaExcerptBase, CreateMediaExcerpt, CreateMediaExcerptInput, UpdateMediaExcerpt, UpdateMediaExcerptInput, CreateUrlLocatorsInput, createJustificationBaseShape, createJustificationInputBaseShape, CreateJustificationInput, CreateJustification, CreateCounterJustificationInput, CreateCounterJustification, justificationVotePolarities, JustificationVote, JustificationVotePolarities, CreateJustificationVote, DeleteJustificationVote, TaggableEntityType, TagVote, TagVotePolarities, CreateTagVote, EntityType, EntityTypes, ContentReportType, ContentReportTypes, ContentReport, CreateContentReport, CreateContentReportInput, CreateUser, AccountSettings, CreateAccountSettings, UpdateAccountSettings, CreateJustifiedSentenceInput, CreateJustifiedSentence, RegistrationRequest, CreateRegistrationRequest, CreateRegistrationRequestInput, Password, RegistrationConfirmation, CreateRegistrationConfirmation, CreateRegistrationConfirmationInput, PasswordResetRequest, Credentials;
+  var import_lodash6, Entity, CreateModel, PersistedEntity, UserExternalIds, User, UserBlurb, Proposition, UpdatePropositionInput, UpdateProposition, Tag, CreateTag, CreateTagInput, tagVotePolarities, PropositionTagVote, PropositionTagVotePolarities, CreatePropositionTagVote, CreatePropositionTagVoteInput, CreatePropositionInput, CreateProposition, Persorg, CreatePersorg, CreatePersorgInput, UpdatePersorg, UpdatePersorgInput, sentenceTypes, baseStatement, Statement, SentenceTypes, CreateStatementInput, CreateStatement, Writ, CreateWrit, CreateWritInput, UpdateWrit, UpdateWritInput, DomAnchor, CreateDomAnchor, UrlTarget, Url, CreateUrl, CreateUrlInput, UrlLocator, WritQuote, PicRegion, VidSegment, AudSegment, sourceExcerptTypes, SourceExcerpt, SourceExcerptTypes, CreateUrlLocator, CreateUrlLocatorInput, Source, CreateSource, CreateSourceInput, UpdateSource, UpdateSourceInput, MediaExcerptCitation, CreateMediaExcerptCitation, CreateMediaExcerptCitationInput, DeleteMediaExcerptCitation, MediaExcerpt, PropositionCompoundAtom, PropositionCompound, CreatePropositionCompoundAtomInput, UpdatePropositionCompoundAtomInput, CreatePropositionCompoundInput, CreatePropositionCompoundAtom, UpdatePropositionCompoundAtom, CreatePropositionCompound, UpdatePropositionCompoundInput, UpdatePropositionCompound, JustificationPolarity, JustificationPolarities, RelationPolarity2, JustificationRootPolarity, JustificationRootPolarities, JustificationBasisType, JustificationBasisTypes, justificationBaseShape, JustificationRootTargetType, JustificationRootTargetTypes, JustificationTargetType2, Justification, JustificationTargetTypes, PropositionRef, StatementRef, JustificationRef, JustificationVoteRef, PropositionCompoundRef, SourceExcerptRef, WritQuoteRef, WritRef, PersorgRef, TagRef, TagVoteRef, UrlRef, UserRef, PropositionTagVoteRef, RegistrationRequestRef, PasswordResetRequestRef, AccountSettingsRef, ContentReportRef, UrlLocatorRef, MediaExcerptRef, SourceRef, CreateWritQuoteInput, CreateWritQuote, UpdateWritQuoteInput, UpdateWritQuote, CreateVidSegmentInput, CreateVidSegment, CreateAudSegmentInput, CreateAudSegment, UpdateVidSegmentInput, UpdateVidSegment, CreatePicRegionInput, CreatePicRegion, UpdatePicRegionInput, UpdatePicRegion, CreateSourceExcerptInput, CreateSourceExcerpt, CreateMediaExcerptBase, CreateMediaExcerpt, CreateMediaExcerptInput, UpdateMediaExcerpt, UpdateMediaExcerptInput, CreateUrlLocatorsInput, createJustificationBaseShape, createJustificationInputBaseShape, CreateJustificationInput, CreateJustification, CreateCounterJustificationInput, CreateCounterJustification, justificationVotePolarities, JustificationVote, JustificationVotePolarities, CreateJustificationVote, DeleteJustificationVote, TaggableEntityType, TagVote, TagVotePolarities, CreateTagVote, EntityType, EntityTypes, ContentReportType, ContentReportTypes, ContentReport, CreateContentReport, CreateContentReportInput, CreateUser, AccountSettings, CreateAccountSettings, UpdateAccountSettings, CreateJustifiedSentenceInput, CreateJustifiedSentence, RegistrationRequest, CreateRegistrationRequest, CreateRegistrationRequestInput, Password, RegistrationConfirmation, CreateRegistrationConfirmation, CreateRegistrationConfirmationInput, PasswordResetRequest, Credentials;
   var init_zodSchemas = __esm({
     "../howdju-common/lib/zodSchemas.ts"() {
       "use strict";
-      import_lodash5 = __toESM(require_lodash());
+      import_lodash6 = __toESM(require_lodash());
       init_lib();
       init_zodRefinements();
       Entity = mod.object({
@@ -21769,7 +21998,7 @@
         mediaExcerptId: mod.string(),
         urlLocators: mod.array(CreateUrlLocator)
       });
-      createJustificationBaseShape = __spreadProps(__spreadValues({}, (0, import_lodash5.omit)(justificationBaseShape, ["created"])), {
+      createJustificationBaseShape = __spreadProps(__spreadValues({}, (0, import_lodash6.omit)(justificationBaseShape, ["created"])), {
         basis: mod.object({
           type: mod.enum([
             "PROPOSITION_COMPOUND",
@@ -21787,7 +22016,7 @@
           justificationBasisCompound: Entity.optional()
         })
       });
-      createJustificationInputBaseShape = __spreadProps(__spreadValues({}, (0, import_lodash5.omit)(createJustificationBaseShape, ["basis"])), {
+      createJustificationInputBaseShape = __spreadProps(__spreadValues({}, (0, import_lodash6.omit)(createJustificationBaseShape, ["basis"])), {
         basis: mod.object({
           type: mod.enum([
             "PROPOSITION_COMPOUND",
@@ -21826,7 +22055,7 @@
         }))
       );
       CreateJustification = mod.lazy(
-        () => Entity.extend(__spreadProps(__spreadValues({}, (0, import_lodash5.omit)(createJustificationBaseShape, ["rootPolarity"])), {
+        () => Entity.extend(__spreadProps(__spreadValues({}, (0, import_lodash6.omit)(createJustificationBaseShape, ["rootPolarity"])), {
           basis: mod.discriminatedUnion("type", [
             mod.object({
               type: mod.literal("PROPOSITION_COMPOUND"),
@@ -22030,11 +22259,11 @@
   });
 
   // ../howdju-common/lib/schemas.ts
-  var import_lodash7, schemaSettings, definitionsSchema, passwordResetRequest, passwordResetConfirmation, user, contentReport, writ, writQuote, persorg, schemas, schemasById;
+  var import_lodash8, schemaSettings, definitionsSchema, passwordResetRequest, passwordResetConfirmation, user, contentReport, writ, writQuote, persorg, schemas, schemasById;
   var init_schemas = __esm({
     "../howdju-common/lib/schemas.ts"() {
       "use strict";
-      import_lodash7 = __toESM(require_lodash());
+      import_lodash8 = __toESM(require_lodash());
       init_zodSchemas();
       schemaSettings = {
         propositionTextMaxLength: 512,
@@ -22173,7 +22402,7 @@
         properties: {
           entityType: {
             description: "The type of entity being reported, if the report can pertain to a particular entity.",
-            enum: (0, import_lodash7.keys)(EntityTypes)
+            enum: (0, import_lodash8.keys)(EntityTypes)
           },
           entityId: { $ref: "definitions.json#/definitions/entityId" },
           url: {
@@ -22184,7 +22413,7 @@
           types: {
             type: "array",
             uniqueItems: true,
-            items: { enum: (0, import_lodash7.keys)(ContentReportTypes) },
+            items: { enum: (0, import_lodash8.keys)(ContentReportTypes) },
             // A report must have at least one type
             minItems: 1
           },
@@ -29528,20 +29757,20 @@
         const { received, message } = errorFormat;
         if (received === "undefined" && message === "Required") {
           const rawName = errorFormat.path[errorFormat.path.length - 1];
-          if (!(0, import_lodash8.isString)(rawName)) {
+          if (!(0, import_lodash9.isString)(rawName)) {
             logger.warn(
               `errorFormatToString got a type that doesn't format nicely (${rawName}: ${typeof rawName})`
             );
           }
-          const name = (0, import_lodash8.toString)(rawName);
-          const casedName = (0, import_lodash8.startCase)(name);
+          const name = (0, import_lodash9.toString)(rawName);
+          const casedName = (0, import_lodash9.startCase)(name);
           return `${casedName} is required`;
         }
         return errorFormat.message;
       }
       case "invalid_union_discriminator": {
         const { options } = errorFormat;
-        const joinedOptions = (0, import_lodash8.join)((0, import_lodash8.map)(options, import_lodash8.startCase), ", ");
+        const joinedOptions = (0, import_lodash9.join)((0, import_lodash9.map)(options, import_lodash9.startCase), ", ");
         return `Invalid option. Must be one of: ${joinedOptions}`;
       }
       default:
@@ -29575,7 +29804,7 @@
           }
           let props;
           const arg = argumentsList[0];
-          if ((0, import_lodash8.isString)(arg)) {
+          if ((0, import_lodash9.isString)(arg)) {
             props = { message: arg };
           } else if ("message" in arg) {
             props = arg;
@@ -29597,19 +29826,19 @@
       error,
       (val, key) => {
         if (key === "_errors") {
-          assert((0, import_lodash8.isArray)(val));
-          return (0, import_lodash8.uniqWith)(val, import_lodash8.isEqual);
+          assert((0, import_lodash9.isArray)(val));
+          return (0, import_lodash9.uniqWith)(val, import_lodash9.isEqual);
         }
         return val;
       },
       { mapArrays: false }
     );
   }
-  var import_lodash8, zodIssueFormatter, callableProxyTarget;
+  var import_lodash9, zodIssueFormatter, callableProxyTarget;
   var init_zodError = __esm({
     "../howdju-common/lib/zodError.ts"() {
       "use strict";
-      import_lodash8 = __toESM(require_lodash());
+      import_lodash9 = __toESM(require_lodash());
       init_lib();
       init_general();
       init_logger();
@@ -29732,11 +29961,11 @@
   }
   function jsonPointerToObjectPath(jsonPointer) {
     return jsonPointer.split("/").map((val) => {
-      const parsed = (0, import_lodash9.parseInt)(val);
-      return (0, import_lodash9.isNaN)(parsed) ? val : parsed;
+      const parsed = (0, import_lodash10.parseInt)(val);
+      return (0, import_lodash10.isNaN)(parsed) ? val : parsed;
     });
   }
-  var import_ajv, import_ajv_formats, import_standalone, import_mapValues, import_assign2, import_pick, import_set, import_reduce2, import_values, import_lodash9, schemaIds;
+  var import_ajv, import_ajv_formats, import_standalone, import_mapValues, import_assign2, import_pick, import_set, import_reduce2, import_values, import_lodash10, schemaIds;
   var init_schemaValidation = __esm({
     "../howdju-common/lib/schemaValidation.ts"() {
       "use strict";
@@ -29749,7 +29978,7 @@
       import_set = __toESM(require_set());
       import_reduce2 = __toESM(require_reduce());
       import_values = __toESM(require_values());
-      import_lodash9 = __toESM(require_lodash());
+      import_lodash10 = __toESM(require_lodash());
       init_lib();
       init_general();
       init_schemas();
@@ -30787,235 +31016,6 @@
         return baseClone(value, CLONE_DEEP_FLAG | CLONE_SYMBOLS_FLAG);
       }
       module.exports = cloneDeep5;
-    }
-  });
-
-  // ../node_modules/dom-seek/lib/index.js
-  var require_lib5 = __commonJS({
-    "../node_modules/dom-seek/lib/index.js"(exports) {
-      "use strict";
-      Object.defineProperty(exports, "__esModule", {
-        value: true
-      });
-      exports["default"] = seek;
-      var E_END = "Iterator exhausted before seek ended.";
-      var E_SHOW = "Argument 1 of seek must use filter NodeFilter.SHOW_TEXT.";
-      var E_WHERE = "Argument 2 of seek must be an integer or a Text Node.";
-      var DOCUMENT_POSITION_PRECEDING = 2;
-      var SHOW_TEXT = 4;
-      var TEXT_NODE = 3;
-      function seek(iter, where) {
-        if (iter.whatToShow !== SHOW_TEXT) {
-          var error;
-          try {
-            error = new DOMException(E_SHOW, "InvalidStateError");
-          } catch (_unused) {
-            error = new Error(E_SHOW);
-            error.code = 11;
-            error.name = "InvalidStateError";
-            error.toString = function() {
-              return "InvalidStateError: ".concat(E_SHOW);
-            };
-          }
-          throw error;
-        }
-        var count = 0;
-        var node = iter.referenceNode;
-        var predicates = null;
-        if (isInteger(where)) {
-          predicates = {
-            forward: function forward2() {
-              return count < where;
-            },
-            backward: function backward2() {
-              return count > where || !iter.pointerBeforeReferenceNode;
-            }
-          };
-        } else if (isText(where)) {
-          var forward = before(node, where) ? function() {
-            return false;
-          } : function() {
-            return node !== where;
-          };
-          var backward = function backward2() {
-            return node !== where || !iter.pointerBeforeReferenceNode;
-          };
-          predicates = {
-            forward,
-            backward
-          };
-        } else {
-          throw new TypeError(E_WHERE);
-        }
-        while (predicates.forward()) {
-          node = iter.nextNode();
-          if (node === null) {
-            throw new RangeError(E_END);
-          }
-          count += node.nodeValue.length;
-        }
-        if (iter.nextNode()) {
-          node = iter.previousNode();
-        }
-        while (predicates.backward()) {
-          node = iter.previousNode();
-          if (node === null) {
-            throw new RangeError(E_END);
-          }
-          count -= node.nodeValue.length;
-        }
-        if (!isText(iter.referenceNode)) {
-          throw new RangeError(E_END);
-        }
-        return count;
-      }
-      function isInteger(n3) {
-        if (typeof n3 !== "number")
-          return false;
-        return isFinite(n3) && Math.floor(n3) === n3;
-      }
-      function isText(node) {
-        return node.nodeType === TEXT_NODE;
-      }
-      function before(ref, node) {
-        return ref.compareDocumentPosition(node) & DOCUMENT_POSITION_PRECEDING;
-      }
-    }
-  });
-
-  // ../node_modules/dom-seek/index.js
-  var require_dom_seek2 = __commonJS({
-    "../node_modules/dom-seek/index.js"(exports, module) {
-      module.exports = require_lib5()["default"];
-    }
-  });
-
-  // ../node_modules/dom-anchor-text-position/lib/range-to-string.js
-  var require_range_to_string2 = __commonJS({
-    "../node_modules/dom-anchor-text-position/lib/range-to-string.js"(exports) {
-      "use strict";
-      Object.defineProperty(exports, "__esModule", {
-        value: true
-      });
-      exports["default"] = rangeToString;
-      function nextNode(node, skipChildren) {
-        if (!skipChildren && node.firstChild) {
-          return node.firstChild;
-        }
-        do {
-          if (node.nextSibling) {
-            return node.nextSibling;
-          }
-          node = node.parentNode;
-        } while (node);
-        return node;
-      }
-      function firstNode(range) {
-        if (range.startContainer.nodeType === Node.ELEMENT_NODE) {
-          var node = range.startContainer.childNodes[range.startOffset];
-          return node || nextNode(
-            range.startContainer,
-            true
-            /* skip children */
-          );
-        }
-        return range.startContainer;
-      }
-      function firstNodeAfter(range) {
-        if (range.endContainer.nodeType === Node.ELEMENT_NODE) {
-          var node = range.endContainer.childNodes[range.endOffset];
-          return node || nextNode(
-            range.endContainer,
-            true
-            /* skip children */
-          );
-        }
-        return nextNode(range.endContainer);
-      }
-      function forEachNodeInRange(range, cb) {
-        var node = firstNode(range);
-        var pastEnd = firstNodeAfter(range);
-        while (node !== pastEnd) {
-          cb(node);
-          node = nextNode(node);
-        }
-      }
-      function rangeToString(range) {
-        var text = "";
-        forEachNodeInRange(range, function(node) {
-          if (node.nodeType !== Node.TEXT_NODE) {
-            return;
-          }
-          var start = node === range.startContainer ? range.startOffset : 0;
-          var end = node === range.endContainer ? range.endOffset : node.textContent.length;
-          text += node.textContent.slice(start, end);
-        });
-        return text;
-      }
-    }
-  });
-
-  // ../node_modules/dom-anchor-text-position/lib/index.js
-  var require_lib6 = __commonJS({
-    "../node_modules/dom-anchor-text-position/lib/index.js"(exports) {
-      "use strict";
-      Object.defineProperty(exports, "__esModule", {
-        value: true
-      });
-      exports.fromRange = fromRange2;
-      exports.toRange = toRange4;
-      var _domSeek = _interopRequireDefault(require_dom_seek2());
-      var _rangeToString = _interopRequireDefault(require_range_to_string2());
-      function _interopRequireDefault(obj) {
-        return obj && obj.__esModule ? obj : { "default": obj };
-      }
-      var SHOW_TEXT = 4;
-      function fromRange2(root, range) {
-        if (root === void 0) {
-          throw new Error('missing required parameter "root"');
-        }
-        if (range === void 0) {
-          throw new Error('missing required parameter "range"');
-        }
-        var document2 = root.ownerDocument;
-        var prefix = document2.createRange();
-        var startNode = range.startContainer;
-        var startOffset = range.startOffset;
-        prefix.setStart(root, 0);
-        prefix.setEnd(startNode, startOffset);
-        var start = (0, _rangeToString["default"])(prefix).length;
-        var end = start + (0, _rangeToString["default"])(range).length;
-        return {
-          start,
-          end
-        };
-      }
-      function toRange4(root) {
-        var selector = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : {};
-        if (root === void 0) {
-          throw new Error('missing required parameter "root"');
-        }
-        var document2 = root.ownerDocument;
-        var range = document2.createRange();
-        var iter = document2.createNodeIterator(root, SHOW_TEXT);
-        var start = selector.start || 0;
-        var end = selector.end || start;
-        var startOffset = start - (0, _domSeek["default"])(iter, start);
-        var startNode = iter.referenceNode;
-        var remainder = end - start + startOffset;
-        var endOffset = remainder - (0, _domSeek["default"])(iter, remainder);
-        var endNode = iter.referenceNode;
-        range.setStart(startNode, startOffset);
-        range.setEnd(endNode, endOffset);
-        return range;
-      }
-    }
-  });
-
-  // ../node_modules/dom-anchor-text-position/index.js
-  var require_dom_anchor_text_position2 = __commonJS({
-    "../node_modules/dom-anchor-text-position/index.js"(exports, module) {
-      module.exports = require_lib6();
     }
   });
 
@@ -32985,6 +32985,7 @@
     formatZodError: () => formatZodError,
     fromJson: () => fromJson,
     getConnectingEntitySourceInfo: () => getConnectingEntitySourceInfo,
+    getTextWithin: () => getTextWithin,
     hasQuote: () => hasQuote,
     httpMethods: () => httpMethods,
     httpStatusCodes: () => httpStatusCodes,
@@ -33099,6 +33100,7 @@
     timestampFormatString: () => timestampFormatString,
     toEntries: () => toEntries,
     toJson: () => toJson,
+    toPlainTextContent: () => toPlainTextContent,
     toSingleLine: () => toSingleLine,
     toSlug: () => toSlug,
     toUrlWithFragmentFromAnchors: () => toUrlWithFragmentFromAnchors,
@@ -33769,6 +33771,10 @@
   }
 
   // ../howdju-common/lib/domCommon.ts
+  var textPosition = __toESM(require_dom_anchor_text_position2());
+  var textQuote2 = __toESM(require_dom_anchor_text_quote());
+  var import_lodash5 = __toESM(require_lodash());
+  init_logger();
   function nodeIsBefore(node1, node2) {
     return nodePositionCompare(node1, node2) < 0;
   }
@@ -33801,6 +33807,172 @@
       sibling = sibling.nextSibling;
     }
     return 1;
+  }
+  function getTextWithin(doc, startText, endText) {
+    const { range } = getRangeOfText(doc, startText, endText, 0);
+    if (!range) {
+      return void 0;
+    }
+    if (isRangeInsideScript(range)) {
+      logger.error(
+        `getTextWithin returning a range that is within a script tag for ${doc.location.href}`
+      );
+    }
+    if (range.collapsed) {
+      return void 0;
+    }
+    return toPlainTextContent(range);
+  }
+  function isRangeInsideScript(range) {
+    return isNodeInsideScript(range.startContainer) || isNodeInsideScript(range.endContainer);
+  }
+  function isNodeInsideScript(node) {
+    let currNode = node;
+    while (currNode) {
+      if (isScriptNode(currNode)) {
+        return true;
+      }
+      currNode = currNode.parentNode;
+    }
+    return false;
+  }
+  function isScriptNode(node) {
+    return node.nodeType === getNodeConstructor(node).ELEMENT_NODE && node.nodeName.toLowerCase() === "script";
+  }
+  function getRangeOfText(doc, startText, endText, hint) {
+    let startPosition = textQuote2.toTextPosition(
+      doc.body,
+      { exact: startText },
+      hint !== void 0 ? { hint } : void 0
+    );
+    if (!startPosition) {
+      return { range: void 0, end: void 0 };
+    }
+    let endPosition = textQuote2.toTextPosition(
+      doc.body,
+      { exact: endText },
+      { hint: startPosition.end }
+    );
+    if (!endPosition) {
+      return { range: void 0, end: void 0 };
+    }
+    if (startPosition.start >= endPosition.end) {
+      const betterStartPosition = textQuote2.toTextPosition(
+        doc.body,
+        { exact: startText },
+        { hint: endPosition.start }
+      );
+      const betterEndPosition = textQuote2.toTextPosition(
+        doc.body,
+        { exact: endText },
+        { hint: startPosition.end }
+      );
+      const betterStartLength = betterStartPosition ? endPosition.start - betterStartPosition.end : Number.NEGATIVE_INFINITY;
+      const betterEndLength = betterEndPosition ? betterEndPosition.start - startPosition.end : Number.NEGATIVE_INFINITY;
+      const isValidBetterStart = betterStartPosition && betterStartLength > 0;
+      const isValidBetterEnd = betterEndPosition && betterEndLength > 0;
+      if (isValidBetterStart) {
+        if (isValidBetterEnd) {
+          if (betterStartLength < betterEndLength) {
+            startPosition = betterStartPosition;
+          } else {
+            endPosition = betterEndPosition;
+          }
+        } else {
+          startPosition = betterStartPosition;
+        }
+      } else if (isValidBetterEnd) {
+        endPosition = betterEndPosition;
+      }
+      if (startPosition.start >= endPosition.end) {
+        return { range: void 0, end: void 0 };
+      }
+    }
+    const range = textPosition.toRange(doc.body, {
+      start: startPosition.start,
+      end: endPosition.end
+    });
+    return { range, end: endPosition.end };
+  }
+  function getNodeConstructor(node) {
+    var _a;
+    const window2 = "defaultView" in node ? node.defaultView : (_a = node.ownerDocument) == null ? void 0 : _a.defaultView;
+    if (!window2) {
+      throw new Error(
+        `Unable to obtain window from node to get Node constructor.`
+      );
+    }
+    return window2.Node;
+  }
+  function toPlainTextContent(range) {
+    const textParts = [];
+    const Node2 = getNodeConstructor(range.startContainer);
+    walkRangeNodes(range, {
+      enter: (node) => {
+        var _a, _b, _c;
+        if (node.nodeType === Node2.TEXT_NODE) {
+          let text;
+          if (node.isSameNode(range.startContainer)) {
+            if (node.isSameNode(range.endContainer)) {
+              text = (_a = node.textContent) == null ? void 0 : _a.substring(
+                range.startOffset,
+                range.endOffset
+              );
+            } else {
+              text = (_b = node.textContent) == null ? void 0 : _b.substring(range.startOffset);
+            }
+          } else if (node.isSameNode(range.endContainer)) {
+            text = (_c = node.textContent) == null ? void 0 : _c.substring(0, range.endOffset);
+          } else {
+            text = node.textContent;
+          }
+          if (text) {
+            textParts.push(text);
+          }
+        }
+      },
+      leave: (node) => {
+        if (node.nodeType === Node2.ELEMENT_NODE && node.nodeName.toLowerCase() === "p") {
+          textParts.push("\n\n");
+        }
+      }
+    });
+    return textParts.join("").replace(/\s+$/gm, "\n").trim();
+  }
+  function isTextNode(node) {
+    return node.nodeType === getNodeConstructor(node).TEXT_NODE;
+  }
+  function walkRangeNodes(range, { enter, leave }) {
+    var _a;
+    let node = isTextNode(range.startContainer) || range.startOffset == 0 ? range.startContainer : range.startContainer.childNodes[range.startOffset];
+    while (node) {
+      enter(node);
+      if (node.firstChild) {
+        node = node.firstChild;
+        continue;
+      }
+      while (node && !node.nextSibling) {
+        leave(node);
+        if (node.isSameNode(range.endContainer)) {
+          return;
+        }
+        node = node.parentNode;
+      }
+      if (!node) {
+        logger.error(
+          `Unexpectedly reached the root node without encountering the range's endContainer.`
+        );
+        return;
+      }
+      leave(node);
+      node = node.nextSibling;
+      if (!isTextNode(range.endContainer) && ((_a = node == null ? void 0 : node.parentNode) == null ? void 0 : _a.isSameNode(range.endContainer)) && (0, import_lodash5.indexOf)(node.parentNode.childNodes, node) >= range.endOffset) {
+        return;
+      }
+      if (node && !range.endContainer.contains(node) && nodeIsAfter(node, range.endContainer)) {
+        return;
+      }
+    }
   }
 
   // ../howdju-common/lib/enums.ts
@@ -33917,7 +34089,7 @@
   init_logger();
 
   // ../howdju-common/lib/models.ts
-  var import_lodash6 = __toESM(require_lodash());
+  var import_lodash7 = __toESM(require_lodash());
   var import_assign = __toESM(require_assign());
   var import_merge = __toESM(require_merge());
   var import_toString = __toESM(require_toString());
@@ -34200,7 +34372,7 @@
   function demuxCreateJustificationInput(input) {
     const basis = demuxCreateJustificationInputBasis(input.basis);
     const target = demuxCreateJustificationInputTarget(input.target);
-    const creation = (0, import_assign.default)((0, import_lodash6.cloneDeep)(input), {
+    const creation = (0, import_assign.default)((0, import_lodash7.cloneDeep)(input), {
       target,
       basis
     });
@@ -34209,7 +34381,7 @@
   var muxCreateJustificationErrors = (create, createErrors) => {
     const basis = createErrors.basis && muxCreateJustificationBasisErrors(create.basis, createErrors.basis);
     const target = createErrors.target && muxCreateJustificationTargetErrors(create.target, createErrors.target);
-    const inputErrors = (0, import_assign.default)((0, import_lodash6.cloneDeep)(createErrors), {
+    const inputErrors = (0, import_assign.default)((0, import_lodash7.cloneDeep)(createErrors), {
       target,
       basis
     });
@@ -34527,9 +34699,7 @@
   init_urls();
 
   // ../howdju-common/lib/urlTextFragments.ts
-  var textQuote2 = __toESM(require_dom_anchor_text_quote());
-  var textPosition = __toESM(require_dom_anchor_text_position2());
-  var import_lodash10 = __toESM(require_lodash());
+  var textQuote3 = __toESM(require_dom_anchor_text_quote());
   var FRAGMENT_DIRECTIVE = ":~:";
   function toUrlWithFragmentFromQuotation(url, quotation) {
     if (!quotation) {
@@ -34639,151 +34809,8 @@
     });
     return quoteParts.filter(isDefined).join(options.textDirectiveDelimiter);
   }
-  function getTextWithin(doc, startText, endText) {
-    const { range } = getRangeOfText(doc, startText, endText, 0);
-    if (!range) {
-      return void 0;
-    }
-    if (range.collapsed) {
-      return void 0;
-    }
-    return toPlainTextContent(range);
-  }
-  function getRangeOfText(doc, startText, endText, hint) {
-    let startPosition = textQuote2.toTextPosition(
-      doc.body,
-      { exact: startText },
-      hint !== void 0 ? { hint } : void 0
-    );
-    if (!startPosition) {
-      return { range: void 0, end: void 0 };
-    }
-    let endPosition = textQuote2.toTextPosition(
-      doc.body,
-      { exact: endText },
-      { hint: startPosition.end }
-    );
-    if (!endPosition) {
-      return { range: void 0, end: void 0 };
-    }
-    if (startPosition.start >= endPosition.end) {
-      const betterStartPosition = textQuote2.toTextPosition(
-        doc.body,
-        { exact: startText },
-        { hint: endPosition.start }
-      );
-      const betterEndPosition = textQuote2.toTextPosition(
-        doc.body,
-        { exact: endText },
-        { hint: startPosition.end }
-      );
-      const betterStartLength = betterStartPosition ? endPosition.start - betterStartPosition.end : Number.NEGATIVE_INFINITY;
-      const betterEndLength = betterEndPosition ? betterEndPosition.start - startPosition.end : Number.NEGATIVE_INFINITY;
-      const isValidBetterStart = betterStartPosition && betterStartLength > 0;
-      const isValidBetterEnd = betterEndPosition && betterEndLength > 0;
-      if (isValidBetterStart) {
-        if (isValidBetterEnd) {
-          if (betterStartLength < betterEndLength) {
-            startPosition = betterStartPosition;
-          } else {
-            endPosition = betterEndPosition;
-          }
-        } else {
-          startPosition = betterStartPosition;
-        }
-      } else if (isValidBetterEnd) {
-        endPosition = betterEndPosition;
-      }
-      if (startPosition.start >= endPosition.end) {
-        return { range: void 0, end: void 0 };
-      }
-    }
-    const range = textPosition.toRange(doc.body, {
-      start: startPosition.start,
-      end: endPosition.end
-    });
-    return { range, end: endPosition.end };
-  }
-  function getNodeConstructor(node) {
-    var _a, _b;
-    const Node2 = (_b = (_a = node.ownerDocument) == null ? void 0 : _a.defaultView) == null ? void 0 : _b.Node;
-    if (!Node2) {
-      throw new Error(`Unable to obtain Node constructor from range.`);
-    }
-    return Node2;
-  }
-  function toPlainTextContent(range) {
-    const textParts = [];
-    const Node2 = getNodeConstructor(range.startContainer);
-    walkRangeNodes(range, {
-      enter: (node) => {
-        var _a, _b, _c;
-        if (node.nodeType === Node2.TEXT_NODE) {
-          let text;
-          if (node.isSameNode(range.startContainer)) {
-            if (node.isSameNode(range.endContainer)) {
-              text = (_a = node.textContent) == null ? void 0 : _a.substring(
-                range.startOffset,
-                range.endOffset
-              );
-            } else {
-              text = (_b = node.textContent) == null ? void 0 : _b.substring(range.startOffset);
-            }
-          } else if (node.isSameNode(range.endContainer)) {
-            text = (_c = node.textContent) == null ? void 0 : _c.substring(0, range.endOffset);
-          } else {
-            text = node.textContent;
-          }
-          if (text) {
-            textParts.push(text);
-          }
-        }
-      },
-      leave: (node) => {
-        if (node.nodeType === Node2.ELEMENT_NODE && node.nodeName.toLowerCase() === "p") {
-          textParts.push("\n\n");
-        }
-      }
-    });
-    return textParts.join("").replace(/\s+$/gm, "\n").trim();
-  }
-  function isTextNode(node) {
-    return node.nodeType === getNodeConstructor(node).TEXT_NODE;
-  }
-  function walkRangeNodes(range, { enter, leave }) {
-    var _a;
-    let node = isTextNode(range.startContainer) || range.startOffset == 0 ? range.startContainer : range.startContainer.childNodes[range.startOffset];
-    while (node) {
-      enter(node);
-      if (node.firstChild) {
-        node = node.firstChild;
-        continue;
-      }
-      while (node && !node.nextSibling) {
-        leave(node);
-        if (node.isSameNode(range.endContainer)) {
-          return;
-        }
-        node = node.parentNode;
-      }
-      if (!node) {
-        logger.error(
-          `Unexpectedly reached the root node without encountering the range's endContainer.`
-        );
-        return;
-      }
-      leave(node);
-      node = node.nextSibling;
-      if (!isTextNode(range.endContainer) && ((_a = node == null ? void 0 : node.parentNode) == null ? void 0 : _a.isSameNode(range.endContainer)) && (0, import_lodash10.indexOf)(node.parentNode.childNodes, node) >= range.endOffset) {
-        return;
-      }
-      if (node && !range.endContainer.contains(node) && nodeIsAfter(node, range.endContainer)) {
-        return;
-      }
-    }
-  }
   function confirmQuotationInDoc(doc, quotation) {
-    const quotationRange = textQuote2.toRange(doc.body, {
+    const quotationRange = textQuote3.toRange(doc.body, {
       exact: quotation
     });
     if (!quotationRange) {
@@ -35051,7 +35078,7 @@
 
   // ../howdju-client-common/lib/target.ts
   var textPosition2 = __toESM(require_dom_anchor_text_position2());
-  var textQuote3 = __toESM(require_dom_anchor_text_quote());
+  var textQuote4 = __toESM(require_dom_anchor_text_quote());
 
   // src/index.ts
   O(null);

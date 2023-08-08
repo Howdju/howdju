@@ -10,8 +10,8 @@ import {
   makeDomAnchor,
   nodeIsBefore,
 } from "howdju-common";
-import { getPreviousLeafNode } from "./dom";
 
+import { getPreviousLeafNode } from "./dom";
 import { getCanonicalOrCurrentUrl } from "./location";
 
 export function selectionToMediaExcerptInfo(

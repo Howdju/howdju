@@ -89,6 +89,25 @@ describe("normalizeContentRange", () => {
     expectedRange.setStart(secondTextNode, 0);
     expect(normalizedRange).toBeEqualRange(expectedRange);
   });
+  test("doesn't move a range that is already at the beginning and end of the enclosed content", () => {
+    document.body.innerHTML = `
+      <p id="first">The first paragraph</p>
+      <p id="second">The second paragraph</p>
+      <p id="third">The third paragraph</p>
+      <p id="fourth">The fourth paragraph</p>`;
+    const second = getElementById("second");
+    const third = getElementById("third");
+    const range = document.createRange();
+    const secondTextNode = getFirstChild(second);
+    const thirdTextNode = getLastChild(third);
+    range.setStart(secondTextNode, 0);
+    range.setEnd(thirdTextNode, getTextContentLength(thirdTextNode));
+
+    const normalizedRange = normalizeContentRange(range);
+
+    const expectedRange = range.cloneRange();
+    expect(normalizedRange).toBeEqualRange(expectedRange);
+  });
 });
 
 function getTextContentLength(node: Node): number {
