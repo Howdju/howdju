@@ -1,8 +1,12 @@
 import * as textQuote from "dom-anchor-text-quote";
-import * as textPosition from "dom-anchor-text-position";
 
-import { isDefined, logger, UrlLocator } from "howdju-common";
-import striptags from "striptags";
+import {
+  getTextWithin,
+  isDefined,
+  logger,
+  toPlainTextContent,
+  UrlLocator,
+} from "howdju-common";
 
 const FRAGMENT_DIRECTIVE = ":~:";
 
@@ -75,7 +79,7 @@ export function toUrlWithFragmentFromAnchors(
   return urlObj.toString();
 }
 
-function cleanTextFragmentParameter(textParameter: string) {
+export function cleanTextFragmentParameter(textParameter: string) {
   return encodeTextFragmentParameter(textParameter.replace(/\n/g, ""));
 }
 
@@ -168,75 +172,40 @@ export function extractQuotationFromTextFragment(
   return quoteParts.filter(isDefined).join(options.textDirectiveDelimiter);
 }
 
-function getTextWithin(doc: Document, startText: string, endText: string) {
-  let startPosition = textQuote.toTextPosition(doc.body, { exact: startText });
-  let endPosition = textQuote.toTextPosition(doc.body, { exact: endText });
-  if (!startPosition || !endPosition) {
-    return undefined;
-  }
-  // If the positions are invalid, try to find better positions.
-  if (startPosition.start >= endPosition.end) {
-    const betterStartPosition = textQuote.toTextPosition(
-      doc.body,
-      { exact: startText },
-      { hint: endPosition.start }
-    );
-    const betterEndPosition = textQuote.toTextPosition(
-      doc.body,
-      { exact: endText },
-      { hint: startPosition.end }
-    );
-    const betterStartLength = betterStartPosition
-      ? endPosition.start - betterStartPosition.end
-      : Number.NEGATIVE_INFINITY;
-    const betterEndLength = betterEndPosition
-      ? betterEndPosition.start - startPosition.end
-      : Number.NEGATIVE_INFINITY;
-    const isValidBetterStart = betterStartPosition && betterStartLength > 0;
-    const isValidBetterEnd = betterEndPosition && betterEndLength > 0;
-    if (isValidBetterStart) {
-      if (isValidBetterEnd) {
-        // If both better positions were found, return the one that yields a smaller range.
-        if (betterStartLength < betterEndLength) {
-          startPosition = betterStartPosition;
-        } else {
-          endPosition = betterEndPosition;
-        }
-      } else {
-        startPosition = betterStartPosition;
-      }
-    } else if (isValidBetterEnd) {
-      endPosition = betterEndPosition;
+export type QuotationConfirmationResult =
+  | {
+      status: "NOT_FOUND";
+      foundQuotation?: undefined;
+      errorMessage?: undefined;
     }
-    // If the positions are still invalid, give up.
-    if (startPosition.start >= endPosition.end) {
-      return undefined;
+  | {
+      status: "FOUND";
+      foundQuotation: string;
+      errorMessage?: undefined;
     }
-  }
+  | {
+      status: "ERROR";
+      foundQuotation?: undefined;
+      errorMessage: string;
+    };
 
-  const range = textPosition.toRange(doc.body, {
-    start: startPosition.start,
-    end: endPosition.end,
+export function confirmQuotationInDoc(
+  doc: Document,
+  quotation: string
+): QuotationConfirmationResult {
+  const quotationRange = textQuote.toRange(doc.body, {
+    exact: quotation,
   });
-  if (range.collapsed) {
-    return undefined;
+  if (!quotationRange) {
+    return {
+      status: "NOT_FOUND",
+    };
   }
-  return getFormattedText(range.toString());
-}
 
-/**
- * Try to return the text content of an element, formatted as it would be in a browser.
- *
- * JSDOM doesn't implement innerText, so we must do this ourselves
- * (https://github.com/jsdom/jsdom/issues/1245). Another option might be to run headless Chrome.
- *
- * (On the differences between textContent and innerText:
- * https://developer.mozilla.org/en-US/docs/Web/API/Node/textContent#differences_from_innertext)
- */
-function getFormattedText(textContent: string) {
-  const formatted = textContent
-    .replace(/&nbsp;/, " ")
-    .replace(/\s*<\/p>\s*/gi, "</p>\n\n")
-    .trim();
-  return striptags(formatted);
+  // TODO(491) add an INEXACT_FOUND option if foundQuotation !== quotation.
+  const foundQuotation = toPlainTextContent(quotationRange);
+  return {
+    status: "FOUND",
+    foundQuotation,
+  };
 }

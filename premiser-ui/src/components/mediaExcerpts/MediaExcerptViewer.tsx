@@ -62,13 +62,15 @@ function toAnchorElement(
   mediaExcerpt: MediaExcerptView,
   urlLocator: UrlLocatorView
 ) {
-  const url =
-    "foundQuotation" in urlLocator.autoConfirmationStatus
+  const displayUrl = urlLocator.url.url;
+  const textFragmentUrl =
+    urlLocator.textFragmentUrl ??
+    ("foundQuotation" in urlLocator.autoConfirmationStatus
       ? toUrlWithFragmentFromQuotation(
           urlLocator.url.url,
           urlLocator.autoConfirmationStatus.foundQuotation
         )
-      : toUrlWithFragmentFromAnchors(urlLocator);
+      : toUrlWithFragmentFromAnchors(urlLocator));
   const confirmationStatus = toConfirmationStatus(urlLocator);
   const creationInfo =
     urlLocator.creatorUserId !== mediaExcerpt.creatorUserId ||
@@ -81,8 +83,8 @@ function toAnchorElement(
     ) : null;
 
   return (
-    <a href={url}>
-      {urlLocator.url.url} {confirmationStatus} {creationInfo}
+    <a href={textFragmentUrl}>
+      {displayUrl} {confirmationStatus} {creationInfo}
     </a>
   );
 }

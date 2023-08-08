@@ -1,8 +1,15 @@
 const fs = require("fs");
 const path = require("path");
 const zip = new require("node-zip");
+const { ArgumentParser } = require("argparse");
 
 const { logger } = require("howdju-ops");
+
+const parser = new ArgumentParser({
+  description: "Change a user password",
+});
+parser.add_argument("--extra-file", { nargs: "*", default: [] });
+const args = parser.parse_args();
 
 // Assume we are run from the lambda package root
 const packagePath = process.cwd();
@@ -12,8 +19,14 @@ logger.info(`Zipping lambda ${packageInfo.name}`);
 
 const distDir = path.resolve(packagePath, "dist");
 const zipFile = zip();
-for (let filename of ["index.js", "index.js.map"]) {
-  const data = fs.readFileSync(path.join(distDir, filename));
+const lambdaFilePaths = ["index.js", "index.js.map"].map((f) =>
+  path.join(distDir, f)
+);
+const extraFilePaths = args.extra_file.map((f) => path.join(packagePath, f));
+const allFilePaths = lambdaFilePaths.concat(extraFilePaths);
+for (let filePath of allFilePaths) {
+  const data = fs.readFileSync(filePath);
+  const filename = path.basename(filePath);
   zipFile.file(filename, data);
 }
 const zipData = zipFile.generate({ base64: false, compression: "DEFLATE" });

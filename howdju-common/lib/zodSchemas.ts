@@ -399,6 +399,8 @@ export type CreateUrlInput = z.infer<typeof CreateUrlInput>;
 export const UrlLocator = Entity.extend({
   mediaExcerptId: z.string(),
   url: Url,
+  // If we have inferred a text fragment URL for the UrlLocator based on its MediaExcerpt's localRep.
+  textFragmentUrl: urlString().optional(),
   anchors: z.array(DomAnchor).optional(),
   created: momentObject,
   creatorUserId: z.string(),

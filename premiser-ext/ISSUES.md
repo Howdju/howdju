@@ -1,5 +1,7 @@
 # Issues
 
+TODO(499) migrate the contents of this file to Github issues.
+
 ## Part of this feature
 
 - Persist target (it is an appearance of the Sentence)
@@ -10,7 +12,6 @@
 
 ## Next Features
 
-- Request page from api to determine author, determine source data, and verify anchor
 - If extension opened on from browser action, should navigate to searching for exact url and domain!
 - Extension needs to request annotations of current URL upon page load
 

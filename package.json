@@ -43,6 +43,7 @@
       "howdju-service-common",
       "howdju-service-routes",
       "howdju-test-common",
+      "howdju-text-fragment-generation",
       "lambdas/*",
       "premiser-api",
       "premiser-ext",
