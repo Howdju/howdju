@@ -2,6 +2,7 @@ import { GenerateFragmentResult } from "text-fragments-polyfill/dist/fragment-ge
 
 declare global {
   interface Window {
-    generateFragmentFromRange: (range: Range) => GenerateFragmentResult;
+    rangeToFragment: (range: Range) => GenerateFragmentResult;
+    getRangesForCurrentFragment: () => Record<string, Range[]> | undefined;
   }
 }

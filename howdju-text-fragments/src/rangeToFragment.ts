@@ -8,7 +8,7 @@ import { normalizeContentRange } from "howdju-client-common";
 // Disable timeouts
 setTimeout(null);
 
-function generateFragmentFromRange(range: Range) {
+function rangeToFragment(range: Range) {
   const selection = selectTextOfRange(range);
   return generateFragment(selection);
 }
@@ -25,4 +25,4 @@ function selectTextOfRange(range: Range) {
 }
 
 // Put functions on the window so that we can reference them from JSDOM.
-window.generateFragmentFromRange = generateFragmentFromRange;
+window.rangeToFragment = rangeToFragment;

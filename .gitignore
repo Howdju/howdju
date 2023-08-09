@@ -17,3 +17,5 @@
 # macOS file system metadata. These were showing up in act's Github Workflow
 # runner.
 .DS_Store
+
+*.cpuprofile

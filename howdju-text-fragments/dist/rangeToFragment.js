@@ -33808,8 +33808,15 @@
     }
     return 1;
   }
-  function getTextWithin(doc, startText, endText) {
-    const { range } = getRangeOfText(doc, startText, endText, 0);
+  function getTextWithin(doc, startText, endText, { prefix, suffix } = {
+    prefix: void 0,
+    suffix: void 0
+  }) {
+    const { range } = getRangeOfText(doc, startText, endText, {
+      hint: 0,
+      prefix,
+      suffix
+    });
     if (!range) {
       return void 0;
     }
@@ -33839,10 +33846,10 @@
   function isScriptNode(node) {
     return node.nodeType === getNodeConstructor(node).ELEMENT_NODE && node.nodeName.toLowerCase() === "script";
   }
-  function getRangeOfText(doc, startText, endText, hint) {
+  function getRangeOfText(doc, startText, endText, { prefix, suffix, hint }) {
     let startPosition = textQuote2.toTextPosition(
       doc.body,
-      { exact: startText },
+      { exact: startText, prefix },
       hint !== void 0 ? { hint } : void 0
     );
     if (!startPosition) {
@@ -33850,7 +33857,7 @@
     }
     let endPosition = textQuote2.toTextPosition(
       doc.body,
-      { exact: endText },
+      { exact: endText, suffix },
       { hint: startPosition.end }
     );
     if (!endPosition) {
@@ -33926,18 +33933,21 @@
           } else {
             text = node.textContent;
           }
+          text = text == null ? void 0 : text.trim();
           if (text) {
             textParts.push(text);
           }
         }
       },
       leave: (node) => {
-        if (node.nodeType === Node2.ELEMENT_NODE && node.nodeName.toLowerCase() === "p") {
+        if (node.nodeType === Node2.ELEMENT_NODE && ["p", "div", "h1", "h2", "h3", "h4", "h5", "h6"].includes(
+          node.nodeName.toLowerCase()
+        )) {
           textParts.push("\n\n");
         }
       }
     });
-    return textParts.join("").replace(/\s+$/gm, "\n").trim();
+    return textParts.join(" ").replace(/^\s+/gm, "").replace(/\s+$/gm, "\n").trim();
   }
   function isTextNode(node) {
     return node.nodeType === getNodeConstructor(node).TEXT_NODE;
@@ -34779,6 +34789,16 @@
         return textParameters[0];
       }
       if (textParameters.length === 4) {
+        if (options.doc) {
+          const [prefix, startText, endText, suffix] = textParameters;
+          const textWithin = getTextWithin(options.doc, startText, endText, {
+            prefix,
+            suffix
+          });
+          if (textWithin) {
+            return textWithin;
+          }
+        }
         const textParameterStartEndDelimiter = (_a = options.textParameterStartEndDelimiter) != null ? _a : defaultOptions.textParameterStartEndDelimiter;
         return textParameters[1] + textParameterStartEndDelimiter + textParameters[2];
       }
@@ -35080,9 +35100,9 @@
   var textPosition2 = __toESM(require_dom_anchor_text_position2());
   var textQuote4 = __toESM(require_dom_anchor_text_quote());
 
-  // src/index.ts
+  // src/rangeToFragment.ts
   O(null);
-  function generateFragmentFromRange(range) {
+  function rangeToFragment(range) {
     const selection = selectTextOfRange(range);
     return x(selection);
   }
@@ -35096,7 +35116,7 @@
     selection.addRange(normalRange);
     return selection;
   }
-  window.generateFragmentFromRange = generateFragmentFromRange;
+  window.rangeToFragment = rangeToFragment;
 })();
 /*! Bundled license information:
 

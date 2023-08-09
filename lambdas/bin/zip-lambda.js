@@ -6,7 +6,7 @@ const { ArgumentParser } = require("argparse");
 const { logger } = require("howdju-ops");
 
 const parser = new ArgumentParser({
-  description: "Change a user password",
+  description: "Create a ZIP file containing a Lambda's files",
 });
 parser.add_argument("--extra-file", { nargs: "*", default: [] });
 const args = parser.parse_args();

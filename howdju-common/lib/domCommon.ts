@@ -65,13 +65,21 @@ export function nodePositionCompare(node1: Node, node2: Node) {
 export function getTextWithin(
   doc: Document,
   startText: string,
-  endText: string
+  endText: string,
+  { prefix, suffix }: { prefix?: string; suffix?: string } = {
+    prefix: undefined,
+    suffix: undefined,
+  }
 ) {
   // Some sites includes the content of the page in a script tag. E.g. substack's `body_html`. So
   // use a hint at the beginning to try and find content in the body. (If we find this doens't work,
   // we might need to use a binary search style approach until we either have exhausted ranges in
   // the document or have found a range that isn't in a script tag.)
-  const { range } = getRangeOfText(doc, startText, endText, 0);
+  const { range } = getRangeOfText(doc, startText, endText, {
+    hint: 0,
+    prefix,
+    suffix,
+  });
   if (!range) {
     return undefined;
   }
@@ -115,11 +123,11 @@ function getRangeOfText(
   doc: Document,
   startText: string,
   endText: string,
-  hint?: number
+  { prefix, suffix, hint }: { prefix?: string; suffix?: string; hint?: number }
 ) {
   let startPosition = textQuote.toTextPosition(
     doc.body,
-    { exact: startText },
+    { exact: startText, prefix },
     hint !== undefined ? { hint } : undefined
   );
   if (!startPosition) {
@@ -127,7 +135,7 @@ function getRangeOfText(
   }
   let endPosition = textQuote.toTextPosition(
     doc.body,
-    { exact: endText },
+    { exact: endText, suffix },
     { hint: startPosition.end }
   );
   if (!endPosition) {
@@ -225,6 +233,7 @@ export function toPlainTextContent(range: Range) {
         } else {
           text = node.textContent;
         }
+        text = text?.trim();
         if (text) {
           textParts.push(text);
         }
@@ -233,13 +242,19 @@ export function toPlainTextContent(range: Range) {
     leave: (node) => {
       if (
         node.nodeType === Node.ELEMENT_NODE &&
-        node.nodeName.toLowerCase() === "p"
+        ["p", "div", "h1", "h2", "h3", "h4", "h5", "h6"].includes(
+          node.nodeName.toLowerCase()
+        )
       ) {
         textParts.push("\n\n");
       }
     },
   });
-  return textParts.join("").replace(/\s+$/gm, "\n").trim();
+  return textParts
+    .join(" ")
+    .replace(/^\s+/gm, "")
+    .replace(/\s+$/gm, "\n")
+    .trim();
 }
 
 function isTextNode(node: Node): node is Text {

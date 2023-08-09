@@ -16921,9 +16921,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"howdju-text-fragment-generation@workspace:howdju-text-fragment-generation":
+"howdju-text-fragments@workspace:howdju-text-fragments":
   version: 0.0.0-use.local
-  resolution: "howdju-text-fragment-generation@workspace:howdju-text-fragment-generation"
+  resolution: "howdju-text-fragments@workspace:howdju-text-fragments"
   dependencies:
     esbuild: ^0.18.18
     eslint: ^8.27.0

@@ -2,11 +2,18 @@ const fs = require("fs");
 const os = require("os");
 const path = require("path");
 const zip = new require("node-zip");
+const { ArgumentParser } = require("argparse");
 const debug = require("debug")(
   "howdju:premiser-api:update-lambda-function-code"
 );
 
 const { lambda, NodePlatforms } = require("howdju-ops");
+
+const parser = new ArgumentParser({
+  description: "Create a ZIP file containing the API Lambda's files",
+});
+parser.add_argument("--extra-file", { nargs: "*", default: [] });
+const args = parser.parse_args();
 
 const lambdarcPath = path.resolve("lambdarc");
 debug(`${{ lambdarcPath }}`);
@@ -19,10 +26,18 @@ if (lambdarc.requiresNativeBuild && os.platform() !== NodePlatforms.LINUX) {
   );
 }
 
+const packagePath = process.cwd();
 const distDir = path.resolve(process.cwd(), "dist");
 const zipFile = zip();
-for (let filename of ["index.js", "index.js.map"]) {
-  const data = fs.readFileSync(path.join(distDir, filename));
+
+const lambdaFilePaths = ["index.js", "index.js.map"].map((f) =>
+  path.join(distDir, f)
+);
+const extraFilePaths = args.extra_file.map((f) => path.join(packagePath, f));
+const allFilePaths = lambdaFilePaths.concat(extraFilePaths);
+for (const filePath of allFilePaths) {
+  const data = fs.readFileSync(filePath);
+  const filename = path.basename(filePath);
   zipFile.file(filename, data);
 }
 const zipData = zipFile.generate({ base64: false, compression: "DEFLATE" });

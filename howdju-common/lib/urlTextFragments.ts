@@ -134,6 +134,17 @@ export function extractQuotationFromTextFragment(
       return textParameters[0];
     }
     if (textParameters.length === 4) {
+      if (options.doc) {
+        const [prefix, startText, endText, suffix] = textParameters;
+        const textWithin = getTextWithin(options.doc, startText, endText, {
+          prefix,
+          suffix,
+        });
+        if (textWithin) {
+          return textWithin;
+        }
+        // otherwise, fall through
+      }
       const textParameterStartEndDelimiter =
         options.textParameterStartEndDelimiter ??
         defaultOptions.textParameterStartEndDelimiter;
