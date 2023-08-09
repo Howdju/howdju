@@ -181,6 +181,26 @@ function getRangeOfText(
     }
   }
 
+  // Sometimes dom-anchor-text-position finds a bad start position. E.g. for
+  // https://lexfridman.com/robert-f-kennedy-jr-transcript/#:~:text=Camus-,Lex%20Fridman,act%20of%20rebellion.%E2%80%9D%20What%20do%20you%20think%20he%20means%20by%20that%3F,-Robert%20F.%20Kennedy
+  // it finds a start position at the beginning of the document.
+  // So after finding the end position, see if there is a closer match for the start position.
+  const maybeCloserStartPosition = textQuote.toTextPosition(
+    doc.body,
+    { exact: startText, prefix },
+    { hint: endPosition.start }
+  );
+  if (maybeCloserStartPosition) {
+    const maybeCloserStartPositionDistance =
+      endPosition.start - maybeCloserStartPosition.end;
+    if (
+      maybeCloserStartPositionDistance > 0 &&
+      maybeCloserStartPositionDistance < endPosition.start - startPosition.end
+    ) {
+      startPosition = maybeCloserStartPosition;
+    }
+  }
+
   const range = textPosition.toRange(doc.body, {
     start: startPosition.start,
     end: endPosition.end,

@@ -4,6 +4,8 @@ import stripIndent from "strip-indent";
 import { extractQuotationFromWindowsFragmentUsingPolyfill } from "./extractQuotation";
 
 describe("extractQuotationFromWindowsFragmentUsingPolyfill", () => {
+  // TODO(506) speed up this test and then maybe use
+  // extractQuotationFromWindowsFragmentUsingPolyfill to infer a quotation.
   it("extracts the full quotation from the text fragment with a text end, prefix, and suffix when a doc is provided", () => {
     const html = readFileSync(
       "lib/testData/extractQuotation/lexfridman.html",

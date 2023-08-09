@@ -137,8 +137,8 @@ export function extractQuotationFromTextFragment(
       if (options.doc) {
         const [prefix, startText, endText, suffix] = textParameters;
         const textWithin = getTextWithin(options.doc, startText, endText, {
-          prefix,
-          suffix,
+          prefix: prefix.replace(/-$/, ""),
+          suffix: suffix.replace(/^-/, ""),
         });
         if (textWithin) {
           return textWithin;
@@ -170,7 +170,15 @@ export function extractQuotationFromTextFragment(
     if (options.doc) {
       const startText = textParameters[start];
       const endText = textParameters[end];
-      const textWithin = getTextWithin(options.doc, startText, endText);
+      const prefix = start === 1 ? textParameters[0] : undefined;
+      const suffix =
+        end < textParameters.length - 1
+          ? textParameters[textParameters.length - 1]
+          : undefined;
+      const textWithin = getTextWithin(options.doc, startText, endText, {
+        prefix: prefix?.replace(/-$/, ""),
+        suffix: suffix?.replace(/^-/, ""),
+      });
       if (textWithin) {
         return textWithin;
       }

@@ -12,10 +12,10 @@ import {
   inferAnchoredBibliographicInfo,
   MediaExcerptInfo,
   logger,
+  extractQuotationFromTextFragment,
 } from "howdju-common";
 
 import { fetchUrl } from "./fetchUrl";
-import { extractQuotationFromWindowsFragmentUsingPolyfill } from "./extractQuotation";
 import { runScriptAction } from "./runScript";
 
 /** Given a URL and quotation from it, return anchor info for it */
@@ -26,9 +26,9 @@ export async function requestMediaExcerptInfo(
   const html = await fetchUrl(url);
   const dom = new JSDOM(html, { url, runScripts: "outside-only" });
 
-  const extractedQuotation = extractQuotationFromWindowsFragmentUsingPolyfill(
-    dom.window
-  );
+  const extractedQuotation = extractQuotationFromTextFragment(url, {
+    doc: dom.window.document,
+  });
 
   const anchoredBibliographicInfo = inferAnchoredBibliographicInfo(
     dom.window.document,

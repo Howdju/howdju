@@ -19,7 +19,7 @@ fi
 
 yarn run clean
 yarn run build
-yarn run update-lambda-function-code --extra-file=../howdju-text-fragments/dist/getFragmentRanges.js
+yarn run update-lambda-function-code
 
 bin/lambda-smoke-test.sh us-east-1 premiserApi test-events/login.json || {
   echo 'smoke test failed'
