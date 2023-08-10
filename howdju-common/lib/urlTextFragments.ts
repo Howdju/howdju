@@ -182,20 +182,3 @@ export function extractQuotationFromTextFragment(
   });
   return quoteParts.filter(isDefined).join(options.textDirectiveDelimiter);
 }
-
-export type QuotationConfirmationResult =
-  | {
-      status: "NOT_FOUND";
-      foundQuotation?: undefined;
-      errorMessage?: undefined;
-    }
-  | {
-      status: "FOUND";
-      foundQuotation: string;
-      errorMessage?: undefined;
-    }
-  | {
-      status: "ERROR";
-      foundQuotation?: undefined;
-      errorMessage: string;
-    };

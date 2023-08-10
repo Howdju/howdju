@@ -1,6 +1,14 @@
+import { readFileSync } from "fs";
 import { JSDOM } from "jsdom";
+
 import { getElementById, getFirstChild } from "howdju-test-common";
-import { nodePositionCompare, walkRangeNodes } from "./domCommon";
+
+import {
+  nodePositionCompare,
+  walkRangeNodes,
+  findTextInDoc,
+} from "./domCommon";
+import stripIndent from "strip-indent";
 
 describe("nodePositionCompare", () => {
   test("works for siblings", () => {
@@ -171,5 +179,41 @@ describe("walkRangeNodes", () => {
       { enter: outerAfterText },
       { leave: outerAfterText },
     ]);
+  });
+});
+
+describe("findTextInDoc", () => {
+  test("finds multiline text in the Seattle Times", () => {
+    const url =
+      "https://www.seattletimes.com/seattle-news/homeless/heres-why-people-think-seattle-will-reverse-course-on-homelessness/";
+    const html = readFileSync(
+      "lib/testData/domBibliographicInfoTestData/seattletimes.html",
+      "utf8"
+    );
+    const dom = new JSDOM(html, { url });
+    const doc = dom.window.document;
+    const quotation = stripIndent(`
+      Many poll respondents said the reason they believe the homelessness crisis is worse now than it was three years ago is because they see it more.
+
+      “I see a lot more encampments around or RVs parked on the side of the road where they didn’t used to be,” said Drew Scoggins, a Northgate resident who responded to the poll.`).trim();
+
+    expect(findTextInDoc(doc, quotation)).toEqual(quotation);
+  });
+  test("finds multiline text in a Lex Fridman podcast transcript", () => {
+    const url = "https://lexfridman.com/robert-f-kennedy-jr-transcript/";
+    const html = readFileSync(
+      "lib/testData/urlTextFragments/lexfridman.html",
+      "utf8"
+    );
+    const dom = new JSDOM(html, { url });
+    const doc = dom.window.document;
+    const quotation = stripIndent(`
+    Robert F. Kennedy Jr
+
+    (00:09:49) I suppose the way that Camus viewed the world and the way that the Stoics did and a lot of the existentialists, it was that it was so absurd and that the problems and the tasks that were given just to live a life are so insurmountable that the only way that we can get back the gods for giving us this impossible task of living life was to embrace it and to enjoy it and to do our best at it. To me, I read Camus, and particularly in The Myth of Sisyphus as a parable that… And it’s the same lesson that I think he writes about in The Plague, where we’re all given these insurmountable tasks in our lives, but that by doing our duty, by being of service to others, we can bring meaning to a meaningless chaos and we can bring order to the universe.
+    `).trim();
+    const foundQuotation = `Robert F. Kennedy Jr (00:09:49) I suppose the way that Camus viewed the world and the way that the Stoics did and a lot of the existentialists, it was that it was so absurd and that the problems and the tasks that were given just to live a life are so insurmountable that the only way that we can get back the gods for giving us this impossible task of living life was to embrace it and to enjoy it and to do our best at it. To me, I read Camus, and particularly in The Myth of Sisyphus as a parable that… And it’s the same lesson that I think he writes about in The Plague, where we’re all given these insurmountable tasks in our lives, but that by doing our duty, by being of service to others, we can bring meaning to a meaningless chaos and we can bring order to the universe.`;
+
+    expect(findTextInDoc(doc, quotation)).toEqual(foundQuotation);
   });
 });

@@ -1,4 +1,3 @@
-import * as textPosition from "dom-anchor-text-position";
 import { JSDOM } from "jsdom";
 import {
   GenerateFragmentResult,
@@ -6,19 +5,16 @@ import {
 } from "text-fragments-polyfill/dist/fragment-generation-utils.js";
 
 import {
-  QuotationConfirmationResult,
   cleanTextFragmentParameter,
   inferAnchoredBibliographicInfo,
   MediaExcerptInfo,
   logger,
   extractQuotationFromTextFragment,
-  approximateMatch,
-  toPlainTextContent,
-  toJson,
+  getRangeOfTextInDoc,
 } from "howdju-common";
 
 import { fetchUrl } from "./fetchUrl";
-import { runScriptAction } from "./runScript";
+import { runScriptAction } from "./runScriptAction";
 
 /** Given a URL and quotation from it, return anchor info for it */
 export async function requestMediaExcerptInfo(
@@ -45,41 +41,6 @@ export async function requestMediaExcerptInfo(
   };
 }
 
-export function confirmQuotationInHtml(
-  url: string,
-  html: string,
-  quotation: string
-): QuotationConfirmationResult {
-  const dom = new JSDOM(html, { url });
-  const doc = dom.window.document;
-  const range = getTextRangeInDoc(doc, quotation);
-  if (!range) {
-    return {
-      status: "NOT_FOUND",
-    };
-  }
-
-  // TODO(491) add an INEXACT_FOUND option if foundQuotation !== quotation.
-  const foundQuotation = toPlainTextContent(range);
-  return {
-    status: "FOUND",
-    foundQuotation,
-  };
-}
-
-export function getTextRangeInDoc(
-  doc: Document,
-  quotation: string
-): Range | undefined {
-  const matches = approximateMatch(doc.body.textContent || "", quotation);
-  logger.info(`getTextRangeInDoc matches ${toJson(matches)}`);
-  if (!matches.length) {
-    return undefined;
-  }
-  const { start, end } = matches[0];
-  return textPosition.toRange(doc.body, { start, end }) || undefined;
-}
-
 const FRAGMENT_DIRECTIVE = ":~:";
 
 export function generateTextFragmentUrlFromHtml(
@@ -90,7 +51,7 @@ export function generateTextFragmentUrlFromHtml(
   const { window } = new JSDOM(html, { url, runScripts: "outside-only" });
 
   // Select the quotation in the JSDOM page.
-  const quotationRange = getTextRangeInDoc(window.document, quotation);
+  const quotationRange = getRangeOfTextInDoc(window.document, quotation);
   if (!quotationRange) {
     logger.error(`Unable to find quotation ${quotation} in ${url}`);
     return undefined;

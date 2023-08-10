@@ -15091,7 +15091,6 @@
         var hint = options.hint;
         var dmp = new _diffMatchPatch2.default();
         dmp.Match_Distance = root.textContent.length * 2;
-        dmp.Match_Threshold = 0.9;
         var slices = exact.match(SLICE_RE);
         var loc = hint === void 0 ? root.textContent.length / 2 | 0 : hint;
         var start = Number.POSITIVE_INFINITY;
@@ -32983,10 +32982,12 @@
     extractDomain: () => extractDomain,
     extractQuotationFromTextFragment: () => extractQuotationFromTextFragment,
     filterDefined: () => filterDefined,
+    findTextInDoc: () => findTextInDoc,
     formatDuration: () => formatDuration,
     formatZodError: () => formatZodError,
     fromJson: () => fromJson,
     getConnectingEntitySourceInfo: () => getConnectingEntitySourceInfo,
+    getRangeOfTextInDoc: () => getRangeOfTextInDoc,
     getTextWithin: () => getTextWithin,
     hasQuote: () => hasQuote,
     httpMethods: () => httpMethods,
@@ -34005,6 +34006,21 @@
   }
   function isScriptNode(node) {
     return node.nodeType === getNodeConstructor(node).ELEMENT_NODE && node.nodeName.toLowerCase() === "script";
+  }
+  function findTextInDoc(doc, text) {
+    const range = getRangeOfTextInDoc(doc, text);
+    if (!range) {
+      return void 0;
+    }
+    return toPlainTextContent(range);
+  }
+  function getRangeOfTextInDoc(doc, quotation) {
+    const matches = approximateMatch(doc.body.textContent || "", quotation);
+    if (!matches.length) {
+      return void 0;
+    }
+    const { start, end } = matches[0];
+    return textPosition.toRange(doc.body, { start, end }) || void 0;
   }
   function getRangeOfText(doc, startText, endText, { prefix, suffix, hint }) {
     let startPosition = textQuote2.toTextPosition(

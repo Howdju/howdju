@@ -2,9 +2,9 @@ import { DOMWindow } from "jsdom";
 
 import { logger, toPlainTextContent } from "howdju-common";
 
-import { runScriptAction } from "./runScript";
+import { runScriptAction } from "./runScriptAction";
 
-export function extractQuotationFromWindowsFragmentUsingPolyfill(
+export function extractQuotationFromWindowFragmentUsingPolyfill(
   window: DOMWindow
 ) {
   const url = window.location.href;

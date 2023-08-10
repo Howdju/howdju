@@ -2,6 +2,14 @@ import fs from "fs";
 import { toJson } from "howdju-common";
 import { DOMWindow } from "jsdom";
 
+/**
+ * Runs a bundled script in a JSDOM winow, returning the result.
+ *
+ * @param window the window in which to run the script.
+ * @param scriptName the name of the script. The path of the bundled script is inferred from this.
+ * @param scriptAction the JavaScript to run in the window, which will return the result.
+ * @returns
+ */
 export function runScriptAction<T>(
   window: DOMWindow,
   scriptName: string,

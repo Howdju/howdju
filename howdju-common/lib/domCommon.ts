@@ -1,6 +1,7 @@
 import * as textPosition from "dom-anchor-text-position";
 import * as textQuote from "dom-anchor-text-quote";
 import { indexOf } from "lodash";
+import { approximateMatch } from "./approximateStringMatch";
 
 import { logger } from "./logger";
 
@@ -117,6 +118,27 @@ function isScriptNode(node: Node) {
     node.nodeType === getNodeConstructor(node).ELEMENT_NODE &&
     node.nodeName.toLowerCase() === "script"
   );
+}
+
+export function findTextInDoc(doc: Document, text: string): string | undefined {
+  const range = getRangeOfTextInDoc(doc, text);
+  if (!range) {
+    return undefined;
+  }
+
+  return toPlainTextContent(range);
+}
+
+export function getRangeOfTextInDoc(
+  doc: Document,
+  quotation: string
+): Range | undefined {
+  const matches = approximateMatch(doc.body.textContent || "", quotation);
+  if (!matches.length) {
+    return undefined;
+  }
+  const { start, end } = matches[0];
+  return textPosition.toRange(doc.body, { start, end }) || undefined;
 }
 
 function getRangeOfText(
