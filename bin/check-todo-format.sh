@@ -7,7 +7,6 @@ target=${2:-}
 # Equivalent for the whole repo:
 #  egrep --exclude=check-todo-format\.sh --exclude-dir=node_modules --exclude-dir=dist --exclude-dir=coverage --exclude-dir=Pods --exclude-dir=\.git -RI '\bTODO\b' . | egrep -v '\bTODO\((\d+,?)+\)'
 git diff $base $target ':(exclude)bin/check-todo-format.sh' ':(exclude).github/workflows/ci.yml'\
-  ':(exclude)howdju-text-fragments/dist/global-fragment-generation.js'\
   | grep '^+' | egrep '\bTODO\b' | egrep -v '\bTODO\((\d+,?)+\)'
 
 # grep returns 0 if it found matches. It is an error if we found matches.
