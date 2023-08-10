@@ -1,6 +1,7 @@
 /// <reference path="../../howdju-test-common/lib/globals.d.ts" />
 
 export * from "./anchors";
+export * from "./approximateStringMatch";
 export * from "./arguments";
 export * from "./apiModels";
 export * from "./codes";

@@ -1,12 +1,4 @@
-import * as textQuote from "dom-anchor-text-quote";
-
-import {
-  getTextWithin,
-  isDefined,
-  logger,
-  toPlainTextContent,
-  UrlLocator,
-} from "howdju-common";
+import { getTextWithin, isDefined, logger, UrlLocator } from "howdju-common";
 
 const FRAGMENT_DIRECTIVE = ":~:";
 
@@ -207,24 +199,3 @@ export type QuotationConfirmationResult =
       foundQuotation?: undefined;
       errorMessage: string;
     };
-
-export function confirmQuotationInDoc(
-  doc: Document,
-  quotation: string
-): QuotationConfirmationResult {
-  const quotationRange = textQuote.toRange(doc.body, {
-    exact: quotation,
-  });
-  if (!quotationRange) {
-    return {
-      status: "NOT_FOUND",
-    };
-  }
-
-  // TODO(491) add an INEXACT_FOUND option if foundQuotation !== quotation.
-  const foundQuotation = toPlainTextContent(quotationRange);
-  return {
-    status: "FOUND",
-    foundQuotation,
-  };
-}

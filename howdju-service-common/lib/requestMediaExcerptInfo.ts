@@ -1,4 +1,4 @@
-import * as textQuote from "dom-anchor-text-quote";
+import * as textPosition from "dom-anchor-text-position";
 import { JSDOM } from "jsdom";
 import {
   GenerateFragmentResult,
@@ -8,11 +8,13 @@ import {
 import {
   QuotationConfirmationResult,
   cleanTextFragmentParameter,
-  confirmQuotationInDoc,
   inferAnchoredBibliographicInfo,
   MediaExcerptInfo,
   logger,
   extractQuotationFromTextFragment,
+  approximateMatch,
+  toPlainTextContent,
+  toJson,
 } from "howdju-common";
 
 import { fetchUrl } from "./fetchUrl";
@@ -50,7 +52,32 @@ export function confirmQuotationInHtml(
 ): QuotationConfirmationResult {
   const dom = new JSDOM(html, { url });
   const doc = dom.window.document;
-  return confirmQuotationInDoc(doc, quotation);
+  const range = getTextRangeInDoc(doc, quotation);
+  if (!range) {
+    return {
+      status: "NOT_FOUND",
+    };
+  }
+
+  // TODO(491) add an INEXACT_FOUND option if foundQuotation !== quotation.
+  const foundQuotation = toPlainTextContent(range);
+  return {
+    status: "FOUND",
+    foundQuotation,
+  };
+}
+
+export function getTextRangeInDoc(
+  doc: Document,
+  quotation: string
+): Range | undefined {
+  const matches = approximateMatch(doc.body.textContent || "", quotation);
+  logger.info(`getTextRangeInDoc matches ${toJson(matches)}`);
+  if (!matches.length) {
+    return undefined;
+  }
+  const { start, end } = matches[0];
+  return textPosition.toRange(doc.body, { start, end }) || undefined;
 }
 
 const FRAGMENT_DIRECTIVE = ":~:";
@@ -63,9 +90,7 @@ export function generateTextFragmentUrlFromHtml(
   const { window } = new JSDOM(html, { url, runScripts: "outside-only" });
 
   // Select the quotation in the JSDOM page.
-  const quotationRange = textQuote.toRange(window.document.body, {
-    exact: quotation,
-  });
+  const quotationRange = getTextRangeInDoc(window.document, quotation);
   if (!quotationRange) {
     logger.error(`Unable to find quotation ${quotation} in ${url}`);
     return undefined;

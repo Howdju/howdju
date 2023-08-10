@@ -8975,6 +8975,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"approx-string-match@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "approx-string-match@npm:2.0.0"
+  checksum: ed95f473ce91d97f1b2ba297265b5ce970458885156b9b8715b5f236753d3d4933d1b5182f03bae0685d5c975933babf5b9e15b48b5d6bdd5e406d835f00cb4a
+  languageName: node
+  linkType: hard
+
 "aproba@npm:^1.0.3":
   version: 1.2.0
   resolution: "aproba@npm:1.2.0"
@@ -16691,6 +16698,7 @@ __metadata:
     "@types/validator": ^13.7.10
     ajv: ^8.1.0
     ajv-formats: ^2.0.2
+    approx-string-match: ^2.0.0
     dom-anchor-text-position: ^5.0.0
     dom-anchor-text-quote: ^4.0.2
     esbuild: ^0.18.17
