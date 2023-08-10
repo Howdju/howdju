@@ -1,17 +1,11 @@
-import {
-  Logger,
-  QuotationConfirmationResult,
-  toJson,
-  utcNow,
-} from "howdju-common";
+import { JSDOM } from "jsdom";
+
+import { Logger, toJson, utcNow, findTextInDoc } from "howdju-common";
 
 import { MediaExcerptsService } from "./MediaExcerptsService";
 import { UrlLocatorAutoConfirmationDao } from "../daos/UrlLocatorAutoConfirmationDao";
 import { EntityNotFoundError } from "..";
-import {
-  confirmQuotationInHtml,
-  generateTextFragmentUrlFromHtml,
-} from "../requestMediaExcerptInfo";
+import { generateTextFragmentUrlFromHtml } from "../requestMediaExcerptInfo";
 import { fetchUrl } from "../fetchUrl";
 
 export class UrlLocatorAutoConfirmationService {
@@ -76,3 +70,40 @@ export class UrlLocatorAutoConfirmationService {
     }
   }
 }
+
+function confirmQuotationInHtml(
+  url: string,
+  html: string,
+  quotation: string
+): QuotationConfirmationResult {
+  const dom = new JSDOM(html, { url });
+  const doc = dom.window.document;
+  const foundQuotation = findTextInDoc(doc, quotation);
+  // TODO(491) add an APPROXIMATE_FOUND option if foundQuotation !== quotation.
+  if (foundQuotation) {
+    return {
+      status: "FOUND",
+      foundQuotation,
+    };
+  }
+  return {
+    status: "NOT_FOUND",
+  };
+}
+
+type QuotationConfirmationResult =
+  | {
+      status: "NOT_FOUND";
+      foundQuotation?: undefined;
+      errorMessage?: undefined;
+    }
+  | {
+      status: "FOUND";
+      foundQuotation: string;
+      errorMessage?: undefined;
+    }
+  | {
+      status: "ERROR";
+      foundQuotation?: undefined;
+      errorMessage: string;
+    };

@@ -1,6 +1,7 @@
 import * as textPosition from "dom-anchor-text-position";
 import * as textQuote from "dom-anchor-text-quote";
 import { indexOf } from "lodash";
+import { approximateMatch } from "./approximateStringMatch";
 
 import { logger } from "./logger";
 
@@ -65,13 +66,21 @@ export function nodePositionCompare(node1: Node, node2: Node) {
 export function getTextWithin(
   doc: Document,
   startText: string,
-  endText: string
+  endText: string,
+  { prefix, suffix }: { prefix?: string; suffix?: string } = {
+    prefix: undefined,
+    suffix: undefined,
+  }
 ) {
   // Some sites includes the content of the page in a script tag. E.g. substack's `body_html`. So
   // use a hint at the beginning to try and find content in the body. (If we find this doens't work,
   // we might need to use a binary search style approach until we either have exhausted ranges in
   // the document or have found a range that isn't in a script tag.)
-  const { range } = getRangeOfText(doc, startText, endText, 0);
+  const { range } = getRangeOfText(doc, startText, endText, {
+    hint: 0,
+    prefix,
+    suffix,
+  });
   if (!range) {
     return undefined;
   }
@@ -111,15 +120,36 @@ function isScriptNode(node: Node) {
   );
 }
 
+export function findTextInDoc(doc: Document, text: string): string | undefined {
+  const range = getRangeOfTextInDoc(doc, text);
+  if (!range) {
+    return undefined;
+  }
+
+  return toPlainTextContent(range);
+}
+
+export function getRangeOfTextInDoc(
+  doc: Document,
+  quotation: string
+): Range | undefined {
+  const matches = approximateMatch(doc.body.textContent || "", quotation);
+  if (!matches.length) {
+    return undefined;
+  }
+  const { start, end } = matches[0];
+  return textPosition.toRange(doc.body, { start, end }) || undefined;
+}
+
 function getRangeOfText(
   doc: Document,
   startText: string,
   endText: string,
-  hint?: number
+  { prefix, suffix, hint }: { prefix?: string; suffix?: string; hint?: number }
 ) {
   let startPosition = textQuote.toTextPosition(
     doc.body,
-    { exact: startText },
+    { exact: startText, prefix },
     hint !== undefined ? { hint } : undefined
   );
   if (!startPosition) {
@@ -127,7 +157,7 @@ function getRangeOfText(
   }
   let endPosition = textQuote.toTextPosition(
     doc.body,
-    { exact: endText },
+    { exact: endText, suffix },
     { hint: startPosition.end }
   );
   if (!endPosition) {
@@ -170,6 +200,26 @@ function getRangeOfText(
     // If the positions are still invalid, give up.
     if (startPosition.start >= endPosition.end) {
       return { range: undefined, end: undefined };
+    }
+  }
+
+  // Sometimes dom-anchor-text-position finds a bad start position. E.g. for
+  // https://lexfridman.com/robert-f-kennedy-jr-transcript/#:~:text=Camus-,Lex%20Fridman,act%20of%20rebellion.%E2%80%9D%20What%20do%20you%20think%20he%20means%20by%20that%3F,-Robert%20F.%20Kennedy
+  // it finds a start position at the beginning of the document.
+  // So after finding the end position, see if there is a closer match for the start position.
+  const maybeCloserStartPosition = textQuote.toTextPosition(
+    doc.body,
+    { exact: startText, prefix },
+    { hint: endPosition.start }
+  );
+  if (maybeCloserStartPosition) {
+    const maybeCloserStartPositionDistance =
+      endPosition.start - maybeCloserStartPosition.end;
+    if (
+      maybeCloserStartPositionDistance > 0 &&
+      maybeCloserStartPositionDistance < endPosition.start - startPosition.end
+    ) {
+      startPosition = maybeCloserStartPosition;
     }
   }
 
@@ -225,6 +275,7 @@ export function toPlainTextContent(range: Range) {
         } else {
           text = node.textContent;
         }
+        text = text?.trim();
         if (text) {
           textParts.push(text);
         }
@@ -233,13 +284,19 @@ export function toPlainTextContent(range: Range) {
     leave: (node) => {
       if (
         node.nodeType === Node.ELEMENT_NODE &&
-        node.nodeName.toLowerCase() === "p"
+        ["p", "div", "h1", "h2", "h3", "h4", "h5", "h6"].includes(
+          node.nodeName.toLowerCase()
+        )
       ) {
         textParts.push("\n\n");
       }
     },
   });
-  return textParts.join("").replace(/\s+$/gm, "\n").trim();
+  return textParts
+    .join(" ")
+    .replace(/^\s+/gm, "")
+    .replace(/\s+$/gm, "\n")
+    .trim();
 }
 
 function isTextNode(node: Node): node is Text {

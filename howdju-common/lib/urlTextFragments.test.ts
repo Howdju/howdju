@@ -5,7 +5,6 @@ import stripIndent from "strip-indent";
 import { mergeCopy, utcNow } from "howdju-common";
 
 import {
-  confirmQuotationInDoc,
   extractQuotationFromTextFragment,
   toUrlWithFragmentFromAnchors,
   toUrlWithFragmentFromQuotation,
@@ -292,6 +291,23 @@ describe("extractQuotationFromTextFragment", () => {
       )
     ).toBe("the exact text start…the exact text end");
   });
+  it("extracts the full quotation from the text fragment with a text end, prefix, and suffix when a doc is provided", () => {
+    const html = readFileSync(
+      "lib/testData/urlTextFragments/lexfridman.html",
+      "utf8"
+    );
+    const url =
+      "https://lexfridman.com/robert-f-kennedy-jr-transcript/#:~:text=Camus-,Lex%20Fridman,act%20of%20rebellion.%E2%80%9D%20What%20do%20you%20think%20he%20means%20by%20that%3F,-Robert%20F.%20Kennedy";
+    const dom = new JSDOM(html, { url, runScripts: "outside-only" });
+
+    expect(
+      extractQuotationFromTextFragment(url, { doc: dom.window.document })
+    ).toBe(
+      stripIndent(`
+        Lex Fridman (00:09:26) The blood of each generation. You mentioned your interest, your admiration of Al Albert Camus, of Stoicism, perhaps your interest in existentialism. Camus said, I believe in Myth of Sisyphus, “The only way to deal with an unfree world is to become so absolutely free that your very existence is an act of rebellion.” What do you think he means by that?
+        `).trim()
+    );
+  });
   it("extracts the quotation from multiple text fragments", () => {
     expect(
       extractQuotationFromTextFragment(
@@ -304,25 +320,5 @@ describe("extractQuotationFromTextFragment", () => {
     expect(
       extractQuotationFromTextFragment("https://example.com#some-heading")
     ).toBeUndefined();
-  });
-});
-
-describe("confirmQuotationInDoc", () => {
-  test("Confirms a quotation", () => {
-    const html = readFileSync(
-      "lib/testData/domBibliographicInfoTestData/seattletimes.html",
-      "utf8"
-    );
-    const dom = new JSDOM(html);
-    const doc = dom.window.document;
-    const quotation = stripIndent(`
-      Many poll respondents said the reason they believe the homelessness crisis is worse now than it was three years ago is because they see it more.
-
-      “I see a lot more encampments around or RVs parked on the side of the road where they didn’t used to be,” said Drew Scoggins, a Northgate resident who responded to the poll.`).trim();
-
-    expect(confirmQuotationInDoc(doc, quotation)).toEqual({
-      status: "FOUND",
-      foundQuotation: quotation,
-    });
   });
 });

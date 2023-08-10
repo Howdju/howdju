@@ -1,5 +1,3 @@
-import fs from "fs";
-import * as textQuote from "dom-anchor-text-quote";
 import { JSDOM } from "jsdom";
 import {
   GenerateFragmentResult,
@@ -7,16 +5,16 @@ import {
 } from "text-fragments-polyfill/dist/fragment-generation-utils.js";
 
 import {
-  QuotationConfirmationResult,
   cleanTextFragmentParameter,
-  confirmQuotationInDoc,
-  extractQuotationFromTextFragment,
   inferAnchoredBibliographicInfo,
   MediaExcerptInfo,
   logger,
+  extractQuotationFromTextFragment,
+  getRangeOfTextInDoc,
 } from "howdju-common";
 
 import { fetchUrl } from "./fetchUrl";
+import { runScriptAction } from "./runScriptAction";
 
 /** Given a URL and quotation from it, return anchor info for it */
 export async function requestMediaExcerptInfo(
@@ -24,7 +22,7 @@ export async function requestMediaExcerptInfo(
   quotation: string | undefined
 ): Promise<MediaExcerptInfo> {
   const html = await fetchUrl(url);
-  const dom = new JSDOM(html, { url });
+  const dom = new JSDOM(html, { url, runScripts: "outside-only" });
 
   const extractedQuotation = extractQuotationFromTextFragment(url, {
     doc: dom.window.document,
@@ -43,16 +41,6 @@ export async function requestMediaExcerptInfo(
   };
 }
 
-export function confirmQuotationInHtml(
-  url: string,
-  html: string,
-  quotation: string
-): QuotationConfirmationResult {
-  const dom = new JSDOM(html, { url });
-  const doc = dom.window.document;
-  return confirmQuotationInDoc(doc, quotation);
-}
-
 const FRAGMENT_DIRECTIVE = ":~:";
 
 export function generateTextFragmentUrlFromHtml(
@@ -62,15 +50,8 @@ export function generateTextFragmentUrlFromHtml(
 ) {
   const { window } = new JSDOM(html, { url, runScripts: "outside-only" });
 
-  // Add the fragment generation utils to the JSDOM page.
-  // See https://github.com/jsdom/jsdom/wiki/Don't-stuff-jsdom-globals-onto-the-Node-global#running-code-inside-the-jsdom-context
-  const fragmentGenerationUtils = readFragmentGenerationScript();
-  window.eval(fragmentGenerationUtils);
-
   // Select the quotation in the JSDOM page.
-  const quotationRange = textQuote.toRange(window.document.body, {
-    exact: quotation,
-  });
+  const quotationRange = getRangeOfTextInDoc(window.document, quotation);
   if (!quotationRange) {
     logger.error(`Unable to find quotation ${quotation} in ${url}`);
     return undefined;
@@ -78,12 +59,12 @@ export function generateTextFragmentUrlFromHtml(
   logger.info(`Found quotation in range: ${quotationRange.toString()}`);
   window.quotationRange = quotationRange;
 
-  // Run the fragment generation utils on the selection in the JSDOM page.
-  window.eval(`
-    window.generateFragmentResult = window.generateFragmentFromRange(window.quotationRange);
-  `);
-  const { status, fragment } =
-    window.generateFragmentResult as GenerateFragmentResult;
+  const { status, fragment } = runScriptAction<GenerateFragmentResult>(
+    window,
+    "rangeToFragment",
+    "window.rangeToFragment(window.quotationRange)"
+  );
+
   if (status !== GenerateFragmentStatus.SUCCESS) {
     logger.error(`Unable to generate fragment for URL (${status}): ${url}`);
     return undefined;
@@ -102,25 +83,6 @@ export function generateTextFragmentUrlFromHtml(
   const textFragment = `${prefix}${start}${end}${suffix}`;
 
   return addTextFragmentToUrl(url, textFragment);
-}
-
-function readFragmentGenerationScript() {
-  if (
-    fs.existsSync(
-      "../howdju-text-fragment-generation/dist/global-fragment-generation.js"
-    )
-  ) {
-    return fs.readFileSync(
-      "../howdju-text-fragment-generation/dist/global-fragment-generation.js",
-      { encoding: "utf-8" }
-    );
-  }
-  if (fs.existsSync("./global-fragment-generation.js")) {
-    return fs.readFileSync("./global-fragment-generation.js", {
-      encoding: "utf-8",
-    });
-  }
-  throw new Error("Unable to find fragment generation script");
 }
 
 function addTextFragmentToUrl(url: string, textFragment: string) {

@@ -23,3 +23,11 @@ declare module "text-fragments-polyfill/dist/fragment-generation-utils.js" {
 
   function setTimeout(timeout: number | null): void;
 }
+
+declare module "text-fragments-polyfill/text-fragment-utils" {
+  function getFragmentDirectives(hash: string): { text: string[] };
+  function parseFragmentDirectives(fragmentDirectives: { text: string[] }): {
+    text: TextFragment[];
+  };
+  function processTextFragmentDirective(textFragment: TextFragment): Range[];
+}

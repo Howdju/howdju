@@ -1,5 +1,5 @@
 {
-  "name": "howdju-text-fragment-generation",
+  "name": "howdju-text-fragments",
   "packageManager": "yarn@3.3.1",
   "version": "1.0.0",
   "description": "A client script for generating text fragments for URLs",
@@ -10,11 +10,11 @@
   "private": true,
   "scripts": {
     "clean": "rm -rf dist",
-    "build": " yarn run clean && esbuild src/index.ts --bundle --outfile=dist/global-fragment-generation.js --platform=browser --target=es2016",
-    "build:global-fragment-generation-script": "yarn run build",
-    "check-build": "yarn run build",
+    "build:get-ranges-for-current-fragment-script": "esbuild src/getRangesForCurrentFragment.ts --bundle --outfile=dist/getRangesForCurrentFragment.js --platform=browser --target=es2016",
+    "build:range-to-fragment-script": "esbuild src/rangeToFragment.ts --bundle --outfile=dist/rangeToFragment.js --platform=browser --target=es2016",
+    "check-build": "yarn run build:range-to-fragment-script && yarn run build:get-ranges-for-current-fragment-script",
     "check-format": "yarn run prettier --check --ignore-path .gitignore .",
-    "custom-check": "bin/check-script-fresh.sh",
+    "custom-check": "bin/check-scripts-are-updated.sh",
     "fix-format": "yarn run lint --fix && yarn run prettier --write --ignore-path .gitignore .",
     "lint": "eslint --ignore-path=.gitignore .",
     "typecheck": "tsc",

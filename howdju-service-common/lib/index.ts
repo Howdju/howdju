@@ -1,7 +1,7 @@
 /// <reference path="../../howdju-test-common/lib/globals.d.ts" />
 /// <reference path="../../howdju-common/lib/dom-anchor-text-position.d.ts" />
 /// <reference path="../../howdju-common/lib/dom-anchor-text-quote.d.ts" />
-/// <reference path="../../howdju-text-fragment-generation/src/text-fragments-polyfill.d.ts" />
+/// <reference path="../../howdju-text-fragments/src/text-fragments-polyfill.d.ts" />
 
 import anyPromiseRegister from "any-promise/register";
 import * as moment from "moment";

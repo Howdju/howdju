@@ -27,7 +27,6 @@ export class Handler {
         );
         continue;
       }
-      provider.logger.error(result.data);
       try {
         await this.handleMessage(result.data);
       } catch (err) {
@@ -50,6 +49,9 @@ export class Handler {
       }
       case "AUTO_CONFIRM_URL_LOCATOR": {
         const { urlLocatorId } = params;
+        this.provider.logger.debug(
+          `Auto-confirming URL locator for urlLocatorId: ${urlLocatorId}`
+        );
         await this.provider.urlLocatorAutoConfirmationService.confirmUrlLocator(
           urlLocatorId
         );
@@ -57,6 +59,9 @@ export class Handler {
       }
       case "CONFIRM_CANONICAL_URL": {
         const { urlId } = params;
+        this.provider.logger.debug(
+          `Confirming canonical URL for urlID: ${urlId}`
+        );
         await this.provider.urlsService.confirmCanonicalUrl(urlId);
         break;
       }

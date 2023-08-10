@@ -4003,7 +4003,7 @@
             basePullAt(array, indexes);
             return result2;
           }
-          function reverse(array) {
+          function reverse2(array) {
             return array == null ? array : nativeReverse.call(array);
           }
           function slice(array, start, end) {
@@ -4241,12 +4241,12 @@
               wrapped = wrapped.reverse();
               wrapped.__actions__.push({
                 "func": thru,
-                "args": [reverse],
+                "args": [reverse2],
                 "thisArg": undefined2
               });
               return new LodashWrapper(wrapped, this.__chain__);
             }
-            return this.thru(reverse);
+            return this.thru(reverse2);
           }
           function wrapperValue() {
             return baseWrapperValue(this.__wrapped__, this.__actions__);
@@ -5732,7 +5732,7 @@
           lodash.reject = reject2;
           lodash.remove = remove;
           lodash.rest = rest;
-          lodash.reverse = reverse;
+          lodash.reverse = reverse2;
           lodash.sampleSize = sampleSize;
           lodash.set = set2;
           lodash.setWith = setWith;
@@ -14923,7 +14923,7 @@
         value: true
       });
       exports.fromRange = fromRange2;
-      exports.toRange = toRange4;
+      exports.toRange = toRange3;
       var _domNodeIterator = require_dom_node_iterator();
       var _domNodeIterator2 = _interopRequireDefault(_domNodeIterator);
       var _domSeek = require_dom_seek();
@@ -14954,7 +14954,7 @@
           end
         };
       }
-      function toRange4(root) {
+      function toRange3(root) {
         var selector = arguments.length <= 1 || arguments[1] === void 0 ? {} : arguments[1];
         if (root === void 0) {
           throw new Error('missing required parameter "root"');
@@ -15001,7 +15001,7 @@
       });
       exports.fromRange = fromRange2;
       exports.fromTextPosition = fromTextPosition3;
-      exports.toRange = toRange4;
+      exports.toRange = toRange3;
       exports.toTextPosition = toTextPosition3;
       var _diffMatchPatch = require_diff_match_patch();
       var _diffMatchPatch2 = _interopRequireDefault(_diffMatchPatch);
@@ -15066,7 +15066,7 @@
         var suffix = root.textContent.substr(end, suffixEnd - end);
         return { exact, prefix, suffix };
       }
-      function toRange4(root, selector) {
+      function toRange3(root, selector) {
         var options = arguments.length > 2 && arguments[2] !== void 0 ? arguments[2] : {};
         var position = toTextPosition3(root, selector, options);
         if (position === null) {
@@ -15332,7 +15332,7 @@
         value: true
       });
       exports.fromRange = fromRange2;
-      exports.toRange = toRange4;
+      exports.toRange = toRange3;
       var _domSeek = _interopRequireDefault(require_dom_seek2());
       var _rangeToString = _interopRequireDefault(require_range_to_string2());
       function _interopRequireDefault(obj) {
@@ -15359,7 +15359,7 @@
           end
         };
       }
-      function toRange4(root) {
+      function toRange3(root) {
         var selector = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : {};
         if (root === void 0) {
           throw new Error('missing required parameter "root"');
@@ -32868,6 +32868,7 @@
     JustificationVote: () => JustificationVote,
     JustificationVotePolarities: () => JustificationVotePolarities,
     JustificationVoteRef: () => JustificationVoteRef,
+    MAX_ACCEPTABLE_ERRORS: () => MAX_ACCEPTABLE_ERRORS,
     MediaExcerpt: () => MediaExcerpt,
     MediaExcerptCitation: () => MediaExcerptCitation,
     MediaExcerptRef: () => MediaExcerptRef,
@@ -32944,6 +32945,7 @@
     WritQuoteRef: () => WritQuoteRef,
     WritRef: () => WritRef,
     apiErrorCodes: () => apiErrorCodes,
+    approximateMatch: () => approximateMatch,
     areAdjacentConnectingEntities: () => areAdjacentConnectingEntities,
     areValidTargetAndConnectingEntity: () => areValidTargetAndConnectingEntity,
     arrayToObject: () => arrayToObject,
@@ -32954,7 +32956,6 @@
     cleanTextFragmentParameter: () => cleanTextFragmentParameter,
     cleanWhitespace: () => cleanWhitespace,
     commonErrorTypes: () => commonErrorTypes,
-    confirmQuotationInDoc: () => confirmQuotationInDoc,
     contextTrailItemPolarity: () => contextTrailItemPolarity,
     contextTrailPolarityByShortcut: () => contextTrailPolarityByShortcut,
     contextTrailShortcutByPolarity: () => contextTrailShortcutByPolarity,
@@ -32981,10 +32982,12 @@
     extractDomain: () => extractDomain,
     extractQuotationFromTextFragment: () => extractQuotationFromTextFragment,
     filterDefined: () => filterDefined,
+    findTextInDoc: () => findTextInDoc,
     formatDuration: () => formatDuration,
     formatZodError: () => formatZodError,
     fromJson: () => fromJson,
     getConnectingEntitySourceInfo: () => getConnectingEntitySourceInfo,
+    getRangeOfTextInDoc: () => getRangeOfTextInDoc,
     getTextWithin: () => getTextWithin,
     hasQuote: () => hasQuote,
     httpMethods: () => httpMethods,
@@ -33125,6 +33128,164 @@
       startOffset: start,
       endOffset: end
     };
+  }
+
+  // ../node_modules/approx-string-match/build/src/index.js
+  function reverse(s3) {
+    return s3.split("").reverse().join("");
+  }
+  function findMatchStarts(text, pattern, matches) {
+    const patRev = reverse(pattern);
+    return matches.map((m3) => {
+      const minStart = Math.max(0, m3.end - pattern.length - m3.errors);
+      const textRev = reverse(text.slice(minStart, m3.end));
+      const start = findMatchEnds(textRev, patRev, m3.errors).reduce((min, rm) => {
+        if (m3.end - rm.end < min) {
+          return m3.end - rm.end;
+        }
+        return min;
+      }, m3.end);
+      return {
+        start,
+        end: m3.end,
+        errors: m3.errors
+      };
+    });
+  }
+  function oneIfNotZero(n3) {
+    return (n3 | -n3) >> 31 & 1;
+  }
+  function advanceBlock(ctx, peq, b3, hIn) {
+    let pV = ctx.P[b3];
+    let mV = ctx.M[b3];
+    const hInIsNegative = hIn >>> 31;
+    const eq = peq[b3] | hInIsNegative;
+    const xV = eq | mV;
+    const xH = (eq & pV) + pV ^ pV | eq;
+    let pH = mV | ~(xH | pV);
+    let mH = pV & xH;
+    const hOut = oneIfNotZero(pH & ctx.lastRowMask[b3]) - oneIfNotZero(mH & ctx.lastRowMask[b3]);
+    pH <<= 1;
+    mH <<= 1;
+    mH |= hInIsNegative;
+    pH |= oneIfNotZero(hIn) - hInIsNegative;
+    pV = mH | ~(xV | pH);
+    mV = pH & xV;
+    ctx.P[b3] = pV;
+    ctx.M[b3] = mV;
+    return hOut;
+  }
+  function findMatchEnds(text, pattern, maxErrors) {
+    if (pattern.length === 0) {
+      return [];
+    }
+    maxErrors = Math.min(maxErrors, pattern.length);
+    const matches = [];
+    const w3 = 32;
+    const bMax = Math.ceil(pattern.length / w3) - 1;
+    const ctx = {
+      P: new Uint32Array(bMax + 1),
+      M: new Uint32Array(bMax + 1),
+      lastRowMask: new Uint32Array(bMax + 1)
+    };
+    ctx.lastRowMask.fill(1 << 31);
+    ctx.lastRowMask[bMax] = 1 << (pattern.length - 1) % w3;
+    const emptyPeq = new Uint32Array(bMax + 1);
+    const peq = /* @__PURE__ */ new Map();
+    const asciiPeq = [];
+    for (let i3 = 0; i3 < 256; i3++) {
+      asciiPeq.push(emptyPeq);
+    }
+    for (let c3 = 0; c3 < pattern.length; c3 += 1) {
+      const val = pattern.charCodeAt(c3);
+      if (peq.has(val)) {
+        continue;
+      }
+      const charPeq = new Uint32Array(bMax + 1);
+      peq.set(val, charPeq);
+      if (val < asciiPeq.length) {
+        asciiPeq[val] = charPeq;
+      }
+      for (let b3 = 0; b3 <= bMax; b3 += 1) {
+        charPeq[b3] = 0;
+        for (let r3 = 0; r3 < w3; r3 += 1) {
+          const idx = b3 * w3 + r3;
+          if (idx >= pattern.length) {
+            continue;
+          }
+          const match = pattern.charCodeAt(idx) === val;
+          if (match) {
+            charPeq[b3] |= 1 << r3;
+          }
+        }
+      }
+    }
+    let y3 = Math.max(0, Math.ceil(maxErrors / w3) - 1);
+    const score = new Uint32Array(bMax + 1);
+    for (let b3 = 0; b3 <= y3; b3 += 1) {
+      score[b3] = (b3 + 1) * w3;
+    }
+    score[bMax] = pattern.length;
+    for (let b3 = 0; b3 <= y3; b3 += 1) {
+      ctx.P[b3] = ~0;
+      ctx.M[b3] = 0;
+    }
+    for (let j3 = 0; j3 < text.length; j3 += 1) {
+      const charCode = text.charCodeAt(j3);
+      let charPeq;
+      if (charCode < asciiPeq.length) {
+        charPeq = asciiPeq[charCode];
+      } else {
+        charPeq = peq.get(charCode);
+        if (typeof charPeq === "undefined") {
+          charPeq = emptyPeq;
+        }
+      }
+      let carry = 0;
+      for (let b3 = 0; b3 <= y3; b3 += 1) {
+        carry = advanceBlock(ctx, charPeq, b3, carry);
+        score[b3] += carry;
+      }
+      if (score[y3] - carry <= maxErrors && y3 < bMax && (charPeq[y3 + 1] & 1 || carry < 0)) {
+        y3 += 1;
+        ctx.P[y3] = ~0;
+        ctx.M[y3] = 0;
+        let maxBlockScore;
+        if (y3 === bMax) {
+          const remainder = pattern.length % w3;
+          maxBlockScore = remainder === 0 ? w3 : remainder;
+        } else {
+          maxBlockScore = w3;
+        }
+        score[y3] = score[y3 - 1] + maxBlockScore - carry + advanceBlock(ctx, charPeq, y3, carry);
+      } else {
+        while (y3 > 0 && score[y3] >= maxErrors + w3) {
+          y3 -= 1;
+        }
+      }
+      if (y3 === bMax && score[y3] <= maxErrors) {
+        if (score[y3] < maxErrors) {
+          matches.splice(0, matches.length);
+        }
+        matches.push({
+          start: -1,
+          end: j3 + 1,
+          errors: score[y3]
+        });
+        maxErrors = score[y3];
+      }
+    }
+    return matches;
+  }
+  function search(text, pattern, maxErrors) {
+    const matches = findMatchEnds(text, pattern, maxErrors);
+    return findMatchStarts(text, pattern, matches);
+  }
+
+  // ../howdju-common/lib/approximateStringMatch.ts
+  var MAX_ACCEPTABLE_ERRORS = 50;
+  function approximateMatch(document2, query) {
+    return search(document2, query, MAX_ACCEPTABLE_ERRORS);
   }
 
   // ../howdju-common/lib/arguments.js
@@ -33808,8 +33969,15 @@
     }
     return 1;
   }
-  function getTextWithin(doc, startText, endText) {
-    const { range } = getRangeOfText(doc, startText, endText, 0);
+  function getTextWithin(doc, startText, endText, { prefix, suffix } = {
+    prefix: void 0,
+    suffix: void 0
+  }) {
+    const { range } = getRangeOfText(doc, startText, endText, {
+      hint: 0,
+      prefix,
+      suffix
+    });
     if (!range) {
       return void 0;
     }
@@ -33839,10 +34007,25 @@
   function isScriptNode(node) {
     return node.nodeType === getNodeConstructor(node).ELEMENT_NODE && node.nodeName.toLowerCase() === "script";
   }
-  function getRangeOfText(doc, startText, endText, hint) {
+  function findTextInDoc(doc, text) {
+    const range = getRangeOfTextInDoc(doc, text);
+    if (!range) {
+      return void 0;
+    }
+    return toPlainTextContent(range);
+  }
+  function getRangeOfTextInDoc(doc, quotation) {
+    const matches = approximateMatch(doc.body.textContent || "", quotation);
+    if (!matches.length) {
+      return void 0;
+    }
+    const { start, end } = matches[0];
+    return textPosition.toRange(doc.body, { start, end }) || void 0;
+  }
+  function getRangeOfText(doc, startText, endText, { prefix, suffix, hint }) {
     let startPosition = textQuote2.toTextPosition(
       doc.body,
-      { exact: startText },
+      { exact: startText, prefix },
       hint !== void 0 ? { hint } : void 0
     );
     if (!startPosition) {
@@ -33850,7 +34033,7 @@
     }
     let endPosition = textQuote2.toTextPosition(
       doc.body,
-      { exact: endText },
+      { exact: endText, suffix },
       { hint: startPosition.end }
     );
     if (!endPosition) {
@@ -33886,6 +34069,17 @@
       }
       if (startPosition.start >= endPosition.end) {
         return { range: void 0, end: void 0 };
+      }
+    }
+    const maybeCloserStartPosition = textQuote2.toTextPosition(
+      doc.body,
+      { exact: startText, prefix },
+      { hint: endPosition.start }
+    );
+    if (maybeCloserStartPosition) {
+      const maybeCloserStartPositionDistance = endPosition.start - maybeCloserStartPosition.end;
+      if (maybeCloserStartPositionDistance > 0 && maybeCloserStartPositionDistance < endPosition.start - startPosition.end) {
+        startPosition = maybeCloserStartPosition;
       }
     }
     const range = textPosition.toRange(doc.body, {
@@ -33926,18 +34120,21 @@
           } else {
             text = node.textContent;
           }
+          text = text == null ? void 0 : text.trim();
           if (text) {
             textParts.push(text);
           }
         }
       },
       leave: (node) => {
-        if (node.nodeType === Node2.ELEMENT_NODE && node.nodeName.toLowerCase() === "p") {
+        if (node.nodeType === Node2.ELEMENT_NODE && ["p", "div", "h1", "h2", "h3", "h4", "h5", "h6"].includes(
+          node.nodeName.toLowerCase()
+        )) {
           textParts.push("\n\n");
         }
       }
     });
-    return textParts.join("").replace(/\s+$/gm, "\n").trim();
+    return textParts.join(" ").replace(/^\s+/gm, "").replace(/\s+$/gm, "\n").trim();
   }
   function isTextNode(node) {
     return node.nodeType === getNodeConstructor(node).TEXT_NODE;
@@ -34699,7 +34896,6 @@
   init_urls();
 
   // ../howdju-common/lib/urlTextFragments.ts
-  var textQuote3 = __toESM(require_dom_anchor_text_quote());
   var FRAGMENT_DIRECTIVE = ":~:";
   function toUrlWithFragmentFromQuotation(url, quotation) {
     if (!quotation) {
@@ -34779,6 +34975,16 @@
         return textParameters[0];
       }
       if (textParameters.length === 4) {
+        if (options.doc) {
+          const [prefix, startText, endText, suffix] = textParameters;
+          const textWithin = getTextWithin(options.doc, startText, endText, {
+            prefix: prefix.replace(/-$/, ""),
+            suffix: suffix.replace(/^-/, "")
+          });
+          if (textWithin) {
+            return textWithin;
+          }
+        }
         const textParameterStartEndDelimiter = (_a = options.textParameterStartEndDelimiter) != null ? _a : defaultOptions.textParameterStartEndDelimiter;
         return textParameters[1] + textParameterStartEndDelimiter + textParameters[2];
       }
@@ -34799,7 +35005,12 @@
       if (options.doc) {
         const startText = textParameters[start];
         const endText = textParameters[end];
-        const textWithin = getTextWithin(options.doc, startText, endText);
+        const prefix = start === 1 ? textParameters[0] : void 0;
+        const suffix = end < textParameters.length - 1 ? textParameters[textParameters.length - 1] : void 0;
+        const textWithin = getTextWithin(options.doc, startText, endText, {
+          prefix: prefix == null ? void 0 : prefix.replace(/-$/, ""),
+          suffix: suffix == null ? void 0 : suffix.replace(/^-/, "")
+        });
         if (textWithin) {
           return textWithin;
         }
@@ -34808,21 +35019,6 @@
       return textParameters.slice(start, end + 1).join(textDirectiveDelimiter);
     });
     return quoteParts.filter(isDefined).join(options.textDirectiveDelimiter);
-  }
-  function confirmQuotationInDoc(doc, quotation) {
-    const quotationRange = textQuote3.toRange(doc.body, {
-      exact: quotation
-    });
-    if (!quotationRange) {
-      return {
-        status: "NOT_FOUND"
-      };
-    }
-    const foundQuotation = toPlainTextContent(quotationRange);
-    return {
-      status: "FOUND",
-      foundQuotation
-    };
   }
 
   // ../howdju-common/lib/validation.ts
@@ -35078,11 +35274,11 @@
 
   // ../howdju-client-common/lib/target.ts
   var textPosition2 = __toESM(require_dom_anchor_text_position2());
-  var textQuote4 = __toESM(require_dom_anchor_text_quote());
+  var textQuote3 = __toESM(require_dom_anchor_text_quote());
 
-  // src/index.ts
+  // src/rangeToFragment.ts
   O(null);
-  function generateFragmentFromRange(range) {
+  function rangeToFragment(range) {
     const selection = selectTextOfRange(range);
     return x(selection);
   }
@@ -35096,7 +35292,7 @@
     selection.addRange(normalRange);
     return selection;
   }
-  window.generateFragmentFromRange = generateFragmentFromRange;
+  window.rangeToFragment = rangeToFragment;
 })();
 /*! Bundled license information:
 

@@ -1,12 +1,4 @@
-import * as textQuote from "dom-anchor-text-quote";
-
-import {
-  getTextWithin,
-  isDefined,
-  logger,
-  toPlainTextContent,
-  UrlLocator,
-} from "howdju-common";
+import { getTextWithin, isDefined, logger, UrlLocator } from "howdju-common";
 
 const FRAGMENT_DIRECTIVE = ":~:";
 
@@ -134,6 +126,17 @@ export function extractQuotationFromTextFragment(
       return textParameters[0];
     }
     if (textParameters.length === 4) {
+      if (options.doc) {
+        const [prefix, startText, endText, suffix] = textParameters;
+        const textWithin = getTextWithin(options.doc, startText, endText, {
+          prefix: prefix.replace(/-$/, ""),
+          suffix: suffix.replace(/^-/, ""),
+        });
+        if (textWithin) {
+          return textWithin;
+        }
+        // otherwise, fall through
+      }
       const textParameterStartEndDelimiter =
         options.textParameterStartEndDelimiter ??
         defaultOptions.textParameterStartEndDelimiter;
@@ -159,7 +162,15 @@ export function extractQuotationFromTextFragment(
     if (options.doc) {
       const startText = textParameters[start];
       const endText = textParameters[end];
-      const textWithin = getTextWithin(options.doc, startText, endText);
+      const prefix = start === 1 ? textParameters[0] : undefined;
+      const suffix =
+        end < textParameters.length - 1
+          ? textParameters[textParameters.length - 1]
+          : undefined;
+      const textWithin = getTextWithin(options.doc, startText, endText, {
+        prefix: prefix?.replace(/-$/, ""),
+        suffix: suffix?.replace(/^-/, ""),
+      });
       if (textWithin) {
         return textWithin;
       }
@@ -170,42 +181,4 @@ export function extractQuotationFromTextFragment(
     return textParameters.slice(start, end + 1).join(textDirectiveDelimiter);
   });
   return quoteParts.filter(isDefined).join(options.textDirectiveDelimiter);
-}
-
-export type QuotationConfirmationResult =
-  | {
-      status: "NOT_FOUND";
-      foundQuotation?: undefined;
-      errorMessage?: undefined;
-    }
-  | {
-      status: "FOUND";
-      foundQuotation: string;
-      errorMessage?: undefined;
-    }
-  | {
-      status: "ERROR";
-      foundQuotation?: undefined;
-      errorMessage: string;
-    };
-
-export function confirmQuotationInDoc(
-  doc: Document,
-  quotation: string
-): QuotationConfirmationResult {
-  const quotationRange = textQuote.toRange(doc.body, {
-    exact: quotation,
-  });
-  if (!quotationRange) {
-    return {
-      status: "NOT_FOUND",
-    };
-  }
-
-  // TODO(491) add an INEXACT_FOUND option if foundQuotation !== quotation.
-  const foundQuotation = toPlainTextContent(quotationRange);
-  return {
-    status: "FOUND",
-    foundQuotation,
-  };
 }
