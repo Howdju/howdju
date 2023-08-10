@@ -1,6 +1,6 @@
 {
   "name": "howdju-message-handler",
-  "version": "1.6.0",
+  "version": "1.7.0",
   "description": "AWS Lambda function for handling SNS messages",
   "main": "src/index.js",
   "scripts": {
