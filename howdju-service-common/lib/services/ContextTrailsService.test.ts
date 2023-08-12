@@ -69,15 +69,18 @@ describe("ContextTrailsService", () => {
       const { authToken, user } = await makeUser();
 
       const { proposition } = await propositionsService.readOrCreateProposition(
-        authToken,
+        { authToken },
         {
           text: "A fine wee proposition.",
         }
       );
       const { proposition: basisProposition1 } =
-        await propositionsService.readOrCreateProposition(authToken, {
-          text: "A fine wee proposition 1.",
-        });
+        await propositionsService.readOrCreateProposition(
+          { authToken },
+          {
+            text: "A fine wee proposition 1.",
+          }
+        );
       const now = moment();
       const { propositionCompound: propositionCompound1 } =
         await propositionCompoundsService.createPropositionCompoundAsUser(
@@ -102,9 +105,12 @@ describe("ContextTrailsService", () => {
         authToken
       );
       const { proposition: basisProposition2 } =
-        await propositionsService.readOrCreateProposition(authToken, {
-          text: "A fine wee proposition 2.",
-        });
+        await propositionsService.readOrCreateProposition(
+          { authToken },
+          {
+            text: "A fine wee proposition 2.",
+          }
+        );
       const { propositionCompound: propositionCompound2 } =
         await propositionCompoundsService.createPropositionCompoundAsUser(
           {
@@ -183,15 +189,18 @@ describe("ContextTrailsService", () => {
       const { authToken, user } = await makeUser();
 
       const { proposition } = await propositionsService.readOrCreateProposition(
-        authToken,
+        { authToken },
         {
           text: "A fine wee proposition.",
         }
       );
       const { proposition: basisProposition1 } =
-        await propositionsService.readOrCreateProposition(authToken, {
-          text: "A fine wee proposition 1.",
-        });
+        await propositionsService.readOrCreateProposition(
+          { authToken },
+          {
+            text: "A fine wee proposition 1.",
+          }
+        );
       const now = moment();
       const { propositionCompound: propositionCompound1 } =
         await propositionCompoundsService.createPropositionCompoundAsUser(
@@ -218,13 +227,19 @@ describe("ContextTrailsService", () => {
 
       // A justification that doesn't target a proposition in the first one's basis
       const { proposition: proposition2 } =
-        await propositionsService.readOrCreateProposition(authToken, {
-          text: "A fine wee proposition 2.",
-        });
+        await propositionsService.readOrCreateProposition(
+          { authToken },
+          {
+            text: "A fine wee proposition 2.",
+          }
+        );
       const { proposition: basisProposition2 } =
-        await propositionsService.readOrCreateProposition(authToken, {
-          text: "A fine wee proposition 3.",
-        });
+        await propositionsService.readOrCreateProposition(
+          { authToken },
+          {
+            text: "A fine wee proposition 3.",
+          }
+        );
       const { propositionCompound: propositionCompound2 } =
         await propositionCompoundsService.createPropositionCompoundAsUser(
           {
@@ -270,15 +285,18 @@ describe("ContextTrailsService", () => {
       const { authToken, user } = await makeUser();
 
       const { proposition } = await propositionsService.readOrCreateProposition(
-        authToken,
+        { authToken },
         {
           text: "A fine wee proposition.",
         }
       );
       const { proposition: basisProposition1 } =
-        await propositionsService.readOrCreateProposition(authToken, {
-          text: "A fine wee proposition 1.",
-        });
+        await propositionsService.readOrCreateProposition(
+          { authToken },
+          {
+            text: "A fine wee proposition 1.",
+          }
+        );
       const now = moment();
       const { propositionCompound: propositionCompound1 } =
         await propositionCompoundsService.createPropositionCompoundAsUser(

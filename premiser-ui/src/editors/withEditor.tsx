@@ -159,21 +159,25 @@ type EntityPropProps<EntityProp extends string, EntityType> = {
  */
 export default function withEditor<
   EntityProp extends string,
-  FieldsProps extends EntityEditorFieldsProps<EntityProp, SchemaInput>,
+  FieldsProps extends EntityEditorFieldsProps<EntityProp, SchemaInput> &
+    ExtraProps,
   Route extends ServiceRoute,
   SchemaInput extends EditorEntity = any,
   SchemaOutput = SchemaInput,
-  ApiModel = any
+  ApiModel = any,
+  ExtraProps extends Record<string, any> = object
 >(
   editorType: EditorType,
   EntityEditorFields: React.FC<FieldsProps>,
   entityPropName: EntityProp,
   schemaOrId: z.ZodType<SchemaOutput, z.ZodTypeDef, SchemaInput> | SchemaId,
-  commitConfig?: EditorCommitCrudActionConfig<SchemaInput, ApiModel, Route>
+  commitConfig?: EditorCommitCrudActionConfig<SchemaInput, ApiModel, Route>,
+  _extraProps?: ExtraProps
 ): React.FC<
   WithEditorProps &
     Omit<FieldsProps, keyof EntityEditorFieldsProps<EntityProp, SchemaOutput>> &
-    EntityPropProps<EntityProp, SchemaInput>
+    EntityPropProps<EntityProp, SchemaInput> &
+    ExtraProps
 > {
   return function EntityEditor(props: WithEditorProps) {
     const {
@@ -291,7 +295,7 @@ export default function withEditor<
       wasSubmitAttempted,
       onKeyDown,
       // There appears to be no way around this typecast https://stackoverflow.com/questions/74072249/
-    } as unknown as FieldsProps;
+    } as unknown as FieldsProps & ExtraProps;
 
     return (
       <form onSubmit={onSubmit} className={className}>

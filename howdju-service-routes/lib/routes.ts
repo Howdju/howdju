@@ -7,7 +7,6 @@ import {
   decodeSorts,
   httpMethods,
   JustificationRootTargetTypes,
-  Proposition,
   WritQuote,
   JustificationSearchFilters,
   CreateProposition,
@@ -44,6 +43,7 @@ import {
   isDefined,
   UpdateSource,
   CreateUrlLocator,
+  CreateAppearance,
 } from "howdju-common";
 import {
   EntityNotFoundError,
@@ -194,6 +194,9 @@ export const serviceRoutes = {
         appProvider: ServicesProvider,
         { queryStringParams: { tagId }, authToken }
       ) => {
+        if (!tagId) {
+          throw new InvalidRequestError("tagId is required.");
+        }
         const propositions =
           await appProvider.propositionsService.readPropositionsForTagId(
             tagId,
@@ -221,12 +224,16 @@ export const serviceRoutes = {
           queryStringParams: {
             sorts: encodedSorts,
             continuationToken,
-            count,
+            count: countParam,
             propositionIds: propositionIdsParam,
           },
         }
       ) => {
         const sorts = decodeSorts(encodedSorts);
+        const count = toNumber(countParam);
+        if (isNaN(count)) {
+          throw new InvalidRequestError("count must be a number.");
+        }
         if (propositionIdsParam) {
           const propositionIds = split(propositionIdsParam, ",");
           const propositions =
@@ -236,14 +243,11 @@ export const serviceRoutes = {
           return { body: { propositions } };
         } else {
           const { propositions, continuationToken: newContinuationToken } =
-            (await appProvider.propositionsService.readPropositions({
+            await appProvider.propositionsService.readPropositions({
               sorts,
-              continuationToken: continuationToken as any,
-              count: count as any,
-            })) as {
-              propositions: PropositionOut[];
-              continuationToken: ContinuationToken;
-            };
+              continuationToken,
+              count,
+            });
           return {
             body: { propositions, continuationToken: newContinuationToken },
           };
@@ -262,9 +266,9 @@ export const serviceRoutes = {
       ) => {
         const { proposition, isExtant } = await prefixErrorPath(
           appProvider.propositionsService.readOrCreateProposition(
-            authToken,
+            { authToken },
             createProposition
-          ) as Promise<{ isExtant: boolean; proposition: Proposition }>,
+          ),
           "proposition"
         );
         return { body: { proposition, isExtant } };
@@ -1020,6 +1024,28 @@ export const serviceRoutes = {
   },
 
   /*
+   * Appearances
+   */
+  createAppearance: {
+    path: "appearances",
+    method: httpMethods.POST,
+    request: handler(
+      Authed.merge(Body({ appearance: CreateAppearance })),
+      async (
+        appProvider: ServicesProvider,
+        { authToken, body: { appearance: createAppearance } }
+      ) => {
+        const { appearance, isExtant } =
+          await appProvider.appearancesService.createAppearance(
+            { authToken },
+            createAppearance
+          );
+        return { body: { appearance, isExtant } };
+      }
+    ),
+  },
+
+  /*
    * Auth
    */
   login: {
@@ -1232,7 +1258,7 @@ export const serviceRoutes = {
         { body: { propositionTagVote: createPropositionTagVote }, authToken }
       ) => {
         const propositionTagVote =
-          await appProvider.propositionTagVotesService.readOrCreatePropositionTagVote(
+          await appProvider.propositionsService.readOrCreatePropositionTagVote(
             authToken,
             createPropositionTagVote
           );

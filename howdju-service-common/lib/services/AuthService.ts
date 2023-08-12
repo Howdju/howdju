@@ -37,6 +37,17 @@ export class AuthService {
     return this.authDao.getUserIdForAuthToken(authToken);
   }
 
+  readOptionalUserIdForUserIdent(userIdent: UserIdent) {
+    const { authToken, userId } = userIdent;
+    if (userId) {
+      return userId;
+    }
+    if (!authToken) {
+      throw new Error(`UserIdent requires either authToken or userId`);
+    }
+    return this.readOptionalUserIdForAuthToken(authToken);
+  }
+
   readUserIdForUserIdent(userIdent: UserIdent) {
     const { authToken, userId } = userIdent;
     if (userId) {

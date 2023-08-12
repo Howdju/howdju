@@ -1,5 +1,6 @@
 export * from "./AccountSettingsService";
 export * from "./ActionsService";
+export * from "./AppearancesService";
 export * from "./AuthService";
 export * from "./AwsTopicMessageSender";
 export * from "./CanonicalUrlsService";

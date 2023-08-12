@@ -8,6 +8,7 @@ import toNumber from "lodash/toNumber";
 import { Moment } from "moment";
 
 import {
+  brandedParse,
   cleanWhitespace,
   CreateProposition,
   EntityId,
@@ -18,13 +19,19 @@ import {
   requireArgs,
   SortDescription,
   SortDirections,
+  toSlug,
   UpdateProposition,
 } from "howdju-common";
 
 import { toProposition } from "./orm";
-import { normalizeText } from "./daosUtil";
+import { normalizeText, toIdString } from "./daosUtil";
 import { DatabaseSortDirection } from "./daoModels";
-import { Database, EntityNotFoundError, PropositionRow } from "..";
+import {
+  Database,
+  EntityNotFoundError,
+  PropositionData,
+  PropositionRow,
+} from "..";
 import { toString } from "lodash";
 
 export class PropositionsDao {
@@ -32,7 +39,7 @@ export class PropositionsDao {
 
   async createProposition(
     userId: EntityId,
-    proposition: CreateProposition,
+    createProposition: CreateProposition,
     now: Moment
   ) {
     const {
@@ -44,14 +51,22 @@ export class PropositionsDao {
       values ($1, $2, $3, $4)
       returning proposition_id`,
       [
-        cleanWhitespace(proposition.text),
-        normalizeText(proposition.text),
+        cleanWhitespace(createProposition.text),
+        normalizeText(createProposition.text),
         userId,
         now,
       ]
     );
 
-    return this.readPropositionForId(toString(row.proposition_id));
+    const proposition = await this.readPropositionForId(
+      toIdString(row.proposition_id)
+    );
+    if (!proposition) {
+      throw new Error(
+        `Unable to read proposition we just created (id: ${row.proposition_id})`
+      );
+    }
+    return proposition;
   }
 
   async readPropositionsForIds(propositionIds: EntityId[]) {
@@ -101,7 +116,10 @@ export class PropositionsDao {
     return this.readPropositionForId(toString(row.proposition_id));
   }
 
-  async readPropositions(sorts: SortDescription[], count: number) {
+  async readPropositions(
+    sorts: SortDescription[],
+    count: number
+  ): Promise<PropositionData[]> {
     requireArgs({ sorts, count });
 
     const args = [];
@@ -134,13 +152,21 @@ export class PropositionsDao {
       ${countSql}
       `;
     const { rows } = await this.database.query("readPropositions", sql, args);
-    return map(rows, toProposition);
+    return rows.map((row) =>
+      brandedParse(PropositionRef, {
+        id: toIdString(row.proposition_id),
+        text: row.text,
+        normalText: row.normal_text,
+        slug: toSlug(row.text),
+        created: row.created,
+      })
+    );
   }
 
   async readMorePropositions(
     sortContinuations: SortDescription[],
     count: number
-  ) {
+  ): Promise<PropositionData[]> {
     const args = [];
     let countSql = "";
     if (isFinite(count)) {
@@ -196,7 +222,15 @@ export class PropositionsDao {
       sql,
       args
     );
-    return map(rows, toProposition);
+    return rows.map((row) =>
+      brandedParse(PropositionRef, {
+        id: toIdString(row.proposition_id),
+        text: row.text,
+        normalText: row.normal_text,
+        slug: toSlug(row.text),
+        created: row.created,
+      })
+    );
   }
 
   async updateProposition(proposition: UpdateProposition) {
@@ -228,10 +262,12 @@ export class PropositionsDao {
     if (!rows.length) {
       throw new EntityNotFoundError("PROPOSITION", propositionId);
     }
-    return head(map(rows, (r) => r.proposition_id));
+    return head(map(rows, (r) => toIdString(r.proposition_id)));
   }
 
-  async countEquivalentPropositions(proposition: Proposition) {
+  async countEquivalentPropositions(
+    proposition: Proposition | UpdateProposition
+  ) {
     const sql = `
       select count(*) as count
       from propositions
@@ -252,7 +288,7 @@ export class PropositionsDao {
   }
 
   async hasOtherUsersRootedJustifications(
-    proposition: Proposition,
+    proposition: Proposition | UpdateProposition,
     userId: EntityId
   ) {
     const sql = `
@@ -275,7 +311,7 @@ export class PropositionsDao {
   }
 
   async hasOtherUsersRootedJustificationsVotes(
-    proposition: Proposition,
+    proposition: Proposition | UpdateProposition,
     userId: EntityId
   ) {
     const sql = `
@@ -301,7 +337,7 @@ export class PropositionsDao {
   }
 
   async isBasisToOtherUsersJustifications(
-    proposition: Proposition,
+    proposition: Proposition | UpdateProposition,
     userId: EntityId
   ) {
     const sql = `

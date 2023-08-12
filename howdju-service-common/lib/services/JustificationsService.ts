@@ -393,16 +393,16 @@ export class JustificationsService extends EntityService<
       );
     }
 
-    this.actionsService.asyncRecordAction(
+    await this.actionsService.recordAction(
       userId,
       now,
       ActionTypes.DELETE,
       ActionTargetTypes.JUSTIFICATION,
-      toIdString(deletedJustificationId)
+      deletedJustificationId
     );
 
     return {
-      deletedJustificationId: toIdString(deletedJustificationId),
+      deletedJustificationId: deletedJustificationId,
       deletedCounterJustificationIds,
     };
   }
@@ -598,16 +598,26 @@ export class JustificationsService extends EntityService<
     const type = justificationTarget.type;
     switch (type) {
       case "PROPOSITION": {
-        const { isExtant, proposition } = await prefixErrorPath(
-          this.propositionsService.readOrCreateValidPropositionAsUser(
-            justificationTarget.entity,
-            userId,
-            now
-          ) as Promise<{ isExtant: boolean; proposition: PropositionOut }>,
-          "entity"
+        if ("text" in justificationTarget.entity) {
+          const { isExtant, proposition } = await prefixErrorPath(
+            this.propositionsService.readOrCreateValidPropositionAsUser(
+              justificationTarget.entity,
+              userId,
+              now
+            ) as Promise<{ isExtant: boolean; proposition: PropositionOut }>,
+            "entity"
+          );
+          return {
+            isExtant,
+            target: { type, entity: proposition },
+          };
+        }
+        const proposition = await this.propositionsService.readPropositionForId(
+          justificationTarget.entity.id,
+          { userId, authToken: undefined }
         );
         return {
-          isExtant,
+          isExtant: true,
           target: { type, entity: proposition },
         };
       }

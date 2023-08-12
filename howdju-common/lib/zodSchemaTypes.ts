@@ -66,6 +66,7 @@ import {
   UpdateSource,
   CreateUrl,
   MediaExcerptRef,
+  Appearance,
 } from "./zodSchemas";
 
 /**
@@ -246,6 +247,8 @@ export type EntityName<T> = T extends Proposition
   ? "Url"
   : T extends Url
   ? "Url"
+  : T extends Appearance
+  ? "Appearance"
   : never;
 
 /** A reference to an Entity by ID. */
@@ -259,6 +262,8 @@ export type EntityRef<T extends Entity> = T extends Ref<string>
 /** Translates a CreateModel to its corresponding Entity's name. */
 type CreateModelEntityName<T extends CreateModel> = T extends CreateMediaExcerpt
   ? "MediaExcerpt"
+  : T extends CreateProposition
+  ? "Proposition"
   : never;
 
 type CreateModelOrRef<T extends CreateModel> =

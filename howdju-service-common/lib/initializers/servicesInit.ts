@@ -40,6 +40,7 @@ import {
   WritsService,
   WritQuotesService,
   EmailService,
+  AppearancesService,
 } from "../services";
 import { AwsProvider } from "./awsInit";
 
@@ -88,26 +89,22 @@ export function servicesInitializer(provider: AwsProvider) {
   );
   const tagsService = new TagsService(provider.logger, provider.tagsDao);
   const propositionTagVotesService = new PropositionTagVotesService(
-    provider.logger,
-    provider.propositionTagVoteValidator,
     authService,
     tagsService,
     provider.propositionTagVotesDao
   );
 
   const propositionTagsService = new PropositionTagsService(
-    provider.logger,
     provider.propositionTagsDao
   );
 
   const propositionsService = new PropositionsService(
     provider.appConfig,
-    provider.propositionValidator,
     actionsService,
     authService,
+    tagsService,
     propositionTagsService,
     propositionTagVotesService,
-    tagsService,
     provider.propositionsDao,
     provider.permissionsDao,
     provider.justificationsDao
@@ -291,11 +288,19 @@ export function servicesInitializer(provider: AwsProvider) {
   );
   const emailService = new EmailService(provider.logger, provider.sesv2);
 
+  const appearancesService = new AppearancesService(
+    authService,
+    mediaExcerptsService,
+    propositionsService,
+    provider.appearancesDao
+  );
+
   provider.logger.debug("servicesInit complete");
 
   return {
     accountSettingsService,
     actionsService,
+    appearancesService,
     authService,
     canonicalUrlsService,
     contentReportsService,

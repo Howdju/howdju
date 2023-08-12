@@ -6,11 +6,13 @@ import moment from "moment";
 import { merge } from "lodash";
 
 import {
+  brandedParse,
   CreateJustification,
   httpStatusCodes,
   JustificationOut,
   PropositionRef,
   toSlug,
+  utcNow,
 } from "howdju-common";
 import {
   InferRequestBody,
@@ -41,6 +43,9 @@ describe("JustificationsPage", () => {
       created,
       text: "the-proposition-text",
       justifications,
+      tags: [],
+      recommendedTags: [],
+      propositionTagVotes: [],
     };
     const response: InferResponseBody<typeof serviceRoutes.readProposition> = {
       proposition,
@@ -94,6 +99,9 @@ describe("JustificationsPage", () => {
       created,
       text: "the-proposition-text",
       justifications,
+      tags: [],
+      recommendedTags: [],
+      propositionTagVotes: [],
     };
     const response: InferResponseBody<typeof serviceRoutes.readProposition> = {
       proposition,
@@ -120,7 +128,12 @@ describe("JustificationsPage", () => {
           >();
           const response: InferResponseBody<
             typeof serviceRoutes.updateProposition
-          > = { proposition };
+          > = {
+            proposition: brandedParse(PropositionRef, {
+              ...proposition,
+              created: utcNow(),
+            }),
+          };
           return res(ctx.status(httpStatusCodes.OK), ctx.json(response));
         }
       )
@@ -173,6 +186,9 @@ describe("JustificationsPage", () => {
       created,
       text: "the-proposition-text",
       justifications,
+      tags: [],
+      recommendedTags: [],
+      propositionTagVotes: [],
     };
 
     const basisText1 = "The proposition text 1";

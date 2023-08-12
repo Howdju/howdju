@@ -48,6 +48,7 @@ import { Location, LocationState } from "history";
 import { PrimaryContextTrailProvider } from "./components/contextTrail/PrimaryContextTrailProvider";
 import MediaExcerptPage from "./pages/mediaExcerpt/MediaExcerptPage";
 import MediaExcerptUsagesPage from "./pages/mediaExcerptUsages/MediaExcerptUsagesPage";
+import CreateAppearancePage from "./pages/appearances/CreateAppearancePage";
 
 const renderHomePath = (props: RouteProps) => {
   const mainSearchText =
@@ -188,6 +189,13 @@ const routesById = {
           mode={CreatePropositionPageMode.CREATE_JUSTIFICATION}
         />
       )}
+    />
+  ),
+  createAppearance: (
+    <Route
+      exact
+      path="/media-excerpts/:mediaExcerptId/appearances/new"
+      component={CreateAppearancePage}
     />
   ),
   submitJustificationViaQueryString: (

@@ -13,11 +13,7 @@ import { MaterialSymbol } from "react-material-symbols";
 import { Link } from "react-router-dom";
 import { push } from "connected-react-router";
 
-import {
-  EntityId,
-  makeCreateUrlLocatorInput,
-  newUnimplementedError,
-} from "howdju-common";
+import { EntityId, makeCreateUrlLocatorInput } from "howdju-common";
 
 import { useAppDispatch, useAppEntitySelector, useAppSelector } from "@/hooks";
 import { api } from "@/apiActions";
@@ -55,9 +51,6 @@ export default function MediaExcerptPage(props: Props) {
     setIsDeleteUrlLocatorsDialogVisible,
   ] = useState(false);
 
-  function useInAppearance() {
-    throw newUnimplementedError("useInAppearance");
-  }
   function deleteMediaExcerpt() {
     dispatch(
       flows.apiActionOnSuccess(
@@ -111,7 +104,8 @@ export default function MediaExcerptPage(props: Props) {
           primaryText="Use in Appearance…"
           key="use-in-appearance"
           leftIcon={<MaterialSymbol icon="upgrade" />}
-          onClick={useInAppearance}
+          component={Link}
+          to={paths.createAppearance(mediaExcerptId)}
         />,
         <Divider key="divider-use" />,
         <ListItem

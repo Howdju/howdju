@@ -671,6 +671,41 @@ export const MediaExcerpt = Entity.extend({
 });
 export type MediaExcerpt = z.output<typeof MediaExcerpt>;
 
+export const Appearance = Entity.extend({
+  /**
+   * Where the entity appears.
+   */
+  mediaExcerpt: MediaExcerpt,
+  /**
+   * The entity that appears at the MediaExcerpt.
+   *
+   * We can make this a discriminatedUnion on type to support additional appearing entities.
+   */
+  apparition: z.object({
+    type: z.literal("PROPOSITION"),
+    entity: Proposition,
+  }),
+});
+export type Appearance = z.output<typeof Appearance>;
+
+export const CreateAppearance = z.object({
+  mediaExcerptId: z.string(),
+  apparition: z.object({
+    type: z.literal("PROPOSITION"),
+    entity: CreateProposition,
+  }),
+});
+export type CreateAppearance = z.output<typeof CreateAppearance>;
+
+export const CreateAppearanceInput = z.object({
+  mediaExcerptId: z.string(),
+  apparition: z.object({
+    type: z.literal("PROPOSITION"),
+    entity: CreatePropositionInput,
+  }),
+});
+export type CreateAppearanceInput = z.output<typeof CreateAppearanceInput>;
+
 export const PropositionCompoundAtom = z.object({
   /**
    * A reference to this atom's parent compound.

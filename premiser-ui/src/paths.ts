@@ -114,6 +114,8 @@ class Paths {
     }
     return createPath(location);
   };
+  createAppearance = (mediaExcerptId: EntityId) =>
+    `/mediaExcerpts/${mediaExcerptId}/appearances/new`;
   searchJustifications = (params: JustificationSearchFilters) =>
     createPath({
       pathname: "/search-justifications",

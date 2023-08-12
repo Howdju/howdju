@@ -70,7 +70,7 @@ export default class TestHelper {
     };
     const { proposition } =
       await this.servicesProvider.propositionsService.readOrCreateProposition(
-        authToken,
+        { authToken },
         createProposition
       );
     return proposition;

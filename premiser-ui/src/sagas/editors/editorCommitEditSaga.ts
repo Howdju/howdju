@@ -351,6 +351,11 @@ export const MediaExcerptConfig = {
   }),
 };
 
+export const AppearanceConfig = {
+  requestActionCreator: api.createAppearance,
+  inputTransformer: identity,
+};
+
 export const UpdateSourceConfig = {
   requestActionCreator: api.updateSource,
   inputTransformer: identity,

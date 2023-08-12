@@ -3,7 +3,7 @@ import { Pool } from "pg";
 import {
   CreateJustification,
   CreateProposition,
-  PropositionCompound,
+  PropositionCompoundOut,
 } from "howdju-common";
 import { mockLogger } from "howdju-test-common";
 
@@ -50,7 +50,7 @@ describe("PropositionsService", () => {
 
       const {
         proposition: { id: propositionId },
-      } = await service.readOrCreateProposition(authToken, proposition);
+      } = await service.readOrCreateProposition({ authToken }, proposition);
 
       const { deletedPropositionId, deletedJustificationIds } =
         await service.deleteProposition(authToken, propositionId);
@@ -73,8 +73,9 @@ describe("PropositionsService", () => {
         authToken
       );
 
-      const propositionId = (justification.basis.entity as PropositionCompound)
-        .atoms[0].entity.id;
+      const propositionId = (
+        justification.basis.entity as PropositionCompoundOut
+      ).atoms[0].entity.id;
       const { deletedPropositionId, deletedJustificationIds } =
         await service.deleteProposition(authToken, propositionId);
 
