@@ -68,9 +68,8 @@ const basisTypeControls = [
   },
 ];
 interface Props
-  extends EntityEditorFieldsProps<"justification", CreateJustificationInput> {
   // Justifications are not editable, they can only be created.
-  justification?: CreateJustificationInput;
+  extends EntityEditorFieldsProps<"justification", CreateJustificationInput> {
   doShowTypeSelection?: boolean;
   onKeyDown?: OnKeyDownCallback;
   editorDispatch: EditorFieldsDispatch;
@@ -96,9 +95,9 @@ export default function JustificationEditorFields(props: Props) {
 
   const onChange = toOnChangeCallback(onPropertyChange);
 
-  const basisPropositionCompound = justification?.basis.propositionCompound;
-  const basisMediaExcerpt = justification?.basis.mediaExcerpt;
-  const basisWritQuote = justification?.basis.writQuote;
+  const basisPropositionCompound = justification.basis.propositionCompound;
+  const basisMediaExcerpt = justification.basis.mediaExcerpt;
+  const basisWritQuote = justification.basis.writQuote;
   const _isPropositionCompoundBased =
     justification && isPropositionCompoundBased(justification);
   const _isMediaExcerptBased =
@@ -112,12 +111,12 @@ export default function JustificationEditorFields(props: Props) {
     disabled,
   };
 
-  if (basisPropositionCompound && isRef(basisPropositionCompound)) {
+  if (isRef(basisPropositionCompound)) {
     logger.error(
       "JustificationEditorFields does not support PropositionCompound refs yet."
     );
   }
-  if (basisWritQuote && isRef(basisWritQuote)) {
+  if (isRef(basisWritQuote)) {
     logger.error(
       "JustificationEditorFields does not support WritQuote refs yet."
     );
@@ -142,6 +141,7 @@ export default function JustificationEditorFields(props: Props) {
         editorDispatch={editorDispatch}
       />
     );
+  // TODO why is basisMediaExcerpt optional?
   const mediaExcerptEditorFields = basisMediaExcerpt &&
     !isOnlyRef(basisMediaExcerpt) && (
       <MediaExcerptEditorFields
@@ -161,7 +161,7 @@ export default function JustificationEditorFields(props: Props) {
         editorDispatch={editorDispatch}
       />
     );
-  const writQuoteEditorFields = basisWritQuote && !isRef(basisWritQuote) && (
+  const writQuoteEditorFields = !isRef(basisWritQuote) && (
     <WritQuoteEditorFields
       {...commonFieldsProps}
       writQuote={basisWritQuote}

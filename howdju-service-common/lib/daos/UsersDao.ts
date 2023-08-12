@@ -71,47 +71,47 @@ export class UsersDao {
     return in_use;
   }
 
-  readUserForId(userId: EntityId) {
-    return this.database
-      .query<UserRow>(
-        "readUserForId",
-        "select * from users join user_external_ids using (user_id) where user_id = $1 and deleted is null",
-        [userId]
-      )
-      .then(({ rows: [row] }) => toUser(row));
+  async readUserForId(userId: EntityId) {
+    const {
+      rows: [row],
+    } = await this.database.query<UserRow>(
+      "readUserForId",
+      "select * from users join user_external_ids using (user_id) where user_id = $1 and deleted is null",
+      [userId]
+    );
+    return toUser(row);
   }
 
-  readUserBlurbForId(userId: EntityId) {
-    return this.database
-      .query(
-        "readUserBlurbForId",
-        "select user_id, long_name from users where user_id = $1 and deleted is null",
-        [userId]
-      )
-      .then(({ rows: [row] }) => ({
-        id: toIdString(row.user_id),
-        longName: row.long_name,
-      }));
+  async readUserBlurbForId(userId: EntityId) {
+    const {
+      rows: [row],
+    } = await this.database.query(
+      "readUserBlurbForId",
+      "select user_id, long_name from users where user_id = $1 and deleted is null",
+      [userId]
+    );
+    return brandedParse(UserRef, {
+      id: toIdString(row.user_id),
+      longName: row.long_name,
+    });
   }
 
-  readUserForEmail(email: string) {
-    return this.database
-      .query<UserRow>(
-        "readUserForEmail",
-        "select * from users join user_external_ids using (user_id) where email = $1 and deleted is null",
-        [email]
-      )
-      .then(({ rows }) => toUser(rows[0]));
+  async readUserForEmail(email: string) {
+    const { rows } = await this.database.query<UserRow>(
+      "readUserForEmail",
+      "select * from users join user_external_ids using (user_id) where email = $1 and deleted is null",
+      [email]
+    );
+    return toUser(rows[0]);
   }
 
-  readUserForUsername(username: string) {
-    return this.database
-      .query<UserRow>(
-        "readUserForUsername",
-        "select * from users join user_external_ids using (user_id) where username = $1 and deleted is null",
-        [username]
-      )
-      .then(({ rows }) => toUser(rows[0]));
+  async readUserForUsername(username: string) {
+    const { rows } = await this.database.query<UserRow>(
+      "readUserForUsername",
+      "select * from users join user_external_ids using (user_id) where username = $1 and deleted is null",
+      [username]
+    );
+    return toUser(rows[0]);
   }
 
   updateLastLoginForUserId(userId: EntityId, now: Moment) {

@@ -11,13 +11,16 @@ import { AuthService } from "./AuthService";
 import { MediaExcerptsService } from "./MediaExcerptsService";
 import { readWriteReread } from "./patterns";
 import { PropositionsService } from "./PropositionsService";
+import { UsersService } from "./UsersService";
 import { UserIdent } from "./types";
+import { EntityNotFoundError } from "..";
 
 export class AppearancesService {
   constructor(
     private readonly authService: AuthService,
     private readonly mediaExcerptsService: MediaExcerptsService,
     private readonly propositionsService: PropositionsService,
+    private readonly usersService: UsersService,
     private readonly appearancesDao: AppearancesDao
   ) {}
 
@@ -28,16 +31,17 @@ export class AppearancesService {
     const userId = await this.authService.readUserIdForUserIdent(userIdent);
 
     const { mediaExcerptId } = createAppearance;
-    const mediaExcerpt = await this.mediaExcerptsService.readMediaExcerptForId(
-      mediaExcerptId
-    );
-    const {
-      propositionId,
-      entity,
-      isExtant: isExtantApparitionEntity,
-    } = await this.readOrCreateApparition(userId, createAppearance.apparition);
+    const [
+      mediaExcerpt,
+      { propositionId, entity, isExtant: isExtantApparitionEntity },
+      creator,
+    ] = await Promise.all([
+      this.mediaExcerptsService.readMediaExcerptForId(mediaExcerptId),
+      this.readOrCreateApparition(userId, createAppearance.apparition),
+      this.usersService.readCreatorInfoForId(userId),
+    ]);
 
-    const createdAt = utcNow();
+    const created = utcNow();
     const { entity: id, isExtant: isExtantAppearance } = await readWriteReread(
       () =>
         this.appearancesDao.readEquivalentAppearanceId(userId, mediaExcerptId, {
@@ -48,7 +52,7 @@ export class AppearancesService {
           userId,
           mediaExcerptId,
           { propositionId },
-          createdAt
+          created
         )
     );
 
@@ -60,6 +64,8 @@ export class AppearancesService {
         ...createAppearance.apparition,
         entity,
       },
+      created,
+      creator,
     };
     return { appearance, isExtant };
   }
@@ -82,5 +88,45 @@ export class AppearancesService {
         };
       }
     }
+  }
+
+  async readAppearanceForId(
+    userIdent: UserIdent,
+    appearanceId: EntityId
+  ): Promise<AppearanceOut> {
+    const appearance = await this.appearancesDao.readAppearanceForId(
+      appearanceId
+    );
+    if (!appearance) {
+      throw new EntityNotFoundError("APPEARANCE", appearanceId);
+    }
+    const { mediaExcerptId, propositionId, creatorUserId, created } =
+      appearance;
+    const [mediaExcerpt, apparition, creator] = await Promise.all([
+      this.mediaExcerptsService.readMediaExcerptForId(mediaExcerptId),
+      this.readApparition(userIdent, { propositionId }),
+      this.usersService.readCreatorInfoForId(creatorUserId),
+    ]);
+
+    return {
+      id: appearanceId,
+      mediaExcerpt,
+      apparition,
+      creator,
+      created,
+    };
+  }
+
+  private async readApparition(
+    userIdent: UserIdent,
+    { propositionId }: { propositionId: EntityId }
+  ): Promise<AppearanceOut["apparition"]> {
+    return {
+      type: "PROPOSITION",
+      entity: await this.propositionsService.readPropositionForId(
+        propositionId,
+        userIdent
+      ),
+    };
   }
 }

@@ -43,7 +43,7 @@ export class AuthService {
       return userId;
     }
     if (!authToken) {
-      throw new Error(`UserIdent requires either authToken or userId`);
+      return undefined;
     }
     return this.readOptionalUserIdForAuthToken(authToken);
   }

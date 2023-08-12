@@ -223,7 +223,7 @@ export function servicesInitializer(provider: AwsProvider) {
     provider.accountSettingsDao
   );
   const usersService = new UsersService(
-    provider.userValidator,
+    provider.appConfig,
     actionsService,
     authService,
     permissionsService,
@@ -292,6 +292,7 @@ export function servicesInitializer(provider: AwsProvider) {
     authService,
     mediaExcerptsService,
     propositionsService,
+    usersService,
     provider.appearancesDao
   );
 

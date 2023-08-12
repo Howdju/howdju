@@ -134,7 +134,7 @@ export type EntityEditorFieldsProps<EntityProp extends string, Schema> = {
 } & EntityPropProps<EntityProp, Schema>;
 
 type EntityPropProps<EntityProp extends string, EntityType> = {
-  [key in EntityProp]?: EntityType;
+  [key in EntityProp]: EntityType;
 };
 
 /**
@@ -159,25 +159,20 @@ type EntityPropProps<EntityProp extends string, EntityType> = {
  */
 export default function withEditor<
   EntityProp extends string,
-  FieldsProps extends EntityEditorFieldsProps<EntityProp, SchemaInput> &
-    ExtraProps,
+  FieldsProps extends EntityEditorFieldsProps<EntityProp, SchemaInput>,
   Route extends ServiceRoute,
   SchemaInput extends EditorEntity = any,
   SchemaOutput = SchemaInput,
-  ApiModel = any,
-  ExtraProps extends Record<string, any> = object
+  ApiModel = any
 >(
   editorType: EditorType,
   EntityEditorFields: React.FC<FieldsProps>,
   entityPropName: EntityProp,
   schemaOrId: z.ZodType<SchemaOutput, z.ZodTypeDef, SchemaInput> | SchemaId,
-  commitConfig?: EditorCommitCrudActionConfig<SchemaInput, ApiModel, Route>,
-  _extraProps?: ExtraProps
+  commitConfig?: EditorCommitCrudActionConfig<SchemaInput, ApiModel, Route>
 ): React.FC<
   WithEditorProps &
-    Omit<FieldsProps, keyof EntityEditorFieldsProps<EntityProp, SchemaOutput>> &
-    EntityPropProps<EntityProp, SchemaInput> &
-    ExtraProps
+    Omit<FieldsProps, keyof EntityEditorFieldsProps<EntityProp, SchemaOutput>>
 > {
   return function EntityEditor(props: WithEditorProps) {
     const {
@@ -295,12 +290,16 @@ export default function withEditor<
       wasSubmitAttempted,
       onKeyDown,
       // There appears to be no way around this typecast https://stackoverflow.com/questions/74072249/
-    } as unknown as FieldsProps & ExtraProps;
+    } as unknown as FieldsProps;
 
     return (
       <form onSubmit={onSubmit} className={className}>
         <CardText>
-          <EntityEditorFields {...editorFieldsProps} />
+          {editEntity ? (
+            <EntityEditorFields {...editorFieldsProps} />
+          ) : (
+            <CircularProgress id={combineIds(id, "editor-fields-progress")} />
+          )}
         </CardText>
         <CardActions>
           {(isSaving || isFetching) && (

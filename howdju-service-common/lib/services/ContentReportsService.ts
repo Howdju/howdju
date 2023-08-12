@@ -42,6 +42,7 @@ export class ContentReportsService {
     contentReport: CreateContentReport
   ) {
     const now = new Date();
+    // TODO should user be optional?
     const userId = await this.authService.readUserIdForAuthToken(authToken);
 
     const result = CreateContentReport.safeParse(contentReport);
@@ -58,15 +59,17 @@ export class ContentReportsService {
     const user = await this.usersService.readUserForId(userId);
     await Promise.all([
       this.sendContentReportNotificationEmail(contentReport, user),
-      this.sendContentReportConfirmationEmail(contentReport, user),
+      user && this.sendContentReportConfirmationEmail(contentReport, user),
     ]);
   }
 
   private async sendContentReportNotificationEmail(
     contentReport: CreateContentReport,
-    user: User
+    user: User | undefined
   ) {
-    const { email, username } = user;
+    const userDescription = user
+      ? `${user.username} (${user.email})`
+      : "An anonymous user";
     const { html: contentReportTableHtml, plainText: contentReportText } =
       this.makeContentReportEmailContent(contentReport);
     const params = {
@@ -76,14 +79,14 @@ export class ContentReportsService {
       bodyHtml: outdent`
           Hello,<br/>
           <br/>
-          ${username} (${email}) has reported content:<br/>
+          ${userDescription} has reported content:<br/>
           <br/>
           ${contentReportTableHtml}
         `,
       bodyText: outdent`
           Hello,
 
-          ${username} (${email}) has reported content:
+          ${userDescription} has reported content:
 
           ${contentReportText}
         `,

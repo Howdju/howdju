@@ -423,6 +423,9 @@ export const editorCommitConfigs: Partial<
   CREATE_URL_LOCATORS: {
     CREATE: CreateUrlLocatorsCommitConfig,
   },
+  APPEARANCE: {
+    CREATE: AppearanceConfig,
+  },
 };
 
 /** Translates CreateJustifiedSentence errors into input model errors. */

@@ -3,6 +3,7 @@ import isEmpty from "lodash/isEmpty";
 import queryString from "query-string";
 
 import {
+  AppearanceOut,
   ContextTrailItem,
   EntityId,
   JustificationBasisSourceType,
@@ -115,7 +116,7 @@ class Paths {
     return createPath(location);
   };
   createAppearance = (mediaExcerptId: EntityId) =>
-    `/mediaExcerpts/${mediaExcerptId}/appearances/new`;
+    `/media-excerpts/${mediaExcerptId}/appearances/new`;
   searchJustifications = (params: JustificationSearchFilters) =>
     createPath({
       pathname: "/search-justifications",
@@ -138,6 +139,9 @@ class Paths {
   source = (source: SourceOut) =>
     `/sources/${source.id}/${toSlug(source.description)}`;
   submitMediaExcerpt = () => "/media-excerpts/new";
+
+  appearance = (appearance: AppearanceOut) =>
+    `/media-excerpts/${appearance.mediaExcerpt.id}/appearances/${appearance.id}`;
 
   tools = () => "/tools";
 

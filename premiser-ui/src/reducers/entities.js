@@ -35,6 +35,7 @@ import { api } from "../actions";
 import { logger } from "@/logger";
 
 const defaultState = {
+  appearances: {},
   contextTrailItems: {},
   justifications: {},
   justificationVotes: {},
@@ -54,6 +55,7 @@ export default handleActions(
   {
     [combineActions(
       api.antiTagProposition.response,
+      api.createAppearance.response,
       api.createProposition.response,
       api.createStatement.response,
       api.fetchContextTrail.response,
@@ -66,6 +68,7 @@ export default handleActions(
       api.fetchPersorgNameSuggestions.response,
       api.fetchProposition.response,
       api.tagProposition.response,
+      api.fetchAppearance.response,
       api.fetchPropositions.response,
       api.fetchPropositionRootJustificationTarget.response,
       api.fetchPropositionTextSuggestions.response,
@@ -101,6 +104,7 @@ export default handleActions(
 
         const updates = map(
           [
+            ["appearances"],
             ["contextTrailItems"],
             ["justifications"],
             ["justificationVotes"],

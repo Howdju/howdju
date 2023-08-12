@@ -488,6 +488,14 @@ export const api = {
       normalizationSchema: { appearance: appearanceSchema },
     })
   ),
+  fetchAppearance: apiActionCreator(
+    "FETCH_APPEARANCE",
+    serviceRoutes.readAppearance,
+    (appearanceId: EntityId) => ({
+      pathParams: { appearanceId },
+      normalizationSchema: { appearance: appearanceSchema },
+    })
+  ),
 
   createUrlLocators: apiActionCreator(
     "CREATE_URL_LOCATORS",

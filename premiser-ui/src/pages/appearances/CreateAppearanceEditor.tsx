@@ -10,8 +10,5 @@ export default withEditor(
   AppearanceEditorFields,
   "appearance",
   CreateAppearanceInput,
-  AppearanceConfig,
-  {
-    mediaExcerptId: "string",
-  }
+  AppearanceConfig
 );

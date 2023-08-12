@@ -92,6 +92,8 @@ export interface AppearanceOut {
     type: "PROPOSITION";
     entity: PropositionOut;
   };
+  created: Moment;
+  creator: CreatorBlurb;
 }
 
 export type SourceOut = ToPersistedEntity<Source>;

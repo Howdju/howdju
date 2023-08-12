@@ -1044,6 +1044,24 @@ export const serviceRoutes = {
       }
     ),
   },
+  readAppearance: {
+    path: "appearances/:appearanceId",
+    method: httpMethods.GET,
+    request: handler(
+      PathParams("appearanceId"),
+      async (
+        appProvider: ServicesProvider,
+        { authToken, pathParams: { appearanceId } }
+      ) => {
+        const appearance =
+          await appProvider.appearancesService.readAppearanceForId(
+            { authToken },
+            appearanceId
+          );
+        return { body: { appearance } };
+      }
+    ),
+  },
 
   /*
    * Auth

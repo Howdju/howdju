@@ -1,4 +1,3 @@
-import bcrypt from "bcryptjs";
 import moment, { Duration, Moment } from "moment";
 import outdent from "outdent";
 
@@ -16,9 +15,9 @@ import {
   Logger,
   TopicMessageSender,
   formatZodError,
+  CreateUser,
 } from "howdju-common";
 
-import { HashTypes } from "../hashTypes";
 import {
   EntityNotFoundError,
   EntityValidationError,
@@ -28,10 +27,7 @@ import {
 import { UsersService } from "./UsersService";
 import { AuthService } from "./AuthService";
 import { ApiConfig, RegistrationRequestsDao } from "..";
-import {
-  CreateRegistrationRequestData,
-  CreateUserDataIn,
-} from "../daos/dataTypes";
+import { CreateRegistrationRequestData } from "../daos/dataTypes";
 import { randomBase64String } from "../crypto";
 
 export class RegistrationService {
@@ -325,26 +321,14 @@ export class RegistrationService {
     registrationConfirmation: RegistrationConfirmation,
     now: Moment
   ) {
-    const passwordHash = await bcrypt.hash(
-      registrationConfirmation.password,
-      this.config.auth.bcrypt.saltRounds
-    );
-    const userData: CreateUserDataIn = {
-      username: registrationConfirmation.username,
+    const createUser: CreateUser = {
+      ...registrationConfirmation,
       email: registration.email,
-      phoneNumber: registrationConfirmation.phoneNumber,
-      shortName: registrationConfirmation.shortName,
-      longName: registrationConfirmation.longName,
-      acceptedTerms: now,
-      affirmedMajorityConsent: now,
-      affirmed13YearsOrOlder: now,
-      affirmedNotGdpr: now,
       isActive: true,
     };
     return await this.usersService.createRegisteredUser(
-      userData,
-      passwordHash,
-      HashTypes.BCRYPT,
+      createUser,
+      registrationConfirmation.password,
       now
     );
   }

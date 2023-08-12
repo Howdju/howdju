@@ -132,24 +132,26 @@ export default function MediaExcerptEditorFields(props: Props) {
         disabled={disabled}
       />
 
-      <fieldset className="url-locators">
-        <legend>URLs</legend>
-        <UrlLocatorsEditorFields
-          id={combineIds(id, `locators.urlLocators`)}
-          key={combineIds(id, `locators.urlLocators`)}
-          name={combineNames(name, `locators.urlLocators`)}
-          urlLocators={mediaExcerpt?.locators?.urlLocators}
-          errors={errors?.locators?.urlLocators}
-          dirtyFields={dirtyFields?.locators?.urlLocators}
-          blurredFields={blurredFields?.locators?.urlLocators}
-          editorDispatch={editorDispatch}
-          disabled={disabled}
-          suggestionsKey={suggestionsKey}
-          onPropertyChange={onPropertyChange}
-          wasSubmitAttempted={wasSubmitAttempted}
-          onInferMediaExcerptInfo={onInferMediaExcerptInfo}
-        />
-      </fieldset>
+      {mediaExcerpt.locators && (
+        <fieldset className="url-locators">
+          <legend>URLs</legend>
+          <UrlLocatorsEditorFields
+            id={combineIds(id, `locators.urlLocators`)}
+            key={combineIds(id, `locators.urlLocators`)}
+            name={combineNames(name, `locators.urlLocators`)}
+            urlLocators={mediaExcerpt.locators.urlLocators}
+            errors={errors?.locators?.urlLocators}
+            dirtyFields={dirtyFields?.locators?.urlLocators}
+            blurredFields={blurredFields?.locators?.urlLocators}
+            editorDispatch={editorDispatch}
+            disabled={disabled}
+            suggestionsKey={suggestionsKey}
+            onPropertyChange={onPropertyChange}
+            wasSubmitAttempted={wasSubmitAttempted}
+            onInferMediaExcerptInfo={onInferMediaExcerptInfo}
+          />
+        </fieldset>
+      )}
       <fieldset>
         <legend>Citations</legend>
         {mediaExcerpt?.citations?.map(({ source, pincite }, index) => (

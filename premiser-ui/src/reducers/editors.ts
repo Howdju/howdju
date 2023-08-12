@@ -73,6 +73,7 @@ import {
   CreateUrlLocatorsInput,
   CreateUrlLocator,
   CreateAppearanceInput,
+  CreateAppearance,
 } from "howdju-common";
 
 import {
@@ -798,6 +799,11 @@ const editorReducerByType: {
     },
     defaultEditorState()
   ),
+
+  APPEARANCE: handleActions<
+    EditorState<CreateAppearanceInput, CreateAppearance>,
+    any
+  >({}, defaultEditorState()),
 };
 
 function inferMediaExcerptInfoSuccessHandler<T extends EditorEntity>(

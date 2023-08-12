@@ -10,6 +10,7 @@ import {
   EntityId,
   MediaExcerptOut,
   Persisted,
+  PropositionOut,
   UrlOut,
   User,
   UserBlurb,
@@ -64,13 +65,13 @@ export default class TestHelper {
     return mediaExcerpt;
   }
 
-  async makeProposition(authToken: AuthToken) {
+  async makeProposition(userIdent: UserIdent): Promise<PropositionOut> {
     const createProposition = {
       text: "The proposition text",
     };
     const { proposition } =
       await this.servicesProvider.propositionsService.readOrCreateProposition(
-        { authToken },
+        userIdent,
         createProposition
       );
     return proposition;

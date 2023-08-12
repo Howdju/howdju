@@ -8,7 +8,8 @@ import { MediaExcerptConfig } from "../sagas/editors/editorCommitEditSaga";
 export default withEditor(
   "MEDIA_EXCERPT",
   MediaExcerptEditorFields,
-  "model",
+  // TODO how was this working before?
+  "mediaExcerpt",
   CreateMediaExcerptInput,
   MediaExcerptConfig
 );

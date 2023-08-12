@@ -1,4 +1,5 @@
 import {
+  AppearanceOut,
   JustificationOut,
   MediaExcerptOut,
   PropositionCompoundOut,
@@ -68,4 +69,8 @@ export interface MediaExcerptView extends MediaExcerptOut {
     /** A key uniquely identifying a persorg relative to others. */
     key: string;
   })[];
+}
+
+export interface AppearanceView extends AppearanceOut {
+  mediaExcerpt: MediaExcerptView;
 }
