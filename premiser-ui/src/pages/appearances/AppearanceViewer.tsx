@@ -3,22 +3,30 @@ import React from "react";
 import { AppearanceView } from "howdju-common";
 
 import CreationInfo from "@/components/creationInfo/CreationInfo";
-import PropositionViewer from "@/PropositionViewer";
-import MediaExcerptViewer from "@/components/mediaExcerpts/MediaExcerptViewer";
+import { combineIds } from "@/viewModels";
+import PropositionEntityViewer from "@/PropositionEntityViewer";
+import MediaExcerptEntityViewer from "@/components/mediaExcerpts/MediaExcerptEntityViewer";
+
+import "./AppearanceViewer.scss";
 
 interface Props {
+  id: string;
   appearance: AppearanceView;
 }
 
-export default function AppearanceViewer({ appearance }: Props) {
+export default function AppearanceViewer({ id, appearance }: Props) {
   return (
-    <div>
-      <h1>Appearance</h1>
+    <div className="appearance-viewer">
+      <PropositionEntityViewer
+        id={combineIds(id, "proposition-viewer")}
+        proposition={appearance.apparition.entity}
+      />
+      <p>appears in</p>
+      <MediaExcerptEntityViewer
+        id={combineIds(id, "media-excerpt-viewer")}
+        mediaExcerpt={appearance.mediaExcerpt}
+      />
       <CreationInfo created={appearance.created} creator={appearance.creator} />
-      <h2>Proposition</h2>
-      <PropositionViewer proposition={appearance.apparition.entity} />
-      <h2>Media Excerpt</h2>
-      <MediaExcerptViewer mediaExcerpt={appearance.mediaExcerpt} />
     </div>
   );
 }

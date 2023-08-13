@@ -402,7 +402,7 @@ export class JustificationsService extends EntityService<
     );
 
     return {
-      deletedJustificationId: deletedJustificationId,
+      deletedJustificationId,
       deletedCounterJustificationIds,
     };
   }
@@ -598,6 +598,8 @@ export class JustificationsService extends EntityService<
     const type = justificationTarget.type;
     switch (type) {
       case "PROPOSITION": {
+        // TODO(452) remove CreateProposition.id and use `"id" in createPropositionTagVote.proposition`
+        // instead (and switch the conditonal blocks)
         if ("text" in justificationTarget.entity) {
           const { isExtant, proposition } = await prefixErrorPath(
             this.propositionsService.readOrCreatePropositionAsUser(

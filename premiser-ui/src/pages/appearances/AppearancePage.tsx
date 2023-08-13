@@ -8,6 +8,7 @@ import { api } from "@/apiActions";
 import { useAppDispatch, useAppEntitySelector } from "@/hooks";
 import { appearanceSchema } from "@/normalizationSchemas";
 import AppearanceCard from "./AppearanceCard";
+import HowdjuHelmet from "@/Helmet";
 
 interface MatchParams {
   appearanceId: EntityId;
@@ -42,13 +43,22 @@ export default function AppearancePage(props: Props) {
   }, [dispatch, appearanceId]);
 
   const appearance = useAppEntitySelector(appearanceId, appearanceSchema);
+  const title = `Appearance ${appearanceId}`;
 
-  return appearance ? (
-    <AppearanceCard
-      id="appearance-page--appearance-card"
-      appearance={appearance}
-    />
-  ) : (
-    <CircularProgress id="appearance-page--progress" />
+  return (
+    <div className="md-grid">
+      <HowdjuHelmet>
+        <title>{title} — Howdju</title>
+      </HowdjuHelmet>
+      <h1 className="md-cell md-cell--12">{title}</h1>
+      {appearance ? (
+        <AppearanceCard
+          id="appearance-page--appearance-card"
+          appearance={appearance}
+        />
+      ) : (
+        <CircularProgress id="appearance-page--progress" />
+      )}
+    </div>
   );
 }

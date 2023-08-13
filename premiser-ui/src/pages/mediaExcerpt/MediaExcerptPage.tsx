@@ -103,7 +103,7 @@ export default function MediaExcerptPage(props: Props) {
         <ListItem
           primaryText="Use in Appearance…"
           key="use-in-appearance"
-          leftIcon={<MaterialSymbol icon="upgrade" />}
+          leftIcon={<MaterialSymbol icon="add_location" />}
           component={Link}
           to={paths.createAppearance(mediaExcerptId)}
         />,

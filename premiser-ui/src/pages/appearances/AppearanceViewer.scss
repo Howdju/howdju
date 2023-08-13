@@ -1,0 +1,11 @@
+.appearance-viewer {
+  & > * {
+    margin: 2em 0;
+  }
+  .entity-viewer {
+    padding: 1em;
+    margin-left: 0;
+    margin-right: 0;
+    border: 1px solid #ccc;
+  }
+}
