@@ -8,7 +8,7 @@ Howdju is a platform for countering misunderstanding based upon three hypotheses
    perspectives and respond to others’ perspectives.
 3. We need a human-centered aggregatator that focuses on the efficient transmission .
 
-Howdju is a personal project by [Carl Gieringer](https://twitter.com/carlgieringer)
+Howdju is a personal project by [Carl Gieringer](https://www.linkedin.com/in/carlgieringer/)
 
 ## Research supports this approach
 

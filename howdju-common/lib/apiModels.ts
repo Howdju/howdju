@@ -9,6 +9,7 @@ import { Moment } from "moment";
 import { MergeDeep } from "type-fest";
 
 import { ApiErrorCode } from "./codes";
+import { EntityId } from "./entities";
 import { JustificationView } from "./viewModels";
 import { ModelErrors } from "./zodError";
 import {
@@ -82,6 +83,17 @@ export type UrlLocatorAutoConfirmationStatus =
 export interface UrlLocatorOut extends ToPersistedEntity<UrlLocator> {
   url: UrlOut;
   autoConfirmationStatus: UrlLocatorAutoConfirmationStatus;
+}
+
+export interface AppearanceOut {
+  id: EntityId;
+  mediaExcerpt: MediaExcerptOut;
+  apparition: {
+    type: "PROPOSITION";
+    entity: PropositionOut;
+  };
+  created: Moment;
+  creator: CreatorBlurb;
 }
 
 export type SourceOut = ToPersistedEntity<Source>;

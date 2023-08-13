@@ -63,7 +63,7 @@ describe("StatementsService", () => {
         }),
       };
       const propositionsService = {
-        readOrCreateValidPropositionAsUser: sinon.fake((proposition) => {
+        readOrCreatePropositionAsUser: sinon.fake((proposition) => {
           const copy = clone(proposition);
           copy.id = propositionId;
           return { proposition: copy };
@@ -105,11 +105,11 @@ describe("StatementsService", () => {
 
       expect(actual).toEqual(expected);
       sinon.assert.callCount(
-        propositionsService.readOrCreateValidPropositionAsUser,
+        propositionsService.readOrCreatePropositionAsUser,
         1
       );
       sinon.assert.calledWith(
-        propositionsService.readOrCreateValidPropositionAsUser,
+        propositionsService.readOrCreatePropositionAsUser,
         proposition,
         userId,
         now

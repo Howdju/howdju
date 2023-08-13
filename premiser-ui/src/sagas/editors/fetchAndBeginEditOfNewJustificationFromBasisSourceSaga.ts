@@ -21,6 +21,7 @@ import {
   WritQuoteOut,
   PropositionCompoundOut,
   MediaExcerptOut,
+  makeCreateMediaExcerptInput,
 } from "howdju-common";
 
 import { api, editors, flows, str } from "@/actions";
@@ -100,7 +101,7 @@ export function* fetchAndBeginEditOfNewJustificationFromBasisSource() {
           propositionCompound || makeCreatePropositionCompoundInput(),
         writQuote: writQuote || makeCreateWritQuoteInput(),
         sourceExcerpt: sourceExcerpt || makeCreateSourceExcerptInput(),
-        mediaExcerpt: mediaExcerpt || undefined,
+        mediaExcerpt: mediaExcerpt || makeCreateMediaExcerptInput(),
       };
 
       const model = makeCreateJustifiedSentenceInput({}, { basis });

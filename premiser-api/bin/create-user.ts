@@ -34,7 +34,7 @@ async function createUser() {
     prompt: `Please enter the password for ${args.email}:`,
     silent: true,
   });
-  const createUser: CreateUser = {
+  const createUser = CreateUser.parse({
     email: args.email,
     username: args.username,
     acceptedTerms: false,
@@ -45,7 +45,7 @@ async function createUser() {
     longName: args.longName,
     phoneNumber: args.phoneNumber,
     isActive: !args.inactive,
-  };
+  });
   const user = await usersService.createUserAsUser(
     args.creatorUserId,
     createUser,

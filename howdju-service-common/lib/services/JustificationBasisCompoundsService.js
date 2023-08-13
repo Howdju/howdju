@@ -308,7 +308,7 @@ function readOrCreateJustificationBasisCompoundAtomEntity(
   switch (type) {
     case JustificationBasisCompoundAtomTypes.PROPOSITION:
       return service.propositionsService
-        .readOrCreateValidPropositionAsUser(atom.entity, userId, now)
+        .readOrCreatePropositionAsUser(atom.entity, userId, now)
         .then(({ isExtant, proposition }) => {
           atom.entity = proposition;
           return {

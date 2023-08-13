@@ -13,6 +13,8 @@ import { EditorTypes } from "../../reducers/editors";
 import { editors, goto, flows, str } from "../../actions";
 import config from "@/config";
 import { logger } from "@/logger";
+import { push } from "connected-react-router";
+import paths from "@/paths";
 
 const editorCommitResultGotoActionCreators = {
   [EditorTypes.PROPOSITION]: ({ proposition }) => goto.proposition(proposition),
@@ -57,6 +59,7 @@ const editorCommitResultGotoActionCreators = {
     );
   },
   MEDIA_EXCERPT: ({ mediaExcerpt }) => goto.mediaExcerpt(mediaExcerpt),
+  APPEARANCE: ({ appearance }) => push(paths.appearance(appearance)),
 };
 
 const gotoEditorCommitResultAction = (editorType, resultAction) => {

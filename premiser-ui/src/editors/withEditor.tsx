@@ -134,7 +134,7 @@ export type EntityEditorFieldsProps<EntityProp extends string, Schema> = {
 } & EntityPropProps<EntityProp, Schema>;
 
 type EntityPropProps<EntityProp extends string, EntityType> = {
-  [key in EntityProp]?: EntityType;
+  [key in EntityProp]: EntityType;
 };
 
 /**
@@ -145,6 +145,7 @@ type EntityPropProps<EntityProp extends string, EntityType> = {
  * @param editorType The editor type to determine editor behaviors and state location.
  * @param EntityEditorFields The EditorFields class for the entity.
  * @param entityPropName The field on EntityEditorFields for the editEntity
+ *   TODO(460) deduplicate this with EntityEditorFieldsProps's EntityProp.
  * @param schemaOrId: Either the Zod schema (preferred) or the ID of the AJV schema to use to validate the entity.
  * @param commitConfig An optional commit config describing the API endpoint that commiting uses.
  *   When provided, the editor supports pre-request validation (prevents submission if the request
@@ -172,8 +173,7 @@ export default function withEditor<
   commitConfig?: EditorCommitCrudActionConfig<SchemaInput, ApiModel, Route>
 ): React.FC<
   WithEditorProps &
-    Omit<FieldsProps, keyof EntityEditorFieldsProps<EntityProp, SchemaOutput>> &
-    EntityPropProps<EntityProp, SchemaInput>
+    Omit<FieldsProps, keyof EntityEditorFieldsProps<EntityProp, SchemaOutput>>
 > {
   return function EntityEditor(props: WithEditorProps) {
     const {
@@ -296,7 +296,11 @@ export default function withEditor<
     return (
       <form onSubmit={onSubmit} className={className}>
         <CardText>
-          <EntityEditorFields {...editorFieldsProps} />
+          {editEntity ? (
+            <EntityEditorFields {...editorFieldsProps} />
+          ) : (
+            <CircularProgress id={combineIds(id, "editor-fields-progress")} />
+          )}
         </CardText>
         <CardActions>
           {(isSaving || isFetching) && (

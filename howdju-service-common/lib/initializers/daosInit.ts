@@ -34,6 +34,7 @@ import {
   UrlLocatorAutoConfirmationDao,
   WritQuoteUrlTargetsDao,
   VidSegmentsDao,
+  AppearancesDao,
 } from "../daos";
 
 import { DatabaseProvider } from "./databaseInit";
@@ -118,15 +119,17 @@ export function daosInitializer(provider: DatabaseProvider) {
   const userPermissionsDao = new UserPermissionsDao(database);
   const registrationRequestsDao = new RegistrationRequestsDao(logger, database);
   const justificationVotesDao = new JustificationVotesDao(database);
-  const propositionTagVotesDao = new PropositionTagVotesDao(logger, database);
-  const propositionTagsDao = new PropositionTagsDao(logger, database);
+  const propositionTagVotesDao = new PropositionTagVotesDao(database);
+  const propositionTagsDao = new PropositionTagsDao(database, propositionsDao);
   const tagsDao = new TagsDao(logger, database);
+  const appearancesDao = new AppearancesDao(database);
 
   logger.debug("daosInit complete");
 
   return {
     accountSettingsDao,
     actionsDao,
+    appearancesDao,
     authDao,
     canonicalUrlsDao,
     contentReportsDao,

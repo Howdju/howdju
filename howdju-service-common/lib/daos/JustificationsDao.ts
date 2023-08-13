@@ -801,7 +801,7 @@ export class JustificationsDao {
     if (!row) {
       return undefined;
     }
-    return row.justification_id;
+    return toIdString(row.justification_id);
   }
 
   async deleteCounterJustificationsToJustificationIds(

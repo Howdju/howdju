@@ -9,7 +9,6 @@ import {
   newImpossibleError,
   newExhaustedEnumError,
   newProgrammingError,
-  newUnimplementedError,
 } from "./commonErrors";
 import { EntityId } from "./entities";
 import { isDefined } from "./general";
@@ -63,7 +62,6 @@ import {
   PicRegion,
   PropositionTagVote,
   SourceExcerpt,
-  SourceExcerptRef,
   Tag,
   Url,
   VidSegment,
@@ -666,98 +664,6 @@ export const makeCreateCounterJustificationInput = (
   },
   polarity: "NEGATIVE",
 });
-
-export function copyJustificationForInput(
-  justification: Justification
-): CreateJustificationInput {
-  let justificationTarget;
-  let propositionTarget;
-  let statementTarget;
-  switch (justification.target.type) {
-    case "JUSTIFICATION":
-      justificationTarget = copyJustificationForInput(
-        justification.target.entity
-      );
-      break;
-    case "PROPOSITION":
-      propositionTarget = justification.target.entity;
-      break;
-    case "STATEMENT":
-      statementTarget = justification.target.entity;
-      break;
-    default:
-      throw newExhaustedEnumError(justification.target);
-  }
-
-  let sourceExcerptBasis;
-  let propositionCompoundBasis;
-  switch (justification.basis.type) {
-    case "SOURCE_EXCERPT":
-      sourceExcerptBasis = copySourceExcerptForInput(
-        justification.basis.entity
-      );
-      break;
-    case "PROPOSITION_COMPOUND":
-      propositionCompoundBasis = justification.basis.entity;
-      break;
-    default:
-      throw newUnimplementedError(
-        `Unsupported justification basis type: ${justification.basis.type}`
-      );
-  }
-
-  // Remove entity
-  const { entity: targetEntity, ...target } = justification.target;
-  const { entity: basisEntity, ...basis } = justification.basis;
-  return {
-    ...justification,
-    target: {
-      ...target,
-      justification: justificationTarget ?? makeCreateJustificationInput(),
-      statement: statementTarget ?? makeCreateStatementInput(),
-      proposition: propositionTarget ?? makeCreatePropositionInput(),
-    },
-    basis: {
-      ...basis,
-      sourceExcerpt: sourceExcerptBasis ?? makeCreateSourceExcerptInput(),
-      propositionCompound:
-        propositionCompoundBasis ?? makeCreatePropositionCompoundInput(),
-      writQuote: makeCreateWritQuoteInput(),
-      justificationBasisCompound: makeCreateJustificationBasisCompoundInput(),
-    },
-  };
-}
-
-export function copySourceExcerptForInput(
-  sourceExcerpt: EntityOrRef<SourceExcerpt>
-): CreateSourceExcerptInput | SourceExcerptRef {
-  if (isRef(sourceExcerpt)) {
-    return SourceExcerptRef.parse(sourceExcerpt);
-  }
-  let writQuote;
-  let picRegion;
-  let vidSegment;
-  switch (sourceExcerpt.type) {
-    case "WRIT_QUOTE":
-      writQuote = sourceExcerpt.entity;
-      break;
-    case "PIC_REGION":
-      picRegion = sourceExcerpt.entity;
-      break;
-    case "VID_SEGMENT":
-      vidSegment = sourceExcerpt.entity;
-      break;
-    default:
-      throw newImpossibleError(sourceExcerpt);
-  }
-  const { entity, ...props } = sourceExcerpt;
-  return {
-    ...props,
-    writQuote: writQuote ?? makeCreateWritQuoteInput(),
-    picRegion: picRegion ?? makeCreatePicRegionInput(),
-    vidSegment: vidSegment ?? makeCreateVidSegmentInput(),
-  };
-}
 
 /** Trunk justifications directly target the root */
 export const makeCreateJustificationInputTargetingRoot = (

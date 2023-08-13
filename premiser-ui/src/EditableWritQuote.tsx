@@ -26,9 +26,7 @@ export default function EditableWritQuote({
   showUrls,
   onClickUrl,
 }: Props) {
-  const editor = () => (
-    <WritQuoteEditor id={id} writQuote={writQuote} editorId={editorId} />
-  );
+  const editor = () => <WritQuoteEditor id={id} editorId={editorId} />;
 
   const viewer = (
     <WritQuoteViewer

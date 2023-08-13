@@ -89,6 +89,40 @@ CREATE TABLE public.actions (
 
 
 --
+-- Name: appearances; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.appearances (
+    appearance_id integer NOT NULL,
+    media_excerpt_id bigint NOT NULL,
+    proposition_id bigint NOT NULL,
+    created timestamp without time zone NOT NULL,
+    creator_user_id bigint NOT NULL,
+    deleted timestamp without time zone
+);
+
+
+--
+-- Name: appearances_appearance_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.appearances_appearance_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: appearances_appearance_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.appearances_appearance_id_seq OWNED BY public.appearances.appearance_id;
+
+
+--
 -- Name: canonical_url_confirmations; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -1341,6 +1375,13 @@ ALTER TABLE ONLY public.account_settings ALTER COLUMN account_settings_id SET DE
 
 
 --
+-- Name: appearances appearance_id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.appearances ALTER COLUMN appearance_id SET DEFAULT nextval('public.appearances_appearance_id_seq'::regclass);
+
+
+--
 -- Name: content_reports content_report_id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -1541,6 +1582,14 @@ ALTER TABLE ONLY public.writ_quotes ALTER COLUMN writ_quote_id SET DEFAULT nextv
 --
 
 ALTER TABLE ONLY public.writs ALTER COLUMN writ_id SET DEFAULT nextval('public.citations_citation_id_seq'::regclass);
+
+
+--
+-- Name: appearances appearances_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.appearances
+    ADD CONSTRAINT appearances_pkey PRIMARY KEY (appearance_id);
 
 
 --
@@ -2032,6 +2081,30 @@ CREATE INDEX writ_title_fulltext_idx ON public.writs USING gin (to_tsvector('eng
 
 ALTER TABLE ONLY public.account_settings
     ADD CONSTRAINT account_settings_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(user_id);
+
+
+--
+-- Name: appearances appearances_creator_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.appearances
+    ADD CONSTRAINT appearances_creator_user_id_fkey FOREIGN KEY (creator_user_id) REFERENCES public.users(user_id);
+
+
+--
+-- Name: appearances appearances_media_excerpt_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.appearances
+    ADD CONSTRAINT appearances_media_excerpt_id_fkey FOREIGN KEY (media_excerpt_id) REFERENCES public.media_excerpts(media_excerpt_id);
+
+
+--
+-- Name: appearances appearances_proposition_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.appearances
+    ADD CONSTRAINT appearances_proposition_id_fkey FOREIGN KEY (proposition_id) REFERENCES public.propositions(proposition_id);
 
 
 --

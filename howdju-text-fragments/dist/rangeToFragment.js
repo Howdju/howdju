@@ -30,18 +30,6 @@
       return require.apply(this, arguments);
     throw Error('Dynamic require of "' + x3 + '" is not supported');
   });
-  var __objRest = (source, exclude) => {
-    var target = {};
-    for (var prop in source)
-      if (__hasOwnProp.call(source, prop) && exclude.indexOf(prop) < 0)
-        target[prop] = source[prop];
-    if (source != null && __getOwnPropSymbols)
-      for (var prop of __getOwnPropSymbols(source)) {
-        if (exclude.indexOf(prop) < 0 && __propIsEnum.call(source, prop))
-          target[prop] = source[prop];
-      }
-    return target;
-  };
   var __esm = (fn2, res) => function __init() {
     return fn2 && (res = (0, fn2[__getOwnPropNames(fn2)[0]])(fn2 = 0)), res;
   };
@@ -21370,7 +21358,7 @@
       });
     }
   }
-  var import_lodash6, Entity, CreateModel, PersistedEntity, UserExternalIds, User, UserBlurb, Proposition, UpdatePropositionInput, UpdateProposition, Tag, CreateTag, CreateTagInput, tagVotePolarities, PropositionTagVote, PropositionTagVotePolarities, CreatePropositionTagVote, CreatePropositionTagVoteInput, CreatePropositionInput, CreateProposition, Persorg, CreatePersorg, CreatePersorgInput, UpdatePersorg, UpdatePersorgInput, sentenceTypes, baseStatement, Statement, SentenceTypes, CreateStatementInput, CreateStatement, Writ, CreateWrit, CreateWritInput, UpdateWrit, UpdateWritInput, DomAnchor, CreateDomAnchor, UrlTarget, Url, CreateUrl, CreateUrlInput, UrlLocator, WritQuote, PicRegion, VidSegment, AudSegment, sourceExcerptTypes, SourceExcerpt, SourceExcerptTypes, CreateUrlLocator, CreateUrlLocatorInput, Source, CreateSource, CreateSourceInput, UpdateSource, UpdateSourceInput, MediaExcerptCitation, CreateMediaExcerptCitation, CreateMediaExcerptCitationInput, DeleteMediaExcerptCitation, MediaExcerpt, PropositionCompoundAtom, PropositionCompound, CreatePropositionCompoundAtomInput, UpdatePropositionCompoundAtomInput, CreatePropositionCompoundInput, CreatePropositionCompoundAtom, UpdatePropositionCompoundAtom, CreatePropositionCompound, UpdatePropositionCompoundInput, UpdatePropositionCompound, JustificationPolarity, JustificationPolarities, RelationPolarity2, JustificationRootPolarity, JustificationRootPolarities, JustificationBasisType, JustificationBasisTypes, justificationBaseShape, JustificationRootTargetType, JustificationRootTargetTypes, JustificationTargetType2, Justification, JustificationTargetTypes, PropositionRef, StatementRef, JustificationRef, JustificationVoteRef, PropositionCompoundRef, SourceExcerptRef, WritQuoteRef, WritRef, PersorgRef, TagRef, TagVoteRef, UrlRef, UserRef, PropositionTagVoteRef, RegistrationRequestRef, PasswordResetRequestRef, AccountSettingsRef, ContentReportRef, UrlLocatorRef, MediaExcerptRef, SourceRef, CreateWritQuoteInput, CreateWritQuote, UpdateWritQuoteInput, UpdateWritQuote, CreateVidSegmentInput, CreateVidSegment, CreateAudSegmentInput, CreateAudSegment, UpdateVidSegmentInput, UpdateVidSegment, CreatePicRegionInput, CreatePicRegion, UpdatePicRegionInput, UpdatePicRegion, CreateSourceExcerptInput, CreateSourceExcerpt, CreateMediaExcerptBase, CreateMediaExcerpt, CreateMediaExcerptInput, UpdateMediaExcerpt, UpdateMediaExcerptInput, CreateUrlLocatorsInput, createJustificationBaseShape, createJustificationInputBaseShape, CreateJustificationInput, CreateJustification, CreateCounterJustificationInput, CreateCounterJustification, justificationVotePolarities, JustificationVote, JustificationVotePolarities, CreateJustificationVote, DeleteJustificationVote, TaggableEntityType, TagVote, TagVotePolarities, CreateTagVote, EntityType, EntityTypes, ContentReportType, ContentReportTypes, ContentReport, CreateContentReport, CreateContentReportInput, CreateUser, AccountSettings, CreateAccountSettings, UpdateAccountSettings, CreateJustifiedSentenceInput, CreateJustifiedSentence, RegistrationRequest, CreateRegistrationRequest, CreateRegistrationRequestInput, Password, RegistrationConfirmation, CreateRegistrationConfirmation, CreateRegistrationConfirmationInput, PasswordResetRequest, Credentials;
+  var import_lodash6, Entity, CreateModel, PersistedEntity, UserExternalIds, User, UserBlurb, Proposition, UpdatePropositionInput, UpdateProposition, Tag, CreateTag, CreateTagInput, tagVotePolarities, PropositionTagVote, PropositionTagVotePolarities, CreatePropositionTagVote, CreatePropositionTagVoteInput, CreatePropositionInput, CreateProposition, Persorg, CreatePersorg, CreatePersorgInput, UpdatePersorg, UpdatePersorgInput, sentenceTypes, baseStatement, Statement, SentenceTypes, CreateStatementInput, CreateStatement, Writ, CreateWrit, CreateWritInput, UpdateWrit, UpdateWritInput, DomAnchor, CreateDomAnchor, UrlTarget, Url, CreateUrl, CreateUrlInput, UrlLocator, WritQuote, PicRegion, VidSegment, AudSegment, sourceExcerptTypes, SourceExcerpt, SourceExcerptTypes, CreateUrlLocator, CreateUrlLocatorInput, Source, CreateSource, CreateSourceInput, UpdateSource, UpdateSourceInput, MediaExcerptCitation, CreateMediaExcerptCitation, CreateMediaExcerptCitationInput, DeleteMediaExcerptCitation, MediaExcerpt, Appearance, CreateAppearance, CreateAppearanceInput, PropositionCompoundAtom, PropositionCompound, CreatePropositionCompoundAtomInput, UpdatePropositionCompoundAtomInput, CreatePropositionCompoundInput, CreatePropositionCompoundAtom, UpdatePropositionCompoundAtom, CreatePropositionCompound, UpdatePropositionCompoundInput, UpdatePropositionCompound, JustificationPolarity, JustificationPolarities, RelationPolarity2, JustificationRootPolarity, JustificationRootPolarities, JustificationBasisType, JustificationBasisTypes, justificationBaseShape, JustificationRootTargetType, JustificationRootTargetTypes, JustificationTargetType2, Justification, JustificationTargetTypes, PropositionRef, StatementRef, JustificationRef, JustificationVoteRef, PropositionCompoundRef, SourceExcerptRef, WritQuoteRef, WritRef, PersorgRef, TagRef, TagVoteRef, UrlRef, UserRef, PropositionTagVoteRef, RegistrationRequestRef, PasswordResetRequestRef, AccountSettingsRef, ContentReportRef, UrlLocatorRef, MediaExcerptRef, SourceRef, CreateWritQuoteInput, CreateWritQuote, UpdateWritQuoteInput, UpdateWritQuote, CreateVidSegmentInput, CreateVidSegment, CreateAudSegmentInput, CreateAudSegment, UpdateVidSegmentInput, UpdateVidSegment, CreatePicRegionInput, CreatePicRegion, UpdatePicRegionInput, UpdatePicRegion, CreateSourceExcerptInput, CreateSourceExcerpt, CreateMediaExcerptBase, CreateMediaExcerpt, CreateMediaExcerptInput, UpdateMediaExcerpt, UpdateMediaExcerptInput, CreateUrlLocatorsInput, createJustificationBaseShape, createJustificationInputBaseShape, CreateJustificationInput, CreateJustification, CreateCounterJustificationInput, CreateCounterJustification, justificationVotePolarities, JustificationVote, JustificationVotePolarities, CreateJustificationVote, DeleteJustificationVote, TaggableEntityType, TagVote, TagVotePolarities, CreateTagVote, EntityType, EntityTypes, ContentReportType, ContentReportTypes, ContentReport, CreateContentReport, CreateContentReportInput, CreateUser, AccountSettings, CreateAccountSettings, UpdateAccountSettings, CreateJustifiedSentenceInput, CreateJustifiedSentence, RegistrationRequest, CreateRegistrationRequest, CreateRegistrationRequestInput, Password, RegistrationConfirmation, CreateRegistrationConfirmation, CreateRegistrationConfirmationInput, PasswordResetRequest, Credentials;
   var init_zodSchemas = __esm({
     "../howdju-common/lib/zodSchemas.ts"() {
       "use strict";
@@ -21788,6 +21776,35 @@
         creatorUserId: mod.string(),
         creator: UserBlurb
       });
+      Appearance = Entity.extend({
+        /**
+         * Where the entity appears.
+         */
+        mediaExcerpt: MediaExcerpt,
+        /**
+         * The entity that appears at the MediaExcerpt.
+         *
+         * We can make this a discriminatedUnion on type to support additional appearing entities.
+         */
+        apparition: mod.object({
+          type: mod.literal("PROPOSITION"),
+          entity: Proposition
+        })
+      });
+      CreateAppearance = mod.object({
+        mediaExcerptId: mod.string(),
+        apparition: mod.object({
+          type: mod.literal("PROPOSITION"),
+          entity: CreateProposition
+        })
+      });
+      CreateAppearanceInput = mod.object({
+        mediaExcerptId: mod.string(),
+        apparition: mod.object({
+          type: mod.literal("PROPOSITION"),
+          entity: CreatePropositionInput
+        })
+      });
       PropositionCompoundAtom = mod.object({
         /**
          * A reference to this atom's parent compound.
@@ -22028,7 +22045,7 @@
             CreatePropositionCompoundInput,
             PropositionCompoundRef
           ]),
-          mediaExcerpt: MediaExcerptRef.optional(),
+          mediaExcerpt: MediaExcerptRef,
           sourceExcerpt: mod.union([CreateSourceExcerptInput, SourceExcerptRef]),
           writQuote: mod.union([CreateWritQuoteInput, WritQuoteRef]),
           justificationBasisCompound: Entity.optional()
@@ -22138,6 +22155,7 @@
         tag: mod.union([TagRef, CreateTag])
       });
       EntityType = mod.enum([
+        "APPEARANCE",
         "JUSTIFICATION",
         "JUSTIFICATION_VOTE",
         "MEDIA_EXCERPT",
@@ -22195,10 +22213,22 @@
         created: true,
         externalIds: true
       }).extend({
-        acceptedTerms: mod.boolean().refine((v3) => v3, "Must accept the terms."),
-        affirmed13YearsOrOlder: mod.boolean().refine((v3) => v3, "Must be 13 years or older."),
-        affirmedMajorityConsent: mod.boolean().refine((v3) => v3, "Must have adult consent."),
-        affirmedNotGdpr: mod.boolean().refine((v3) => v3, "Must not be subject to the GDPR.")
+        doesAcceptTerms: mod.literal(true, {
+          required_error: "Must accept the terms.",
+          invalid_type_error: "Must accept the terms."
+        }),
+        is13YearsOrOlder: mod.literal(true, {
+          required_error: "Must be 13 years or older.",
+          invalid_type_error: "Must be 13 years or older."
+        }),
+        hasMajorityConsent: mod.literal(true, {
+          required_error: "Must have adult consent.",
+          invalid_type_error: "Must have adult consent."
+        }),
+        isNotGdpr: mod.literal(true, {
+          required_error: "Must not be subject to the GDPR.",
+          invalid_type_error: "Must not be subject to the GDPR."
+        })
       });
       AccountSettings = Entity.extend({
         paidContributionsDisclosure: mod.string().max(4096)
@@ -22236,10 +22266,10 @@
         shortName: User.shape.shortName,
         longName: User.shape.longName,
         password: Password,
-        doesAcceptTerms: CreateUser.shape.acceptedTerms,
-        is13YearsOrOlder: CreateUser.shape.affirmed13YearsOrOlder,
-        hasMajorityConsent: CreateUser.shape.affirmedMajorityConsent,
-        isNotGdpr: CreateUser.shape.affirmedNotGdpr
+        doesAcceptTerms: CreateUser.shape.doesAcceptTerms,
+        is13YearsOrOlder: CreateUser.shape.is13YearsOrOlder,
+        hasMajorityConsent: CreateUser.shape.hasMajorityConsent,
+        isNotGdpr: CreateUser.shape.isNotGdpr
       });
       CreateRegistrationConfirmation = RegistrationConfirmation;
       CreateRegistrationConfirmationInput = RegistrationConfirmation;
@@ -29992,7 +30022,7 @@
     "../howdju-common/lib/standaloneAjv.js"(exports) {
       "use strict";
       exports["https://howdju.com/schemas/content-report.schema.json"] = validate10;
-      var schema27 = { "$id": "https://howdju.com/schemas/content-report.schema.json", "$schema": "http://json-schema.org/draft-07/schema#", "title": "Content Report", "description": "A user-submitted report of content that may violate our policies.", "type": "object", "required": ["url", "types"], "properties": { "entityType": { "description": "The type of entity being reported, if the report can pertain to a particular entity.", "enum": ["JUSTIFICATION", "JUSTIFICATION_VOTE", "MEDIA_EXCERPT", "PASSWORD_HASH", "PASSWORD_RESET_REQUEST", "PERSORG", "PROPOSITION", "PROPOSITION_TAG_VOTE", "REGISTRATION_REQUEST", "SOURCE", "STATEMENT", "TAG_VOTE", "URL", "URL_LOCATOR", "USER", "WRIT", "WRIT_QUOTE"] }, "entityId": { "$ref": "definitions.json#/definitions/entityId" }, "url": { "description": "The URL upon which the user made the report, and so likely an URL where the content appears.", "type": "string", "format": "uri" }, "types": { "type": "array", "uniqueItems": true, "items": { "enum": ["HARASSMENT", "THREATENING_VIOLENCE", "HATEFUL", "OBSCENE", "SEXUALIZATION_OF_MINORS", "SHARING_PRIVATE_PERSONAL_INFORMATION", "PORNOGRAPHY", "ILLEGAL_ACTIVITY", "IMPERSONATION", "COPYRIGHT_VIOLATION", "TRADEMARK_VIOLATION", "SPAM", "OTHER"] }, "minItems": 1 }, "description": { "description": "The user's description of the report.", "type": "string", "maxLength": 4096 } } };
+      var schema27 = { "$id": "https://howdju.com/schemas/content-report.schema.json", "$schema": "http://json-schema.org/draft-07/schema#", "title": "Content Report", "description": "A user-submitted report of content that may violate our policies.", "type": "object", "required": ["url", "types"], "properties": { "entityType": { "description": "The type of entity being reported, if the report can pertain to a particular entity.", "enum": ["APPEARANCE", "JUSTIFICATION", "JUSTIFICATION_VOTE", "MEDIA_EXCERPT", "PASSWORD_HASH", "PASSWORD_RESET_REQUEST", "PERSORG", "PROPOSITION", "PROPOSITION_TAG_VOTE", "REGISTRATION_REQUEST", "SOURCE", "STATEMENT", "TAG_VOTE", "URL", "URL_LOCATOR", "USER", "WRIT", "WRIT_QUOTE"] }, "entityId": { "$ref": "definitions.json#/definitions/entityId" }, "url": { "description": "The URL upon which the user made the report, and so likely an URL where the content appears.", "type": "string", "format": "uri" }, "types": { "type": "array", "uniqueItems": true, "items": { "enum": ["HARASSMENT", "THREATENING_VIOLENCE", "HATEFUL", "OBSCENE", "SEXUALIZATION_OF_MINORS", "SHARING_PRIVATE_PERSONAL_INFORMATION", "PORNOGRAPHY", "ILLEGAL_ACTIVITY", "IMPERSONATION", "COPYRIGHT_VIOLATION", "TRADEMARK_VIOLATION", "SPAM", "OTHER"] }, "minItems": 1 }, "description": { "description": "The user's description of the report.", "type": "string", "maxLength": 4096 } } };
       var schema29 = { "type": "string", "format": "int32", "description": "An identifier for an entity. Usually used in the database to identify the entity. A positive integer formatted as a string.", "examples": ["1", "2", "42"] };
       var func0 = require_equal().default;
       var func7 = require_ucs2length().default;
@@ -30023,7 +30053,7 @@
           }
           if (data.entityType !== void 0) {
             let data0 = data.entityType;
-            if (!(data0 === "JUSTIFICATION" || data0 === "JUSTIFICATION_VOTE" || data0 === "MEDIA_EXCERPT" || data0 === "PASSWORD_HASH" || data0 === "PASSWORD_RESET_REQUEST" || data0 === "PERSORG" || data0 === "PROPOSITION" || data0 === "PROPOSITION_TAG_VOTE" || data0 === "REGISTRATION_REQUEST" || data0 === "SOURCE" || data0 === "STATEMENT" || data0 === "TAG_VOTE" || data0 === "URL" || data0 === "URL_LOCATOR" || data0 === "USER" || data0 === "WRIT" || data0 === "WRIT_QUOTE")) {
+            if (!(data0 === "APPEARANCE" || data0 === "JUSTIFICATION" || data0 === "JUSTIFICATION_VOTE" || data0 === "MEDIA_EXCERPT" || data0 === "PASSWORD_HASH" || data0 === "PASSWORD_RESET_REQUEST" || data0 === "PERSORG" || data0 === "PROPOSITION" || data0 === "PROPOSITION_TAG_VOTE" || data0 === "REGISTRATION_REQUEST" || data0 === "SOURCE" || data0 === "STATEMENT" || data0 === "TAG_VOTE" || data0 === "URL" || data0 === "URL_LOCATOR" || data0 === "USER" || data0 === "WRIT" || data0 === "WRIT_QUOTE")) {
               const err2 = { instancePath: instancePath + "/entityType", schemaPath: "#/properties/entityType/enum", keyword: "enum", params: { allowedValues: schema27.properties.entityType.enum }, message: "must be equal to one of the allowed values", schema: schema27.properties.entityType.enum, parentSchema: schema27.properties.entityType, data: data0 };
               if (vErrors === null) {
                 vErrors = [err2];
@@ -32781,11 +32811,14 @@
     ActionSubjectTypes: () => ActionSubjectTypes,
     ActionTargetTypes: () => ActionTargetTypes,
     ActionTypes: () => ActionTypes2,
+    Appearance: () => Appearance,
     AudSegment: () => AudSegment,
     ContentReport: () => ContentReport,
     ContentReportRef: () => ContentReportRef,
     ContentReportTypes: () => ContentReportTypes,
     CreateAccountSettings: () => CreateAccountSettings,
+    CreateAppearance: () => CreateAppearance,
+    CreateAppearanceInput: () => CreateAppearanceInput,
     CreateAudSegment: () => CreateAudSegment,
     CreateAudSegmentInput: () => CreateAudSegmentInput,
     CreateContentReport: () => CreateContentReport,
@@ -32961,8 +32994,6 @@
     contextTrailShortcutByPolarity: () => contextTrailShortcutByPolarity,
     contextTrailShortcutByType: () => contextTrailShortcutByType,
     contextTrailTypeByShortcut: () => contextTrailTypeByShortcut,
-    copyJustificationForInput: () => copyJustificationForInput,
-    copySourceExcerptForInput: () => copySourceExcerptForInput,
     decircularizeJustification: () => decircularizeJustification,
     decircularizeProposition: () => decircularizeProposition,
     decircularizeSourceExcerpt: () => decircularizeSourceExcerpt,
@@ -34729,84 +34760,6 @@
     },
     polarity: "NEGATIVE"
   });
-  function copyJustificationForInput(justification) {
-    let justificationTarget;
-    let propositionTarget;
-    let statementTarget;
-    switch (justification.target.type) {
-      case "JUSTIFICATION":
-        justificationTarget = copyJustificationForInput(
-          justification.target.entity
-        );
-        break;
-      case "PROPOSITION":
-        propositionTarget = justification.target.entity;
-        break;
-      case "STATEMENT":
-        statementTarget = justification.target.entity;
-        break;
-      default:
-        throw newExhaustedEnumError(justification.target);
-    }
-    let sourceExcerptBasis;
-    let propositionCompoundBasis;
-    switch (justification.basis.type) {
-      case "SOURCE_EXCERPT":
-        sourceExcerptBasis = copySourceExcerptForInput(
-          justification.basis.entity
-        );
-        break;
-      case "PROPOSITION_COMPOUND":
-        propositionCompoundBasis = justification.basis.entity;
-        break;
-      default:
-        throw newUnimplementedError(
-          `Unsupported justification basis type: ${justification.basis.type}`
-        );
-    }
-    const _a = justification.target, { entity: targetEntity } = _a, target = __objRest(_a, ["entity"]);
-    const _b = justification.basis, { entity: basisEntity } = _b, basis = __objRest(_b, ["entity"]);
-    return __spreadProps(__spreadValues({}, justification), {
-      target: __spreadProps(__spreadValues({}, target), {
-        justification: justificationTarget != null ? justificationTarget : makeCreateJustificationInput(),
-        statement: statementTarget != null ? statementTarget : makeCreateStatementInput(),
-        proposition: propositionTarget != null ? propositionTarget : makeCreatePropositionInput()
-      }),
-      basis: __spreadProps(__spreadValues({}, basis), {
-        sourceExcerpt: sourceExcerptBasis != null ? sourceExcerptBasis : makeCreateSourceExcerptInput(),
-        propositionCompound: propositionCompoundBasis != null ? propositionCompoundBasis : makeCreatePropositionCompoundInput(),
-        writQuote: makeCreateWritQuoteInput(),
-        justificationBasisCompound: makeCreateJustificationBasisCompoundInput()
-      })
-    });
-  }
-  function copySourceExcerptForInput(sourceExcerpt) {
-    if (isRef(sourceExcerpt)) {
-      return SourceExcerptRef.parse(sourceExcerpt);
-    }
-    let writQuote2;
-    let picRegion;
-    let vidSegment;
-    switch (sourceExcerpt.type) {
-      case "WRIT_QUOTE":
-        writQuote2 = sourceExcerpt.entity;
-        break;
-      case "PIC_REGION":
-        picRegion = sourceExcerpt.entity;
-        break;
-      case "VID_SEGMENT":
-        vidSegment = sourceExcerpt.entity;
-        break;
-      default:
-        throw newImpossibleError(sourceExcerpt);
-    }
-    const _a = sourceExcerpt, { entity } = _a, props = __objRest(_a, ["entity"]);
-    return __spreadProps(__spreadValues({}, props), {
-      writQuote: writQuote2 != null ? writQuote2 : makeCreateWritQuoteInput(),
-      picRegion: picRegion != null ? picRegion : makeCreatePicRegionInput(),
-      vidSegment: vidSegment != null ? vidSegment : makeCreateVidSegmentInput()
-    });
-  }
   var makeCreateJustificationInputTargetingRoot = (targetType, targetId, polarity) => {
     let targetEntityProperty;
     switch (targetType) {

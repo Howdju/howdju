@@ -68,9 +68,8 @@ const basisTypeControls = [
   },
 ];
 interface Props
-  extends EntityEditorFieldsProps<"justification", CreateJustificationInput> {
   // Justifications are not editable, they can only be created.
-  justification?: CreateJustificationInput;
+  extends EntityEditorFieldsProps<"justification", CreateJustificationInput> {
   doShowTypeSelection?: boolean;
   onKeyDown?: OnKeyDownCallback;
   editorDispatch: EditorFieldsDispatch;
@@ -96,9 +95,9 @@ export default function JustificationEditorFields(props: Props) {
 
   const onChange = toOnChangeCallback(onPropertyChange);
 
-  const basisPropositionCompound = justification?.basis.propositionCompound;
-  const basisMediaExcerpt = justification?.basis.mediaExcerpt;
-  const basisWritQuote = justification?.basis.writQuote;
+  const basisPropositionCompound = justification.basis.propositionCompound;
+  const basisMediaExcerpt = justification.basis.mediaExcerpt;
+  const basisWritQuote = justification.basis.writQuote;
   const _isPropositionCompoundBased =
     justification && isPropositionCompoundBased(justification);
   const _isMediaExcerptBased =
@@ -112,56 +111,51 @@ export default function JustificationEditorFields(props: Props) {
     disabled,
   };
 
-  if (basisPropositionCompound && isRef(basisPropositionCompound)) {
+  if (isRef(basisPropositionCompound)) {
     logger.error(
       "JustificationEditorFields does not support PropositionCompound refs yet."
     );
   }
-  if (basisWritQuote && isRef(basisWritQuote)) {
+  if (isRef(basisWritQuote)) {
     logger.error(
       "JustificationEditorFields does not support WritQuote refs yet."
     );
   }
 
-  const propositionCompoundEditorFields = basisPropositionCompound &&
-    !isRef(basisPropositionCompound) && (
-      <PropositionCompoundEditorFields
-        {...commonFieldsProps}
-        id={combineIds(id, propositionCompoundName)}
-        name={combineNames(name, propositionCompoundName)}
-        propositionCompound={basisPropositionCompound}
-        key={propositionCompoundName}
-        suggestionsKey={combineSuggestionsKeys(
-          suggestionsKey,
-          propositionCompoundName
-        )}
-        blurredFields={blurredFields?.basis?.propositionCompound}
-        dirtyFields={dirtyFields?.basis?.propositionCompound}
-        errors={errors?.basis?.propositionCompound}
-        wasSubmitAttempted={wasSubmitAttempted}
-        editorDispatch={editorDispatch}
-      />
-    );
-  const mediaExcerptEditorFields = basisMediaExcerpt &&
-    !isOnlyRef(basisMediaExcerpt) && (
-      <MediaExcerptEditorFields
-        {...commonFieldsProps}
-        mediaExcerpt={basisMediaExcerpt}
-        id={combineIds(id, mediaExcerptName)}
-        key={mediaExcerptName}
-        name={combineNames(name, mediaExcerptName)}
-        suggestionsKey={combineSuggestionsKeys(
-          suggestionsKey,
-          mediaExcerptName
-        )}
-        blurredFields={blurredFields?.basis?.mediaExcerpt}
-        dirtyFields={dirtyFields?.basis?.mediaExcerpt}
-        errors={errors?.basis?.mediaExcerpt}
-        wasSubmitAttempted={wasSubmitAttempted}
-        editorDispatch={editorDispatch}
-      />
-    );
-  const writQuoteEditorFields = basisWritQuote && !isRef(basisWritQuote) && (
+  const propositionCompoundEditorFields = !isRef(basisPropositionCompound) && (
+    <PropositionCompoundEditorFields
+      {...commonFieldsProps}
+      id={combineIds(id, propositionCompoundName)}
+      name={combineNames(name, propositionCompoundName)}
+      propositionCompound={basisPropositionCompound}
+      key={propositionCompoundName}
+      suggestionsKey={combineSuggestionsKeys(
+        suggestionsKey,
+        propositionCompoundName
+      )}
+      blurredFields={blurredFields?.basis?.propositionCompound}
+      dirtyFields={dirtyFields?.basis?.propositionCompound}
+      errors={errors?.basis?.propositionCompound}
+      wasSubmitAttempted={wasSubmitAttempted}
+      editorDispatch={editorDispatch}
+    />
+  );
+  const mediaExcerptEditorFields = !isOnlyRef(basisMediaExcerpt) && (
+    <MediaExcerptEditorFields
+      {...commonFieldsProps}
+      mediaExcerpt={basisMediaExcerpt}
+      id={combineIds(id, mediaExcerptName)}
+      key={mediaExcerptName}
+      name={combineNames(name, mediaExcerptName)}
+      suggestionsKey={combineSuggestionsKeys(suggestionsKey, mediaExcerptName)}
+      blurredFields={blurredFields?.basis?.mediaExcerpt}
+      dirtyFields={dirtyFields?.basis?.mediaExcerpt}
+      errors={errors?.basis?.mediaExcerpt}
+      wasSubmitAttempted={wasSubmitAttempted}
+      editorDispatch={editorDispatch}
+    />
+  );
+  const writQuoteEditorFields = !isRef(basisWritQuote) && (
     <WritQuoteEditorFields
       {...commonFieldsProps}
       writQuote={basisWritQuote}

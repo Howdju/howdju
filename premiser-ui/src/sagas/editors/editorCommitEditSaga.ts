@@ -351,6 +351,11 @@ export const MediaExcerptConfig = {
   }),
 };
 
+export const AppearanceConfig = {
+  requestActionCreator: api.createAppearance,
+  inputTransformer: identity,
+};
+
 export const UpdateSourceConfig = {
   requestActionCreator: api.updateSource,
   inputTransformer: identity,
@@ -417,6 +422,9 @@ export const editorCommitConfigs: Partial<
   },
   CREATE_URL_LOCATORS: {
     CREATE: CreateUrlLocatorsCommitConfig,
+  },
+  APPEARANCE: {
+    CREATE: AppearanceConfig,
   },
 };
 

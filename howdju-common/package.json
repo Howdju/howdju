@@ -9,7 +9,7 @@
   "scripts": {
     "check-format": "yarn run prettier --check --ignore-path .prettierignore .",
     "fix-format": "yarn run lint --fix && yarn run prettier --write --ignore-path .prettierignore .",
-    "gen:standalone-schema-validation": "npx ts-node bin/gen-standalone-schema-validation.js",
+    "gen:standalone-schema-validation": "../bin/build-and-run-script.sh bin/gen-standalone-schema-validation.js",
     "lint": "eslint --ignore-path=.gitignore .",
     "custom-check": "bin/custom-check.sh",
     "test": "jest",

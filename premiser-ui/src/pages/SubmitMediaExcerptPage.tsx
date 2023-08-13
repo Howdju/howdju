@@ -49,7 +49,6 @@ export default function SubmitMediaExcerptPage() {
       <MediaExcerptEditor
         id={id}
         editorId={editorId}
-        mediaExcerpt={editEntity}
         className="md-cell--12"
         editorCommitBehavior={"CommitThenView"}
         submitButtonText="Create"

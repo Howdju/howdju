@@ -538,7 +538,7 @@ describe("JustificationsService", () => {
     test("can read a media excerpt based justification for a proposition root target", async () => {
       const { user, authToken } = await testHelper.makeUser();
 
-      const proposition = await testHelper.makeProposition(authToken);
+      const proposition = await testHelper.makeProposition({ authToken });
       const mediaExcerpt = await testHelper.makeMediaExcerpt({ authToken });
       const createJustification: CreateJustification = {
         target: {

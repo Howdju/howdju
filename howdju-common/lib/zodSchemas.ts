@@ -671,6 +671,41 @@ export const MediaExcerpt = Entity.extend({
 });
 export type MediaExcerpt = z.output<typeof MediaExcerpt>;
 
+export const Appearance = Entity.extend({
+  /**
+   * Where the entity appears.
+   */
+  mediaExcerpt: MediaExcerpt,
+  /**
+   * The entity that appears at the MediaExcerpt.
+   *
+   * We can make this a discriminatedUnion on type to support additional appearing entities.
+   */
+  apparition: z.object({
+    type: z.literal("PROPOSITION"),
+    entity: Proposition,
+  }),
+});
+export type Appearance = z.output<typeof Appearance>;
+
+export const CreateAppearance = z.object({
+  mediaExcerptId: z.string(),
+  apparition: z.object({
+    type: z.literal("PROPOSITION"),
+    entity: CreateProposition,
+  }),
+});
+export type CreateAppearance = z.output<typeof CreateAppearance>;
+
+export const CreateAppearanceInput = z.object({
+  mediaExcerptId: z.string(),
+  apparition: z.object({
+    type: z.literal("PROPOSITION"),
+    entity: CreatePropositionInput,
+  }),
+});
+export type CreateAppearanceInput = z.output<typeof CreateAppearanceInput>;
+
 export const PropositionCompoundAtom = z.object({
   /**
    * A reference to this atom's parent compound.
@@ -1174,7 +1209,7 @@ export type CreateJustificationInput = Entity & {
   basis: {
     type: JustificationBasisType;
     propositionCompound: EntityOrRef<CreatePropositionCompoundInput>;
-    mediaExcerpt?: CreateMediaExcerptInput | EntityRef<MediaExcerpt>;
+    mediaExcerpt: CreateMediaExcerptInput | EntityRef<MediaExcerpt>;
     /** @deprecated */
     sourceExcerpt: EntityOrRef<CreateSourceExcerptInput>;
     /** @deprecated */
@@ -1220,7 +1255,7 @@ const createJustificationInputBaseShape = {
       CreatePropositionCompoundInput,
       PropositionCompoundRef,
     ]),
-    mediaExcerpt: MediaExcerptRef.optional(),
+    mediaExcerpt: MediaExcerptRef,
     sourceExcerpt: z.union([CreateSourceExcerptInput, SourceExcerptRef]),
     writQuote: z.union([CreateWritQuoteInput, WritQuoteRef]),
     justificationBasisCompound: Entity.optional(),
@@ -1425,6 +1460,7 @@ export const CreateTagVote = TagVote.extend({
 export type CreateTagVote = z.infer<typeof CreateTagVote>;
 
 const EntityType = z.enum([
+  "APPEARANCE",
   "JUSTIFICATION",
   "JUSTIFICATION_VOTE",
   "MEDIA_EXCERPT",
@@ -1493,16 +1529,22 @@ export const CreateUser = User.omit({
   created: true,
   externalIds: true,
 }).extend({
-  acceptedTerms: z.boolean().refine((v) => v, "Must accept the terms."),
-  affirmed13YearsOrOlder: z
-    .boolean()
-    .refine((v) => v, "Must be 13 years or older."),
-  affirmedMajorityConsent: z
-    .boolean()
-    .refine((v) => v, "Must have adult consent."),
-  affirmedNotGdpr: z
-    .boolean()
-    .refine((v) => v, "Must not be subject to the GDPR."),
+  doesAcceptTerms: z.literal(true, {
+    required_error: "Must accept the terms.",
+    invalid_type_error: "Must accept the terms.",
+  }),
+  is13YearsOrOlder: z.literal(true, {
+    required_error: "Must be 13 years or older.",
+    invalid_type_error: "Must be 13 years or older.",
+  }),
+  hasMajorityConsent: z.literal(true, {
+    required_error: "Must have adult consent.",
+    invalid_type_error: "Must have adult consent.",
+  }),
+  isNotGdpr: z.literal(true, {
+    required_error: "Must not be subject to the GDPR.",
+    invalid_type_error: "Must not be subject to the GDPR.",
+  }),
 });
 export type CreateUser = z.infer<typeof CreateUser>;
 
@@ -1565,10 +1607,10 @@ export const RegistrationConfirmation = z.object({
   shortName: User.shape.shortName,
   longName: User.shape.longName,
   password: Password,
-  doesAcceptTerms: CreateUser.shape.acceptedTerms,
-  is13YearsOrOlder: CreateUser.shape.affirmed13YearsOrOlder,
-  hasMajorityConsent: CreateUser.shape.affirmedMajorityConsent,
-  isNotGdpr: CreateUser.shape.affirmedNotGdpr,
+  doesAcceptTerms: CreateUser.shape.doesAcceptTerms,
+  is13YearsOrOlder: CreateUser.shape.is13YearsOrOlder,
+  hasMajorityConsent: CreateUser.shape.hasMajorityConsent,
+  isNotGdpr: CreateUser.shape.isNotGdpr,
 });
 export type RegistrationConfirmation = z.infer<typeof RegistrationConfirmation>;
 export const CreateRegistrationConfirmation = RegistrationConfirmation;

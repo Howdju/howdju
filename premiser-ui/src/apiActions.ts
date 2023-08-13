@@ -45,6 +45,7 @@ import {
   UpdateSource,
   CreateUrlLocatorsInput,
   UrlLocatorOut,
+  CreateAppearance,
 } from "howdju-common";
 import {
   InferPathParams,
@@ -58,6 +59,7 @@ import {
 
 import {
   accountSettingsSchema,
+  appearanceSchema,
   contextTrailItemsSchema,
   justificationSchema,
   justificationsSchema,
@@ -475,6 +477,23 @@ export const api = {
     serviceRoutes.deleteMediaExcerpt,
     (mediaExcerptId: EntityId) => ({
       pathParams: { mediaExcerptId },
+    })
+  ),
+
+  createAppearance: apiActionCreator(
+    "CREATE_APPEARANCE",
+    serviceRoutes.createAppearance,
+    (appearance: CreateAppearance) => ({
+      body: { appearance },
+      normalizationSchema: { appearance: appearanceSchema },
+    })
+  ),
+  fetchAppearance: apiActionCreator(
+    "FETCH_APPEARANCE",
+    serviceRoutes.readAppearance,
+    (appearanceId: EntityId) => ({
+      pathParams: { appearanceId },
+      normalizationSchema: { appearance: appearanceSchema },
     })
   ),
 

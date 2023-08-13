@@ -38,7 +38,7 @@ export default function EntityViewer({
       {icon}
     </FontIcon>
   ) : (
-    icon
+    <div {...titleProps}>{icon}</div>
   );
   if (iconLink) {
     header = <Link to={iconLink}>{header}</Link>;

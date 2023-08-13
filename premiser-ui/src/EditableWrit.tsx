@@ -25,9 +25,7 @@ export default function EditableWrit({
   writ,
   showStatusText,
 }: Props) {
-  const editor = () => (
-    <UpdateWritEditor id={id} writ={writ} editorId={editorId} />
-  );
+  const editor = () => <UpdateWritEditor id={id} editorId={editorId} />;
 
   const viewer = (
     <WritViewer

@@ -72,6 +72,8 @@ import {
   UpdatePersorgInput,
   CreateUrlLocatorsInput,
   CreateUrlLocator,
+  CreateAppearanceInput,
+  CreateAppearance,
 } from "howdju-common";
 
 import {
@@ -108,6 +110,7 @@ forEach(
 
 export const EditorTypes = {
   ACCOUNT_SETTINGS: "ACCOUNT_SETTINGS",
+  APPEARANCE: "APPEARANCE",
   CONTENT_REPORT: "CONTENT_REPORT",
   COUNTER_JUSTIFICATION: "COUNTER_JUSTIFICATION",
   CREATE_URL_LOCATORS: "CREATE_URL_LOCATORS",
@@ -159,7 +162,8 @@ export type EditorEntity =
   | UpdateSourceInput
   | CreatePersorgInput
   | UpdatePersorgInput
-  | CreateUrlLocatorsInput;
+  | CreateUrlLocatorsInput
+  | CreateAppearanceInput;
 /**
  * @typeparam T the editor model type.
  * @typeparam U the request model type.
@@ -795,6 +799,11 @@ const editorReducerByType: {
     },
     defaultEditorState()
   ),
+
+  APPEARANCE: handleActions<
+    EditorState<CreateAppearanceInput, CreateAppearance>,
+    any
+  >({}, defaultEditorState()),
 };
 
 function inferMediaExcerptInfoSuccessHandler<T extends EditorEntity>(

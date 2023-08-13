@@ -18,6 +18,7 @@ import { tagPage } from "@/pages/tag/tagPageSlice";
 import { persorgPage } from "@/pages/persorg/persorgPageSlice";
 import { sourcePage } from "@/pages/source/sourcePageSlice";
 import { mediaExcerptPage } from "@/pages/mediaExcerpt/mediaExcerptPageSlice";
+import { createAppearancePage } from "@/pages/appearances/createAppearancePageSlice";
 import { justificationsPage } from "@/pages/justifications/justificationsPageSlice";
 import { accountSettingsPage } from "@/pages/accountSettings/accountSettingsPageSlice";
 import { propositionUsagesPage } from "@/pages/propositionUsages/propositionUsagesPageSlice";
@@ -32,6 +33,7 @@ export default (history: History) =>
     app,
     auth,
     autocompletes,
+    createAppearancePage,
     editors,
     entities,
     errors,

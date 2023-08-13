@@ -2,6 +2,7 @@ import { schema } from "normalizr";
 
 import {
   AccountSettings,
+  AppearanceOut,
   ContextTrailItem,
   Justification,
   JustificationVote,
@@ -253,6 +254,21 @@ export const contextTrailItemsSchema = new schema.Array(
   new schema.Entity<ContextTrailItem>("contextTrailItems", {
     connectingEntity: connectingEntitySchema,
   })
+);
+
+export const appearanceSchema = new schema.Entity<AppearanceOut>(
+  "appearances",
+  {
+    mediaExcerpt: mediaExcerptSchema,
+    apparition: {
+      entity: new schema.Union(
+        {
+          PROPOSITION: propositionSchema,
+        },
+        (_value, parent) => parent.type
+      ),
+    },
+  }
 );
 
 export const mainSearchResultSchema = {
