@@ -152,7 +152,7 @@ function readOrCreateEquivalentValidSourceExcerptParaphraseAsUser(
   const sourceExcerptType = sourceExcerptParaphrase.sourceExcerpt.type;
   const sourceExcerptEntity = sourceExcerptParaphrase.sourceExcerpt.entity;
   return Promise.all([
-    service.propositionsService.readOrCreateValidPropositionAsUser(
+    service.propositionsService.readOrCreatePropositionAsUser(
       sourceExcerptParaphrase.paraphrasingProposition,
       userId,
       now

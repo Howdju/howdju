@@ -11,7 +11,11 @@ import AppearanceCard from "./AppearanceCard";
 
 interface MatchParams {
   appearanceId: EntityId;
+  // If the user navigates to the Appearance in the context of a MediaExcerpt, the route will have
+  // a mediaExcerptId. Otherwise we must request the Appearance to get it.
   mediaExcerptId?: EntityId;
+  // If the user navigates to the Appearance in the context of a Proposition, the route will have a
+  // propositionId. Otherwise we must request the Appearance to get it.
   propositionId?: EntityId;
 }
 type Props = RouteComponentProps<MatchParams>;
@@ -19,32 +23,23 @@ type Props = RouteComponentProps<MatchParams>;
 /**
  * A page displaying an Appearance.
  *
- * The page can occur in two contexts:
+ * Users can navigate to the page from two contexts:
  *
- * - The Appearance's MediaExcerpt, in which case we show other Appearances
+ * - From the Appearance's MediaExcerpt, in which case we initially show other Appearances
  *   at the same MediaExcerpt.
- * - The Appearance's Proposition, in which case we show other Appearances
+ * - From the Appearance's Proposition, in which case we initially show other Appearances
  *   of the same Proposition.
+ *
+ * TODO(20): implement tabbed navigation including the justifications, other appearances of the same
+ * MediaExcerpt, and other appearances of the same Proposition.
  */
 export default function AppearancePage(props: Props) {
-  const { appearanceId, mediaExcerptId, propositionId } = props.match.params;
+  const { appearanceId } = props.match.params;
 
   const dispatch = useAppDispatch();
   useEffect(() => {
     dispatch(api.fetchAppearance(appearanceId));
   }, [dispatch, appearanceId]);
-  useEffect(() => {
-    if (mediaExcerptId) {
-      // TODO
-      // dispatch(api.fetchPropositionsAppearingAtMediaExcerpt(mediaExcerptId));
-    }
-  }, [dispatch, mediaExcerptId]);
-  useEffect(() => {
-    if (propositionId) {
-      // TODO
-      // dispatch(api.fetchMediaExcerptsWherePropositionAppears(propositionId));
-    }
-  }, [dispatch, propositionId]);
 
   const appearance = useAppEntitySelector(appearanceId, appearanceSchema);
 

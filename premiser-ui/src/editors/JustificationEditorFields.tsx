@@ -122,45 +122,39 @@ export default function JustificationEditorFields(props: Props) {
     );
   }
 
-  const propositionCompoundEditorFields = basisPropositionCompound &&
-    !isRef(basisPropositionCompound) && (
-      <PropositionCompoundEditorFields
-        {...commonFieldsProps}
-        id={combineIds(id, propositionCompoundName)}
-        name={combineNames(name, propositionCompoundName)}
-        propositionCompound={basisPropositionCompound}
-        key={propositionCompoundName}
-        suggestionsKey={combineSuggestionsKeys(
-          suggestionsKey,
-          propositionCompoundName
-        )}
-        blurredFields={blurredFields?.basis?.propositionCompound}
-        dirtyFields={dirtyFields?.basis?.propositionCompound}
-        errors={errors?.basis?.propositionCompound}
-        wasSubmitAttempted={wasSubmitAttempted}
-        editorDispatch={editorDispatch}
-      />
-    );
-  // TODO why is basisMediaExcerpt optional?
-  const mediaExcerptEditorFields = basisMediaExcerpt &&
-    !isOnlyRef(basisMediaExcerpt) && (
-      <MediaExcerptEditorFields
-        {...commonFieldsProps}
-        mediaExcerpt={basisMediaExcerpt}
-        id={combineIds(id, mediaExcerptName)}
-        key={mediaExcerptName}
-        name={combineNames(name, mediaExcerptName)}
-        suggestionsKey={combineSuggestionsKeys(
-          suggestionsKey,
-          mediaExcerptName
-        )}
-        blurredFields={blurredFields?.basis?.mediaExcerpt}
-        dirtyFields={dirtyFields?.basis?.mediaExcerpt}
-        errors={errors?.basis?.mediaExcerpt}
-        wasSubmitAttempted={wasSubmitAttempted}
-        editorDispatch={editorDispatch}
-      />
-    );
+  const propositionCompoundEditorFields = !isRef(basisPropositionCompound) && (
+    <PropositionCompoundEditorFields
+      {...commonFieldsProps}
+      id={combineIds(id, propositionCompoundName)}
+      name={combineNames(name, propositionCompoundName)}
+      propositionCompound={basisPropositionCompound}
+      key={propositionCompoundName}
+      suggestionsKey={combineSuggestionsKeys(
+        suggestionsKey,
+        propositionCompoundName
+      )}
+      blurredFields={blurredFields?.basis?.propositionCompound}
+      dirtyFields={dirtyFields?.basis?.propositionCompound}
+      errors={errors?.basis?.propositionCompound}
+      wasSubmitAttempted={wasSubmitAttempted}
+      editorDispatch={editorDispatch}
+    />
+  );
+  const mediaExcerptEditorFields = !isOnlyRef(basisMediaExcerpt) && (
+    <MediaExcerptEditorFields
+      {...commonFieldsProps}
+      mediaExcerpt={basisMediaExcerpt}
+      id={combineIds(id, mediaExcerptName)}
+      key={mediaExcerptName}
+      name={combineNames(name, mediaExcerptName)}
+      suggestionsKey={combineSuggestionsKeys(suggestionsKey, mediaExcerptName)}
+      blurredFields={blurredFields?.basis?.mediaExcerpt}
+      dirtyFields={dirtyFields?.basis?.mediaExcerpt}
+      errors={errors?.basis?.mediaExcerpt}
+      wasSubmitAttempted={wasSubmitAttempted}
+      editorDispatch={editorDispatch}
+    />
+  );
   const writQuoteEditorFields = !isRef(basisWritQuote) && (
     <WritQuoteEditorFields
       {...commonFieldsProps}

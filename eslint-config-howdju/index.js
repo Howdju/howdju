@@ -78,6 +78,7 @@ module.exports = {
     },
     {
       files: "*.{ts,tsx}",
+      // TODO(424) extend plugin:@typescript-eslint/strict-type-checked instead
       plugins: ["@typescript-eslint"],
       parser: "@typescript-eslint/parser",
       extends: [

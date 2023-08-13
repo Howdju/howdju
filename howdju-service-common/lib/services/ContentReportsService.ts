@@ -38,12 +38,13 @@ export class ContentReportsService {
   }
 
   async createContentReport(
-    authToken: AuthToken,
+    authToken: AuthToken | undefined,
     contentReport: CreateContentReport
   ) {
     const now = new Date();
-    // TODO should user be optional?
-    const userId = await this.authService.readUserIdForAuthToken(authToken);
+    const userId = authToken
+      ? await this.authService.readUserIdForAuthToken(authToken)
+      : undefined;
 
     const result = CreateContentReport.safeParse(contentReport);
     if (!result.success) {
@@ -56,7 +57,9 @@ export class ContentReportsService {
       now
     );
 
-    const user = await this.usersService.readUserForId(userId);
+    const user = userId
+      ? await this.usersService.readUserForId(userId)
+      : undefined;
     await Promise.all([
       this.sendContentReportNotificationEmail(contentReport, user),
       user && this.sendContentReportConfirmationEmail(contentReport, user),

@@ -45,7 +45,7 @@ module.exports.StatementsService = class StatementsService extends (
     const { statements, proposition } = collectSentences(statement);
 
     let { proposition: prevSentence } =
-      await this.propositionsService.readOrCreateValidPropositionAsUser(
+      await this.propositionsService.readOrCreatePropositionAsUser(
         proposition,
         userId,
         now

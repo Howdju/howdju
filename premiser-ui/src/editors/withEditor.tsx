@@ -145,6 +145,7 @@ type EntityPropProps<EntityProp extends string, EntityType> = {
  * @param editorType The editor type to determine editor behaviors and state location.
  * @param EntityEditorFields The EditorFields class for the entity.
  * @param entityPropName The field on EntityEditorFields for the editEntity
+ *   TODO(460) deduplicate this with EntityEditorFieldsProps's EntityProp.
  * @param schemaOrId: Either the Zod schema (preferred) or the ID of the AJV schema to use to validate the entity.
  * @param commitConfig An optional commit config describing the API endpoint that commiting uses.
  *   When provided, the editor supports pre-request validation (prevents submission if the request

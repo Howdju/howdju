@@ -600,7 +600,7 @@ export class JustificationsService extends EntityService<
       case "PROPOSITION": {
         if ("text" in justificationTarget.entity) {
           const { isExtant, proposition } = await prefixErrorPath(
-            this.propositionsService.readOrCreateValidPropositionAsUser(
+            this.propositionsService.readOrCreatePropositionAsUser(
               justificationTarget.entity,
               userId,
               now

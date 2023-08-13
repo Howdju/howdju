@@ -381,15 +381,6 @@ export class PropositionsService {
   }
 
   async readOrCreatePropositionAsUser(
-    proposition: CreateProposition,
-    userId: EntityId,
-    now: Moment
-  ) {
-    // TODO remove
-    return this.readOrCreateValidPropositionAsUser(proposition, userId, now);
-  }
-
-  async readOrCreateValidPropositionAsUser(
     createProposition: CreateProposition,
     userId: EntityId,
     now: Moment

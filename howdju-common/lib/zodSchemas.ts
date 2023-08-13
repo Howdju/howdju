@@ -1209,8 +1209,7 @@ export type CreateJustificationInput = Entity & {
   basis: {
     type: JustificationBasisType;
     propositionCompound: EntityOrRef<CreatePropositionCompoundInput>;
-    // TODO why is this optional?
-    mediaExcerpt?: CreateMediaExcerptInput | EntityRef<MediaExcerpt>;
+    mediaExcerpt: CreateMediaExcerptInput | EntityRef<MediaExcerpt>;
     /** @deprecated */
     sourceExcerpt: EntityOrRef<CreateSourceExcerptInput>;
     /** @deprecated */
@@ -1256,7 +1255,7 @@ const createJustificationInputBaseShape = {
       CreatePropositionCompoundInput,
       PropositionCompoundRef,
     ]),
-    mediaExcerpt: MediaExcerptRef.optional(),
+    mediaExcerpt: MediaExcerptRef,
     sourceExcerpt: z.union([CreateSourceExcerptInput, SourceExcerptRef]),
     writQuote: z.union([CreateWritQuoteInput, WritQuoteRef]),
     justificationBasisCompound: Entity.optional(),

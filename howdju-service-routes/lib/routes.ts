@@ -1379,7 +1379,7 @@ export const serviceRoutes = {
     path: "content-reports",
     method: httpMethods.POST,
     request: handler(
-      Authed.merge(Body({ contentReport: CreateContentReport })),
+      Body({ contentReport: CreateContentReport }),
       async (
         appProvider: ServicesProvider,
         { authToken, body: { contentReport } }
