@@ -36,6 +36,7 @@
     "@types/lodash": "^4.14.186",
     "@types/random-seed": "^0.3.3",
     "@types/validator": "^13.7.10",
+    "canopy": "^0.4.1",
     "esbuild": "^0.18.17",
     "eslint": "^8.27.0",
     "eslint-config-howdju": "workspace:eslint-config-howdju",

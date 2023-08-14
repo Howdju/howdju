@@ -1,0 +1,15 @@
+# PEG reference: https://www.gnu.org/software/guile/manual/html_node/PEG-Syntax-Reference.html
+
+grammar MainSearch
+  search <- term (whitespace term)* %makeSearch
+  term <- quotedTerm / facetTerm / bareTerm
+
+  quotedTerm <- '"' [^"]* '"' / "'" [^']* "'" %makeQuotedTerm
+
+  facetTerm <- facetName ":" facetValue %makeFacetTerm
+  facetName <- [a-zA-Z] [a-zA-Z0-9]*
+  facetValue <- [a-zA-Z0-9]+
+
+  bareTerm <- [^\s]+ %makeBareTerm
+
+  whitespace <- [\s] %makeWhitespace

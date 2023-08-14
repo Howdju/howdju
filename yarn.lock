@@ -8484,6 +8484,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"abbrev@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "abbrev@npm:2.0.0"
+  checksum: 0e994ad2aa6575f94670d8a2149afe94465de9cedaaaac364e7fb43a40c3691c980ff74899f682f4ca58fa96b4cbd7421a015d3a6defe43a442117d7821a2f36
+  languageName: node
+  linkType: hard
+
 "abort-controller@npm:^3.0.0":
   version: 3.0.0
   resolution: "abort-controller@npm:3.0.0"
@@ -10970,6 +10977,18 @@ __metadata:
   version: 1.0.30001519
   resolution: "caniuse-lite@npm:1.0.30001519"
   checksum: 66085133ede05d947e30b62fed2cbae18e5767afda8b0de38840883e1cfe5846bf1568ddbafd31647544e59112355abedaf9c867ac34541bfc20d69e7a19d94c
+  languageName: node
+  linkType: hard
+
+"canopy@npm:^0.4.1":
+  version: 0.4.1
+  resolution: "canopy@npm:0.4.1"
+  dependencies:
+    handlebars: ">=4.0.0"
+    nopt: "*"
+  bin:
+    canopy: bin/canopy
+  checksum: 9d50f79cdcc7d13bc6eddd0660ce014c80c73ca3379dac148952bdcbab47935b5be4a8d9311bd8ac957a39084a71a17cecbd99f33b9ed05cef1db4b412b5dadb
   languageName: node
   linkType: hard
 
@@ -16345,6 +16364,24 @@ __metadata:
   languageName: node
   linkType: hard
 
+"handlebars@npm:>=4.0.0":
+  version: 4.7.8
+  resolution: "handlebars@npm:4.7.8"
+  dependencies:
+    minimist: ^1.2.5
+    neo-async: ^2.6.2
+    source-map: ^0.6.1
+    uglify-js: ^3.1.4
+    wordwrap: ^1.0.0
+  dependenciesMeta:
+    uglify-js:
+      optional: true
+  bin:
+    handlebars: bin/handlebars
+  checksum: 00e68bb5c183fd7b8b63322e6234b5ac8fbb960d712cb3f25587d559c2951d9642df83c04a1172c918c41bcfc81bfbd7a7718bbce93b893e0135fc99edea93ff
+  languageName: node
+  linkType: hard
+
 "hard-rejection@npm:^2.1.0":
   version: 2.1.0
   resolution: "hard-rejection@npm:2.1.0"
@@ -16699,6 +16736,7 @@ __metadata:
     ajv: ^8.1.0
     ajv-formats: ^2.0.2
     approx-string-match: ^2.0.0
+    canopy: ^0.4.1
     dom-anchor-text-position: ^5.0.0
     dom-anchor-text-quote: ^4.0.2
     esbuild: ^0.18.17
@@ -21849,6 +21887,17 @@ __metadata:
   bin:
     nodezip: bin/nodezip
   checksum: 46cc8a19acc3836185d48055834cef5421e490786eb5b1d06449c4901144f161ae27d94baa3b677551b013b35143ae807b0de47e2ba459e9684a1682a73d043f
+  languageName: node
+  linkType: hard
+
+"nopt@npm:*":
+  version: 7.2.0
+  resolution: "nopt@npm:7.2.0"
+  dependencies:
+    abbrev: ^2.0.0
+  bin:
+    nopt: bin/nopt.js
+  checksum: a9c0f57fb8cb9cc82ae47192ca2b7ef00e199b9480eed202482c962d61b59a7fbe7541920b2a5839a97b42ee39e288c0aed770e38057a608d7f579389dfde410
   languageName: node
   linkType: hard
 
@@ -28366,6 +28415,15 @@ resolve@^2.0.0-next.3:
   languageName: node
   linkType: hard
 
+"uglify-js@npm:^3.1.4":
+  version: 3.17.4
+  resolution: "uglify-js@npm:3.17.4"
+  bin:
+    uglifyjs: bin/uglifyjs
+  checksum: 7b3897df38b6fc7d7d9f4dcd658599d81aa2b1fb0d074829dd4e5290f7318dbca1f4af2f45acb833b95b1fe0ed4698662ab61b87e94328eb4c0a0d3435baf924
+  languageName: node
+  linkType: hard
+
 "ultron@npm:1.0.x":
   version: 1.0.2
   resolution: "ultron@npm:1.0.2"
@@ -29553,6 +29611,13 @@ resolve@^2.0.0-next.3:
   version: 1.2.4
   resolution: "word-wrap@npm:1.2.4"
   checksum: 8f1f2e0a397c0e074ca225ba9f67baa23f99293bc064e31355d426ae91b8b3f6b5f6c1fc9ae5e9141178bb362d563f55e62fd8d5c31f2a77e3ade56cb3e35bd1
+  languageName: node
+  linkType: hard
+
+"wordwrap@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "wordwrap@npm:1.0.0"
+  checksum: 2a44b2788165d0a3de71fd517d4880a8e20ea3a82c080ce46e294f0b68b69a2e49cff5f99c600e275c698a90d12c5ea32aff06c311f0db2eb3f1201f3e7b2a04
   languageName: node
   linkType: hard
 
