@@ -1,5 +1,5 @@
 import { expect } from "@jest/globals";
-import assign from "lodash/assign";
+import { assign, omit, pick } from "lodash";
 import moment from "moment";
 import { Pool } from "pg";
 
@@ -14,8 +14,13 @@ import {
   Persisted,
   AuthToken,
   UserOut,
+  brandedParse,
 } from "howdju-common";
-import { mockLogger, expectToBeSameMomentDeep } from "howdju-test-common";
+import {
+  mockLogger,
+  expectToBeSameMomentDeep,
+  restrictObject,
+} from "howdju-test-common";
 
 import { JustificationsDao } from "./JustificationsDao";
 import { endPoolAndDropDb, initDb, makeTestDbConfig } from "@/util/testUtil";
@@ -30,7 +35,6 @@ import {
 import { makeTestProvider } from "@/initializers/TestProvider";
 import { CreateJustificationDataIn } from "./dataTypes";
 import TestHelper from "@/initializers/TestHelper";
-import { merge } from "lodash";
 
 describe("JustificationsDao", () => {
   const dbConfig = makeTestDbConfig();
@@ -73,10 +77,10 @@ describe("JustificationsDao", () => {
       const now = moment();
       const createJustificationData: CreateJustificationDataIn = {
         rootTargetType: "STATEMENT",
-        rootTarget: statement,
+        rootTarget: brandedParse(StatementRef, { id: statement.id }),
         polarity: "NEGATIVE",
         target: {
-          type: "STATEMENT",
+          type: "STATEMENT" as const,
           entity: statement,
         },
         basis: {
@@ -93,14 +97,19 @@ describe("JustificationsDao", () => {
       );
 
       // Assert
-      const expectedJustification = merge({}, createJustificationData, {
-        id: expect.any(String),
-        counterJustifications: [],
-        creator: { id: user.id },
-        created: expect.toBeSameMoment(now),
-        rootPolarity: createJustificationData.polarity,
-      });
-      expect(justificationData).toMatchObject(expectedJustification);
+      const readJustification = await dao.readJustificationForId(
+        justificationData.id
+      );
+      if (!readJustification) {
+        throw new Error("Expected to read justification");
+      }
+      const expectedJustification = restrictObject(
+        readJustification,
+        createJustificationData
+      );
+      expect(justificationData).toEqual(
+        expectToBeSameMomentDeep(expectedJustification)
+      );
     });
   });
 
@@ -145,7 +154,7 @@ describe("JustificationsDao", () => {
         creator: { id: user.id, longName: user.longName },
         created: expect.toBeSameMoment(now),
         rootPolarity: createJustificationData.polarity,
-        rootTarget: expectToBeSameMomentDeep(statementData),
+        rootTarget: pick(statementData, ["id"]),
       });
       expect(justificationData).toMatchObject(expectedJustificationData);
       expect(justificationData?.creator).toEqual(
@@ -247,8 +256,8 @@ describe("JustificationsDao", () => {
         }
       );
       expect(justifications).toMatchObject([
-        expectedJustificationData,
-        expectedCounterJustificationData,
+        omitServiceSpecificProps(expectedJustificationData),
+        omitServiceSpecificProps(expectedCounterJustificationData),
       ]);
     });
 
@@ -380,9 +389,9 @@ describe("JustificationsDao", () => {
         }
       );
       expect(justifications).toMatchObject([
-        expectedProjustificationData,
-        expectedCounterJustificationData,
-        expectedDisjustificationData,
+        omitServiceSpecificProps(expectedProjustificationData),
+        omitServiceSpecificProps(expectedCounterJustificationData),
+        omitServiceSpecificProps(expectedDisjustificationData),
       ]);
     });
   });
@@ -412,7 +421,7 @@ describe("JustificationsDao", () => {
     );
     const createStatementData = {
       speaker,
-      sentenceType: "PROPOSITION",
+      sentenceType: "PROPOSITION" as const,
       sentence: proposition,
     };
     const { statement } = await statementsService.readOrCreate(
@@ -448,3 +457,25 @@ describe("JustificationsDao", () => {
     return propositionCompound;
   }
 });
+
+/** Because we use StatementsService to create the rootTarget, it includes a lot of properties that
+ * the DAOs do not. So remove them for comparisons. */
+function omitServiceSpecificProps(justificationData: any) {
+  return omit(justificationData, [
+    "rootTarget.creator.longName",
+    "rootTarget.sentence.propositionTagVotes",
+    "rootTarget.sentence.recommendedTags",
+    "rootTarget.sentence.tags",
+    "rootTarget.speaker.created",
+    "rootTarget.speaker.creator",
+    "rootTarget.speaker.creatorUserId",
+    "rootTarget.speaker.isOrganization",
+    "rootTarget.speaker.knownFor",
+    "rootTarget.speaker.modified",
+    "rootTarget.speaker.name",
+    "rootTarget.speaker.normalName",
+    "rootTarget.speaker.twitterUrl",
+    "rootTarget.speaker.websiteUrl",
+    "rootTarget.speaker.wikipediaUrl",
+  ]);
+}

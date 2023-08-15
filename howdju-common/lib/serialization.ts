@@ -1,5 +1,6 @@
 import cloneDeep from "lodash/cloneDeep";
-import { JustificationOut } from "./apiModels";
+import { JustificationOut, JustificationWithRootOut } from "./apiModels";
+import { JustificationView } from "./viewModels";
 
 import { Entity, Proposition, SourceExcerpt } from "./zodSchemas";
 
@@ -12,7 +13,7 @@ export type Decircularized<T> = {
 };
 
 export function decircularizeJustification(
-  justification: JustificationOut
+  justification: JustificationOut | JustificationWithRootOut | JustificationView
 ): Decircularized<JustificationOut> {
   const decircularized: Decircularized<JustificationOut> =
     cloneDeep(justification);

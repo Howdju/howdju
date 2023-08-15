@@ -8,6 +8,7 @@
  */
 const config = {
   apiRoot: process.env.API_ROOT,
+  apiTimeoutMs: 10_000,
   humanDateTimeFormat: "D MMM YYYY h:mm:ss A Z",
   isDev: process.env.NODE_ENV === "development",
   contentScriptAckDelayMs: 200,

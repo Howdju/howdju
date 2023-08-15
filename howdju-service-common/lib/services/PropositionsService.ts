@@ -59,6 +59,7 @@ import {
   TagsService,
 } from "..";
 import { UserIdent } from "./types";
+import { ensurePresent } from "./patterns";
 
 const emptyPropositionsByVotePolarity = {
   [PropositionTagVotePolarities.POSITIVE]: [],
@@ -136,8 +137,12 @@ export class PropositionsService {
     return this.readMorePropositions(continuationToken, countNumber);
   }
 
-  readPropositionsForIds(propositionsIds: EntityId[]) {
-    return this.propositionsDao.readPropositionsForIds(propositionsIds);
+  async readPropositionsForIds(propositionIds: EntityId[]) {
+    const propositions = await this.propositionsDao.readPropositionsForIds(
+      propositionIds
+    );
+    ensurePresent(propositionIds, propositions, "PROPOSITION");
+    return propositions;
   }
 
   async readInitialPropositions(

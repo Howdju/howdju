@@ -4,6 +4,7 @@ import { mockLogger } from "howdju-test-common";
 import { ServiceRoute, serviceRoutes } from "howdju-service-routes";
 import { ServicesProvider } from "howdju-service-common";
 import {
+  brandedParse,
   httpMethods,
   httpStatusCodes,
   PersorgRef,
@@ -70,17 +71,19 @@ describe("routeRequest", () => {
   test("correctly routes a request with query string params", async () => {
     // Arrange
     const callback = jest.fn();
-    const proposition = {
-      ...PropositionRef.parse({ id: "42" }),
+    const creator = {
+      id: "52",
+      longName: "The creator",
+    };
+    const proposition = brandedParse(PropositionRef, {
+      id: "42",
       text: "Hi they said me.",
       created: moment(),
-    };
+      creator,
+    });
     const statements: StatementOut[] = [
-      {
-        ...StatementRef.parse({ id: "92" }),
-        created: moment(),
-        sentenceType: "PROPOSITION",
-        sentence: proposition,
+      brandedParse(StatementRef, {
+        id: "92",
         speaker: {
           ...PersorgRef.parse({ id: "92" }),
           isOrganization: false,
@@ -88,7 +91,11 @@ describe("routeRequest", () => {
           created: moment(),
           creatorUserId: "52",
         },
-      },
+        sentenceType: "PROPOSITION",
+        sentence: proposition,
+        created: moment(),
+        creator,
+      }),
     ];
     const readStatementsForSentenceTypeAndId = jest
       .fn()

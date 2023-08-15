@@ -4,6 +4,7 @@ import { Moment } from "moment";
 import {
   CreateSource,
   EntityId,
+  isDefined,
   makeModelErrors,
   momentAdd,
   SourceOut,
@@ -31,6 +32,17 @@ export class SourcesService {
     private permissionsService: PermissionsService,
     private sourcesDao: SourcesDao
   ) {}
+
+  async readSourcesForIds(sourceIds: EntityId[]): Promise<SourceOut[]> {
+    const sources = await this.sourcesDao.readSourcesForIds(sourceIds);
+    const missingSourceIds = sources
+      .map((s, i) => (!s ? sourceIds[i] : undefined))
+      .filter(isDefined);
+    if (missingSourceIds.length) {
+      throw new EntityNotFoundError("SOURCE", missingSourceIds);
+    }
+    return sources;
+  }
 
   async readSourceForId(sourceId: EntityId): Promise<SourceOut> {
     const source = await this.sourcesDao.readSourceForId(sourceId);

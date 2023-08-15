@@ -10,10 +10,8 @@ import { MergeDeep } from "type-fest";
 
 import { ApiErrorCode } from "./codes";
 import { EntityId } from "./entities";
-import { JustificationView } from "./viewModels";
 import { ModelErrors } from "./zodError";
 import {
-  Entity,
   JustificationRef,
   JustificationVote,
   Persorg,
@@ -25,7 +23,6 @@ import {
   Source,
   SourceExcerpt,
   MediaExcerpt,
-  Statement,
   Tag,
   TagVote,
   Url,
@@ -35,12 +32,13 @@ import {
   WritQuote,
   UrlLocator,
   MediaExcerptCitation,
+  MediaExcerptSpeaker,
+  PersistedEntity,
 } from "./zodSchemas";
 import {
   EntityRef,
   Persisted,
   PersistedJustificationWithRootRef,
-  PersistRelated,
   ToPersistedEntity,
 } from "./zodSchemaTypes";
 
@@ -51,7 +49,7 @@ export type MediaExcerptOut = MergeDeep<
     locators: {
       urlLocators: UrlLocatorOut[];
     };
-    speakers: PersorgOut[];
+    speakers: MediaExcerptSpeakerOut[];
   }
 >;
 
@@ -101,6 +99,11 @@ export type MediaExcerptCitationOut = MediaExcerptCitation & {
   source: SourceOut;
 };
 
+export type MediaExcerptSpeakerOut = MediaExcerptSpeaker & {
+  persorg: PersorgOut;
+  creator: CreatorBlurb;
+};
+
 /**
  * An out model representing errors for any CRUD action.
  *
@@ -115,9 +118,10 @@ export interface ErrorOut<T extends object> {
 
 export interface PropositionOut
   extends Persisted<Proposition>,
-    TaggedEntityOut<Proposition> {
+    TaggedEntityOut {
   justifications?: JustificationOut[];
   propositionTagVotes?: PropositionTagVoteOut[];
+  creator?: CreatorBlurb;
 }
 
 export type WritOut = Persisted<Writ>;
@@ -135,22 +139,89 @@ export type SourceExcerptOut = Persisted<SourceExcerpt> &
     | { type: "VID_SEGMENT"; entity: VidSegmentOut }
   );
 
-export interface StatementOut extends Persisted<Statement> {
-  justifications?: JustificationOut[];
-}
+export type StatementOut = PersistedEntity &
+  TaggedEntityOut & {
+    speaker: PersorgOut;
+    justifications?: JustificationOut[];
+    created: Moment;
+    creator: CreatorBlurb;
+  } & (
+    | {
+        sentenceType: "PROPOSITION";
+        sentence: PropositionOut;
+      }
+    | {
+        sentenceType: "STATEMENT";
+        sentence: StatementOut;
+      }
+  );
 export type SentenceOut = PropositionOut | StatementOut;
 
-export type CreatorBlurb = EntityRef<User> & Pick<Persisted<User>, "longName">;
+export type CreatorBlurb = Pick<UserOut, "id" | "longName">;
 
+/**
+ * A justification returned from the API with only a ref to its root target.
+ *
+ * Appropriate for display along with other justifications, where the root target
+ * will have been requested separately.
+ */
 export type JustificationOut = PersistedJustificationWithRootRef & {
   creator?: EntityRef<User>;
   /** Justifications countering this justification. */
-  counterJustifications?: (JustificationRef | JustificationView)[];
+  counterJustifications?: (JustificationRef | JustificationWithRootOut)[];
   /** The sorting score for the current user */
   score?: number;
   /** The current user's vote on this justification. */
   vote?: JustificationVote;
 };
+
+/**
+ * A JustificationOut with a full root target.
+ *
+ * Appropriate for display in lists where the root target will not have been separately requested.
+ */
+export type JustificationWithRootOut = Omit<
+  JustificationOut,
+  "rootTarget" | "rootTargetType" | "target" | "basis"
+> &
+  (
+    | {
+        rootTargetType: "PROPOSITION";
+        rootTarget: PropositionOut;
+      }
+    | {
+        rootTargetType: "STATEMENT";
+        rootTarget: StatementOut;
+      }
+  ) & {
+    target:
+      | {
+          type: "PROPOSITION";
+          entity: PropositionOut;
+        }
+      | {
+          type: "STATEMENT";
+          entity: StatementOut;
+        }
+      | {
+          type: "JUSTIFICATION";
+          entity: JustificationWithRootOut;
+        };
+  } & {
+    basis:
+      | {
+          type: "PROPOSITION_COMPOUND";
+          entity: PropositionCompoundOut;
+        }
+      | {
+          type: "MEDIA_EXCERPT";
+          entity: MediaExcerptOut;
+        }
+      | {
+          type: "WRIT_QUOTE";
+          entity: WritQuoteOut;
+        };
+  };
 
 export type UrlOut = ToPersistedEntity<Url>;
 
@@ -158,15 +229,17 @@ export type JustificationRootTargetOut = PropositionOut | StatementOut;
 
 export type PropositionCompoundOut = Persisted<PropositionCompound>;
 
-export type PropositionCompoundAtomOut =
-  PersistRelated<PropositionCompoundAtom>;
+export type PropositionCompoundAtomOut = PropositionCompoundAtom & {
+  entity: PropositionOut;
+};
 
 // TagVoteViewModel don't need a target because they are added to their targets
 export type TagVoteViewModel = TagVote;
 
 export type PropositionTagVoteOut = Persisted<PropositionTagVote>;
 
-export type TaggedEntityOut<T extends Entity = Entity> = Persisted<T> & {
+/** A mixin type for Entities that can be tagged. */
+export type TaggedEntityOut = PersistedEntity & {
   tags?: Tag[];
   // TODO(112) put votes on tags and type it as a viewmodel
   tagVotes?: TagVoteViewModel[];
@@ -221,6 +294,8 @@ export interface SortDescription {
   value?: string;
 }
 
-export type PersorgOut = Persisted<Persorg>;
+export type PersorgOut = Persisted<Persorg> & {
+  creator?: CreatorBlurb;
+};
 
 export type TagOut = Persisted<Tag>;

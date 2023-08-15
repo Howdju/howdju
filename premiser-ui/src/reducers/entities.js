@@ -119,6 +119,7 @@ export default handleActions(
             ["tags"],
             ["urlLocators"],
             ["users"],
+            ["urls"],
             ["writQuotes", stubSkippingCustomizer("quoteText")],
             ["writs", stubSkippingCustomizer("title")],
           ],

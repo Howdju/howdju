@@ -11,6 +11,7 @@ import {
   ContextTrailsService,
   DevTopicMessageConsumer,
   DevTopicMessageSender,
+  FactChecksService,
   GroupsService,
   JustificationsService,
   JustificationBasisCompoundsService,
@@ -110,19 +111,30 @@ export function servicesInitializer(provider: AwsProvider) {
     provider.justificationsDao
   );
 
+  const usersService = new UsersService(
+    provider.appConfig,
+    actionsService,
+    authService,
+    permissionsService,
+    provider.userExternalIdsDao,
+    provider.usersDao,
+    provider.accountSettingsDao
+  );
+
   const persorgsService = new PersorgsService(
     provider.appConfig,
     authService,
     permissionsService,
+    usersService,
     provider.persorgsDao
   );
 
   const statementsService = new StatementsService(
-    provider.logger,
     authService,
     provider.statementsDao,
     persorgsService,
-    propositionsService
+    propositionsService,
+    usersService
   );
 
   const propositionCompoundsService = new PropositionCompoundsService(
@@ -222,15 +234,6 @@ export function servicesInitializer(provider: AwsProvider) {
     authService,
     provider.accountSettingsDao
   );
-  const usersService = new UsersService(
-    provider.appConfig,
-    actionsService,
-    authService,
-    permissionsService,
-    provider.userExternalIdsDao,
-    provider.usersDao,
-    provider.accountSettingsDao
-  );
   const justificationVotesService = new JustificationVotesService(
     provider.logger,
     provider.justificationVoteValidator,
@@ -296,6 +299,13 @@ export function servicesInitializer(provider: AwsProvider) {
     provider.appearancesDao
   );
 
+  const factChecksService = new FactChecksService(
+    appearancesService,
+    usersService,
+    urlsService,
+    sourcesService
+  );
+
   provider.logger.debug("servicesInit complete");
 
   return {
@@ -308,6 +318,7 @@ export function servicesInitializer(provider: AwsProvider) {
     contextTrailsService,
     devTopicMessageConsumer,
     emailService,
+    factChecksService,
     groupsService,
     justificationsService,
     justificationBasisCompoundsService,

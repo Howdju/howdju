@@ -19,13 +19,7 @@ export function* beginEditOfMediaExcerptFromInfo() {
 function toCreateMediaExcerptInput(
   payload: MediaExcerptInfo
 ): CreateMediaExcerptInput {
-  const {
-    anchors,
-    sourceDescription,
-    authors: speakers,
-    pincite,
-    url,
-  } = payload;
+  const { anchors, sourceDescription, authors, pincite, url } = payload;
   const quotation = anchors?.map((a) => a.exactText.trim()).join("\n\n") ?? "";
   return {
     localRep: {
@@ -41,6 +35,6 @@ function toCreateMediaExcerptInput(
         pincite,
       },
     ],
-    speakers,
+    speakers: authors?.map((persorg) => ({ persorg })),
   };
 }

@@ -13,10 +13,10 @@ import {
 import { EntityId } from "./entities";
 import { isDefined } from "./general";
 import { OneOf } from "./typeUtils";
+import { JustificationView } from "./viewModels";
 import { ModelErrors } from "./zodError";
 import {
   AccountSettings,
-  CounterJustification,
   CreateCounterJustification,
   CreateCounterJustificationBasis,
   CreateCounterJustificationInput,
@@ -33,6 +33,7 @@ import {
   CreateJustificationTarget,
   CreateJustifiedSentenceInput,
   CreateMediaExcerptInput,
+  CreateMediaExcerptSpeakerInput,
   CreatePersorg,
   CreatePicRegionInput,
   CreatePropositionCompoundAtomInput,
@@ -76,12 +77,6 @@ export const isRootPositive = (j: Justification | JustificationOut) =>
   j.rootPolarity === "POSITIVE";
 export const isRootNegative = (j: Justification | JustificationOut) =>
   j.rootPolarity === "NEGATIVE";
-// If a justification targets another justification, its polarity should always be negative
-export function isCounter(
-  j: Justification | JustificationOut
-): j is CounterJustification {
-  return j.target.type === "JUSTIFICATION" && isNegative(j);
-}
 
 export const isRootJustification = (j: Justification) =>
   j.target?.type === j.rootTargetType &&
@@ -200,6 +195,16 @@ export const makeCreateUrl = (props?: Partial<CreateUrl>): CreateUrl =>
 export const makeCreateUrlLocatorInput = (
   props?: Partial<CreateUrlLocatorInput>
 ): CreateUrlLocatorInput => merge({ url: makeCreateUrl() }, props);
+
+export const makeCreateMediaExcerptSpeakerInput = (
+  props?: Partial<CreateMediaExcerptSpeakerInput>
+): CreateMediaExcerptSpeakerInput =>
+  merge(
+    {
+      persorg: makeCreatePersorg(),
+    },
+    props
+  );
 
 export const makeCreatePersorg = (): CreatePersorg => ({
   isOrganization: false,
@@ -492,10 +497,11 @@ function muxCreateJustificationTargetErrors(
     case "JUSTIFICATION":
       return {
         _errors: errors._errors,
-        justification: isRef(target.entity)
-          ? errors.entity
-          : errors.entity &&
-            muxCreateJustificationErrors(target.entity, errors.entity),
+        justification:
+          "basis" in target.entity
+            ? errors.entity &&
+              muxCreateJustificationErrors(target.entity, errors.entity)
+            : errors.entity,
       };
     default:
       throw newExhaustedEnumError(target);
@@ -649,7 +655,10 @@ function muxSourceExcerptEntity(
  * persisted, then it counters a ref to it.
  */
 export const makeCreateCounterJustificationInput = (
-  targetJustification: CreateJustificationInput | JustificationOut
+  targetJustification:
+    | CreateJustificationInput
+    | JustificationOut
+    | JustificationView
 ): CreateCounterJustificationInput => ({
   rootPolarity: negateRootPolarity(targetJustification.rootPolarity),
   target: {

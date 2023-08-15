@@ -2,7 +2,10 @@ import { Moment } from "moment";
 import { z } from "zod";
 import {
   MediaExcerptOut,
+  PropositionCompoundOut,
+  PropositionOut,
   SourceOut,
+  StatementOut,
   UserOut,
   WritOut,
   WritQuoteOut,
@@ -79,21 +82,21 @@ export type PersistedJustificationWithRootRef = Omit<
   (
     | {
         rootTargetType: "PROPOSITION";
-        rootTarget: EntityRef<Proposition>;
+        rootTarget: PersistedEntity;
       }
     | {
         rootTargetType: "STATEMENT";
-        rootTarget: EntityRef<Statement>;
+        rootTarget: PersistedEntity;
       }
   ) & {
     target:
       | {
           type: "PROPOSITION";
-          entity: Persisted<Proposition>;
+          entity: PropositionOut;
         }
       | {
           type: "STATEMENT";
-          entity: Persisted<Statement>;
+          entity: StatementOut;
         }
       | {
           type: "JUSTIFICATION";
@@ -102,7 +105,7 @@ export type PersistedJustificationWithRootRef = Omit<
     basis:
       | {
           type: "PROPOSITION_COMPOUND";
-          entity: Persisted<PropositionCompound>;
+          entity: PropositionCompoundOut;
         }
       | {
           type: "MEDIA_EXCERPT";
@@ -315,6 +318,12 @@ export type PersistOrRef<T> = T extends Entity
         ? PersistedOrRef<T[key]>
         : PersistOrRef<T[key]>;
     };
+
+/** Whether o is an unbranded entity refererence. */
+export function isBareRef(o: object): o is PersistedEntity {
+  const keys = Object.keys(o);
+  return keys.length === 1 && keys[0] === "id";
+}
 
 /**
  * Whether o is a plain Ref of type brand.

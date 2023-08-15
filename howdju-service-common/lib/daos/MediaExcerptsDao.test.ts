@@ -71,6 +71,7 @@ describe("MediaExcerptsDao", () => {
                     creatorUserId: user.id,
                     created: expect.any(MomentConstructor),
                   },
+                  textFragmentUrl: undefined,
                   creatorUserId: user.id,
                   created: expect.any(MomentConstructor),
                 },
@@ -91,7 +92,6 @@ describe("MediaExcerptsDao", () => {
             ],
             speakers: [
               {
-                id: expect.any(String),
                 creator: { id: user.id },
                 created: expect.any(MomentConstructor),
               },

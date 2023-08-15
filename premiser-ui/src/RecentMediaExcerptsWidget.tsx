@@ -2,7 +2,7 @@ import React, { HTMLAttributes } from "react";
 
 import { MediaExcerptOut } from "howdju-common";
 
-import { smallCellClasses } from "./CellList";
+import { largeCellClasses } from "./CellList";
 import ListEntitiesWidget from "./ListEntitiesWidget";
 import { api } from "./actions";
 import { mediaExcerptsSchema } from "./normalizationSchemas";
@@ -24,7 +24,7 @@ export default function RecentMediaExcerptsWidget({
         id={cardId}
         key={cardId}
         mediaExcerpt={mediaExcerpt}
-        className={smallCellClasses}
+        className={largeCellClasses}
       />
     );
   };
@@ -36,6 +36,7 @@ export default function RecentMediaExcerptsWidget({
       widgetId={widgetId}
       entitiesWidgetStateKey="recentMediaExcerpts"
       fetchEntities={api.fetchRecentMediaExcerpts}
+      cellClasses={largeCellClasses}
       entityToCard={toCard}
       entitiesSchema={mediaExcerptsSchema}
       emptyEntitiesMessage="No recent media excerpts"

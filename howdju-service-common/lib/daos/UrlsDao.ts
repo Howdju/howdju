@@ -12,7 +12,6 @@ import {
   JustificationRootTargetType,
   CreateUrl,
   UrlOut,
-  isDefined,
 } from "howdju-common";
 
 import { toUrl } from "./orm";
@@ -42,29 +41,24 @@ export class UrlsDao {
     return this.readUrlForId(row.url_id);
   }
 
-  async readUrlForId(id: EntityId) {
-    const {
-      rows: [row],
-    } = await this.database.query(
+  async readUrlsForIds(urlIds: EntityId[]) {
+    const { rows } = await this.database.query(
       "readUrlsForIds",
-      "select * from urls where url_id = $1 and deleted is null",
-      [id]
+      "select * from urls where url_id = any($1) and deleted is null",
+      [urlIds]
     );
-    if (!row) {
-      return undefined;
-    }
-    return {
+    return rows.map((row) => ({
       id: toIdString(row.url_id),
       url: row.url,
       canonicalUrl: row.canonical_url,
       creatorUserId: toIdString(row.creator_user_id),
       created: row.created,
-    };
+    }));
   }
 
-  async readUrlsForIds(ids: EntityId[]) {
-    const urls = await Promise.all(ids.map((id) => this.readUrlForId(id)));
-    return urls.filter(isDefined);
+  async readUrlForId(urlId: EntityId) {
+    const [url] = await this.readUrlsForIds([urlId]);
+    return url;
   }
 
   async readUrlsForCanonicalUrl(canonicalUrl: string) {
@@ -175,26 +169,20 @@ export class UrlsDao {
 
   async createUrl(url: CreateUrl, userId: EntityId, now: Moment) {
     const {
-      rows: [row],
+      rows: [{ url_id }],
     } = await this.database.query(
       "createUrl",
       `
         insert into urls (url, canonical_url, creator_user_id, created)
         values ($1, $2, $3, $4)
-        returning *
+        returning url_id
         `,
       [url.url, url.canonicalUrl, userId, now]
     );
-    return {
-      id: toIdString(row.url_id),
-      url: row.url,
-      canonicalUrl: row.canonical_url,
-      creatorUserId: toIdString(row.creator_user_id),
-      created: row.created,
-    };
+    return this.readUrlForId(toIdString(url_id));
   }
 
-  setCanonicalUrlForId(urlId: string, canonicalUrl: string) {
+  setCanonicalUrlForId(urlId: string, canonicalUrl: string | undefined) {
     return this.database.query(
       "setCanonicalUrlForId",
       `update urls set canonical_url = $2 where url_id = $1`,

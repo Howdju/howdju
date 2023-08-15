@@ -9,6 +9,7 @@ import {
   JustificationRef,
   PropositionCompoundRef,
   PropositionRef,
+  UserRef,
 } from "./zodSchemas";
 import { brandedParse } from "./zodSchemaTypes";
 
@@ -65,6 +66,10 @@ describe("nextContextTrailItem", () => {
       id: "1",
       text: "the-proposition-text",
       created: utcNow(),
+      creator: brandedParse(UserRef, {
+        id: "1",
+        longName: "The user long name",
+      }),
     });
     const basis = {
       type: "PROPOSITION_COMPOUND" as const,
@@ -118,6 +123,10 @@ describe("nextContextTrailItem", () => {
       id: "1",
       text: "the-proposition-text",
       created: utcNow(),
+      creator: brandedParse(UserRef, {
+        id: "1",
+        longName: "The user long name",
+      }),
     });
     const basis = {
       type: "PROPOSITION_COMPOUND" as const,

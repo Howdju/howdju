@@ -42,7 +42,7 @@ import {
   createNextContinuationToken,
   decodeContinuationToken,
 } from "./pagination";
-import { retryTransaction } from "./patterns";
+import { ensurePresent, retryTransaction } from "./patterns";
 
 // Must be greater than the number MediaExcerpts targeting the same URL or Source that we want
 // to succeed creating in parallel.
@@ -69,6 +69,16 @@ export class MediaExcerptsService {
     return mediaExcerpt;
   }
 
+  async readMediaExcerptForIds(
+    mediaExcerptIds: EntityId[]
+  ): Promise<MediaExcerptOut[]> {
+    const mediaExcerpts = await this.mediaExcerptsDao.readMediaExcerptsForIds(
+      mediaExcerptIds
+    );
+    ensurePresent(mediaExcerptIds, mediaExcerpts, "MEDIA_EXCERPT");
+    return mediaExcerpts;
+  }
+
   async readOrCreateMediaExcerpt(
     userIdent: UserIdent,
     createMediaExcerpt: CreateMediaExcerpt
@@ -82,7 +92,7 @@ export class MediaExcerptsService {
     const createUrls = createUrlLocators.map((u) => u.url);
     const [
       { sources, isExtant: isExtantSources },
-      { persorgs: speakers, isExtant: isExtantPersorgs },
+      { persorgs: speakerPersorgs, isExtant: isExtantPersorgs },
       urls,
     ] = await Promise.all([
       this.sourcesService.readOrCreateSources(
@@ -93,7 +103,7 @@ export class MediaExcerptsService {
       createMediaExcerpt.speakers
         ? this.persorgsService.readOrCreatePersorgs(
             creator.id,
-            createMediaExcerpt.speakers,
+            createMediaExcerpt.speakers.map((s) => s.persorg),
             createdAt
           )
         : { persorgs: [], isExtant: true },
@@ -154,7 +164,7 @@ export class MediaExcerptsService {
     const [
       { urlLocators, isExtant: isExtantUrlLocators },
       { citations, isExtant: isExtantCitations },
-      { isExtant: isExtantSpeakers },
+      { speakers, isExtant: isExtantSpeakers },
     ] = await Promise.all([
       isExtantMediaExcerpt
         ? this.readOrCreateUrlLocators(
@@ -189,7 +199,7 @@ export class MediaExcerptsService {
       this.ensureMediaExcerptSpeakers(
         creator.id,
         mediaExcerpt.id,
-        speakers,
+        speakerPersorgs,
         createdAt
       ),
     ]);
@@ -206,7 +216,7 @@ export class MediaExcerptsService {
       mediaExcerpt: merge({}, mediaExcerpt, {
         locators: { urlLocators },
         citations,
-        speakers,
+        speakers: speakers,
       }),
     };
   }
@@ -365,8 +375,10 @@ export class MediaExcerptsService {
       )
     );
     const isExtant = result.every((r) => r.isExtant);
+    const speakers = result.map((r) => r.speaker);
     return {
       isExtant,
+      speakers,
     };
   }
 
@@ -376,23 +388,24 @@ export class MediaExcerptsService {
     persorg: PersorgOut,
     created: Moment
   ) {
-    const hasEquivalent =
-      await this.mediaExcerptsDao.hasEquivalentMediaExcerptSpeaker(
+    const equivalentSpeaker =
+      await this.mediaExcerptsDao.readEquivalentMediaExcerptSpeaker(
         mediaExcerptId,
         persorg
       );
-    if (hasEquivalent) {
+    if (equivalentSpeaker) {
       return {
+        speaker: equivalentSpeaker,
         isExtant: true,
       };
     }
-    await this.mediaExcerptsDao.createMediaExcerptSpeaker(
+    const speaker = await this.mediaExcerptsDao.createMediaExcerptSpeaker(
       userId,
       mediaExcerptId,
       persorg,
       created
     );
-    return { isExtant: false };
+    return { speaker, isExtant: false };
   }
 
   async readMediaExcerpts(

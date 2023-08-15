@@ -2,6 +2,7 @@ import { uniq } from "lodash";
 
 import {
   EntityId,
+  PropositionOut,
   PropositionTagVotePolarities,
   PropositionTagVotePolarity,
 } from "howdju-common";
@@ -140,7 +141,7 @@ export class PropositionTagsDao {
         );
       acc[p.id] = p;
       return acc;
-    }, {} as Record<EntityId, PropositionData>);
+    }, {} as Record<EntityId, PropositionOut>);
 
     const propositionsByPolarity = rows.reduce((acc, r) => {
       const proposition = propositionById[r.proposition_id];

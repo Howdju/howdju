@@ -8,7 +8,7 @@ import { fetchUrl } from "../fetchUrl";
 export class CanonicalUrlsService {
   constructor(private readonly canonicalUrlsDao: CanonicalUrlsDao) {}
 
-  async readOrFetchCanonicalUrl(rawUrl: string) {
+  async readOrFetchCanonicalUrl(rawUrl: string): Promise<string | undefined> {
     const url = normalizeUrl(rawUrl);
     const oldCanonicalUrl = await this.canonicalUrlsDao.read(url);
     if (oldCanonicalUrl) {

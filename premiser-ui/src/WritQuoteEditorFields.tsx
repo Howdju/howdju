@@ -70,8 +70,8 @@ const WritQuoteEditorFields = (props: Props) => {
       editors.addListItem(
         editorType,
         editorId,
-        index,
         combineNames(name, "urls"),
+        index,
         makeUrl
       )
     );
@@ -84,8 +84,8 @@ const WritQuoteEditorFields = (props: Props) => {
       editors.removeListItem(
         editorType,
         editorId,
-        index,
-        combineNames(name, "urls")
+        combineNames(name, "urls"),
+        index
       )
     );
 

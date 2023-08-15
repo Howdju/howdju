@@ -2,6 +2,7 @@ import {
   AppearanceOut,
   CreateAppearance,
   EntityId,
+  isDefined,
   utcNow,
 } from "howdju-common";
 
@@ -14,6 +15,7 @@ import { PropositionsService } from "./PropositionsService";
 import { UsersService } from "./UsersService";
 import { UserIdent } from "./types";
 import { EntityNotFoundError } from "..";
+import { keyBy } from "lodash";
 
 export class AppearancesService {
   constructor(
@@ -38,7 +40,7 @@ export class AppearancesService {
     ] = await Promise.all([
       this.mediaExcerptsService.readMediaExcerptForId(mediaExcerptId),
       this.readOrCreateApparition(userId, createAppearance.apparition),
-      this.usersService.readCreatorInfoForId(userId),
+      this.usersService.readUserBlurbForId(userId),
     ]);
 
     const created = utcNow();
@@ -90,43 +92,78 @@ export class AppearancesService {
     }
   }
 
-  async readAppearanceForId(
-    userIdent: UserIdent,
-    appearanceId: EntityId
-  ): Promise<AppearanceOut> {
-    const appearance = await this.appearancesDao.readAppearanceForId(
-      appearanceId
-    );
-    if (!appearance) {
-      throw new EntityNotFoundError("APPEARANCE", appearanceId);
-    }
-    const { mediaExcerptId, propositionId, creatorUserId, created } =
-      appearance;
-    const [mediaExcerpt, apparition, creator] = await Promise.all([
-      this.mediaExcerptsService.readMediaExcerptForId(mediaExcerptId),
-      this.readApparition(userIdent, { propositionId }),
-      this.usersService.readCreatorInfoForId(creatorUserId),
-    ]);
-
-    return {
-      id: appearanceId,
-      mediaExcerpt,
-      apparition,
-      creator,
-      created,
-    };
+  async readAppearanceForId(appearanceId: EntityId): Promise<AppearanceOut> {
+    const [appearance] = await this.readAppearanceForIds([appearanceId]);
+    return appearance;
   }
 
-  private async readApparition(
-    userIdent: UserIdent,
-    { propositionId }: { propositionId: EntityId }
-  ): Promise<AppearanceOut["apparition"]> {
-    return {
-      type: "PROPOSITION",
-      entity: await this.propositionsService.readPropositionForId(
-        propositionId,
-        userIdent
+  async readAppearanceForIds(
+    appearanceIds: EntityId[]
+  ): Promise<AppearanceOut[]> {
+    const appearances = await this.appearancesDao.readAppearanceForIds(
+      appearanceIds
+    );
+    const missingIds = appearances
+      .map((a, i) => (!a ? appearanceIds[i] : undefined))
+      .filter(isDefined);
+    if (missingIds.length) {
+      throw new EntityNotFoundError("APPEARANCE", missingIds);
+    }
+
+    const relatedIds = appearances.reduce(
+      (acc, a) => {
+        acc.mediaExcerptIds.add(a.mediaExcerptId);
+        acc.propositionIds.add(a.propositionId);
+        acc.creatorUserIds.add(a.creatorUserId);
+        return acc;
+      },
+      {
+        mediaExcerptIds: new Set<EntityId>(),
+        propositionIds: new Set<EntityId>(),
+        creatorUserIds: new Set<EntityId>(),
+      }
+    );
+
+    const [mediaExcerpts, propositions, creators] = await Promise.all([
+      this.mediaExcerptsService.readMediaExcerptForIds(
+        Array.from(relatedIds.mediaExcerptIds)
       ),
-    };
+      this.propositionsService.readPropositionsForIds(
+        Array.from(relatedIds.propositionIds)
+      ),
+      this.usersService.readUserBlurbsForIds(
+        Array.from(relatedIds.creatorUserIds)
+      ),
+    ]);
+    const mediaExcerptsById = keyBy(mediaExcerpts, "id");
+    const propositionsById = keyBy(propositions, "id");
+    const creatorsById = keyBy(creators, "id");
+
+    return appearances.map(
+      ({ id, mediaExcerptId, propositionId, creatorUserId, created }) => ({
+        id,
+        mediaExcerpt: mediaExcerptsById[mediaExcerptId],
+        apparition: {
+          type: "PROPOSITION",
+          entity: propositionsById[propositionId],
+        },
+        creator: creatorsById[creatorUserId],
+        created,
+      })
+    );
+  }
+
+  async readAppearancesWithOverlappingMediaExcerptsForUsers(
+    userIds: EntityId[],
+    urlIds: EntityId[],
+    sourceIds: EntityId[]
+  ): Promise<AppearanceOut[]> {
+    const appearanceIds =
+      await this.appearancesDao.readOverlappingAppearanceIdsForUsers(
+        userIds,
+        urlIds,
+        sourceIds
+      );
+    return this.readAppearanceForIds(appearanceIds);
   }
 }

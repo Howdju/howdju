@@ -56,8 +56,8 @@ export default function PropositionCompoundEditorFields(props: Props) {
       editors.addListItem(
         editorType,
         editorId,
-        index,
         combineNames(name, "atoms"),
+        index,
         makeCreatePropositionCompoundAtomInput
       )
     );
@@ -71,8 +71,8 @@ export default function PropositionCompoundEditorFields(props: Props) {
         editors.removeListItem(
           editorType,
           editorId,
-          index,
-          combineNames(name, "atoms")
+          combineNames(name, "atoms"),
+          index
         ),
       ];
       // Don't let the atoms be empty
@@ -81,8 +81,8 @@ export default function PropositionCompoundEditorFields(props: Props) {
           editors.addListItem(
             editorType,
             editorId,
-            index,
             combineNames(name, "atoms"),
+            index,
             makeCreatePropositionCompoundAtomInput
           )
         );

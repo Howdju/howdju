@@ -78,7 +78,7 @@ describe("MediaExcerptsService", () => {
             pincite: "the pincite",
           },
         ],
-        speakers: [{ name: "the speaker", isOrganization: false }],
+        speakers: [{ persorg: { name: "the speaker", isOrganization: false } }],
       };
 
       const { isExtant, mediaExcerpt } = await service.readOrCreateMediaExcerpt(
@@ -90,6 +90,7 @@ describe("MediaExcerptsService", () => {
         creatorUserId: user.id,
         created: mediaExcerpt.created,
       };
+      const creator = { id: user.id, longName: user.longName };
       expect(isExtant).toBe(false);
       expect(mediaExcerpt).toEqual(
         expectToBeSameMomentDeep(
@@ -110,6 +111,7 @@ describe("MediaExcerptsService", () => {
                   mediaExcerptId: mediaExcerpt.id,
                   url: {
                     id: expect.any(String),
+                    canonicalUrl: undefined,
                     ...creatorInfo,
                   },
                   anchors: [
@@ -136,7 +138,7 @@ describe("MediaExcerptsService", () => {
                   id: expect.any(String),
                   normalDescription: "the source description",
                   ...creatorInfo,
-                  creator: { id: user.id, longName: user.longName },
+                  creator,
                 },
                 normalPincite: "the pincite",
                 ...creatorInfo,
@@ -144,11 +146,16 @@ describe("MediaExcerptsService", () => {
             ],
             speakers: [
               {
-                id: expect.any(String),
-                creator: { id: user.id },
-                created: expect.any(MomentConstructor),
-                creatorUserId: user.id,
-                normalName: "the speaker",
+                mediaExcerptId: mediaExcerpt.id,
+                persorg: expect.objectContaining({
+                  id: expect.any(String),
+                  creator,
+                  created: expect.any(MomentConstructor),
+                  creatorUserId: user.id,
+                  normalName: "the speaker",
+                }),
+                ...creatorInfo,
+                creator,
               },
             ],
           })
@@ -185,7 +192,7 @@ describe("MediaExcerptsService", () => {
           },
           { source: { description: "the source description" } },
         ],
-        speakers: [{ name: "the speaker", isOrganization: false }],
+        speakers: [{ persorg: { name: "the speaker", isOrganization: false } }],
       };
       const { mediaExcerpt: firstMediaExcerpt } =
         await service.readOrCreateMediaExcerpt(
@@ -213,7 +220,7 @@ describe("MediaExcerptsService", () => {
           urlLocators: [{ url: { url: "https://www.example.com" } }],
         },
         citations: [{ source: { description: "the source description" } }],
-        speakers: [{ name: "the speaker", isOrganization: false }],
+        speakers: [{ persorg: { name: "the speaker", isOrganization: false } }],
       };
       const { mediaExcerpt: firstMediaExcerpt } =
         await service.readOrCreateMediaExcerpt(
@@ -249,7 +256,7 @@ describe("MediaExcerptsService", () => {
           quotation: "the text quote",
         },
         citations: [{ source: { description: "the source description" } }],
-        speakers: [{ name: "the speaker", isOrganization: false }],
+        speakers: [{ persorg: { name: "the speaker", isOrganization: false } }],
       };
       const { mediaExcerpt: firstMediaExcerpt } =
         await service.readOrCreateMediaExcerpt(
@@ -288,7 +295,7 @@ describe("MediaExcerptsService", () => {
           urlLocators: [{ url: { url: "https://www.example.com" } }],
         },
         citations: [{ source: { description: "the source description" } }],
-        speakers: [{ name: "the speaker", isOrganization: false }],
+        speakers: [{ persorg: { name: "the speaker", isOrganization: false } }],
       };
       const { mediaExcerpt: firstMediaExcerpt } =
         await service.readOrCreateMediaExcerpt(
@@ -319,7 +326,7 @@ describe("MediaExcerptsService", () => {
           urlLocators: [{ url: { url: "https://www.example.com" } }],
         },
         citations: [{ source: { description: "the source description" } }],
-        speakers: [{ name: "the speaker", isOrganization: false }],
+        speakers: [{ persorg: { name: "the speaker", isOrganization: false } }],
       };
       const { mediaExcerpt: firstMediaExcerpt } =
         await service.readOrCreateMediaExcerpt(
@@ -358,7 +365,7 @@ describe("MediaExcerptsService", () => {
           urlLocators: [{ url: { url: "https://www.example.com" } }],
         },
         citations: [{ source: { description: "the source description" } }],
-        speakers: [{ name: "the speaker", isOrganization: false }],
+        speakers: [{ persorg: { name: "the speaker", isOrganization: false } }],
       };
       const { mediaExcerpt: firstMediaExcerpt } =
         await service.readOrCreateMediaExcerpt(
@@ -389,7 +396,7 @@ describe("MediaExcerptsService", () => {
           urlLocators: [{ url: { url: "https://www.website-1.com" } }],
         },
         citations: [{ source: { description: "the source description" } }],
-        speakers: [{ name: "the speaker", isOrganization: false }],
+        speakers: [{ persorg: { name: "the speaker", isOrganization: false } }],
       };
       const { mediaExcerpt: firstMediaExcerpt } =
         await service.readOrCreateMediaExcerpt(
@@ -462,7 +469,7 @@ describe("MediaExcerptsService", () => {
             source: { description: "the source description" },
           },
         ],
-        speakers: [{ name: "the speaker", isOrganization: false }],
+        speakers: [{ persorg: { name: "the speaker", isOrganization: false } }],
       };
 
       // Act
@@ -479,7 +486,16 @@ describe("MediaExcerptsService", () => {
       const mediaExcerpt = mediaExcerptResults[0].mediaExcerpt;
       for (const mediaExcerptResult of mediaExcerptResults) {
         expect(mediaExcerptResult.mediaExcerpt).toEqual(
-          expectToBeSameMomentDeep(mediaExcerpt)
+          expectToBeSameMomentDeep({
+            ...mediaExcerpt,
+            // The speaker relationship does not participate in the equivalence,
+            // so while the persorgs should be equal, the MediaExcerptSpeakers will not be.
+            speakers: mediaExcerpt.speakers.map(({ persorg }) =>
+              expect.objectContaining({
+                persorg,
+              })
+            ),
+          })
         );
       }
     });
@@ -612,7 +628,7 @@ describe("MediaExcerptsService", () => {
             pincite: "the pincite",
           },
         ],
-        speakers: [{ name: "the speaker", isOrganization: false }],
+        speakers: [{ persorg: { name: "the speaker", isOrganization: false } }],
       };
 
       const { mediaExcerpt } = await service.readOrCreateMediaExcerpt(
@@ -656,6 +672,12 @@ describe("MediaExcerptsService", () => {
                 })
               ),
             },
+            speakers: mediaExcerpt.speakers.map(({ persorg }) =>
+              expect.objectContaining({
+                persorg,
+                mediaExcerptId: recreatedMediaExcerpt.id,
+              })
+            ),
           })
         )
       );
@@ -681,12 +703,14 @@ describe("MediaExcerptsService", () => {
   describe("readMediaExcerpts", () => {
     test("reads initial filtered MediaExcerpts", async () => {
       const { authToken, user } = await testHelper.makeUser();
-      const speaker1 = await testHelper.makePersorg(user.id, {
+      const persorg1 = await testHelper.makePersorg(user.id, {
         name: "Name 1",
       });
-      const speaker2 = await testHelper.makePersorg(user.id, {
+      const persorg2 = await testHelper.makePersorg(user.id, {
         name: "Name 2",
       });
+      const speaker1 = { persorg: persorg1 };
+      const speaker2 = { persorg: persorg2 };
       const mediaExcerpts = await Promise.all(
         Array.from({ length: 10 }).map(async (_, i) => {
           await sleep(Math.random() * 1000);
@@ -704,7 +728,7 @@ describe("MediaExcerptsService", () => {
       );
       // Media excerpts are created out of ID order above, but will be returned sorted by ID
       const filters: MediaExcerptSearchFilter = {
-        speakerPersorgId: speaker1.id,
+        speakerPersorgId: persorg1.id,
       };
       const sorts: SortDescription[] = [];
       const count = 3;
@@ -722,7 +746,7 @@ describe("MediaExcerptsService", () => {
       // Assert
       const expectedMediaExcerpts = mediaExcerpts
         .sort((a, b) => toNumber(a.id) - toNumber(b.id))
-        .filter((me) => me.speakers[0].id === speaker1.id)
+        .filter((me) => me.speakers[0].persorg.id === persorg1.id)
         .slice(0, count);
       expect(initialMediaExcerpts).toIncludeSameMembers(
         expectToBeSameMomentDeep(expectedMediaExcerpts)
@@ -731,12 +755,14 @@ describe("MediaExcerptsService", () => {
 
     test("reads more filtered MediaExcerpts", async () => {
       const { authToken, user } = await testHelper.makeUser();
-      const speaker1 = await testHelper.makePersorg(user.id, {
+      const persorg1 = await testHelper.makePersorg(user.id, {
         name: "Name 1",
       });
-      const speaker2 = await testHelper.makePersorg(user.id, {
+      const persorg2 = await testHelper.makePersorg(user.id, {
         name: "Name 2",
       });
+      const speaker1 = { persorg: persorg1 };
+      const speaker2 = { persorg: persorg2 };
       const mediaExcerpts = await Promise.all(
         Array.from({ length: 10 }).map(async (_, i) => {
           await sleep(Math.random() * 1000);
@@ -754,7 +780,7 @@ describe("MediaExcerptsService", () => {
       );
       mediaExcerpts.sort((a, b) => toNumber(a.id) - toNumber(b.id));
       const filters: MediaExcerptSearchFilter = {
-        speakerPersorgId: speaker1.id,
+        speakerPersorgId: persorg1.id,
       };
       const sorts: SortDescription[] = [];
       const count = 3;
@@ -769,7 +795,7 @@ describe("MediaExcerptsService", () => {
       // Media excerpts are created out of ID order above, but will be returned sorted by ID
       mediaExcerpts.sort((a, b) => toNumber(a.id) - toNumber(b.id));
       const expectedMediaExcerpts = mediaExcerpts
-        .filter((me) => me.speakers[0].id === speaker1.id)
+        .filter((me) => me.speakers[0].persorg.id === persorg1.id)
         .slice(count, 2 * count);
 
       // Act
@@ -799,7 +825,9 @@ describe("MediaExcerptsService", () => {
                 // Make quotaiton unique to avoid any equivalence.
                 quotation: `The most magical thing ${i}`,
               },
-              speakers: [{ name: "Name 1", isOrganization: false }],
+              speakers: [
+                { persorg: { name: "Name 1", isOrganization: false } },
+              ],
             }
           );
         })
@@ -859,7 +887,7 @@ describe("MediaExcerptsService", () => {
             // Make quotaiton unique to avoid any equivalence.
             quotation: `The most important thing is to remember the most important thing`,
           },
-          speakers: [{ name: "Name 1", isOrganization: false }],
+          speakers: [{ persorg: { name: "Name 1", isOrganization: false } }],
         }
       );
 
@@ -894,7 +922,7 @@ describe("MediaExcerptsService", () => {
             // Make quotaiton unique to avoid any equivalence.
             quotation: `The most important thing is to remember the most important thing`,
           },
-          speakers: [{ name: "Name 1", isOrganization: false }],
+          speakers: [{ persorg: { name: "Name 1", isOrganization: false } }],
         }
       );
 

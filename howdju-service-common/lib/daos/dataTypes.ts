@@ -1,12 +1,11 @@
 import { z } from "zod";
-import { CamelCasedProperties, MergeDeep } from "type-fest";
+import { CamelCasedProperties, MergeDeep, Simplify } from "type-fest";
 import { toString } from "lodash";
 
 import {
   AccountSettings,
   camelCaseKeysDeep,
   ContentReport,
-  CreateJustification,
   CreateRegistrationRequest,
   EntityRef,
   Justification,
@@ -38,6 +37,8 @@ import {
   WritQuote,
   EntityId,
   BasedJustificationWithRootRef,
+  PersistedEntity,
+  CreateJustificationInput,
 } from "howdju-common";
 import { Moment } from "moment";
 import { toIdString } from "./daosUtil";
@@ -50,7 +51,7 @@ export interface PropositionRow {
   text: string;
   normal_text: string;
   created: Moment;
-  creator_user_id?: EntityRowId;
+  creator_user_id: EntityRowId;
   creator_long_name?: string;
 }
 export type PropositionData = Persisted<Proposition> & {
@@ -156,8 +157,44 @@ export type JustificationRootTargetData =
       rootTargetType: "STATEMENT";
       rootTarget: EntityRef<Statement>;
     };
-export type CreateJustificationDataIn = PersistRelated<CreateJustification> &
-  JustificationRootTargetData;
+export type CreateJustificationDataIn = JustificationRootTargetData &
+  Simplify<
+    Omit<
+      CreateJustificationInput,
+      "basis" | "target" | "rootTargetType" | "rootTarget" | "rootPolarity"
+    > & {
+      basis:
+        | {
+            type: "PROPOSITION_COMPOUND";
+            entity: PersistedEntity;
+          }
+        | {
+            type: "MEDIA_EXCERPT";
+            entity: PersistedEntity;
+          }
+        | {
+            type: "SOURCE_EXCERPT";
+            entity: PersistedEntity;
+          }
+        | {
+            type: "WRIT_QUOTE";
+            entity: PersistedEntity;
+          };
+      target:
+        | {
+            type: "PROPOSITION";
+            entity: PersistedEntity;
+          }
+        | {
+            type: "STATEMENT";
+            entity: PersistedEntity;
+          }
+        | {
+            type: "JUSTIFICATION";
+            entity: PersistedEntity;
+          };
+    }
+  >;
 
 export type BasedJustificationDataOut = BasedJustificationWithRootRef & {
   creator?: CreatorBlurbData | EntityRef<User>;

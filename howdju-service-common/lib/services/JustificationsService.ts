@@ -9,12 +9,10 @@ import join from "lodash/join";
 import map from "lodash/map";
 import partition from "lodash/partition";
 import toNumber from "lodash/toNumber";
-import { merge } from "lodash";
 
 import {
   JustificationBasisTypes,
   isTruthy,
-  JustificationRootTargetTypes,
   JustificationTargetTypes,
   authorizationErrorCodes,
   ActionTypes,
@@ -33,22 +31,19 @@ import {
   AuthToken,
   Logger,
   SortDescription,
-  JustificationTarget,
-  PersistOrRef,
   newUnimplementedError,
   CreateJustificationTarget,
   CreateJustificationBasis,
   utcNow,
   toJson,
   PropositionOut,
-  EntityRef,
-  isRef,
   StatementOut,
   PropositionCompoundOut,
   WritQuoteOut,
   makeModelErrors,
-  JustificationView,
   isOnlyRef,
+  JustificationWithRootOut,
+  PersistedEntity,
 } from "howdju-common";
 
 import { ApiConfig } from "../config";
@@ -262,25 +257,10 @@ export class JustificationsService extends EntityService<
   }
 
   protected async doReadOrCreate(
-    justification: CreateJustification | EntityRef<Justification>,
+    justification: CreateJustification,
     userId: EntityId,
     now: Moment
   ): Promise<{ isExtant: boolean; justification: JustificationOut }> {
-    if (justification.id) {
-      return {
-        isExtant: true,
-        justification: await this.readJustificationForId(
-          justification.id,
-          userId
-        ),
-      };
-    }
-    if (isRef(justification)) {
-      throw newImpossibleError(
-        "The justification can't be a ref if its id was falsy."
-      );
-    }
-
     return await this.readOrCreateEquivalentValidJustificationAsUser(
       justification,
       userId,
@@ -291,29 +271,26 @@ export class JustificationsService extends EntityService<
   async readJustificationForId(
     justificationId: EntityId,
     userId: EntityId | undefined
-  ): Promise<JustificationView> {
+  ): Promise<JustificationWithRootOut> {
     const justificationData =
       await this.justificationsDao.readJustificationForId(justificationId);
     if (!justificationData) {
       throw new EntityNotFoundError("JUSTIFICATION", justificationId);
     }
 
-    const [rootTarget, targetEntity, basisEntity] = await Promise.all([
-      this.readRootTarget(justificationData, userId),
-      this.readJustificationTarget(justificationData.target, { userId }),
-      this.readJustificationBasis(justificationData.basis),
+    const [rootTargetInfo, targetInfo, basisInfo] = await Promise.all([
+      this.readRootTargetInfo(justificationData, userId),
+      this.readJustificationTargetInfo(justificationData.target, { userId }),
+      this.readJustificationBasisInfo(justificationData.basis),
     ]);
-    const justification = merge(
-      {},
-      justificationData,
-      { rootTarget },
-      {
-        target: {
-          entity: targetEntity,
-        },
+    const justification = {
+      ...justificationData,
+      ...rootTargetInfo,
+      ...{
+        target: targetInfo,
       },
-      { basis: { entity: basisEntity } }
-    );
+      ...{ basis: basisInfo },
+    };
     this.logTargetInconsistency(justification);
     return justification;
   }
@@ -445,7 +422,7 @@ export class JustificationsService extends EntityService<
     );
   }
 
-  private async readRootTarget(
+  private async readRootTargetInfo(
     justification: {
       rootTargetType: JustificationRootTargetType;
       rootTarget: { id: EntityId };
@@ -453,69 +430,107 @@ export class JustificationsService extends EntityService<
     userId: EntityId | undefined
   ) {
     switch (justification.rootTargetType) {
-      case JustificationRootTargetTypes.PROPOSITION:
-        return this.propositionsService.readPropositionForId(
+      case "PROPOSITION": {
+        const rootTarget = await this.propositionsService.readPropositionForId(
           justification.rootTarget.id,
           { userId, authToken: undefined }
         );
-      case JustificationRootTargetTypes.STATEMENT:
-        return this.statementsService.readStatementForId(
+        return { rootTarget, rootTargetType: "PROPOSITION" as const };
+      }
+      case "STATEMENT": {
+        const rootTarget = await this.statementsService.readStatementForId(
+          { userId },
           justification.rootTarget.id
         );
-      default:
-        throw newImpossibleError(
-          `Exhausted JustificationRootTargetTypes: ${justification}`
-        );
+        return { rootTarget, rootTargetType: "STATEMENT" as const };
+      }
     }
   }
 
-  private async readJustificationTarget(
-    justificationTarget: PersistOrRef<JustificationTarget>,
+  private async readJustificationTargetInfo(
+    justificationTarget:
+      | {
+          type: "PROPOSITION";
+          entity: PersistedEntity;
+        }
+      | {
+          type: "STATEMENT";
+          entity: PersistedEntity;
+        }
+      | {
+          type: "JUSTIFICATION";
+          entity: PersistedEntity;
+        },
     { userId }: { userId: EntityId | undefined }
   ) {
     switch (justificationTarget.type) {
-      case "PROPOSITION":
-        return await this.propositionsService.readPropositionForId(
+      case "PROPOSITION": {
+        const entity = await this.propositionsService.readPropositionForId(
           justificationTarget.entity.id,
           { userId, authToken: undefined }
         );
+        return {
+          type: "PROPOSITION" as const,
+          entity,
+        };
+      }
 
-      case "STATEMENT":
-        return await this.statementsService.readStatementForId(
+      case "STATEMENT": {
+        const entity = await this.statementsService.readStatementForId(
+          { userId },
           justificationTarget.entity.id
         );
+        return {
+          type: "STATEMENT" as const,
+          entity,
+        };
+      }
 
-      case "JUSTIFICATION":
-        return await this.readJustificationForId(
+      case "JUSTIFICATION": {
+        const entity = await this.readJustificationForId(
           justificationTarget.entity.id,
           userId
         );
-
-      default:
-        throw newExhaustedEnumError(justificationTarget);
+        return {
+          type: "JUSTIFICATION" as const,
+          entity,
+        };
+      }
     }
   }
 
-  private async readJustificationBasis(
+  private async readJustificationBasisInfo(
     justificationBasis: ReadJustificationDataOut["basis"]
   ) {
     switch (justificationBasis.type) {
-      case "WRIT_QUOTE":
-        return await this.writQuotesService.readWritQuoteForId(
+      case "WRIT_QUOTE": {
+        const entity = await this.writQuotesService.readWritQuoteForId(
           justificationBasis.entity.id
         );
-
-      case "PROPOSITION_COMPOUND":
-        return await this.propositionCompoundsService.readPropositionCompoundForId(
+        return {
+          type: "WRIT_QUOTE" as const,
+          entity,
+        };
+      }
+      case "PROPOSITION_COMPOUND": {
+        const entity =
+          await this.propositionCompoundsService.readPropositionCompoundForId(
+            justificationBasis.entity.id
+          );
+        return {
+          type: "PROPOSITION_COMPOUND" as const,
+          entity,
+        };
+      }
+      case "MEDIA_EXCERPT": {
+        const entity = await this.mediaExcerptsService.readMediaExcerptForId(
           justificationBasis.entity.id
         );
-      case "MEDIA_EXCERPT":
-        return await this.mediaExcerptsService.readMediaExcerptForId(
-          justificationBasis.entity.id
-        );
-
-      default:
-        throw newExhaustedEnumError(justificationBasis);
+        return {
+          type: "MEDIA_EXCERPT" as const,
+          entity,
+        };
+      }
     }
   }
 
@@ -625,27 +640,49 @@ export class JustificationsService extends EntityService<
       }
 
       case "STATEMENT": {
-        const { isExtant, statement } = await prefixErrorPath(
-          this.statementsService.doReadOrCreate(
-            justificationTarget.entity,
-            userId,
-            now
-          ) as Promise<{ isExtant: boolean; statement: StatementOut }>,
-          "entity"
+        // TODO(452) remove CreateStatement.id and use `"id" in createPropositionTagVote.proposition`
+        // instead (and switch the conditonal blocks)
+        if ("sentence" in justificationTarget.entity) {
+          const { isExtant, statement } = await prefixErrorPath(
+            this.statementsService.doReadOrCreate(
+              justificationTarget.entity,
+              userId,
+              now
+            ) as Promise<{ isExtant: boolean; statement: StatementOut }>,
+            "entity"
+          );
+          return {
+            isExtant,
+            target: { type, entity: statement },
+          };
+        }
+        const statement = await this.statementsService.readStatementForId(
+          { userId },
+          justificationTarget.entity.id
         );
         return {
-          isExtant,
+          isExtant: true,
           target: { type, entity: statement },
         };
       }
 
       case "JUSTIFICATION": {
-        const { isExtant, justification } = await prefixErrorPath(
-          this.doReadOrCreate(justificationTarget.entity, userId, now),
-          "entity"
+        if ("target" in justificationTarget.entity) {
+          const { isExtant, justification } = await prefixErrorPath(
+            this.doReadOrCreate(justificationTarget.entity, userId, now),
+            "entity"
+          );
+          return {
+            isExtant,
+            target: { type, entity: justification },
+          };
+        }
+        const justification = await this.readJustificationForId(
+          justificationTarget.entity.id,
+          userId
         );
         return {
-          isExtant,
+          isExtant: true,
           target: { type, entity: justification },
         };
       }

@@ -190,8 +190,8 @@ export const editors = {
     (
       editorType: EditorType,
       editorId: EditorId,
-      itemIndex: number,
       listPathMaker: ListPathFactory,
+      itemIndex: number,
       itemFactory: () => any
     ) => ({ editorType, editorId, itemIndex, listPathMaker, itemFactory })
   ),
@@ -200,15 +200,26 @@ export const editors = {
     (
       editorType: EditorType,
       editorId: EditorId,
-      itemIndex: number,
-      listPathMaker: ListPathFactory
+      listPathMaker: ListPathFactory,
+      itemIndex: number
     ) => ({ editorType, editorId, itemIndex, listPathMaker })
   ),
-
+  replaceListItem: createAction(
+    "EDITORS/REPLACE_LIST_ITEM",
+    (
+      editorType: EditorType,
+      editorId: EditorId,
+      listPathMaker: ListPathFactory,
+      itemIndex: number,
+      item: any
+    ) => ({ editorType, editorId, itemIndex, listPathMaker, item })
+  ),
+  /** @deprecated TODO replace with editors.addListItem */
   addSpeaker: createAction(
     "EDITORS/ADD_SPEAKER",
     (editorType: EditorType, editorId: EditorId) => ({ editorType, editorId })
   ),
+  /** @deprecated TODO replace with editors.remoteListItem */
   removeSpeaker: createAction(
     "EDITORS/REMOVE_SPEAKER",
     (
@@ -223,27 +234,13 @@ export const editors = {
       index,
     })
   ),
-  replaceSpeaker: createAction(
-    "EDITORS/REPLACE_SPEAKER",
-    (
-      editorType: EditorType,
-      editorId: EditorId,
-      speaker: CreatePersorgInput,
-      index: number
-    ) => ({
-      editorType,
-      editorId,
-      speaker,
-      index,
-    })
-  ),
 
-  /** @deprecated use addListItem instead */
+  /** @deprecated TODO use addListItem instead */
   addUrl: createAction(
     "EDITORS/ADD_URL",
     (editorType: EditorType, editorId: EditorId) => ({ editorType, editorId })
   ),
-  /** @deprecated use removeListItem instead */
+  /** @deprecated TODO use removeListItem instead */
   removeUrl: createAction(
     "EDITORS/REMOVE_URL",
     (editorType: EditorType, editorId: EditorId, url: Url, index: number) => ({
@@ -254,7 +251,7 @@ export const editors = {
     })
   ),
 
-  /** @deprecated use addListItem instead */
+  /** @deprecated TODO use addListItem instead */
   addPropositionCompoundAtom: createAction(
     "EDITORS/ADD_PROPOSITION_COMPOUND_ATOM",
     (editorType: EditorType, editorId: EditorId, index: number) => ({
@@ -263,7 +260,7 @@ export const editors = {
       index,
     })
   ),
-  /** @deprecated use removeListItem instead */
+  /** @deprecated TODO use removeListItem instead */
   removePropositionCompoundAtom: createAction(
     "EDITORS/REMOVE_PROPOSITION_COMPOUND_ATOM",
     (

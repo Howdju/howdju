@@ -1,4 +1,4 @@
-import { map, zip } from "lodash";
+import { zip } from "lodash";
 
 import {
   AuthToken,
@@ -8,9 +8,9 @@ import {
   areAdjacentConnectingEntities,
   toJson,
   newImpossibleError,
-  ContextTrailItem,
   RelationPolarity,
   contextTrailItemPolarity,
+  ContextTrailItemOut,
 } from "howdju-common";
 
 import {
@@ -38,7 +38,7 @@ export class ContextTrailsService {
   async readContextTrail(
     authToken: AuthToken | undefined,
     contextTrailInfos: ContextTrailItemInfo[]
-  ): Promise<ContextTrailItem[]> {
+  ): Promise<ContextTrailItemOut[]> {
     if (contextTrailInfos.length > 32) {
       throw new InvalidRequestError("The maximum context trail length is 32");
     }
@@ -46,7 +46,7 @@ export class ContextTrailsService {
       authToken
     );
     const typedConnectingEntities = await Promise.all(
-      map(contextTrailInfos, async (info) => {
+      contextTrailInfos.map(async (info) => {
         switch (info.connectingEntityType) {
           case "JUSTIFICATION":
             return {

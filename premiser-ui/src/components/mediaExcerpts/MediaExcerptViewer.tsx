@@ -48,9 +48,9 @@ export default function MediaExcerptViewer({ mediaExcerpt }: Props) {
         ))}
       </ul>
       <ul className="speakers">
-        {mediaExcerpt.speakers.map((speaker) => (
-          <li key={speaker.key} className="speaker">
-            <Link to={paths.persorg(speaker)}>{speaker.name}</Link>
+        {mediaExcerpt.speakers.map(({ persorg }) => (
+          <li key={persorg.key} className="speaker">
+            <Link to={paths.persorg(persorg)}>{persorg.name}</Link>
           </li>
         ))}
       </ul>

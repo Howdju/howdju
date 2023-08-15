@@ -294,7 +294,9 @@ describe("CreatePropositionPage", () => {
               },
               locators: { urlLocators: [{ url: { url } }] },
               citations: [{ source: { description: sourceDescription } }],
-              speakers: [{ name: speakerName, isOrganization: false }],
+              speakers: [
+                { persorg: { name: speakerName, isOrganization: false } },
+              ],
             },
           },
         };
@@ -331,6 +333,12 @@ describe("CreatePropositionPage", () => {
           rest.get("http://localhost/search-persorgs", (_req, res, ctx) => {
             // delay so that we can cancel the request.
             return res(ctx.delay(1), ctx.json([]));
+          }),
+          rest.get("http://localhost/canonical-urls", (_req, res, ctx) => {
+            return res(
+              ctx.status(httpStatusCodes.OK),
+              ctx.json({ canonicalUrl: undefined })
+            );
           })
         );
 
@@ -412,6 +420,10 @@ describe("CreatePropositionPage", () => {
         id: basisSourceId,
         text: "This warrants a response.",
         created: moment(),
+        creator: {
+          id: "1",
+          longName: "Long name",
+        },
       });
       const justification: CreateJustification = {
         target: {

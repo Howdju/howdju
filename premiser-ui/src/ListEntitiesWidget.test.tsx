@@ -28,6 +28,10 @@ const propositions = Array.from(Array(20).keys()).map((id) => ({
   ...PropositionRef.parse({ id: `proposition${id}` }),
   created,
   text: `The proposition text ${id}`,
+  creator: {
+    id: "creator-id",
+    longName: "creator-long-name",
+  },
 }));
 const initialFetchCount = 7;
 const fetchCount = 8;

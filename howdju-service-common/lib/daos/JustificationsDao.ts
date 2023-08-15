@@ -7,7 +7,7 @@ import map from "lodash/map";
 import mapValues from "lodash/mapValues";
 import snakeCase from "lodash/snakeCase";
 import { Moment } from "moment";
-import { difference, fromPairs, isArray, sortBy, toString } from "lodash";
+import { fromPairs, isArray, sortBy, toString } from "lodash";
 
 import {
   assert,
@@ -74,6 +74,7 @@ import {
   BasedJustificationDataOut,
 } from "./dataTypes";
 import { SqlClause } from "./daoTypes";
+import { ensurePresent } from "../services/patterns";
 
 export const MAX_COUNT = 1024;
 
@@ -735,7 +736,7 @@ export class JustificationsDao {
           insert into justifications
             (root_target_type, root_target_id, root_polarity, target_type, target_id, basis_type, basis_id, polarity, creator_user_id, created)
             values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
-          returning *
+          returning justification_id
           `;
     const args = [
       createJustification.rootTargetType,
@@ -823,7 +824,7 @@ export class JustificationsDao {
 
   private async addStatements(justifications: BasedJustificationDataOut[]) {
     // Collect all the statements we need to read, as well as the justifications that need them as rootTargets and targets
-    const statementIds = new Set();
+    const statementIds = new Set<EntityId>();
     const justificationsByRootTargetStatementId = new Map();
     const justificationsByTargetStatementId = new Map();
     for (const justification of justifications) {
@@ -867,6 +868,11 @@ export class JustificationsDao {
       const statement = await this.statementsDao.readStatementForId(
         statementId
       );
+      if (!statement) {
+        throw newImpossibleError(
+          `Failed to read Statement ID ${statementId} even though referential integrity should have guaranteed its presence.`
+        );
+      }
 
       const justificationsRootTargetingStatement =
         justificationsByRootTargetStatementId.get(statement.id);
@@ -887,7 +893,7 @@ export class JustificationsDao {
   }
 
   private async addMediaExcerpts(justifications: BasedJustificationDataOut[]) {
-    const mediaExcerptIds = new Set<EntityId>();
+    const mediaExcerptIdSet = new Set<EntityId>();
     const justificationsByBasisMediaExcerptId = new Map();
     for (const justification of justifications) {
       if (justification.basis.type !== "MEDIA_EXCERPT") {
@@ -900,18 +906,13 @@ export class JustificationsDao {
       justificationsByBasisMediaExcerptId
         .get(mediaExcerptId)
         .push(justification);
-      mediaExcerptIds.add(mediaExcerptId);
+      mediaExcerptIdSet.add(mediaExcerptId);
     }
+    const mediaExcerptIds = Array.from(mediaExcerptIdSet);
     const mediaExcerpts = await this.mediaExcerptsDao.readMediaExcerptsForIds(
-      Array.from(mediaExcerptIds)
+      mediaExcerptIds
     );
-    if (!mediaExcerpts.every(isDefined)) {
-      const missingMediaExcerptIds = difference(
-        [...mediaExcerptIds],
-        mediaExcerpts.filter(isDefined).map((me) => me.id)
-      );
-      throw new EntityNotFoundError("MEDIA_EXCERPT", missingMediaExcerptIds);
-    }
+    ensurePresent(mediaExcerptIds, mediaExcerpts, "MEDIA_EXCERPT");
     for (const mediaExcerpt of mediaExcerpts) {
       for (const justification of justificationsByBasisMediaExcerptId.get(
         mediaExcerpt.id

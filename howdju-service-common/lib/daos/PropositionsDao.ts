@@ -15,6 +15,7 @@ import {
   JustificationBasisTypes,
   JustificationRootTargetTypes,
   Proposition,
+  PropositionOut,
   PropositionRef,
   requireArgs,
   SortDescription,
@@ -26,16 +27,14 @@ import {
 import { toProposition } from "./orm";
 import { normalizeText, toIdString } from "./daosUtil";
 import { DatabaseSortDirection } from "./daoModels";
-import {
-  Database,
-  EntityNotFoundError,
-  PropositionData,
-  PropositionRow,
-} from "..";
-import { toString } from "lodash";
+import { Database, EntityNotFoundError, PropositionRow, UsersDao } from "..";
+import { keyBy, toString, uniq } from "lodash";
 
 export class PropositionsDao {
-  constructor(private database: Database) {}
+  constructor(
+    private readonly database: Database,
+    private readonly usersDao: UsersDao
+  ) {}
 
   async createProposition(
     userId: EntityId,
@@ -69,34 +68,40 @@ export class PropositionsDao {
     return proposition;
   }
 
-  async readPropositionsForIds(propositionIds: EntityId[]) {
-    const { rows } = await this.database.query<PropositionRow>(
-      "readPropositionsForIds",
-      `select * from propositions where proposition_id = any ($1) and deleted is null`,
-      [propositionIds]
-    );
-    return rows.map(toProposition);
+  async readPropositionForId(propositionId: EntityId) {
+    const [proposition] = await this.readPropositionsForIds([propositionId]);
+    return proposition;
   }
 
-  async readPropositionForId(propositionId: EntityId) {
-    const {
-      rows: [row],
-    } = await this.database.query<PropositionRow>(
-      "readPropositionForId",
+  async readPropositionsForIds(
+    propositionIds: EntityId[]
+  ): Promise<PropositionOut[]> {
+    const { rows } = await this.database.query<PropositionRow>(
+      "readPropositionsForIds",
       `
-        with
-          extant_users as (select * from users where deleted is null)
         select
-            s.*
-          , u.long_name as creator_long_name
-        from propositions s left join extant_users u on s.creator_user_id = u.user_id
-          where s.proposition_id = $1 and s.deleted is null`,
-      [propositionId]
+            p.*
+        from propositions p
+          where
+              p.proposition_id = any($1)
+          and p.deleted is null`,
+      [propositionIds]
     );
-    if (!row) {
-      return undefined;
-    }
-    return toProposition(row);
+
+    const creatorIds = uniq(rows.map((row) => toIdString(row.creator_user_id)));
+    const creators = await this.usersDao.readUserBlurbsForIds(creatorIds);
+    const creatorsById = keyBy(creators, "id");
+
+    return rows.map((row) =>
+      brandedParse(PropositionRef, {
+        id: toString(row.proposition_id),
+        text: row.text,
+        normalText: row.normal_text,
+        slug: toSlug(row.text),
+        creator: creatorsById[toString(row.creator_user_id)],
+        created: row.created,
+      })
+    );
   }
 
   async readPropositionByText(propositionText: string) {
@@ -116,10 +121,7 @@ export class PropositionsDao {
     return this.readPropositionForId(toString(row.proposition_id));
   }
 
-  async readPropositions(
-    sorts: SortDescription[],
-    count: number
-  ): Promise<PropositionData[]> {
+  async readPropositions(sorts: SortDescription[], count: number) {
     requireArgs({ sorts, count });
 
     const args = [];
@@ -146,27 +148,21 @@ export class PropositionsDao {
       orderBySqls.length > 0 ? "order by " + orderBySqls.join(",") : "";
 
     const sql = `
-      select *
+      select proposition_id
       from propositions where ${whereSql}
       ${orderBySql}
       ${countSql}
       `;
     const { rows } = await this.database.query("readPropositions", sql, args);
-    return rows.map((row) =>
-      brandedParse(PropositionRef, {
-        id: toIdString(row.proposition_id),
-        text: row.text,
-        normalText: row.normal_text,
-        slug: toSlug(row.text),
-        created: row.created,
-      })
+    return this.readPropositionsForIds(
+      rows.map((row) => toIdString(row.proposition_id))
     );
   }
 
   async readMorePropositions(
     sortContinuations: SortDescription[],
     count: number
-  ): Promise<PropositionData[]> {
+  ) {
     const args = [];
     let countSql = "";
     if (isFinite(count)) {
@@ -208,7 +204,7 @@ export class PropositionsDao {
       orderBySqls.length > 0 ? "order by " + orderBySqls.join(",") : "";
 
     const sql = `
-      select *
+      select proposition_id
       from propositions where
         ${whereSql}
         and (
@@ -222,14 +218,8 @@ export class PropositionsDao {
       sql,
       args
     );
-    return rows.map((row) =>
-      brandedParse(PropositionRef, {
-        id: toIdString(row.proposition_id),
-        text: row.text,
-        normalText: row.normal_text,
-        slug: toSlug(row.text),
-        created: row.created,
-      })
+    return this.readPropositionsForIds(
+      rows.map((row) => toIdString(row.proposition_id))
     );
   }
 

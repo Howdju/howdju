@@ -31,6 +31,7 @@ import {
   PersorgOut,
   CreatePersorgInput,
   isJustificationBasisSourceType,
+  makeCreateMediaExcerptSpeakerInput,
 } from "howdju-common";
 
 import Helmet from "./Helmet";
@@ -211,11 +212,14 @@ export default function CreatePropositionPage({ mode, location }: Props) {
   }
   function onPersorgAutocomplete(persorg: PersorgOut, index: number) {
     dispatch(
-      editors.replaceSpeaker(
+      editors.replaceListItem(
         editorType,
         editorId,
-        toCreatePersorgInput(persorg),
-        index
+        "speakers",
+        index,
+        makeCreateMediaExcerptSpeakerInput({
+          persorg: toCreatePersorgInput(persorg),
+        })
       )
     );
   }

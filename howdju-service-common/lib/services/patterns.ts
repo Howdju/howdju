@@ -1,8 +1,16 @@
 import { DatabaseError } from "pg";
 
-import { logger, ModelErrors, sleep, toJson } from "howdju-common";
+import {
+  Entity,
+  EntityId,
+  EntityType,
+  logger,
+  ModelErrors,
+  sleep,
+  toJson,
+} from "howdju-common";
 
-import { EntityConflictError } from "../serviceErrors";
+import { EntityConflictError, EntityNotFoundError } from "../serviceErrors";
 import { merge } from "lodash";
 
 const CONSTRAINT_VIOLATION_CODE = "23505";
@@ -112,7 +120,10 @@ export async function readWriteReread<T>(
     const interveningEntity = await readEquivalent();
     if (!interveningEntity) {
       throw new Error(
-        "No intervening entity despite unique constraint violation."
+        `No intervening entity despite unique constraint violation: ${toJson({
+          detail,
+          constraint,
+        })}`
       );
     }
     return {
@@ -120,6 +131,29 @@ export async function readWriteReread<T>(
       isExtant: true,
     };
   }
+}
+
+/**
+ * Pattern for services to ensure that all read entities were found.
+ *
+ * @param entityIds The IDs that were queried
+ * @param entities The entities that the DAO returned.
+ * @param entityType The entity type.
+ * @returns true if all entities were present.
+ * @throws EntityNotFoundError if any entities were missing.
+ */
+export function ensurePresent<E extends Entity>(
+  entityIds: EntityId[],
+  entities: E[],
+  entityType: EntityType
+): entities is E[] {
+  const missingIds = entityIds.filter(
+    (id) => !entities.find((e) => e.id === id)
+  );
+  if (missingIds.length) {
+    throw new EntityNotFoundError(entityType, missingIds);
+  }
+  return true;
 }
 
 export function isDatabaseConstraintError(val: any): val is DatabaseError {

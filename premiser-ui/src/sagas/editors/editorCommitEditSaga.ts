@@ -1,6 +1,5 @@
 import { put, call, takeEvery, select } from "typed-redux-saga";
-import isFunction from "lodash/isFunction";
-import { identity, reduce, reverse, startCase } from "lodash";
+import { identity, reduce, reverse, startCase, isFunction } from "lodash";
 import { z } from "zod";
 
 import {
@@ -11,7 +10,6 @@ import {
   CreateStatement,
   CreateStatementInput,
   IssueFormat,
-  isRef,
   JustificationTargetTypes,
   ModelErrors,
   newProgrammingError,
@@ -26,6 +24,7 @@ import {
   CreateRegistrationRequest,
   CreateRegistrationRequestInput,
   CreateMediaExcerptInput,
+  isBareRef,
 } from "howdju-common";
 
 import { selectEditorState } from "../../selectors";
@@ -449,7 +448,7 @@ function transformCreateJustifiedSentenceErrors(
         );
       case "STATEMENT":
         {
-          if (isRef(target.entity)) {
+          if (isBareRef(target.entity)) {
             throw newProgrammingError(
               "CreateJustifiedSentence does not support Refs"
             );

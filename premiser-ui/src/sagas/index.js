@@ -36,6 +36,7 @@ import { inferMediaExcerptInfo } from "./editors/inferMediaExcerptInfoSaga";
 import * as appSagas from "../app/appSagas";
 import * as justificationsSearchPageSagas from "../pages/justificationsSearch/justificationsSearchPageSagas";
 import * as justificationsPageSagas from "../pages/justifications/justificationPageSagas";
+import { factCheckPageSaga } from "@/pages/factChecks/factCheckPageSlice";
 
 export default () =>
   all([
@@ -69,6 +70,8 @@ export default () =>
     fetchAndBeginEditOfNewJustificationFromBasisSource(),
     redirectUnauthenticatedUserToLoginOnPagesNeedingAuthentication(),
     beginEditOfMediaExcerptFromInfo(),
+
+    factCheckPageSaga(),
 
     editorCommitEdit(),
 

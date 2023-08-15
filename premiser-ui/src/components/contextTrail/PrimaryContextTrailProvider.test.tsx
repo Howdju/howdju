@@ -39,7 +39,9 @@ describe("PrimaryContextTrailProvider", () => {
 
     const contextTrailItems: ContextTrailItem[] = [
       {
-        connectingEntity: { id: connectingEntityId } as JustificationView,
+        connectingEntity: {
+          id: connectingEntityId,
+        } as JustificationView,
         connectingEntityType: "JUSTIFICATION",
         connectingEntityId,
         polarity: "POSITIVE",

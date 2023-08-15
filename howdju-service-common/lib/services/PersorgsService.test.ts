@@ -7,6 +7,7 @@ import { Database, makePool } from "../database";
 import { makeTestProvider } from "@/initializers/TestProvider";
 import TestHelper from "@/initializers/TestHelper";
 import { PersorgsService } from "./PersorgsService";
+import { utcNow } from "howdju-common";
 
 const dbConfig = makeTestDbConfig();
 
@@ -40,7 +41,7 @@ describe("PersorgsService", () => {
         isOrganization: false,
         knownFor: "acting",
       };
-      const created = new Date();
+      const created = utcNow();
       const { persorg: persorg1 } =
         await service.readOrCreateValidPersorgAsUser(
           createPersorg,
@@ -66,7 +67,7 @@ describe("PersorgsService", () => {
         name: "Juan Doe",
         isOrganization: false,
       };
-      const created = new Date();
+      const created = utcNow();
       const { persorg: persorg1 } =
         await service.readOrCreateValidPersorgAsUser(
           createPersorg,
@@ -92,7 +93,7 @@ describe("PersorgsService", () => {
         name: "ACME Corp.",
         isOrganization: true,
       };
-      const created = new Date();
+      const created = utcNow();
       const { persorg: persorg1 } =
         await service.readOrCreateValidPersorgAsUser(
           createPersorg,

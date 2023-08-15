@@ -5,7 +5,6 @@ import moment from "moment";
 
 import {
   ContextTrailItem,
-  isCounter,
   isRootJustification,
   JustificationView,
 } from "howdju-common";
@@ -14,7 +13,7 @@ import EntityViewer from "./EntityViewer";
 import JustificationRootTargetViewer from "./JustificationRootTargetViewer";
 import JustificationChatBubble from "./JustificationChatBubble";
 import config from "./config";
-import { combineIds, combineSuggestionsKeys } from "./viewModels";
+import { combineIds, combineSuggestionsKeys, isCounter } from "./viewModels";
 import {
   ComponentId,
   OnClickJustificationWritQuoteUrl,

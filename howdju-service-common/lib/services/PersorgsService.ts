@@ -1,4 +1,4 @@
-import { Moment } from "moment";
+import moment, { Moment } from "moment";
 
 import {
   EntityId,
@@ -21,10 +21,10 @@ import { persorgSchema } from "./validationSchemas";
 import { PermissionsService } from "./PermissionsService";
 import { AuthService } from "./AuthService";
 import { EntityService } from "./EntityService";
-import { PersorgData, PersorgsDao } from "../daos";
+import { PersorgsDao } from "../daos";
 import { readWriteReread, updateHandlingConstraints } from "./patterns";
 import { UserIdent } from "./types";
-import { ApiConfig } from "..";
+import { ApiConfig, UsersService } from "..";
 
 export class PersorgsService extends EntityService<
   CreatePersorg,
@@ -34,10 +34,11 @@ export class PersorgsService extends EntityService<
   "persorg"
 > {
   constructor(
-    private config: ApiConfig,
+    private readonly config: ApiConfig,
     authService: AuthService,
-    private permissionsService: PermissionsService,
-    private persorgsDao: PersorgsDao
+    private readonly permissionsService: PermissionsService,
+    private readonly usersService: UsersService,
+    private readonly persorgsDao: PersorgsDao
   ) {
     super(persorgSchema, authService);
   }
@@ -46,18 +47,24 @@ export class PersorgsService extends EntityService<
     return await this.persorgsDao.readPersorgForId(persorgId);
   }
 
+  readPersorgsForIds(persorgIds: EntityId[]) {
+    return this.persorgsDao.readPersorgsForIds(persorgIds);
+  }
+
   async readOrCreateValidPersorgAsUser(
     createPersorg: CreatePersorg,
     userId: EntityId,
-    now: Date
+    now: Moment
   ): Promise<{ isExtant: boolean; persorg: PersorgOut }> {
     const { entity: persorg, isExtant } = await readWriteReread(
       () => this.persorgsDao.readEquivalentPersorg(createPersorg),
       () => this.persorgsDao.createPersorg(createPersorg, userId, now)
     );
+    const creatorUserId = isExtant ? persorg.creatorUserId : userId;
+    const creator = await this.usersService.readUserBlurbForId(creatorUserId);
     return {
       isExtant,
-      persorg,
+      persorg: { ...persorg, creator },
     };
   }
 
@@ -68,7 +75,7 @@ export class PersorgsService extends EntityService<
   ) {
     const result = await Promise.all(
       createPersorgs.map((p) =>
-        this.readOrCreateValidPersorgAsUser(p, userId, created.toDate())
+        this.readOrCreateValidPersorgAsUser(p, userId, created)
       )
     );
     const isExtant = result.every((r) => r.isExtant);
@@ -88,14 +95,10 @@ export class PersorgsService extends EntityService<
     throw newUnimplementedError("doReadOrCreate is not implemented.");
   }
 
-  async doUpdate(
-    updatePersorg: UpdatePersorg,
-    userId: EntityId,
-    now: Date | Moment
-  ) {
-    const persorg: PersorgData = await this.persorgsDao.readPersorgForId(
-      updatePersorg.id
-    );
+  async doUpdate(updatePersorg: UpdatePersorg, userId: EntityId, now: Moment) {
+    // TODO remove
+    now = moment.isMoment(now) ? now : moment(now);
+    const persorg = await this.persorgsDao.readPersorgForId(updatePersorg.id);
     if (!persorg) {
       throw new EntityNotFoundError("PERSORG", updatePersorg.id);
     }
