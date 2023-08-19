@@ -28,7 +28,6 @@ interface EntitySchemas {
   updateSchema?: z.ZodTypeAny;
 }
 
-// TODO replace with EntityWrapper.
 type EntityPropped<T, P extends string> = {
   [key in P]: T;
 };

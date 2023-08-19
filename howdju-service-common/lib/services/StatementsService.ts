@@ -133,7 +133,7 @@ export class StatementsService extends EntityService<
     userId: EntityId,
     now: Moment
   ): Promise<{ isExtant: boolean; statement: StatementOut }> {
-    // TODO remove
+    // TODO(361) remove
     now = moment.isMoment(now) ? now : moment(now);
 
     const { createStatements, createProposition } =

@@ -227,7 +227,7 @@ export interface AddListItemPayload {
   itemFactory: () => Entity;
 }
 
-/** @deprecated TODO(83): replace with addListItem/removeListItem */
+/** @deprecated TODO(523): replace with addListItem/removeListItem */
 const makeAddAtomReducer =
   <T extends EditorEntity, U>(atomsPath: string, atomMaker: ModelFactory) =>
   (state: WritableDraft<EditorState<T, U>>, action: AnyAction) => {

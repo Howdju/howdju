@@ -214,12 +214,12 @@ export const editors = {
       item: any
     ) => ({ editorType, editorId, itemIndex, listPathMaker, item })
   ),
-  /** @deprecated TODO replace with editors.addListItem */
+  /** @deprecated TODO(523) replace with editors.addListItem */
   addSpeaker: createAction(
     "EDITORS/ADD_SPEAKER",
     (editorType: EditorType, editorId: EditorId) => ({ editorType, editorId })
   ),
-  /** @deprecated TODO replace with editors.remoteListItem */
+  /** @deprecated TODO(523) replace with editors.remoteListItem */
   removeSpeaker: createAction(
     "EDITORS/REMOVE_SPEAKER",
     (
@@ -235,12 +235,12 @@ export const editors = {
     })
   ),
 
-  /** @deprecated TODO use addListItem instead */
+  /** @deprecated TODO(523) use addListItem instead */
   addUrl: createAction(
     "EDITORS/ADD_URL",
     (editorType: EditorType, editorId: EditorId) => ({ editorType, editorId })
   ),
-  /** @deprecated TODO use removeListItem instead */
+  /** @deprecated TODO(523) use removeListItem instead */
   removeUrl: createAction(
     "EDITORS/REMOVE_URL",
     (editorType: EditorType, editorId: EditorId, url: Url, index: number) => ({
@@ -251,7 +251,7 @@ export const editors = {
     })
   ),
 
-  /** @deprecated TODO use addListItem instead */
+  /** @deprecated TODO(523) use addListItem instead */
   addPropositionCompoundAtom: createAction(
     "EDITORS/ADD_PROPOSITION_COMPOUND_ATOM",
     (editorType: EditorType, editorId: EditorId, index: number) => ({
@@ -260,7 +260,7 @@ export const editors = {
       index,
     })
   ),
-  /** @deprecated TODO use removeListItem instead */
+  /** @deprecated TODO(523) use removeListItem instead */
   removePropositionCompoundAtom: createAction(
     "EDITORS/REMOVE_PROPOSITION_COMPOUND_ATOM",
     (

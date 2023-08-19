@@ -79,7 +79,6 @@ export class MediaExcerptsDao {
     ]);
     const urlLocatorsByMediaExcerptId = groupBy(urlLocators, "mediaExcerptId");
     const citationsByMediaExcerptId = groupBy(citations, "mediaExcerptId");
-    // TODO mediaExcerptId is not there yet.
     const speakersByMediaExcerptId = groupBy(speakers, "mediaExcerptId");
     const creatorsById = keyBy(creators, "id");
 

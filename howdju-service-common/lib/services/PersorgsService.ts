@@ -96,7 +96,7 @@ export class PersorgsService extends EntityService<
   }
 
   async doUpdate(updatePersorg: UpdatePersorg, userId: EntityId, now: Moment) {
-    // TODO remove
+    // TODO(361) remove
     now = moment.isMoment(now) ? now : moment(now);
     const persorg = await this.persorgsDao.readPersorgForId(updatePersorg.id);
     if (!persorg) {

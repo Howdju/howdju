@@ -24,7 +24,6 @@ import { toIdString } from "./daosUtil";
 export class StatementsDao extends BaseDao {
   constructor(
     logger: Logger,
-    // TODO remove BaseDao and rename to database
     private readonly db: Database,
     private readonly propositionsDao: PropositionsDao
   ) {
