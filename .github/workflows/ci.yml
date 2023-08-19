@@ -42,8 +42,6 @@ jobs:
         run: yarn install
       - name: Lint
         run: yarn run lint:all
-      - name: Check todo-format
-        run: yarn run check:todo-format ${{ github.ref }} ${{ github.event.pull_request.head.sha }}
       - name: Check format
         run: yarn run check-format:all
       - name: Typecheck
@@ -75,7 +73,10 @@ jobs:
       - name: Custom checks
         run: yarn run custom-check:all
       - name: Check TODO format
-        run: yarn run check:todo-format
+        run: |
+          git fetch origin ${{ github.event.pull_request.base.sha }}
+          git fetch origin ${{ github.event.pull_request.head.sha }}
+          yarn run check:todo-format ${{ github.event.pull_request.base.sha }} ${{ github.event.pull_request.head.sha }}
       - name: Check do-not-merge
         run: yarn run check:do-not-merge
 
