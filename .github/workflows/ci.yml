@@ -40,12 +40,6 @@ jobs:
           yarn set version $YARN_VERSION
       - name: Install dependencies
         run: yarn install
-      - name: Check TODO format
-        run: |
-          # DO_NOT_MERGE move back to later position
-          git fetch origin ${{ github.event.pull_request.base.sha }}
-          git fetch origin ${{ github.event.pull_request.head.sha }}
-          yarn run check:todo-format ${{ github.event.pull_request.base.sha }} ${{ github.event.pull_request.head.sha }}
       - name: Lint
         run: yarn run lint:all
       - name: Check format
@@ -78,6 +72,11 @@ jobs:
           if-no-files-found: error
       - name: Custom checks
         run: yarn run custom-check:all
+      - name: Check TODO format
+        run: |
+          git fetch origin ${{ github.event.pull_request.base.sha }}
+          git fetch origin ${{ github.event.pull_request.head.sha }}
+          yarn run check:todo-format ${{ github.event.pull_request.base.sha }} ${{ github.event.pull_request.head.sha }}
       - name: Check do-not-merge
         run: yarn run check:do-not-merge
 

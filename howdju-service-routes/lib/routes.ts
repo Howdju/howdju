@@ -162,7 +162,6 @@ export const serviceRoutes = {
         appProvider: ServicesProvider,
         { queryStringParams: { searchText } }
       ) => {
-        // TODO don't merge this.
         if (!searchText) {
           throw new InvalidRequestError("searchText is required.");
         }

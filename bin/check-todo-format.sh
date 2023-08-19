@@ -4,14 +4,9 @@ base=${1:-master}
 # If target is empty, it will compare base with the working tree
 target=${2:-}
 
-echo "Comparing base ($base) to target ($target)"
-
 # Equivalent for the whole repo:
 #  egrep --exclude=check-todo-format\.sh --exclude-dir=node_modules --exclude-dir=dist --exclude-dir=coverage --exclude-dir=Pods --exclude-dir=\.git -RI '\bTODO\b' . | egrep -v '\bTODO\((\d+,?)+\)'
 output=$(git diff $base $target ':(exclude)bin/check-todo-format.sh' ':(exclude).github/workflows/ci.yml')
-
-echo Output:
-echo "${output}"
 
 if [[ $? -ne 0 ]]; then
  echo Error getting diff for TODO check
