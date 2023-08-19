@@ -28,7 +28,7 @@ export class MainSearchService {
     private persorgsNameSearcher: PersorgsNameSearcher
   ) {}
 
-  search(searchText: string) {
+  async search(searchText: string) {
     searchText = searchText.trim();
     if (!searchText) {
       return Bluebird.resolve({
@@ -43,23 +43,7 @@ export class MainSearchService {
       });
     }
     // TODO(466) combine search clauses per entity.
-    const isUrlSearch = isUrl(searchText);
-    const isDomainSearch = isDomain(searchText);
-    const mediaExcerpts = isDomainSearch
-      ? this.mediaExcerptsService.readMediaExcerpts(
-          { domain: searchText },
-          [],
-          undefined,
-          MAX_EXCERPT_COUNT
-        )
-      : isUrlSearch
-      ? this.mediaExcerptsService.readMediaExcerpts(
-          { url: searchText },
-          [],
-          undefined,
-          MAX_EXCERPT_COUNT
-        )
-      : this.mediaExcerptsSearcher.search(searchText);
+    const mediaExcerpts = await this.searchMediaExcerpts(searchText);
     // TODO(466) unify entities into a singular search result.
     return Bluebird.props({
       mediaExcerpts,
@@ -74,5 +58,34 @@ export class MainSearchService {
           searchText
         ),
     });
+  }
+
+  private async searchMediaExcerpts(searchText: string) {
+    const isDomainSearch = isDomain(searchText);
+    if (isDomainSearch) {
+      // TODO(466) include the continuationToken in the response
+      const { mediaExcerpts } =
+        await this.mediaExcerptsService.readMediaExcerpts(
+          { domain: searchText },
+          [],
+          undefined,
+          MAX_EXCERPT_COUNT
+        );
+      return mediaExcerpts;
+    }
+    const isUrlSearch = isUrl(searchText);
+    if (isUrlSearch) {
+      // TODO(466) include the continuationToken in the response
+      const { mediaExcerpts } =
+        await this.mediaExcerptsService.readMediaExcerpts(
+          { url: searchText },
+          [],
+          undefined,
+          MAX_EXCERPT_COUNT
+        );
+      return mediaExcerpts;
+    }
+
+    return this.mediaExcerptsSearcher.search(searchText);
   }
 }
