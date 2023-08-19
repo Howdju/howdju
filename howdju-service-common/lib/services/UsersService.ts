@@ -25,6 +25,7 @@ import {
 import { permissions } from "../permissions";
 import { EntityNotFoundError } from "../serviceErrors";
 import { HashTypes } from "../hashTypes";
+import { ensurePresent } from "./patterns";
 
 export class UsersService {
   constructor(
@@ -171,7 +172,13 @@ export class UsersService {
     return userDataOut;
   }
 
-  readCreatorInfoForId(creatorUserId: EntityId) {
+  readUserBlurbForId(creatorUserId: EntityId) {
     return this.usersDao.readUserBlurbForId(creatorUserId);
+  }
+
+  async readUserBlurbsForIds(userIds: EntityId[]) {
+    const blurbs = await this.usersDao.readUserBlurbsForIds(userIds);
+    ensurePresent(userIds, blurbs, "USER");
+    return blurbs;
   }
 }

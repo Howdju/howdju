@@ -16923,6 +16923,7 @@ __metadata:
     eslint-config-howdju: "workspace:eslint-config-howdju"
     jest: ^29.3.1
     jest-extended: ^3.2.4
+    lodash: ^4.17.21
     prettier: 2.7.1
     sinon: ^10.0.0
     ts-node: ^10.9.1

@@ -9,6 +9,7 @@ export * from "./ContextTrailsService";
 export * from "./DevTopicMessageConsumer";
 export * from "./DevTopicMessageSender";
 export * from "./EmailService";
+export * from "./FactChecksService";
 export * from "./GroupsService";
 export * from "./JustificationBasisCompoundsService";
 export * from "./JustificationsService";

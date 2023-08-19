@@ -19,6 +19,7 @@ import {
   TagVote,
   toSlug,
   UrlLocator,
+  UrlOut,
   User,
   VidSegment,
   Writ,
@@ -28,6 +29,7 @@ import { applyCustomizations, momentConversion } from "./normalizationUtil";
 import { merge } from "lodash";
 
 export const userSchema = new schema.Entity<User>("users");
+export const usersSchema = new schema.Array(userSchema);
 
 export const tagSchema = new schema.Entity<Tag>("tags");
 export const tagsSchema = new schema.Array(tagSchema);
@@ -140,9 +142,14 @@ export const sourceExcerptParaphraseSchema =
     },
   });
 
+export const urlSchema = new schema.Entity<UrlOut>("urls");
+export const urlsSchema = new schema.Array(urlSchema);
+
 export const urlLocatorSchema = new schema.Entity<UrlLocator>(
   "urlLocators",
-  {},
+  {
+    url: urlSchema,
+  },
   {
     processStrategy: (value) =>
       applyCustomizations(
@@ -157,10 +164,11 @@ export const urlLocatorSchema = new schema.Entity<UrlLocator>(
       ),
   }
 );
+export const urlLocatorsSchema = new schema.Array(urlLocatorSchema);
 
 export const sourceSchema = new schema.Entity<SourceOut>("sources");
 export const sourcesSchema = new schema.Array(sourceSchema);
-export const urlLocatorsSchema = new schema.Array(urlLocatorSchema);
+
 export const mediaExcerptSchema = new schema.Entity<MediaExcerptOut>(
   "mediaExcerpts",
   {
@@ -170,7 +178,7 @@ export const mediaExcerptSchema = new schema.Entity<MediaExcerptOut>(
     citations: new schema.Array({
       source: sourceSchema,
     }),
-    speakers: new schema.Array(persorgSchema),
+    speakers: new schema.Array({ persorg: persorgSchema }),
   },
   {
     processStrategy: (value: MediaExcerptOut) => {
@@ -270,6 +278,7 @@ export const appearanceSchema = new schema.Entity<AppearanceOut>(
     },
   }
 );
+export const appearancesSchema = new schema.Array(appearanceSchema);
 
 export const mainSearchResultSchema = {
   mediaExcerpts: mediaExcerptsSchema,

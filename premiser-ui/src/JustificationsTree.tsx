@@ -8,7 +8,6 @@ import { Button } from "react-md";
 
 import {
   ContextTrailItem,
-  JustificationOut,
   JustificationPolarities,
   JustificationView,
 } from "howdju-common";
@@ -27,7 +26,7 @@ import "./JustificationsTree.scss";
 interface Props {
   id: ComponentId;
   className?: string;
-  justifications: JustificationOut[];
+  justifications: JustificationView[];
   doShowControls: boolean;
   doShowJustifications: boolean;
   /** Whether to combine justifications into a single column */

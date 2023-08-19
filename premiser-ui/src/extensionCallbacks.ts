@@ -1,6 +1,6 @@
 import { MouseEvent } from "react";
 
-import { JustificationOut, UrlOut } from "howdju-common";
+import { JustificationView, UrlOut } from "howdju-common";
 import { actions, inIframe } from "howdju-client-common";
 
 import { AppDispatch } from "./setupStore";
@@ -12,7 +12,7 @@ export function makeExtensionHighlightOnClickWritQuoteUrlCallback(
   // A method for top-level components that want to highlight justifications using the extension
   return function extensionHighlightingOnClickWritQuoteUrl(
     event: MouseEvent,
-    justification: JustificationOut,
+    justification: JustificationView,
     url: UrlOut
   ) {
     // If we aren't in the extension iframe, then allow the native behavior of the link click

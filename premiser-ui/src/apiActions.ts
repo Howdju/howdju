@@ -40,12 +40,12 @@ import {
   CreateStatement,
   UpdatePersorg,
   serializeContextTrail,
-  JustificationOut,
   CreateMediaExcerpt,
   UpdateSource,
   CreateUrlLocatorsInput,
   UrlLocatorOut,
   CreateAppearance,
+  JustificationView,
 } from "howdju-common";
 import {
   InferPathParams,
@@ -60,6 +60,7 @@ import {
 import {
   accountSettingsSchema,
   appearanceSchema,
+  appearancesSchema,
   contextTrailItemsSchema,
   justificationSchema,
   justificationsSchema,
@@ -83,7 +84,9 @@ import {
   tagsSchema,
   tagVoteSchema,
   urlLocatorsSchema,
+  urlsSchema,
   userSchema,
+  usersSchema,
   writQuoteSchema,
   writQuotesSchema,
   writsSchema,
@@ -497,6 +500,24 @@ export const api = {
     })
   ),
 
+  fetchFactCheck: apiActionCreator(
+    "FETCH_FACT_CHECK",
+    serviceRoutes.readFactCheck,
+    (userIds: EntityId[], urlIds: EntityId[], sourceIds: EntityId[]) => ({
+      queryStringParams: {
+        userIds: userIds.join(","),
+        urlIds: urlIds.join(","),
+        sourceIds: sourceIds.join(","),
+      },
+      normalizationSchema: {
+        appearances: appearancesSchema,
+        users: usersSchema,
+        urls: urlsSchema,
+        sources: sourcesSchema,
+      },
+    })
+  ),
+
   createUrlLocators: apiActionCreator(
     "CREATE_URL_LOCATORS",
     serviceRoutes.createUrlLocators,
@@ -541,8 +562,8 @@ export const api = {
   fetchSpeakerStatements: apiActionCreator(
     "FETCH_PERSORG_STATEMENTS",
     serviceRoutes.readSpeakerStatements,
-    (speakerPersorgId: EntityId) => ({
-      queryStringParams: { speakerPersorgId },
+    (persorgId: EntityId) => ({
+      pathParams: { persorgId },
       normalizationSchema: { statements: statementsSchema },
     })
   ),
@@ -1289,7 +1310,7 @@ export const api = {
   deleteJustification: apiActionCreator(
     "DELETE_JUSTIFICATION",
     serviceRoutes.deleteJustification,
-    (justification: JustificationOut) => ({
+    (justification: JustificationView) => ({
       config: {
         pathParams: { justificationId: justification.id },
       },

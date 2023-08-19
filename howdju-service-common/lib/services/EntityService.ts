@@ -8,8 +8,6 @@ import {
   Entity,
   utcNow,
   EntityRef,
-  newImpossibleError,
-  isRef,
   ModelErrors,
   makeModelErrors,
   PersistedEntity,
@@ -47,21 +45,13 @@ export abstract class EntityService<
   ) {}
 
   async readOrCreate(
-    entity: CreateIn | EntityRef<CreateIn>,
+    entity: CreateIn,
     authToken: AuthToken | undefined
   ): Promise<{ isExtant: boolean } & EntityPropped<CreateOut, P>> {
     const now = utcNow();
     const userId = authToken
       ? await this.authService.readUserIdForAuthToken(authToken)
       : undefined;
-    if ("id" in entity) {
-      return await this.doReadOrCreate(entity, userId, now);
-    }
-    if (isRef(entity)) {
-      throw newImpossibleError(
-        "The entity can't be a ref if its id was falsy."
-      );
-    }
 
     const entitySchema = isJoiSchema(this.entitySchemas)
       ? this.entitySchemas

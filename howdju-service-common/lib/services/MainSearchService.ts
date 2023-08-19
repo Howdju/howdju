@@ -63,24 +63,24 @@ export class MainSearchService {
   private async searchMediaExcerpts(searchText: string) {
     const isDomainSearch = isDomain(searchText);
     if (isDomainSearch) {
-      // TODO(466) include the continuationToken in the response
       const { mediaExcerpts } =
         await this.mediaExcerptsService.readMediaExcerpts(
           { domain: searchText },
           [],
           undefined,
+          // TODO(466) handle continuationTokens in main search and decrease the request count.
           MAX_EXCERPT_COUNT
         );
       return mediaExcerpts;
     }
     const isUrlSearch = isUrl(searchText);
     if (isUrlSearch) {
-      // TODO(466) include the continuationToken in the response
       const { mediaExcerpts } =
         await this.mediaExcerptsService.readMediaExcerpts(
           { url: searchText },
           [],
           undefined,
+          // TODO(466) handle continuationTokens in main search and decrease the request count.
           MAX_EXCERPT_COUNT
         );
       return mediaExcerpts;

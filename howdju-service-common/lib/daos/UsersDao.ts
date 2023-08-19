@@ -81,6 +81,19 @@ export class UsersDao {
     );
     return toUser(row);
   }
+  async readUserBlurbsForIds(userIds: EntityId[]) {
+    const { rows } = await this.database.query(
+      "readUserBlurbsForIds",
+      "select user_id, long_name from users where user_id = ANY($1) and deleted is null",
+      [userIds]
+    );
+    return rows.map((row) =>
+      brandedParse(UserRef, {
+        id: toIdString(row.user_id),
+        longName: row.long_name,
+      })
+    );
+  }
 
   async readUserBlurbForId(userId: EntityId) {
     const {

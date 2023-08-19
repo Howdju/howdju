@@ -63,7 +63,7 @@ export function daosInitializer(provider: DatabaseProvider) {
     database
   );
   const propositionCompoundsDao = new PropositionCompoundsDao(logger, database);
-  const propositionsDao = new PropositionsDao(database);
+  const propositionsDao = new PropositionsDao(database, usersDao);
   const picRegionsDao = new PicRegionsDao(logger, database);
   const vidSegmentsDao = new VidSegmentsDao(logger, database);
   const writQuoteUrlTargetsDao = new WritQuoteUrlTargetsDao(logger, database);
@@ -88,7 +88,7 @@ export function daosInitializer(provider: DatabaseProvider) {
     sourceExcerptParaphrasesDao
   );
   const statementsDao = new StatementsDao(logger, database, propositionsDao);
-  const persorgsDao = new PersorgsDao(logger, database);
+  const persorgsDao = new PersorgsDao(logger, database, usersDao);
   const sourcesDao = new SourcesDao(database, usersDao);
   const urlLocatorAutoConfirmationDao = new UrlLocatorAutoConfirmationDao(
     database

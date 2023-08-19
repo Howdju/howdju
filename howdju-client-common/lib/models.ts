@@ -8,19 +8,19 @@ import {
   JustificationPolarity,
   newProgrammingError,
   CreateContentReportInput,
-  JustificationView,
   Proposition,
   Persisted,
   JustificationRootPolarity,
-  Statement,
   JustificationRootTargetOut,
-  JustificationRef,
   JustificationOut,
   negateRootPolarity,
   CreatePersorgInput,
   PropositionOut,
   UpdatePropositionInput,
   PersorgOut,
+  StatementOut,
+  JustificationView,
+  PersistedEntity,
 } from "howdju-common";
 
 export function isPropositionRootTarget(
@@ -30,7 +30,7 @@ export function isPropositionRootTarget(
 }
 
 const justificationViewDefaults = () => ({
-  counterJustifications: [] as (JustificationRef | JustificationView)[],
+  counterJustifications: [] as (PersistedEntity | JustificationView)[],
 });
 type JustificationViewOverrides = SetOptional<
   JustificationView,
@@ -38,7 +38,7 @@ type JustificationViewOverrides = SetOptional<
 >;
 export function makeJustificationViewModel<
   O extends JustificationViewOverrides
->(props?: O): JustificationView {
+>(props: O): JustificationView {
   const init = justificationViewDefaults();
   const clonedProps = cloneDeep(props);
   const merged = merge(init, clonedProps);
@@ -55,11 +55,11 @@ type RootTargetStuff = {
 } & (
   | {
       rootTargetType: "PROPOSITION";
-      rootTarget: Persisted<Proposition>;
+      rootTarget: PropositionOut;
     }
   | {
       rootTargetType: "STATEMENT";
-      rootTarget: Persisted<Statement>;
+      rootTarget: StatementOut;
     }
 );
 

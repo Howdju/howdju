@@ -1,4 +1,4 @@
-import { concat, forEach, merge, snakeCase } from "lodash";
+import { concat, forEach, groupBy, keyBy, merge, snakeCase } from "lodash";
 import { Moment } from "moment";
 
 import {
@@ -30,6 +30,7 @@ import {
   toJson,
   UserBlurb,
   mergeCopy,
+  MediaExcerptSpeakerOut,
 } from "howdju-common";
 
 import { Database, TxnClient } from "../database";
@@ -58,59 +59,73 @@ export class MediaExcerptsDao {
     private readonly urlLocatorAutoConfirmationDao: UrlLocatorAutoConfirmationDao
   ) {}
 
-  async readMediaExcerptsForIds(ids: EntityId[]) {
-    return await Promise.all(ids.map((id) => this.readMediaExcerptForId(id)));
+  async readMediaExcerptsForIds(
+    mediaExcerptIds: EntityId[]
+  ): Promise<MediaExcerptOut[]> {
+    const justMediaExcerpts = await this.readJustMediaExcerptsForIds(
+      mediaExcerptIds
+    );
+
+    const creatorUserIds = justMediaExcerpts.reduce((acc, a) => {
+      acc.add(a.creatorUserId);
+      return acc;
+    }, new Set<EntityId>());
+
+    const [urlLocators, citations, speakers, creators] = await Promise.all([
+      this.readUrlLocators({ mediaExcerptIds }),
+      this.readCitationsForMediaExcerptIds(mediaExcerptIds),
+      this.readSpeakersForMediaExcerptIds(mediaExcerptIds),
+      this.usersDao.readUserBlurbsForIds(Array.from(creatorUserIds)),
+    ]);
+    const urlLocatorsByMediaExcerptId = groupBy(urlLocators, "mediaExcerptId");
+    const citationsByMediaExcerptId = groupBy(citations, "mediaExcerptId");
+    const speakersByMediaExcerptId = groupBy(speakers, "mediaExcerptId");
+    const creatorsById = keyBy(creators, "id");
+
+    return justMediaExcerpts.map((me) =>
+      brandedParse(MediaExcerptRef, {
+        ...me,
+        locators: {
+          urlLocators: urlLocatorsByMediaExcerptId[me.id] || [],
+        },
+        citations: citationsByMediaExcerptId[me.id] || [],
+        speakers: speakersByMediaExcerptId[me.id] || [],
+        creator: creatorsById[me.creatorUserId],
+      })
+    );
   }
 
   async readMediaExcerptForId(
     mediaExcerptId: EntityId
-  ): Promise<MediaExcerptOut | undefined> {
-    const justMediaExcerpt = await this.readJustMediaExcerptForId(
-      mediaExcerptId
-    );
-    if (!justMediaExcerpt) {
-      return undefined;
-    }
-    const [urlLocators, citations, speakers, creator] = await Promise.all([
-      this.readUrlLocators({ mediaExcerptId }),
-      this.readCitationsForMediaExcerptId(mediaExcerptId),
-      this.readSpeakersForMediaExcerptId(mediaExcerptId),
-      this.usersDao.readUserBlurbForId(justMediaExcerpt?.creatorUserId),
-    ]);
-    return brandedParse(MediaExcerptRef, {
-      ...justMediaExcerpt,
-      locators: {
-        urlLocators,
-      },
-      citations,
-      speakers,
-      creator,
-    });
+  ): Promise<MediaExcerptOut> {
+    const [mediaExcerpt] = await this.readMediaExcerptsForIds([mediaExcerptId]);
+    return mediaExcerpt;
   }
 
-  async readJustMediaExcerptForId(
-    mediaExcerptId: string
+  async readJustMediaExcerptForId(mediaExcerptId: EntityId) {
+    const [mediaExcerpt] = await this.readJustMediaExcerptsForIds([
+      mediaExcerptId,
+    ]);
+    return mediaExcerpt;
+  }
+
+  async readJustMediaExcerptsForIds(
+    mediaExcerptIds: EntityId[]
   ): Promise<
-    | Pick<MediaExcerptOut, "id" | "localRep" | "created" | "creatorUserId">
-    | undefined
+    Pick<MediaExcerptOut, "id" | "localRep" | "created" | "creatorUserId">[]
   > {
-    const {
-      rows: [row],
-    } = await this.database.query(
-      "readMediaExceptForId",
+    const { rows } = await this.database.query(
+      "readJustMediaExcerptsForIds",
       `
       select *
       from media_excerpts
       where
-          media_excerpt_id = $1
+          media_excerpt_id = any($1)
       and deleted is null
       `,
-      [mediaExcerptId]
+      [mediaExcerptIds]
     );
-    if (!row) {
-      return undefined;
-    }
-    return {
+    return rows.map((row) => ({
       id: row.media_excerpt_id,
       localRep: {
         quotation: row.quotation,
@@ -118,48 +133,72 @@ export class MediaExcerptsDao {
       },
       created: row.created,
       creatorUserId: row.creator_user_id,
-    };
+    }));
   }
 
-  private async readSpeakersForMediaExcerptId(mediaExcerptId: EntityId) {
+  private async readSpeakersForMediaExcerptIds(
+    mediaExcerptIds: EntityId[]
+  ): Promise<MediaExcerptSpeakerOut[]> {
     const { rows } = await this.database.query(
-      "readSpeakersForMediaExcerptId",
+      "readSpeakersForMediaExcerptIds",
       `
       select mes.*
       from
         media_excerpt_speakers mes
         join persorgs p on mes.speaker_persorg_id = p.persorg_id
       where
-        media_excerpt_id = $1
+        media_excerpt_id = any($1)
         and mes.deleted is null
         and p.deleted is null
         `,
-      [mediaExcerptId]
+      [mediaExcerptIds]
     );
-    return await Promise.all(
-      rows.map((row) =>
-        this.persorgsDao.readPersorgForId(row.speaker_persorg_id)
-      )
+    const relatedIds = rows.reduce(
+      (acc, row) => {
+        acc.speakerPersorgIds.add(row.speaker_persorg_id);
+        acc.creatorUserIds.add(row.creator_user_id);
+        return acc;
+      },
+      {
+        speakerPersorgIds: new Set<EntityId>(),
+        creatorUserIds: new Set<EntityId>(),
+      }
     );
+
+    const [speakerPersorgs, creatorUsers] = await Promise.all([
+      this.persorgsDao.readPersorgsForIds(
+        Array.from(relatedIds.speakerPersorgIds)
+      ),
+      this.usersDao.readUserBlurbsForIds(Array.from(relatedIds.creatorUserIds)),
+    ]);
+    const speakerPersorgsById = keyBy(speakerPersorgs, "id");
+    const creatorUsersById = keyBy(creatorUsers, "id");
+    return rows.map((row) => ({
+      mediaExcerptId: row.media_excerpt_id,
+      persorg: speakerPersorgsById[row.speaker_persorg_id],
+      created: row.created,
+      creatorUserId: row.creator_user_id,
+      creator: creatorUsersById[row.creator_user_id],
+    }));
   }
 
-  private async readCitationsForMediaExcerptId(mediaExcerptId: EntityId) {
+  private async readCitationsForMediaExcerptIds(mediaExcerptIds: EntityId[]) {
     const { rows } = await this.database.query(
-      "readCitationsForMediaExcerptId",
+      "readCitationsForMediaExcerptIds",
       `
       select mec.*
       from
              media_excerpt_citations mec
         join sources s using (source_id)
       where
-            mec.media_excerpt_id = $1
+            mec.media_excerpt_id = any($1)
         and mec.deleted is null
         and s.deleted is null
       order by
           media_excerpt_id asc
         , source_id asc
         , normal_pincite asc`,
-      [mediaExcerptId]
+      [mediaExcerptIds]
     );
     return await Promise.all(
       rows.map(async (row) => {
@@ -168,7 +207,7 @@ export class MediaExcerptsDao {
           throw new EntityNotFoundError("SOURCE", row.source_id);
         }
         return {
-          mediaExcerptId,
+          mediaExcerptId: row.media_excerpt_id,
           pincite: row.pincite,
           normalPincite: row.normal_pincite,
           source,
@@ -180,22 +219,22 @@ export class MediaExcerptsDao {
   }
 
   private async readUrlLocators(
-    filter: { mediaExcerptId: EntityId } | { urlLocatorId: EntityId }
+    filter: { mediaExcerptIds: EntityId[] } | { urlLocatorIds: EntityId[] }
   ): Promise<UrlLocatorOut[]> {
     const whereColumn =
-      "mediaExcerptId" in filter ? "media_excerpt_id" : "url_locator_id";
+      "mediaExcerptIds" in filter ? "media_excerpt_id" : "url_locator_id";
     const args =
-      "mediaExcerptId" in filter
-        ? [filter.mediaExcerptId]
-        : [filter.urlLocatorId];
+      "mediaExcerptIds" in filter
+        ? [filter.mediaExcerptIds]
+        : [filter.urlLocatorIds];
     const { rows } = await this.database.query(
-      "readUrlLocatorsForMediaExcerptId",
+      "readUrlLocators",
       `
       select
         ul.*
       from url_locators ul
         join urls u using (url_id)
-      where ${whereColumn} = $1
+      where ${whereColumn} = any($1)
         and ul.deleted is null
         and u.deleted is null
         `,
@@ -301,12 +340,14 @@ export class MediaExcerptsDao {
         left join url_locators ul using (media_excerpt_id)
         left join urls u using (url_id)
         left join media_excerpt_citations mec using (media_excerpt_id)
+        left join media_excerpt_speakers mes using (media_excerpt_id)
       where me.normal_quotation = $1
         and me.deleted is null
         and (
-           (cardinality($2::bigint[]) != 0 and ul.url_id = any ($2))
-        or (cardinality($3::varchar[]) != 0 and u.canonical_url = any ($3))
-        or (cardinality($4::bigint[]) != 0 and mec.source_id = any ($4)))
+            (cardinality($2::bigint[]) != 0 and ul.url_id = any ($2))
+          or (cardinality($3::varchar[]) != 0 and u.canonical_url = any ($3))
+          or (cardinality($4::bigint[]) != 0 and mec.source_id = any ($4))
+        )
       order by media_excerpt_id asc
       `,
       [
@@ -860,28 +901,38 @@ export class MediaExcerptsDao {
     });
   }
 
-  async hasEquivalentMediaExcerptSpeaker(
+  async readEquivalentMediaExcerptSpeaker(
     mediaExcerptId: EntityId,
     persorg: PersorgOut
-  ) {
+  ): Promise<MediaExcerptSpeakerOut | undefined> {
     const {
       rows: [row],
     } = await this.database.query(
-      "hasEquivalentMediaExcerptSpeaker",
+      "readEquivalentMediaExcerptSpeaker",
       `select * from media_excerpt_speakers
       where media_excerpt_id = $1 and speaker_persorg_id = $2 and deleted is null`,
       [mediaExcerptId, persorg.id]
     );
-    return !!row;
+    if (!row) {
+      return undefined;
+    }
+    const creator = await this.usersDao.readUserBlurbForId(row.creator_user_id);
+    return {
+      mediaExcerptId,
+      persorg,
+      created: row.created,
+      creatorUserId: row.creator_user_id,
+      creator,
+    };
   }
 
   async createMediaExcerptSpeaker(
-    userId: string,
+    creatorUserId: string,
     mediaExcerptId: EntityId,
-    speaker: PersorgOut,
+    persorg: PersorgOut,
     created: Moment
-  ) {
-    return await this.database.query(
+  ): Promise<MediaExcerptSpeakerOut> {
+    await this.database.query(
       "createMediaExcerptSpeaker",
       `insert into media_excerpt_speakers (
         media_excerpt_id,
@@ -889,8 +940,16 @@ export class MediaExcerptsDao {
         creator_user_id,
         created
       ) values ($1, $2, $3, $4)`,
-      [mediaExcerptId, speaker.id, userId, created]
+      [mediaExcerptId, persorg.id, creatorUserId, created]
     );
+    const creator = await this.usersDao.readUserBlurbForId(creatorUserId);
+    return {
+      mediaExcerptId,
+      persorg,
+      created,
+      creatorUserId,
+      creator,
+    };
   }
 
   async deleteMediaExcerptSpeakersForPersorgId(
@@ -1203,7 +1262,9 @@ export class MediaExcerptsDao {
   async readUrlLocatorForId(
     urlLocatorId: EntityId
   ): Promise<UrlLocatorOut | undefined> {
-    const [urlLocator] = await this.readUrlLocators({ urlLocatorId });
+    const [urlLocator] = await this.readUrlLocators({
+      urlLocatorIds: [urlLocatorId],
+    });
     return urlLocator;
   }
 

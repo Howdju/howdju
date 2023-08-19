@@ -1,4 +1,4 @@
-import { merge, toString } from "lodash";
+import { keyBy, merge, toString, uniq } from "lodash";
 import { Moment } from "moment";
 
 import {
@@ -60,21 +60,22 @@ export class SourcesDao {
     );
   }
 
+  async readSourcesForIds(sourceIds: EntityId[]) {
+    const { rows } = await this.db.query<SourceRow>(
+      "readSourcesForIds",
+      `SELECT * FROM sources WHERE source_id = ANY($1) and deleted is null`,
+      [sourceIds]
+    );
+    // Get the distinct user IDs, index them by their user ID, and then add them to the sources.
+    const userIds = uniq(rows.map((r) => toIdString(r.creator_user_id)));
+    const creators = await this.usersDao.readUserBlurbsForIds(userIds);
+    const creatorsById = keyBy(creators, "id");
+    return rows.map((r) => toSource(r, creatorsById[r.creator_user_id]));
+  }
+
   async readSourceForId(sourceId: EntityId): Promise<SourceOut | undefined> {
-    const {
-      rows: [row],
-    } = await this.db.query<SourceRow>(
-      "readSourceForId",
-      `SELECT * FROM sources WHERE source_id = $1 and deleted is null`,
-      [normalizeText(sourceId)]
-    );
-    if (!row) {
-      return undefined;
-    }
-    const creator = await this.usersDao.readUserBlurbForId(
-      toIdString(row.creator_user_id)
-    );
-    return toSource(row, creator);
+    const [source] = await this.readSourcesForIds([sourceId]);
+    return source;
   }
 
   async readEquivalentSource(

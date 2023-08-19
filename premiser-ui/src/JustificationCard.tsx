@@ -3,7 +3,7 @@ import { Card, CardText } from "react-md";
 import { Props as ReactMdProps } from "react-md/lib";
 import cn from "classnames";
 
-import { JustificationView, ContextTrailItem } from "howdju-common";
+import { ContextTrailItem, JustificationView } from "howdju-common";
 
 import JustificationEntityViewer from "./JustificationEntityViewer";
 import { ComponentId, OnClickJustificationWritQuoteUrl } from "./types";

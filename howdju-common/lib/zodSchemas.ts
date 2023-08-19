@@ -580,6 +580,32 @@ export type DeleteMediaExcerptCitation = z.output<
   typeof DeleteMediaExcerptCitation
 >;
 
+export const MediaExcerptSpeaker = z.object({
+  mediaExcerptId: z.string(),
+  persorg: Persorg,
+  created: momentObject,
+  creatorUserId: z.string(),
+});
+export type MediaExcerptSpeaker = z.output<typeof MediaExcerptSpeaker>;
+
+export const CreateMediaExcerptSpeaker = MediaExcerptSpeaker.extend({
+  persorg: CreatePersorg,
+}).omit({
+  // A CreateMediaExcerptSpeaker must be associated with a CreateMediaExcerpt, the ID of which
+  // will be substituted for the mediaExcerptId.
+  mediaExcerptId: true,
+  created: true,
+  creatorUserId: true,
+});
+export type CreateMediaExcerptSpeaker = z.output<
+  typeof CreateMediaExcerptSpeaker
+>;
+
+export const CreateMediaExcerptSpeakerInput = CreateMediaExcerptSpeaker;
+export type CreateMediaExcerptSpeakerInput = z.output<
+  typeof CreateMediaExcerptSpeakerInput
+>;
+
 /**
  * A representation of an excerpt of some fixed media conveying speech. *
  *
@@ -664,7 +690,7 @@ export const MediaExcerpt = Entity.extend({
    */
   citations: z.array(MediaExcerptCitation),
   /** Persorgs to whom users have attributed the speech in the source excerpt. */
-  speakers: z.array(Persorg),
+  speakers: z.array(MediaExcerptSpeaker),
   created: momentObject,
   creatorUserId: z.string(),
   creator: UserBlurb,
@@ -1144,7 +1170,7 @@ const CreateMediaExcerptBase = MediaExcerpt.omit({
       })
       .optional(),
     citations: z.array(CreateMediaExcerptCitation).optional(),
-    speakers: z.array(CreatePersorg).optional(),
+    speakers: z.array(CreateMediaExcerptSpeaker).optional(),
   });
 function refineCreateMediaExcerpt(
   val: CreateMediaExcerpt | CreateMediaExcerptInput,
@@ -1330,11 +1356,11 @@ export type CreateJustification = Simplify<
         }
       | {
           type: "STATEMENT";
-          entity: EntityOrRef<CreateStatement>;
+          entity: CreateStatement | PersistedEntity;
         }
       | {
           type: "JUSTIFICATION";
-          entity: EntityOrRef<CreateJustification>;
+          entity: CreateJustification | PersistedEntity;
         };
   }
 >;

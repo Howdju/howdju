@@ -6,7 +6,6 @@ import {
   CreateCounterJustification,
   CreateJustification,
   JustificationOut,
-  JustificationRef,
   JustificationSearchFilters,
   negateRootPolarity,
   SortDescription,
@@ -629,7 +628,10 @@ describe("JustificationsService", () => {
     });
     test("cannot read deleted (counter) justifications by ID", async () => {
       // Arrange
-      const { authToken } = await testHelper.makeUser();
+      const {
+        authToken,
+        user: { id: userId },
+      } = await testHelper.makeUser();
 
       const createJustification = makePropositionCompoundBasedJustification();
       const { justification: justificationOut } = await service.readOrCreate(
@@ -645,18 +647,30 @@ describe("JustificationsService", () => {
       await service.deleteJustification(authToken, justificationOut.id);
 
       // Act/Assert
-      await expect(
-        service.readOrCreate(
-          JustificationRef.parse({ id: justificationOut.id }),
-          authToken
-        )
-      ).rejects.toBeInstanceOf(EntityNotFoundError);
-      await expect(
-        service.readOrCreate(
-          JustificationRef.parse({ id: counterJustificationOut.id }),
-          authToken
-        )
-      ).rejects.toBeInstanceOf(EntityNotFoundError);
+      let err: Error | undefined;
+      try {
+        await service.readJustificationForId(justificationOut.id, userId);
+      } catch (e) {
+        if (!(e instanceof EntityNotFoundError)) {
+          throw e;
+        }
+        err = e;
+      }
+      expect(err).toBeInstanceOf(EntityNotFoundError);
+
+      let counterErr: Error | undefined;
+      try {
+        await service.readJustificationForId(
+          counterJustificationOut.id,
+          userId
+        );
+      } catch (e) {
+        if (!(e instanceof EntityNotFoundError)) {
+          throw e;
+        }
+        counterErr = e;
+      }
+      expect(counterErr).toBeInstanceOf(EntityNotFoundError);
     });
     test("cannot read deleted (counter) justifications by filters", async () => {
       // Arrange

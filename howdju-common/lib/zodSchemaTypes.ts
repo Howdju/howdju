@@ -2,7 +2,10 @@ import { Moment } from "moment";
 import { z } from "zod";
 import {
   MediaExcerptOut,
+  PropositionCompoundOut,
+  PropositionOut,
   SourceOut,
+  StatementOut,
   UserOut,
   WritOut,
   WritQuoteOut,
@@ -79,21 +82,21 @@ export type PersistedJustificationWithRootRef = Omit<
   (
     | {
         rootTargetType: "PROPOSITION";
-        rootTarget: EntityRef<Proposition>;
+        rootTarget: PersistedEntity;
       }
     | {
         rootTargetType: "STATEMENT";
-        rootTarget: EntityRef<Statement>;
+        rootTarget: PersistedEntity;
       }
   ) & {
     target:
       | {
           type: "PROPOSITION";
-          entity: Persisted<Proposition>;
+          entity: PropositionOut;
         }
       | {
           type: "STATEMENT";
-          entity: Persisted<Statement>;
+          entity: StatementOut;
         }
       | {
           type: "JUSTIFICATION";
@@ -102,7 +105,7 @@ export type PersistedJustificationWithRootRef = Omit<
     basis:
       | {
           type: "PROPOSITION_COMPOUND";
-          entity: Persisted<PropositionCompound>;
+          entity: PropositionCompoundOut;
         }
       | {
           type: "MEDIA_EXCERPT";
@@ -316,10 +319,18 @@ export type PersistOrRef<T> = T extends Entity
         : PersistOrRef<T[key]>;
     };
 
+/** Whether o is an unbranded entity refererence. */
+export function isBareRef(o: object): o is PersistedEntity {
+  const keys = Object.keys(o);
+  return keys.length === 1 && keys[0] === "id";
+}
+
 /**
  * Whether o is a plain Ref of type brand.
  *
  * A plain Ref has just an ID and a BRAND. If brand is provided, the BRAND must match.
+ *
+ * TODO(524) We probably want to remove this in favor of isBareRef.
  */
 export function isOnlyRef<T extends string = string>(
   o: any,
@@ -331,6 +342,14 @@ export function isOnlyRef<T extends string = string>(
   return "id" in o && z.BRAND in o && (!brand || o[z.BRAND] === brand);
 }
 
+/**
+ * Returns true of the object has a single ID field or if it has a BRAND.
+ *
+ * The type guard relies on the typesystem and canot not correctly infer whether the BRAND matches
+ * T.
+ *
+ * TODO(524) We probably want to remove this in favor of isBareRef.
+ */
 export function isRef<T extends Entity>(e: EntityOrRef<T>): e is EntityRef<T> {
   const keys = Object.keys(e);
   // An entity with a single property `id` is a ref.

@@ -26,6 +26,7 @@ import { mediaExcerptUsagesPage } from "@/pages/mediaExcerptUsages/mediaExcerptU
 import { registrationConfirmationPage } from "@/pages/registration/registrationConfirmationPageSlice";
 import { primaryContextTrail } from "@/components/contextTrail/primaryContextTrailSlice";
 import { urlLocatorsEditorFields } from "@/editors/urlLocatorsEditorFieldsSlice";
+import { factCheckPage } from "@/pages/factChecks/factCheckPageSlice";
 
 export default (history: History) =>
   combineReducers({
@@ -37,6 +38,7 @@ export default (history: History) =>
     editors,
     entities,
     errors,
+    factCheckPage,
     justificationsPage,
     justificationsSearchPage,
     mainSearch,

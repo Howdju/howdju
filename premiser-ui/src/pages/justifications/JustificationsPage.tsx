@@ -1,7 +1,6 @@
 import React, { Component, UIEvent } from "react";
 import { Button, CircularProgress, FontIcon, ListItem } from "react-md";
 import { connect, ConnectedProps } from "react-redux";
-import forEach from "lodash/forEach";
 import isEmpty from "lodash/isEmpty";
 import isEqual from "lodash/isEqual";
 import sortBy from "lodash/sortBy";
@@ -14,9 +13,9 @@ import {
   JustificationPolarities,
   JustificationRootPolarity,
   JustificationRootTargetType,
-  JustificationOut,
   makeCreateJustificationInputTargetingRoot,
-  JustificationRef,
+  JustificationView,
+  PersistedEntity,
 } from "howdju-common";
 import { actions, isVerified, isDisverified } from "howdju-client-common";
 
@@ -270,15 +269,15 @@ function describeRootTargetType(rootTargetType: JustificationRootTargetType) {
 }
 
 function sortJustifications(
-  justifications?: JustificationOut[]
-): JustificationOut[];
+  justifications?: JustificationView[]
+): JustificationView[];
 function sortJustifications(
-  justifications?: (JustificationRef | JustificationOut)[]
-): (JustificationRef | JustificationOut)[];
+  justifications?: (PersistedEntity | JustificationView)[]
+): (PersistedEntity | JustificationView)[];
 function sortJustifications(
-  justifications?: (JustificationRef | JustificationOut)[]
+  justifications?: (PersistedEntity | JustificationView)[]
 ) {
-  // Sort JustificationRefs to the bottom
+  // Sort PersistedEntitys to the bottom
   justifications = sortBy(justifications, (j) =>
     "score" in j ? j.score : Number.MAX_VALUE
   );
@@ -288,7 +287,7 @@ function sortJustifications(
     }
     return 2;
   });
-  forEach(justifications, (j) => {
+  justifications.forEach((j: PersistedEntity | JustificationView) => {
     if ("counterJustifications" in j) {
       j.counterJustifications = sortJustifications(j.counterJustifications);
     }

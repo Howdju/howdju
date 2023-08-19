@@ -21358,7 +21358,7 @@
       });
     }
   }
-  var import_lodash6, Entity, CreateModel, PersistedEntity, UserExternalIds, User, UserBlurb, Proposition, UpdatePropositionInput, UpdateProposition, Tag, CreateTag, CreateTagInput, tagVotePolarities, PropositionTagVote, PropositionTagVotePolarities, CreatePropositionTagVote, CreatePropositionTagVoteInput, CreatePropositionInput, CreateProposition, Persorg, CreatePersorg, CreatePersorgInput, UpdatePersorg, UpdatePersorgInput, sentenceTypes, baseStatement, Statement, SentenceTypes, CreateStatementInput, CreateStatement, Writ, CreateWrit, CreateWritInput, UpdateWrit, UpdateWritInput, DomAnchor, CreateDomAnchor, UrlTarget, Url, CreateUrl, CreateUrlInput, UrlLocator, WritQuote, PicRegion, VidSegment, AudSegment, sourceExcerptTypes, SourceExcerpt, SourceExcerptTypes, CreateUrlLocator, CreateUrlLocatorInput, Source, CreateSource, CreateSourceInput, UpdateSource, UpdateSourceInput, MediaExcerptCitation, CreateMediaExcerptCitation, CreateMediaExcerptCitationInput, DeleteMediaExcerptCitation, MediaExcerpt, Appearance, CreateAppearance, CreateAppearanceInput, PropositionCompoundAtom, PropositionCompound, CreatePropositionCompoundAtomInput, UpdatePropositionCompoundAtomInput, CreatePropositionCompoundInput, CreatePropositionCompoundAtom, UpdatePropositionCompoundAtom, CreatePropositionCompound, UpdatePropositionCompoundInput, UpdatePropositionCompound, JustificationPolarity, JustificationPolarities, RelationPolarity2, JustificationRootPolarity, JustificationRootPolarities, JustificationBasisType, JustificationBasisTypes, justificationBaseShape, JustificationRootTargetType, JustificationRootTargetTypes, JustificationTargetType2, Justification, JustificationTargetTypes, PropositionRef, StatementRef, JustificationRef, JustificationVoteRef, PropositionCompoundRef, SourceExcerptRef, WritQuoteRef, WritRef, PersorgRef, TagRef, TagVoteRef, UrlRef, UserRef, PropositionTagVoteRef, RegistrationRequestRef, PasswordResetRequestRef, AccountSettingsRef, ContentReportRef, UrlLocatorRef, MediaExcerptRef, SourceRef, CreateWritQuoteInput, CreateWritQuote, UpdateWritQuoteInput, UpdateWritQuote, CreateVidSegmentInput, CreateVidSegment, CreateAudSegmentInput, CreateAudSegment, UpdateVidSegmentInput, UpdateVidSegment, CreatePicRegionInput, CreatePicRegion, UpdatePicRegionInput, UpdatePicRegion, CreateSourceExcerptInput, CreateSourceExcerpt, CreateMediaExcerptBase, CreateMediaExcerpt, CreateMediaExcerptInput, UpdateMediaExcerpt, UpdateMediaExcerptInput, CreateUrlLocatorsInput, createJustificationBaseShape, createJustificationInputBaseShape, CreateJustificationInput, CreateJustification, CreateCounterJustificationInput, CreateCounterJustification, justificationVotePolarities, JustificationVote, JustificationVotePolarities, CreateJustificationVote, DeleteJustificationVote, TaggableEntityType, TagVote, TagVotePolarities, CreateTagVote, EntityType, EntityTypes, ContentReportType, ContentReportTypes, ContentReport, CreateContentReport, CreateContentReportInput, CreateUser, AccountSettings, CreateAccountSettings, UpdateAccountSettings, CreateJustifiedSentenceInput, CreateJustifiedSentence, RegistrationRequest, CreateRegistrationRequest, CreateRegistrationRequestInput, Password, RegistrationConfirmation, CreateRegistrationConfirmation, CreateRegistrationConfirmationInput, PasswordResetRequest, Credentials;
+  var import_lodash6, Entity, CreateModel, PersistedEntity, UserExternalIds, User, UserBlurb, Proposition, UpdatePropositionInput, UpdateProposition, Tag, CreateTag, CreateTagInput, tagVotePolarities, PropositionTagVote, PropositionTagVotePolarities, CreatePropositionTagVote, CreatePropositionTagVoteInput, CreatePropositionInput, CreateProposition, Persorg, CreatePersorg, CreatePersorgInput, UpdatePersorg, UpdatePersorgInput, sentenceTypes, baseStatement, Statement, SentenceTypes, CreateStatementInput, CreateStatement, Writ, CreateWrit, CreateWritInput, UpdateWrit, UpdateWritInput, DomAnchor, CreateDomAnchor, UrlTarget, Url, CreateUrl, CreateUrlInput, UrlLocator, WritQuote, PicRegion, VidSegment, AudSegment, sourceExcerptTypes, SourceExcerpt, SourceExcerptTypes, CreateUrlLocator, CreateUrlLocatorInput, Source, CreateSource, CreateSourceInput, UpdateSource, UpdateSourceInput, MediaExcerptCitation, CreateMediaExcerptCitation, CreateMediaExcerptCitationInput, DeleteMediaExcerptCitation, MediaExcerptSpeaker, CreateMediaExcerptSpeaker, CreateMediaExcerptSpeakerInput, MediaExcerpt, Appearance, CreateAppearance, CreateAppearanceInput, PropositionCompoundAtom, PropositionCompound, CreatePropositionCompoundAtomInput, UpdatePropositionCompoundAtomInput, CreatePropositionCompoundInput, CreatePropositionCompoundAtom, UpdatePropositionCompoundAtom, CreatePropositionCompound, UpdatePropositionCompoundInput, UpdatePropositionCompound, JustificationPolarity, JustificationPolarities, RelationPolarity2, JustificationRootPolarity, JustificationRootPolarities, JustificationBasisType, JustificationBasisTypes, justificationBaseShape, JustificationRootTargetType, JustificationRootTargetTypes, JustificationTargetType2, Justification, JustificationTargetTypes, PropositionRef, StatementRef, JustificationRef, JustificationVoteRef, PropositionCompoundRef, SourceExcerptRef, WritQuoteRef, WritRef, PersorgRef, TagRef, TagVoteRef, UrlRef, UserRef, PropositionTagVoteRef, RegistrationRequestRef, PasswordResetRequestRef, AccountSettingsRef, ContentReportRef, UrlLocatorRef, MediaExcerptRef, SourceRef, CreateWritQuoteInput, CreateWritQuote, UpdateWritQuoteInput, UpdateWritQuote, CreateVidSegmentInput, CreateVidSegment, CreateAudSegmentInput, CreateAudSegment, UpdateVidSegmentInput, UpdateVidSegment, CreatePicRegionInput, CreatePicRegion, UpdatePicRegionInput, UpdatePicRegion, CreateSourceExcerptInput, CreateSourceExcerpt, CreateMediaExcerptBase, CreateMediaExcerpt, CreateMediaExcerptInput, UpdateMediaExcerpt, UpdateMediaExcerptInput, CreateUrlLocatorsInput, createJustificationBaseShape, createJustificationInputBaseShape, CreateJustificationInput, CreateJustification, CreateCounterJustificationInput, CreateCounterJustification, justificationVotePolarities, JustificationVote, JustificationVotePolarities, CreateJustificationVote, DeleteJustificationVote, TaggableEntityType, TagVote, TagVotePolarities, CreateTagVote, EntityType, EntityTypes, ContentReportType, ContentReportTypes, ContentReport, CreateContentReport, CreateContentReportInput, CreateUser, AccountSettings, CreateAccountSettings, UpdateAccountSettings, CreateJustifiedSentenceInput, CreateJustifiedSentence, RegistrationRequest, CreateRegistrationRequest, CreateRegistrationRequestInput, Password, RegistrationConfirmation, CreateRegistrationConfirmation, CreateRegistrationConfirmationInput, PasswordResetRequest, Credentials;
   var init_zodSchemas = __esm({
     "../howdju-common/lib/zodSchemas.ts"() {
       "use strict";
@@ -21706,6 +21706,22 @@
         }),
         normalPincite: mod.string().optional()
       });
+      MediaExcerptSpeaker = mod.object({
+        mediaExcerptId: mod.string(),
+        persorg: Persorg,
+        created: momentObject,
+        creatorUserId: mod.string()
+      });
+      CreateMediaExcerptSpeaker = MediaExcerptSpeaker.extend({
+        persorg: CreatePersorg
+      }).omit({
+        // A CreateMediaExcerptSpeaker must be associated with a CreateMediaExcerpt, the ID of which
+        // will be substituted for the mediaExcerptId.
+        mediaExcerptId: true,
+        created: true,
+        creatorUserId: true
+      });
+      CreateMediaExcerptSpeakerInput = CreateMediaExcerptSpeaker;
       MediaExcerpt = Entity.extend({
         /**
          * One or more local representations of the excerpt.
@@ -21771,7 +21787,7 @@
          */
         citations: mod.array(MediaExcerptCitation),
         /** Persorgs to whom users have attributed the speech in the source excerpt. */
-        speakers: mod.array(Persorg),
+        speakers: mod.array(MediaExcerptSpeaker),
         created: momentObject,
         creatorUserId: mod.string(),
         creator: UserBlurb
@@ -22001,7 +22017,7 @@
           urlLocators: mod.array(CreateUrlLocator)
         }).optional(),
         citations: mod.array(CreateMediaExcerptCitation).optional(),
-        speakers: mod.array(CreatePersorg).optional()
+        speakers: mod.array(CreateMediaExcerptSpeaker).optional()
       });
       CreateMediaExcerpt = CreateMediaExcerptBase.superRefine(
         refineCreateMediaExcerpt
@@ -32835,6 +32851,8 @@
     CreateMediaExcerptCitation: () => CreateMediaExcerptCitation,
     CreateMediaExcerptCitationInput: () => CreateMediaExcerptCitationInput,
     CreateMediaExcerptInput: () => CreateMediaExcerptInput,
+    CreateMediaExcerptSpeaker: () => CreateMediaExcerptSpeaker,
+    CreateMediaExcerptSpeakerInput: () => CreateMediaExcerptSpeakerInput,
     CreateModel: () => CreateModel,
     CreatePersorg: () => CreatePersorg,
     CreatePersorgInput: () => CreatePersorgInput,
@@ -32906,6 +32924,7 @@
     MediaExcerptCitation: () => MediaExcerptCitation,
     MediaExcerptRef: () => MediaExcerptRef,
     MediaExcerptSearchFilterKeys: () => MediaExcerptSearchFilterKeys,
+    MediaExcerptSpeaker: () => MediaExcerptSpeaker,
     MomentConstructor: () => MomentConstructor,
     Password: () => Password,
     PasswordResetRequest: () => PasswordResetRequest,
@@ -33028,7 +33047,7 @@
     inferBibliographicInfo: () => inferBibliographicInfo,
     insertAllAt: () => insertAllAt,
     insertAt: () => insertAt,
-    isCounter: () => isCounter,
+    isBareRef: () => isBareRef,
     isCustomError: () => isCustomError,
     isDefined: () => isDefined,
     isDomain: () => isDomain,
@@ -33058,6 +33077,7 @@
     makeCreateJustificationInputTargetingRoot: () => makeCreateJustificationInputTargetingRoot,
     makeCreateJustifiedSentenceInput: () => makeCreateJustifiedSentenceInput,
     makeCreateMediaExcerptInput: () => makeCreateMediaExcerptInput,
+    makeCreateMediaExcerptSpeakerInput: () => makeCreateMediaExcerptSpeakerInput,
     makeCreatePersorg: () => makeCreatePersorg,
     makeCreatePicRegionInput: () => makeCreatePicRegionInput,
     makeCreatePropositionCompoundAtomInput: () => makeCreatePropositionCompoundAtomInput,
@@ -34329,6 +34349,10 @@
   init_lib();
   init_commonErrors();
   init_logger();
+  function isBareRef(o3) {
+    const keys4 = Object.keys(o3);
+    return keys4.length === 1 && keys4[0] === "id";
+  }
   function isOnlyRef(o3, brand) {
     if (Object.keys(o3).length !== 1) {
       return false;
@@ -34360,9 +34384,6 @@
   var isNegative = (j3) => j3.polarity === "NEGATIVE";
   var isRootPositive = (j3) => j3.rootPolarity === "POSITIVE";
   var isRootNegative = (j3) => j3.rootPolarity === "NEGATIVE";
-  function isCounter(j3) {
-    return j3.target.type === "JUSTIFICATION" && isNegative(j3);
-  }
   var isRootJustification = (j3) => {
     var _a, _b;
     return ((_a = j3.target) == null ? void 0 : _a.type) === j3.rootTargetType && ((_b = j3.target) == null ? void 0 : _b.entity.id) === j3.rootTarget.id;
@@ -34436,6 +34457,12 @@
   var makeUrl = (props) => (0, import_merge.default)({ url: "" }, props);
   var makeCreateUrl = (props) => (0, import_merge.default)({ url: "" }, props);
   var makeCreateUrlLocatorInput = (props) => (0, import_merge.default)({ url: makeCreateUrl() }, props);
+  var makeCreateMediaExcerptSpeakerInput = (props) => (0, import_merge.default)(
+    {
+      persorg: makeCreatePersorg()
+    },
+    props
+  );
   var makeCreatePersorg = () => ({
     isOrganization: false,
     name: "",
@@ -34630,7 +34657,7 @@
       case "JUSTIFICATION":
         return {
           _errors: errors._errors,
-          justification: isRef(target.entity) ? errors.entity : errors.entity && muxCreateJustificationErrors(target.entity, errors.entity)
+          justification: "basis" in target.entity ? errors.entity && muxCreateJustificationErrors(target.entity, errors.entity) : errors.entity
         };
       default:
         throw newExhaustedEnumError(target);

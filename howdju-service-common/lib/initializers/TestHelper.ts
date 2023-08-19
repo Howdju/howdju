@@ -87,7 +87,7 @@ export default class TestHelper {
       await this.servicesProvider.persorgsService.readOrCreateValidPersorgAsUser(
         createPersorg,
         creatorUserId,
-        created.toDate()
+        created
       );
     return persorg;
   }
@@ -207,5 +207,5 @@ const defaultMediaExcerpt: CreateMediaExcerpt = {
       // no pincite
     },
   ],
-  speakers: [{ name: "the speaker", isOrganization: false }],
+  speakers: [{ persorg: { name: "the speaker", isOrganization: false } }],
 };

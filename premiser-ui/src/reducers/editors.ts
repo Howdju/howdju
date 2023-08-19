@@ -22,6 +22,7 @@ import set from "lodash/set";
 import {
   differenceWith,
   filter,
+  isArray,
   isEqual,
   isFunction,
   keys,
@@ -226,7 +227,7 @@ export interface AddListItemPayload {
   itemFactory: () => Entity;
 }
 
-/** @deprecated TODO(83): replace with addListItem/removeListItem */
+/** @deprecated TODO(523): replace with addListItem/removeListItem */
 const makeAddAtomReducer =
   <T extends EditorEntity, U>(atomsPath: string, atomMaker: ModelFactory) =>
   (state: WritableDraft<EditorState<T, U>>, action: AnyAction) => {
@@ -297,7 +298,10 @@ const defaultEditorActions = {
     }
   ),
   [str(editors.addListItem)]: produce(
-    (state: EditorState<any>, action: Action<AddListItemPayload>) => {
+    (
+      state: EditorState<any>,
+      action: ReturnType<typeof editors.addListItem>
+    ) => {
       const { itemIndex, listPathMaker, itemFactory } = action.payload;
       const editEntity = state.editEntity;
 
@@ -316,13 +320,17 @@ const defaultEditorActions = {
     }
   ),
   [str(editors.removeListItem)]: produce(
-    (state: EditorState<any>, action: AnyAction) => {
+    (
+      state: EditorState<any>,
+      action: ReturnType<typeof editors.removeListItem>
+    ) => {
       const { itemIndex, listPathMaker } = action.payload;
       const editEntity = state.editEntity;
 
-      const listPath = isString(listPathMaker)
-        ? listPathMaker
-        : listPathMaker(action.payload);
+      const listPath =
+        isString(listPathMaker) || isArray(listPathMaker)
+          ? listPathMaker
+          : listPathMaker(action.payload);
       if (!editEntity) {
         logger.error(
           `Cannot remove the ${itemIndex}th item from the list '${listPath}' because editEntity is missing.`
@@ -331,6 +339,33 @@ const defaultEditorActions = {
       }
       const list = get(editEntity, listPath);
       removeAt(list, itemIndex);
+    }
+  ),
+  [str(editors.replaceListItem)]: produce(
+    (
+      state: EditorState<any>,
+      action: ReturnType<typeof editors.replaceListItem>
+    ) => {
+      const { itemIndex, listPathMaker, item } = action.payload;
+      const editEntity = state.editEntity;
+
+      const listPath = isFunction(listPathMaker)
+        ? listPathMaker(action.payload)
+        : listPathMaker;
+      if (!editEntity) {
+        logger.error(
+          `Cannot add an item to the list '${listPath}' because editEntity is missing.`
+        );
+        return;
+      }
+      const list = get(editEntity, listPath);
+      if (list.length <= itemIndex) {
+        logger.error(
+          `Cannot replace the ${itemIndex}th item from the list '${listPath}' because it does not exist.`
+        );
+        return;
+      }
+      list[itemIndex] = item;
     }
   ),
   [str(editors.attemptedSubmit)]: produce((state: EditorState<any>) => {
@@ -404,7 +439,7 @@ interface EditorMeta {
   requestMeta?: any;
 }
 const defaultEditorReducer = handleActions<EditorState<any>, any>(
-  defaultEditorActions,
+  defaultEditorActions as any,
   defaultEditorState()
 );
 const editorReducerByType: {
@@ -525,21 +560,6 @@ const editorReducerByType: {
         }
         const speakers = clone(editEntity.speakers);
         removeAt(speakers, action.payload.index);
-        return assign({}, state, {
-          editEntity: {
-            ...editEntity,
-            speakers,
-          },
-        });
-      },
-      [str(editors.replaceSpeaker)]: (state, action) => {
-        const editEntity = state.editEntity;
-        if (!editEntity) {
-          logger.error("Cannot replace speaker of an absent editEntity.");
-          return state;
-        }
-        const speakers = clone(editEntity.speakers);
-        speakers[action.payload.index] = action.payload.speaker;
         return assign({}, state, {
           editEntity: {
             ...editEntity,
@@ -872,7 +892,7 @@ function inferMediaExcerptInfoSuccessHandler<T extends EditorEntity>(
       }
 
       if (authors && (mediaExcerpt.speakers?.length ?? 0) < 1) {
-        mediaExcerpt.speakers = authors;
+        mediaExcerpt.speakers = authors.map((persorg) => ({ persorg }));
       }
 
       // Remove the error if it exists

@@ -7,7 +7,7 @@ import {
   extractQuotationFromTextFragment,
   MediaExcerptCitation,
   MediaExcerpt,
-  makeCreatePersorg,
+  makeCreateMediaExcerptSpeakerInput,
   PersorgOut,
 } from "howdju-common";
 import { toCreatePersorgInput } from "howdju-client-common";
@@ -63,9 +63,9 @@ export default function MediaExcerptEditorFields(props: Props) {
       editors.addListItem(
         editorType,
         editorId,
-        mediaExcerpt?.speakers?.length ?? 0,
         combineNames(name, "speakers"),
-        makeCreatePersorg
+        mediaExcerpt?.speakers?.length ?? 0,
+        makeCreateMediaExcerptSpeakerInput
       )
     );
   }
@@ -75,18 +75,21 @@ export default function MediaExcerptEditorFields(props: Props) {
       editors.removeListItem(
         editorType,
         editorId,
-        index,
-        combineNames(name, "speakers")
+        combineNames(name, "speakers"),
+        index
       )
     );
   }
   function onPersorgAutocomplete(persorg: PersorgOut, index: number) {
     editorDispatch((editorType: EditorType, editorId: EditorId) =>
-      editors.replaceSpeaker(
+      editors.replaceListItem(
         editorType,
         editorId,
-        toCreatePersorgInput(persorg),
-        index
+        combineNames(name, "speakers"),
+        index,
+        makeCreateMediaExcerptSpeakerInput({
+          persorg: toCreatePersorgInput(persorg),
+        })
       )
     );
   }
@@ -193,7 +196,7 @@ export default function MediaExcerptEditorFields(props: Props) {
       </fieldset>
       <fieldset className="speakers">
         <legend>Speakers</legend>
-        {mediaExcerpt?.speakers?.map((speaker, index) => {
+        {mediaExcerpt?.speakers?.map(({ persorg }, index) => {
           return (
             <EntityViewer
               icon="person"
@@ -210,14 +213,14 @@ export default function MediaExcerptEditorFields(props: Props) {
               }
               entity={
                 <PersorgEditorFields
-                  id={combineIds(id, `speakers[${index}]`)}
-                  key={combineIds(id, `speakers[${index}]`)}
-                  persorg={speaker}
+                  id={combineIds(id, `speakers[${index}].persorg`)}
+                  key={combineIds(id, `speakers[${index}].persorg`)}
+                  persorg={persorg}
                   suggestionsKey={combineSuggestionsKeys(
                     suggestionsKey,
-                    `speakers[${index}]`
+                    `speakers[${index}].persorg`
                   )}
-                  name={combineNames(name, `speakers[${index}]`)}
+                  name={combineNames(name, `speakers[${index}].persorg`)}
                   disabled={disabled}
                   onPersorgNameAutocomplete={(persorg: PersorgOut) =>
                     onPersorgAutocomplete(persorg, index)

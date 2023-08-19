@@ -1,6 +1,6 @@
 import {
   AppearanceOut,
-  JustificationOut,
+  JustificationWithRootOut,
   MediaExcerptOut,
   PropositionCompoundOut,
   PropositionOut,
@@ -8,13 +8,15 @@ import {
   UrlLocatorOut,
   WritQuoteOut,
 } from "./apiModels";
+import { PersistedEntity } from "./zodSchemas";
 
-/** A JustificationOut that has been joined with its root target in the client */
+/** A view model where related entities have been replaced with their view model equivalent. */
 export type JustificationView = Omit<
-  JustificationOut,
-  "rootTarget" | "rootTargetType" | "target" | "basis"
-> &
-  (
+  JustificationWithRootOut,
+  "target" | "basis" | "counterJustifications"
+> & {
+  counterJustifications?: (PersistedEntity | JustificationView)[];
+} & (
     | {
         rootTargetType: "PROPOSITION";
         rootTarget: PropositionOut;
@@ -67,7 +69,7 @@ export interface MediaExcerptView extends MediaExcerptOut {
   };
   speakers: (MediaExcerptOut["speakers"][number] & {
     /** A key uniquely identifying a persorg relative to others. */
-    key: string;
+    persorg: MediaExcerptOut["speakers"][number]["persorg"] & { key: string };
   })[];
 }
 

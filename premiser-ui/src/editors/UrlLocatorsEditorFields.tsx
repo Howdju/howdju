@@ -66,7 +66,7 @@ export default function UrlLocatorsEditorFields({
       throw new Error(`Unable to remove URL locator without name: ${id}`);
     }
     editorDispatch((editorType: EditorType, editorId: string) =>
-      editors.removeListItem(editorType, editorId, index, name)
+      editors.removeListItem(editorType, editorId, name, index)
     );
   }
 
@@ -78,8 +78,8 @@ export default function UrlLocatorsEditorFields({
       editors.addListItem(
         editorType,
         editorId,
-        0,
         name,
+        0,
         makeCreateUrlLocatorInput
       )
     );

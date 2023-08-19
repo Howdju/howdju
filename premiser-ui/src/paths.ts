@@ -7,15 +7,14 @@ import {
   ContextTrailItem,
   EntityId,
   JustificationBasisSourceType,
-  JustificationOut,
   JustificationRootTargetTypes,
   JustificationSearchFilters,
+  JustificationView,
   MediaExcerptRef,
   newExhaustedEnumError,
   PersorgOut,
   serializeContextTrail,
   SourceOut,
-  StatementRef,
   TagOut,
   toSlug,
   WritQuoteOut,
@@ -63,20 +62,20 @@ class Paths {
     return `/p/${id}${slugPath}${anchor}${query}`;
   };
   statement = (
-    statement: StatementRef,
+    statementId: EntityId,
     focusJustificationId: EntityId | null = null
   ) => {
     const anchor = focusJustificationId
       ? `#justification-${focusJustificationId}`
       : "";
-    return `/s/${statement.id}${anchor}`;
+    return `/s/${statementId}${anchor}`;
   };
-  justification = (j: JustificationOut) => {
+  justification = (j: JustificationView) => {
     switch (j.rootTargetType) {
       case JustificationRootTargetTypes.PROPOSITION:
         return this.proposition(j.rootTarget, [], false, j.id);
       case JustificationRootTargetTypes.STATEMENT:
-        return this.statement(j.rootTarget, j.id);
+        return this.statement(j.rootTarget.id, j.id);
       default:
         throw newExhaustedEnumError(j);
     }
@@ -115,8 +114,16 @@ class Paths {
     }
     return createPath(location);
   };
+
   createAppearance = (mediaExcerptId: EntityId) =>
     `/media-excerpts/${mediaExcerptId}/appearances/new`;
+  factCheck(userId: EntityId, sourceIds: EntityId[], urlIds: EntityId[]) {
+    return createPath({
+      pathname: `/fact-checks/`,
+      search: "?" + queryString.stringify({ userId, sourceIds, urlIds }),
+    });
+  }
+
   searchJustifications = (params: JustificationSearchFilters) =>
     createPath({
       pathname: "/search-justifications",

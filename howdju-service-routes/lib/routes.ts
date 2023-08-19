@@ -27,7 +27,6 @@ import {
   DeleteJustificationVote,
   Password,
   ContinuationToken,
-  PropositionOut,
   WritOut,
   AuthToken,
   WritQuoteOut,
@@ -44,6 +43,8 @@ import {
   UpdateSource,
   CreateUrlLocator,
   CreateAppearance,
+  SentenceTypes,
+  SentenceType,
 } from "howdju-common";
 import {
   EntityNotFoundError,
@@ -237,9 +238,9 @@ export const serviceRoutes = {
         if (propositionIdsParam) {
           const propositionIds = split(propositionIdsParam, ",");
           const propositions =
-            (await appProvider.propositionsService.readPropositionsForIds(
+            await appProvider.propositionsService.readPropositionsForIds(
               propositionIds
-            )) as PropositionOut[];
+            );
           return { body: { propositions } };
         } else {
           const { propositions, continuationToken: newContinuationToken } =
@@ -356,18 +357,14 @@ export const serviceRoutes = {
     ),
   },
   readSpeakerStatements: {
-    path: "statements",
+    path: "persorgs/:persorgId/statements",
     method: httpMethods.GET,
-    queryStringParams: { speakerPersorgId: /.+/ },
     request: handler(
-      QueryStringParams("speakerPersorgId"),
-      async (
-        appProvider: ServicesProvider,
-        { queryStringParams: { speakerPersorgId } }
-      ) => {
+      PathParams("persorgId"),
+      async (appProvider: ServicesProvider, { pathParams: { persorgId } }) => {
         const statements =
           await appProvider.statementsService.readStatementsForSpeakerPersorgId(
-            speakerPersorgId
+            persorgId
           );
         return { body: { statements } };
       }
@@ -386,9 +383,20 @@ export const serviceRoutes = {
         appProvider: ServicesProvider,
         { queryStringParams: { sentenceType, sentenceId } }
       ) => {
+        if (
+          !sentenceType ||
+          !Object.keys(SentenceTypes).includes(sentenceType)
+        ) {
+          throw new InvalidRequestError(
+            `sentenceType must be one of : ${Object.keys(SentenceTypes)}`
+          );
+        }
+        if (!sentenceId) {
+          throw new InvalidRequestError("sentenceId is required");
+        }
         const statements =
           await appProvider.statementsService.readStatementsForSentenceTypeAndId(
-            sentenceType,
+            sentenceType as SentenceType,
             sentenceId
           );
         return { body: { statements } };
@@ -408,6 +416,9 @@ export const serviceRoutes = {
         appProvider: ServicesProvider,
         { queryStringParams: { rootPropositionId } }
       ) => {
+        if (!rootPropositionId) {
+          throw new InvalidRequestError("rootPropositionId is required");
+        }
         const statements =
           await appProvider.statementsService.readIndirectStatementsForRootPropositionId(
             rootPropositionId
@@ -428,6 +439,9 @@ export const serviceRoutes = {
         appProvider: ServicesProvider,
         { queryStringParams: { rootPropositionId } }
       ) => {
+        if (!rootPropositionId) {
+          throw new InvalidRequestError("rootPropositionId is required");
+        }
         const statements =
           await appProvider.statementsService.readStatementsForRootPropositionId(
             rootPropositionId
@@ -445,10 +459,13 @@ export const serviceRoutes = {
       PathParams("statementId"),
       async (
         appProvider: ServicesProvider,
-        { pathParams: { statementId } }
+        { authToken, pathParams: { statementId } }
       ) => {
-        const { statement } =
-          await appProvider.statementsService.readStatementForId(statementId);
+        const statement =
+          await appProvider.statementsService.readStatementForId(
+            { authToken },
+            statementId
+          );
         return { body: { statement } };
       }
     ),
@@ -1051,14 +1068,44 @@ export const serviceRoutes = {
       PathParams("appearanceId"),
       async (
         appProvider: ServicesProvider,
-        { authToken, pathParams: { appearanceId } }
+        { pathParams: { appearanceId } }
       ) => {
         const appearance =
           await appProvider.appearancesService.readAppearanceForId(
-            { authToken },
             appearanceId
           );
         return { body: { appearance } };
+      }
+    ),
+  },
+
+  /*
+   * FactChecks
+   */
+  readFactCheck: {
+    path: "fact-checks/",
+    method: httpMethods.GET,
+    request: handler(
+      QueryStringParams("userIds", "urlIds", "sourceIds"),
+      async (
+        appProvider: ServicesProvider,
+        { queryStringParams: { userIds, urlIds, sourceIds } }
+      ) => {
+        if (!userIds) {
+          throw new InvalidRequestError("Missing userIds");
+        }
+        if (!urlIds && !sourceIds) {
+          throw new InvalidRequestError(
+            "One of urlIds or sourceIds is required."
+          );
+        }
+        const { appearances, users, urls, sources } =
+          await appProvider.factChecksService.readFactCheck(
+            userIds.split(","),
+            urlIds?.split(",") ?? [],
+            sourceIds?.split(",") ?? []
+          );
+        return { body: { appearances, users, urls, sources } };
       }
     ),
   },

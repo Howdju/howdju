@@ -31,6 +31,10 @@ import {
   ContextTrailItem,
   nextContextTrailItem,
   PropositionRef,
+  isNegative,
+  Justification,
+  JustificationOut,
+  JustificationView,
 } from "howdju-common";
 
 import * as characters from "./characters";
@@ -243,4 +247,16 @@ export function extendContextTrailItems(
 export interface PropositionRefView extends PropositionRef {
   /** A slugified version of the proposition text. */
   slug?: string;
+}
+
+// If a justification targets another justification, its polarity should always be negative
+export function isCounter<
+  J extends Justification | JustificationOut | JustificationView
+>(
+  j: J
+): j is J & {
+  target: { type: "JUSTIFICATION" };
+  polarity: "NEGATIVE";
+} {
+  return j.target.type === "JUSTIFICATION" && isNegative(j);
 }

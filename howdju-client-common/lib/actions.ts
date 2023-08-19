@@ -4,9 +4,9 @@ import { createAction } from "@reduxjs/toolkit";
 import {
   MediaExcerptInfo,
   decircularizeJustification,
-  JustificationOut,
   PersistedJustificationWithRootRef,
   UrlOut,
+  JustificationView,
 } from "howdju-common";
 
 /**
@@ -26,7 +26,7 @@ export const str = (ac: ActionCreator<unknown>) => ac.toString();
 export const extension = {
   highlightTarget: createAction(
     "EXTENSION/HIGHLIGHT_TARGET",
-    (justification: JustificationOut, url: UrlOut) => ({
+    (justification: JustificationView, url: UrlOut) => ({
       payload: {
         justification: decircularizeJustification(
           justification

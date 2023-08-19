@@ -13,7 +13,11 @@ import {
 
 import { SourcesDao } from "../daos";
 import { EntityWrapper } from "../types";
-import { readWriteReread, updateHandlingConstraints } from "./patterns";
+import {
+  ensurePresent,
+  readWriteReread,
+  updateHandlingConstraints,
+} from "./patterns";
 import {
   ApiConfig,
   AuthorizationError,
@@ -32,8 +36,14 @@ export class SourcesService {
     private sourcesDao: SourcesDao
   ) {}
 
+  async readSourcesForIds(sourceIds: EntityId[]): Promise<SourceOut[]> {
+    const sources = await this.sourcesDao.readSourcesForIds(sourceIds);
+    ensurePresent(sourceIds, sources, "SOURCE");
+    return sources;
+  }
+
   async readSourceForId(sourceId: EntityId): Promise<SourceOut> {
-    const source = await this.sourcesDao.readSourceForId(sourceId);
+    const [source] = await this.readSourcesForIds([sourceId]);
     if (!source) {
       throw new EntityNotFoundError("SOURCE", sourceId);
     }

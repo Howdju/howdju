@@ -4,11 +4,11 @@ import {
   EntityId,
   JustificationTargetType,
   RelationPolarity,
-  JustificationOut,
   logger,
+  JustificationView,
 } from "howdju-common";
 
-import { JustificationView } from "./viewModels";
+import { JustificationWithRootOut } from "./apiModels";
 
 /**
  * A representation of an item in a context trail sufficient to request the full information.
@@ -47,9 +47,10 @@ export type ContextTrailItemOut = {
   polarity: RelationPolarity;
 } & {
   connectingEntityType: "JUSTIFICATION";
-  connectingEntity: JustificationOut;
+  connectingEntity: JustificationWithRootOut;
 };
 
+export type ConnectingEntityOut = ContextTrailItemOut["connectingEntity"];
 export type ConnectingEntity = ContextTrailItem["connectingEntity"];
 export type ConnectingEntityType = ContextTrailItem["connectingEntityType"];
 // TODO(20): Union with Appearance target type
@@ -146,7 +147,7 @@ export function parseContextTrail(
 // TODO(20): When we add Appearances, expand this discriminated union.
 export type TypedConnectingEntity = {
   type: "JUSTIFICATION";
-  entity: JustificationView;
+  entity: JustificationWithRootOut | JustificationView;
 };
 
 export type TypedConnectingEntityTargetId = {
@@ -230,7 +231,7 @@ export function nextContextTrailItem(
 
 export function contextTrailItemPolarity(
   connectingEntityType: ConnectingEntityType,
-  connectingEntity: ConnectingEntity,
+  connectingEntity: ConnectingEntity | ConnectingEntityOut,
   prevItemPolarity: RelationPolarity
 ) {
   switch (connectingEntityType) {

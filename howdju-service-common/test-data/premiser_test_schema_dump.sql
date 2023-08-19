@@ -17,6 +17,17 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
+-- Name: appearance_vote_polarity; Type: TYPE; Schema: public; Owner: -
+--
+
+CREATE TYPE public.appearance_vote_polarity AS ENUM (
+    'FOUND',
+    'NOT_FOUND',
+    'ERROR'
+);
+
+
+--
 -- Name: auto_confirmation_status; Type: TYPE; Schema: public; Owner: -
 --
 
@@ -85,6 +96,17 @@ CREATE TABLE public.actions (
     subject_id integer,
     subject_type character varying(64),
     tstamp timestamp without time zone
+);
+
+
+--
+-- Name: appearance_confirmations; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.appearance_confirmations (
+    appearance_id bigint NOT NULL,
+    user_id bigint NOT NULL,
+    polarity public.appearance_vote_polarity NOT NULL
 );
 
 
@@ -630,8 +652,8 @@ CREATE TABLE public.persorgs (
     is_organization boolean NOT NULL,
     name character varying(2048) NOT NULL,
     normal_name character varying(2048) NOT NULL,
-    known_for character varying(4096),
-    normal_known_for character varying(4096),
+    known_for character varying(4096) NOT NULL,
+    normal_known_for character varying(4096) NOT NULL,
     website_url character varying(4096),
     twitter_url character varying(4096),
     wikipedia_url character varying(4096),
@@ -1585,6 +1607,14 @@ ALTER TABLE ONLY public.writs ALTER COLUMN writ_id SET DEFAULT nextval('public.c
 
 
 --
+-- Name: appearance_confirmations appearance_votes_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.appearance_confirmations
+    ADD CONSTRAINT appearance_votes_pkey PRIMARY KEY (appearance_id, user_id);
+
+
+--
 -- Name: appearances appearances_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2081,6 +2111,22 @@ CREATE INDEX writ_title_fulltext_idx ON public.writs USING gin (to_tsvector('eng
 
 ALTER TABLE ONLY public.account_settings
     ADD CONSTRAINT account_settings_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(user_id);
+
+
+--
+-- Name: appearance_confirmations appearance_votes_appearance_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.appearance_confirmations
+    ADD CONSTRAINT appearance_votes_appearance_id_fkey FOREIGN KEY (appearance_id) REFERENCES public.appearances(appearance_id);
+
+
+--
+-- Name: appearance_confirmations appearance_votes_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.appearance_confirmations
+    ADD CONSTRAINT appearance_votes_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(user_id);
 
 
 --

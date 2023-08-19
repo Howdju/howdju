@@ -11,7 +11,7 @@ import {
 
 import { CanonicalUrlsService } from "./CanonicalUrlsService";
 import { UrlsDao } from "../daos";
-import { readWriteReread } from "./patterns";
+import { ensurePresent, readWriteReread } from "./patterns";
 import { EntityNotFoundError } from "..";
 
 export class UrlsService {
@@ -76,5 +76,11 @@ export class UrlsService {
       `Url ${urlId} has a new canonical URL: ${canonicalUrl} (previously: ${url.canonicalUrl}).`
     );
     await this.urlsDao.setCanonicalUrlForId(urlId, canonicalUrl);
+  }
+
+  async readUrlsForIds(urlIds: EntityId[]) {
+    const urls = await this.urlsDao.readUrlsForIds(urlIds);
+    ensurePresent(urlIds, urls, "URL");
+    return urls;
   }
 }
