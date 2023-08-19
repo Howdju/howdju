@@ -12,7 +12,7 @@
     "check:pushed": "bin/check-pushed.sh",
     "check:committed": "node bin/check-committed.mjs",
     "check:do-not-merge": "echo check:do-not-merge && bin/check-do-not-merge.sh && echo check:do-not-merge succeeded || {echo check:do-not-merge failed; exit 1}",
-    "check:todo-format": "echo check:todo-format && bin/check-todo-format.sh && echo check:todo-format succeeded || {echo check:todo-format failed; exit 1}",
+    "check:todo-format": "echo check:todo-format && bin/check-todo-format.sh \"$@\" && echo check:todo-format succeeded || {echo check:todo-format failed; exit 1}",
     "check:pre-deploy": "bin/pre-deploy-check.sh",
     "check:test-db-dump-updated": "bin/check-test-db-dump-updated.sh",
     "check:yarn-install": "echo check:yarn-install && yarn install --immutable && echo check:yarn-install succeeded || {echo check:yarn-install failed; exit 1}",
