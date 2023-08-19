@@ -79,7 +79,6 @@ describe("routeRequest", () => {
       id: "42",
       text: "Hi they said me.",
       created: moment(),
-      creator,
     });
     const statements: StatementOut[] = [
       brandedParse(StatementRef, {

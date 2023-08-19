@@ -420,10 +420,6 @@ describe("CreatePropositionPage", () => {
         id: basisSourceId,
         text: "This warrants a response.",
         created: moment(),
-        creator: {
-          id: "1",
-          longName: "Long name",
-        },
       });
       const justification: CreateJustification = {
         target: {

@@ -15,10 +15,6 @@ describe("makeJustificationViewModel", () => {
       ...PropositionRef.parse({ id: "example" }),
       text: "By law, no building in Washington, D.C. may be taller than the Capitol building",
       created,
-      creator: {
-        id: "1",
-        longName: "The user long name",
-      },
     };
     const justification = makeJustificationViewModel({
       ...JustificationRef.parse({ id: "example" }),
@@ -54,10 +50,6 @@ describe("makeJustificationViewModel", () => {
       ...PropositionRef.parse({ id: "example" }),
       text: "By law, no building in Washington, D.C. may be taller than the Capitol building",
       created,
-      creator: {
-        id: "1",
-        longName: "The user long name",
-      },
     };
     const proJustification = makeJustificationViewModel({
       ...JustificationRef.parse({ id: "example" }),

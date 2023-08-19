@@ -47,15 +47,13 @@ export class StatementsService extends EntityService<
     userIdent: UserIdent,
     statementId: EntityId
   ): Promise<StatementOut> {
-    const hierarchy = await this.statementsDao.readStatementHierarchyForId(
-      statementId
-    );
+    const chain = await this.statementsDao.readStatementChainForId(statementId);
 
-    // Validate the hierarchy
-    if (!hierarchy.length) {
+    // Validate the chain
+    if (!chain.length) {
       throw new EntityNotFoundError("STATEMENT", statementId);
     }
-    hierarchy.forEach(({ sentenceType }, i) => {
+    chain.forEach(({ sentenceType }, i) => {
       if (i === 0 && sentenceType !== "PROPOSITION") {
         throw newImpossibleError(
           `Expected first sentenceType to be PROPOSITION but was ${sentenceType}`
@@ -69,7 +67,7 @@ export class StatementsService extends EntityService<
     });
 
     // Read the Proposition
-    const { sentenceType, sentenceId: propositionId } = hierarchy[0];
+    const { sentenceType, sentenceId: propositionId } = chain[0];
     const proposition = await this.propositionsService.readPropositionForId(
       propositionId,
       userIdent
@@ -79,10 +77,10 @@ export class StatementsService extends EntityService<
     }
 
     // Read the Statements
-    const statementIds = hierarchy
+    const statementIds = chain
       .slice(1)
       .map(({ sentenceId }) => sentenceId)
-      .concat([hierarchy[hierarchy.length - 1].statementId]);
+      .concat([chain[chain.length - 1].statementId]);
     const statements =
       await this.statementsDao.readStatementsWithoutSentencesForIds(
         statementIds
@@ -106,8 +104,8 @@ export class StatementsService extends EntityService<
     let prevSentenceInfo = { sentenceType, sentence: proposition } as
       | { sentenceType: "PROPOSITION"; sentence: PropositionOut }
       | { sentenceType: "STATEMENT"; sentence: StatementOut };
-    for (let i = 1; i < hierarchy.length; i++) {
-      const { sentenceType, sentenceId } = hierarchy[i];
+    for (let i = 1; i < chain.length; i++) {
+      const { sentenceType, sentenceId } = chain[i];
       const statement = statementsById[sentenceId];
       const speaker = speakerPersorgsById[statement.speaker.id];
       const creator = creatorUsersById[statement.creator.id];
@@ -116,7 +114,7 @@ export class StatementsService extends EntityService<
         sentence: { ...statement, ...prevSentenceInfo, speaker, creator },
       };
     }
-    const lastStatementId = hierarchy[hierarchy.length - 1].statementId;
+    const lastStatementId = chain[chain.length - 1].statementId;
     const lastStatement = statementsById[lastStatementId];
     const speaker = speakerPersorgsById[lastStatement.speaker.id];
     const creator = creatorUsersById[lastStatement.creator.id];

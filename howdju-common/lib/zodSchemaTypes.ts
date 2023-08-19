@@ -329,6 +329,8 @@ export function isBareRef(o: object): o is PersistedEntity {
  * Whether o is a plain Ref of type brand.
  *
  * A plain Ref has just an ID and a BRAND. If brand is provided, the BRAND must match.
+ *
+ * TODO(524) We probably want to remove this in favor of isBareRef.
  */
 export function isOnlyRef<T extends string = string>(
   o: any,
@@ -340,6 +342,14 @@ export function isOnlyRef<T extends string = string>(
   return "id" in o && z.BRAND in o && (!brand || o[z.BRAND] === brand);
 }
 
+/**
+ * Returns true of the object has a single ID field or if it has a BRAND.
+ *
+ * The type guard relies on the typesystem and canot not correctly infer whether the BRAND matches
+ * T.
+ *
+ * TODO(524) We probably want to remove this in favor of isBareRef.
+ */
 export function isRef<T extends Entity>(e: EntityOrRef<T>): e is EntityRef<T> {
   const keys = Object.keys(e);
   // An entity with a single property `id` is a ref.

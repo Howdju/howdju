@@ -46,10 +46,6 @@ describe("JustificationsPage", () => {
       tags: [],
       recommendedTags: [],
       propositionTagVotes: [],
-      creator: {
-        id: "creator-id",
-        longName: "creator-long-name",
-      },
     };
     const response: InferResponseBody<typeof serviceRoutes.readProposition> = {
       proposition,
@@ -106,10 +102,6 @@ describe("JustificationsPage", () => {
       tags: [],
       recommendedTags: [],
       propositionTagVotes: [],
-      creator: {
-        id: "creator-id",
-        longName: "creator-long-name",
-      },
     };
     const response: InferResponseBody<typeof serviceRoutes.readProposition> = {
       proposition,
@@ -197,10 +189,6 @@ describe("JustificationsPage", () => {
       tags: [],
       recommendedTags: [],
       propositionTagVotes: [],
-      creator: {
-        id: "creator-id",
-        longName: "creator-long-name",
-      },
     };
 
     const basisText1 = "The proposition text 1";

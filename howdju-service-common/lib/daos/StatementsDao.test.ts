@@ -82,8 +82,8 @@ describe("StatementsDao", () => {
       expect(readStatement).toMatchObject(createdStatement);
     });
   });
-  describe("readStatementHierarchyForId", () => {
-    test("reads a hierarchy for a statement", async () => {
+  describe("readStatementChainForId", () => {
+    test("reads a chain for a statement", async () => {
       const {
         user: { id: userId },
       } = await testHelper.makeUser();
@@ -131,11 +131,9 @@ describe("StatementsDao", () => {
       );
 
       // Act
-      const hierarchy = await dao.readStatementHierarchyForId(
-        createdStatement2.id
-      );
+      const chain = await dao.readStatementChainForId(createdStatement2.id);
 
-      expect(hierarchy).toEqual([
+      expect(chain).toEqual([
         {
           statementId: createdStatement1.id,
           sentenceType: "PROPOSITION",

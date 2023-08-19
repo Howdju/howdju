@@ -62,7 +62,7 @@ export class MediaExcerptsDao {
   async readMediaExcerptsForIds(
     mediaExcerptIds: EntityId[]
   ): Promise<MediaExcerptOut[]> {
-    const justMediaExcerpts = await this.readJustMediaExcerptForIds(
+    const justMediaExcerpts = await this.readJustMediaExcerptsForIds(
       mediaExcerptIds
     );
 
@@ -103,19 +103,19 @@ export class MediaExcerptsDao {
   }
 
   async readJustMediaExcerptForId(mediaExcerptId: EntityId) {
-    const [mediaExcerpt] = await this.readJustMediaExcerptForIds([
+    const [mediaExcerpt] = await this.readJustMediaExcerptsForIds([
       mediaExcerptId,
     ]);
     return mediaExcerpt;
   }
 
-  async readJustMediaExcerptForIds(
+  async readJustMediaExcerptsForIds(
     mediaExcerptIds: EntityId[]
   ): Promise<
     Pick<MediaExcerptOut, "id" | "localRep" | "created" | "creatorUserId">[]
   > {
     const { rows } = await this.database.query(
-      "readMediaExceptForId",
+      "readJustMediaExcerptsForIds",
       `
       select *
       from media_excerpts
@@ -140,7 +140,7 @@ export class MediaExcerptsDao {
     mediaExcerptIds: EntityId[]
   ): Promise<MediaExcerptSpeakerOut[]> {
     const { rows } = await this.database.query(
-      "readSpeakersForMediaExcerptId",
+      "readSpeakersForMediaExcerptIds",
       `
       select mes.*
       from
@@ -184,7 +184,7 @@ export class MediaExcerptsDao {
 
   private async readCitationsForMediaExcerptIds(mediaExcerptIds: EntityId[]) {
     const { rows } = await this.database.query(
-      "readCitationsForMediaExcerptId",
+      "readCitationsForMediaExcerptIds",
       `
       select mec.*
       from
@@ -228,7 +228,7 @@ export class MediaExcerptsDao {
         ? [filter.mediaExcerptIds]
         : [filter.urlLocatorIds];
     const { rows } = await this.database.query(
-      "readUrlLocatorsForMediaExcerptId",
+      "readUrlLocators",
       `
       select
         ul.*

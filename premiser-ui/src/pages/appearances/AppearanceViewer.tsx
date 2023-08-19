@@ -39,7 +39,7 @@ export default function AppearanceViewer({ id, appearance }: Props) {
         )}
       >
         <Button flat secondary iconEl={<MaterialSymbol icon="how_to_reg" />}>
-          User&rsquo;s review
+          User&rsquo;s fact-check
         </Button>
       </Link>
     </div>

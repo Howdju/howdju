@@ -83,7 +83,7 @@ export class UsersDao {
   }
   async readUserBlurbsForIds(userIds: EntityId[]) {
     const { rows } = await this.database.query(
-      "readUserBlurbForId",
+      "readUserBlurbsForIds",
       "select user_id, long_name from users where user_id = ANY($1) and deleted is null",
       [userIds]
     );

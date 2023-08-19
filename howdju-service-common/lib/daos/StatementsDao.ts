@@ -77,11 +77,11 @@ export class StatementsDao extends BaseDao {
     return statement;
   }
 
-  async readStatementHierarchyForId(statementId: EntityId) {
+  async readStatementChainForId(statementId: EntityId) {
     const { rows } = await this.db.query(
-      "readStatementIdHierarchy",
+      "readStatementChainForId",
       `
-        with recursive hierarchy(statement_id, sentence_type, sentence_id) as (
+        with recursive chain(statement_id, sentence_type, sentence_id) as (
           select
               statement_id
             , sentence_type
@@ -93,13 +93,13 @@ export class StatementsDao extends BaseDao {
               s.statement_id
             , s.sentence_type
             , s.sentence_id
-          from hierarchy h, statements s
+          from chain h, statements s
           where
                 h.sentence_id = s.statement_id
             and h.sentence_type = 'STATEMENT'
         )
         select *
-        from hierarchy
+        from chain
       `,
       [statementId]
     );
@@ -129,7 +129,7 @@ export class StatementsDao extends BaseDao {
     const {
       rows: [row],
     } = await this.database.query(
-      "readEquivalentStatement",
+      "readEquivalentStatementId",
       `
         select
             s.statement_id
@@ -206,7 +206,7 @@ export class StatementsDao extends BaseDao {
 
   async readStatementsWithoutSentencesForIds(statementIds: EntityId[]) {
     const { rows } = await this.db.query(
-      "readStatementWithoutSentenceForId",
+      "readStatementsWithoutSentencesForIds",
       `
         select
             s.*
@@ -243,7 +243,7 @@ export class StatementsDao extends BaseDao {
     sentenceId: EntityId
   ) {
     const { rows } = await this.database.query(
-      "readStatementsForSentenceTypeAndId.statementIds",
+      "readStatementsForSentenceTypeAndId",
       "select * from statements s where s.sentence_type = $1 and s.sentence_id = $2 and s.deleted is null",
       [sentenceType, sentenceId]
     );
@@ -254,7 +254,7 @@ export class StatementsDao extends BaseDao {
 
   async readStatementsForRootPropositionId(rootPropositionId: EntityId) {
     const { rows } = await this.database.query(
-      "readStatementsForRootPropositionId.statementIds",
+      "readStatementsForRootPropositionId",
       "select * from statements s where s.root_proposition_id = $1 and s.deleted is null",
       [rootPropositionId]
     );
@@ -267,7 +267,7 @@ export class StatementsDao extends BaseDao {
     rootPropositionId: EntityId
   ) {
     const { rows } = await this.database.query(
-      "readIndirectStatementsForRootPropositionId.statementIds",
+      "readIndirectStatementsForRootPropositionId",
       `select * from statements s
          where
                s.root_proposition_id = $1

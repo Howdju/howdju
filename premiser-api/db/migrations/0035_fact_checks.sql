@@ -9,7 +9,7 @@ create type appearance_vote_polarity as enum ('FOUND', 'NOT_FOUND', 'ERROR');
 --
 -- Users confirm an appearance by:
 -- * Creating (or duplicating) the appearance.
--- * Adding a justification for the appearance.
+-- * Adding a pro-justification for the appearance.
 create table appearance_confirmations (
   appearance_id bigint not null references appearances(appearance_id),
   user_id bigint not null references users(user_id),

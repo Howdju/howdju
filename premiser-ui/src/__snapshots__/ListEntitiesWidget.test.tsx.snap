@@ -62,7 +62,7 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows initial recent propos
                     class="entity-status-text"
                   >
                     created
-                     by creator-long-name
+                    
                      
                     <span
                       title="12 Jan 2023 8:23:00 PM +00:00"
@@ -147,7 +147,7 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows initial recent propos
                     class="entity-status-text"
                   >
                     created
-                     by creator-long-name
+                    
                      
                     <span
                       title="12 Jan 2023 8:23:00 PM +00:00"
@@ -212,7 +212,7 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows initial recent propos
                     class="entity-status-text"
                   >
                     created
-                     by creator-long-name
+                    
                      
                     <span
                       title="12 Jan 2023 8:23:00 PM +00:00"
@@ -277,7 +277,7 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows initial recent propos
                     class="entity-status-text"
                   >
                     created
-                     by creator-long-name
+                    
                      
                     <span
                       title="12 Jan 2023 8:23:00 PM +00:00"
@@ -342,7 +342,7 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows initial recent propos
                     class="entity-status-text"
                   >
                     created
-                     by creator-long-name
+                    
                      
                     <span
                       title="12 Jan 2023 8:23:00 PM +00:00"
@@ -407,7 +407,7 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows initial recent propos
                     class="entity-status-text"
                   >
                     created
-                     by creator-long-name
+                    
                      
                     <span
                       title="12 Jan 2023 8:23:00 PM +00:00"
@@ -472,7 +472,7 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows initial recent propos
                     class="entity-status-text"
                   >
                     created
-                     by creator-long-name
+                    
                      
                     <span
                       title="12 Jan 2023 8:23:00 PM +00:00"
@@ -563,7 +563,7 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows more propositions whe
                     class="entity-status-text"
                   >
                     created
-                     by creator-long-name
+                    
                      
                     <span
                       title="12 Jan 2023 8:23:00 PM +00:00"
@@ -628,7 +628,7 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows more propositions whe
                     class="entity-status-text"
                   >
                     created
-                     by creator-long-name
+                    
                      
                     <span
                       title="12 Jan 2023 8:23:00 PM +00:00"
@@ -693,7 +693,7 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows more propositions whe
                     class="entity-status-text"
                   >
                     created
-                     by creator-long-name
+                    
                      
                     <span
                       title="12 Jan 2023 8:23:00 PM +00:00"
@@ -758,7 +758,7 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows more propositions whe
                     class="entity-status-text"
                   >
                     created
-                     by creator-long-name
+                    
                      
                     <span
                       title="12 Jan 2023 8:23:00 PM +00:00"
@@ -843,7 +843,7 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows more propositions whe
                     class="entity-status-text"
                   >
                     created
-                     by creator-long-name
+                    
                      
                     <span
                       title="12 Jan 2023 8:23:00 PM +00:00"
@@ -908,7 +908,7 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows more propositions whe
                     class="entity-status-text"
                   >
                     created
-                     by creator-long-name
+                    
                      
                     <span
                       title="12 Jan 2023 8:23:00 PM +00:00"
@@ -973,7 +973,7 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows more propositions whe
                     class="entity-status-text"
                   >
                     created
-                     by creator-long-name
+                    
                      
                     <span
                       title="12 Jan 2023 8:23:00 PM +00:00"
@@ -1038,7 +1038,7 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows more propositions whe
                     class="entity-status-text"
                   >
                     created
-                     by creator-long-name
+                    
                      
                     <span
                       title="12 Jan 2023 8:23:00 PM +00:00"
@@ -1103,7 +1103,7 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows more propositions whe
                     class="entity-status-text"
                   >
                     created
-                     by creator-long-name
+                    
                      
                     <span
                       title="12 Jan 2023 8:23:00 PM +00:00"
@@ -1168,7 +1168,7 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows more propositions whe
                     class="entity-status-text"
                   >
                     created
-                     by creator-long-name
+                    
                      
                     <span
                       title="12 Jan 2023 8:23:00 PM +00:00"
@@ -1233,7 +1233,7 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows more propositions whe
                     class="entity-status-text"
                   >
                     created
-                     by creator-long-name
+                    
                      
                     <span
                       title="12 Jan 2023 8:23:00 PM +00:00"
@@ -1298,7 +1298,7 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows more propositions whe
                     class="entity-status-text"
                   >
                     created
-                     by creator-long-name
+                    
                      
                     <span
                       title="12 Jan 2023 8:23:00 PM +00:00"
@@ -1363,7 +1363,7 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows more propositions whe
                     class="entity-status-text"
                   >
                     created
-                     by creator-long-name
+                    
                      
                     <span
                       title="12 Jan 2023 8:23:00 PM +00:00"
@@ -1428,7 +1428,7 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows more propositions whe
                     class="entity-status-text"
                   >
                     created
-                     by creator-long-name
+                    
                      
                     <span
                       title="12 Jan 2023 8:23:00 PM +00:00"
@@ -1493,7 +1493,7 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows more propositions whe
                     class="entity-status-text"
                   >
                     created
-                     by creator-long-name
+                    
                      
                     <span
                       title="12 Jan 2023 8:23:00 PM +00:00"

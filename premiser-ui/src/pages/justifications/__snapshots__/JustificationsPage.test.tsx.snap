@@ -67,7 +67,7 @@ exports[`JustificationsPage Can add a compound-based justification 1`] = `
                             class="entity-status-text"
                           >
                             created
-                             by creator-long-name
+                            
                              
                             <span
                               title="12 Jan 2023 4:23:12 PM +00:00"
@@ -475,7 +475,7 @@ exports[`JustificationsPage Shows a justified proposition 1`] = `
                             class="entity-status-text"
                           >
                             created
-                             by creator-long-name
+                            
                              
                             <span
                               title="12 Jan 2023 4:23:12 PM +00:00"

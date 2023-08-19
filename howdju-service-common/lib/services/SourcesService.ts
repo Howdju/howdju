@@ -4,7 +4,6 @@ import { Moment } from "moment";
 import {
   CreateSource,
   EntityId,
-  isDefined,
   makeModelErrors,
   momentAdd,
   SourceOut,
@@ -14,7 +13,11 @@ import {
 
 import { SourcesDao } from "../daos";
 import { EntityWrapper } from "../types";
-import { readWriteReread, updateHandlingConstraints } from "./patterns";
+import {
+  ensurePresent,
+  readWriteReread,
+  updateHandlingConstraints,
+} from "./patterns";
 import {
   ApiConfig,
   AuthorizationError,
@@ -35,17 +38,12 @@ export class SourcesService {
 
   async readSourcesForIds(sourceIds: EntityId[]): Promise<SourceOut[]> {
     const sources = await this.sourcesDao.readSourcesForIds(sourceIds);
-    const missingSourceIds = sources
-      .map((s, i) => (!s ? sourceIds[i] : undefined))
-      .filter(isDefined);
-    if (missingSourceIds.length) {
-      throw new EntityNotFoundError("SOURCE", missingSourceIds);
-    }
+    ensurePresent(sourceIds, sources, "SOURCE");
     return sources;
   }
 
   async readSourceForId(sourceId: EntityId): Promise<SourceOut> {
-    const source = await this.sourcesDao.readSourceForId(sourceId);
+    const [source] = await this.readSourcesForIds([sourceId]);
     if (!source) {
       throw new EntityNotFoundError("SOURCE", sourceId);
     }

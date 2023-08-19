@@ -69,7 +69,7 @@ export class MediaExcerptsService {
     return mediaExcerpt;
   }
 
-  async readMediaExcerptForIds(
+  async readMediaExcerptsForIds(
     mediaExcerptIds: EntityId[]
   ): Promise<MediaExcerptOut[]> {
     const mediaExcerpts = await this.mediaExcerptsDao.readMediaExcerptsForIds(

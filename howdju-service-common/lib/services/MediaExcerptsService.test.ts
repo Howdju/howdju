@@ -672,6 +672,8 @@ describe("MediaExcerptsService", () => {
                 })
               ),
             },
+            // The speaker relationship does not participate in the equivalence,
+            // so while the persorgs should be equal, the MediaExcerptSpeakers will not be.
             speakers: mediaExcerpt.speakers.map(({ persorg }) =>
               expect.objectContaining({
                 persorg,

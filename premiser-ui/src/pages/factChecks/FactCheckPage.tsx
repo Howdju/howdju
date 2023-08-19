@@ -20,10 +20,10 @@ import CellList, { largeCellClasses } from "@/CellList";
 /**
  * A page displaying Appearances that are part of a FactCheck.
  *
- * A FactCheck is all the Appearances a user has created where:
+ * A FactCheck is all the Appearances a set of users has created where:
  *
- * - The Appearance's MediaExcerpt matches any URL or Source, and
- * - The user created or voted on a Justification of the Appearance's apparition.
+ * - The Appearance's MediaExcerpt matches any URL or Source parameterizing the fact check, and
+ * - The users have confirmed the Appearance's apparition.
  */
 export default function FactCheckPage() {
   const location = useLocation();

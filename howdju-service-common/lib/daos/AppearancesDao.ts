@@ -15,7 +15,7 @@ export class AppearancesDao {
     const {
       rows: [{ appearance_id }],
     } = await this.database.query(
-      `createAppearance`,
+      `createAppearanceReturningId`,
       `insert into appearances (media_excerpt_id, proposition_id, creator_user_id, created)
        values ($1, $2, $3, $4)
        returning appearance_id`,
@@ -25,13 +25,13 @@ export class AppearancesDao {
   }
 
   async readAppearanceForId(appearanceId: string) {
-    const [appearance] = await this.readAppearanceForIds([appearanceId]);
+    const [appearance] = await this.readAppearancesForIds([appearanceId]);
     return appearance;
   }
 
-  async readAppearanceForIds(appearanceIds: EntityId[]) {
+  async readAppearancesForIds(appearanceIds: EntityId[]) {
     const { rows } = await this.database.query(
-      `readAppearanceForId`,
+      `readAppearancesForIds`,
       `select appearance_id, media_excerpt_id, proposition_id, creator_user_id, created
        from appearances
        where appearance_id = any($1)
@@ -53,7 +53,7 @@ export class AppearancesDao {
     sourceIds: EntityId[]
   ) {
     const { rows } = await this.database.query(
-      "readOverlappingMediaExcerptIdsForUsers",
+      "readOverlappingAppearanceIdsForUsers",
       `
       select
         appearance_id
@@ -90,7 +90,7 @@ export class AppearancesDao {
     const {
       rows: [row],
     } = await this.database.query(
-      `readEquivalentAppearance`,
+      `readEquivalentAppearanceId`,
       `select appearance_id
        from appearances
        where media_excerpt_id = $1

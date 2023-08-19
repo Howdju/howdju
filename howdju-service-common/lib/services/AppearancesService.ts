@@ -93,14 +93,14 @@ export class AppearancesService {
   }
 
   async readAppearanceForId(appearanceId: EntityId): Promise<AppearanceOut> {
-    const [appearance] = await this.readAppearanceForIds([appearanceId]);
+    const [appearance] = await this.readAppearancesForIds([appearanceId]);
     return appearance;
   }
 
-  async readAppearanceForIds(
+  async readAppearancesForIds(
     appearanceIds: EntityId[]
   ): Promise<AppearanceOut[]> {
-    const appearances = await this.appearancesDao.readAppearanceForIds(
+    const appearances = await this.appearancesDao.readAppearancesForIds(
       appearanceIds
     );
     const missingIds = appearances
@@ -125,7 +125,7 @@ export class AppearancesService {
     );
 
     const [mediaExcerpts, propositions, creators] = await Promise.all([
-      this.mediaExcerptsService.readMediaExcerptForIds(
+      this.mediaExcerptsService.readMediaExcerptsForIds(
         Array.from(relatedIds.mediaExcerptIds)
       ),
       this.propositionsService.readPropositionsForIds(
@@ -164,6 +164,6 @@ export class AppearancesService {
         urlIds,
         sourceIds
       );
-    return this.readAppearanceForIds(appearanceIds);
+    return this.readAppearancesForIds(appearanceIds);
   }
 }

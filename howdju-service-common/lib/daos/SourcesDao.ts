@@ -74,20 +74,8 @@ export class SourcesDao {
   }
 
   async readSourceForId(sourceId: EntityId): Promise<SourceOut | undefined> {
-    const {
-      rows: [row],
-    } = await this.db.query<SourceRow>(
-      "readSourceForId",
-      `SELECT * FROM sources WHERE source_id = $1 and deleted is null`,
-      [sourceId]
-    );
-    if (!row) {
-      return undefined;
-    }
-    const creator = await this.usersDao.readUserBlurbForId(
-      toIdString(row.creator_user_id)
-    );
-    return toSource(row, creator);
+    const [source] = await this.readSourcesForIds([sourceId]);
+    return source;
   }
 
   async readEquivalentSource(
