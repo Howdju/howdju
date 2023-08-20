@@ -16,7 +16,7 @@ create table appearance_confirmations (
   polarity appearance_vote_polarity not null,
 
   created timestamp not null,
-  deleted timestamp,
-
-  primary key(appearance_id, user_id)
+  deleted timestamp
 );
+
+create unique index appearance_confirmations_uniqueness on appearance_confirmations(appearance_id, user_id) where deleted is null;

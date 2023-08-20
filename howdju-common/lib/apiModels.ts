@@ -83,6 +83,11 @@ export interface UrlLocatorOut extends ToPersistedEntity<UrlLocator> {
   autoConfirmationStatus: UrlLocatorAutoConfirmationStatus;
 }
 
+export type AppearanceConfirmationStatus =
+  | "CONFIRMED"
+  | "DISCONFIRMED"
+  | undefined;
+
 export interface AppearanceOut {
   id: EntityId;
   mediaExcerpt: MediaExcerptOut;
@@ -90,6 +95,7 @@ export interface AppearanceOut {
     type: "PROPOSITION";
     entity: PropositionOut;
   };
+  confirmationStatus?: AppearanceConfirmationStatus;
   created: Moment;
   creator: CreatorBlurb;
 }
@@ -114,12 +120,6 @@ export interface ErrorOut<T extends object> {
   errorCode: ApiErrorCode;
   /** The errors corresponding to the in model. */
   errors: ModelErrors<T>;
-}
-
-export interface CreateAppearanceConfirmation {
-  appearanceId: EntityId;
-  /** Tracks appearance_vote_polarity. */
-  polarity: "POSITIVE" | "NEGATIVE";
 }
 
 export interface PropositionOut

@@ -531,6 +531,42 @@ export const api = {
     }
   ),
 
+  confirmAppearance: apiActionCreator(
+    "CONFIRM_APPEARANCE",
+    serviceRoutes.createAppearanceConfirmation,
+    (appearanceId: EntityId) => ({
+      pathParams: { appearanceId },
+      body: { polarity: "POSITIVE" as const },
+      // TODO remove this schema if we can't get partial update to work.
+      normalizationSchema: { appearance: appearanceSchema },
+    })
+  ),
+  disconfirmAppearance: apiActionCreator(
+    "DISCONFIRM_APPEARANCE",
+    serviceRoutes.createAppearanceConfirmation,
+    (appearanceId: EntityId) => ({
+      pathParams: { appearanceId },
+      body: { polarity: "NEGATIVE" as const },
+      normalizationSchema: { appearance: appearanceSchema },
+    })
+  ),
+  unconfirmAppearance: apiActionCreator(
+    "UNCONFIRM_APPEARANCE",
+    serviceRoutes.deleteAppearanceConfirmation,
+    (appearanceId: EntityId) => ({
+      pathParams: { appearanceId },
+      normalizationSchema: { appearance: appearanceSchema },
+    })
+  ),
+  undisconfirmAppearance: apiActionCreator(
+    "UNDISCONFIRM_APPEARANCE",
+    serviceRoutes.deleteAppearanceConfirmation,
+    (appearanceId: EntityId) => ({
+      pathParams: { appearanceId },
+      normalizationSchema: { appearance: appearanceSchema },
+    })
+  ),
+
   fetchFactCheck: apiActionCreator(
     "FETCH_FACT_CHECK",
     serviceRoutes.readFactCheck,

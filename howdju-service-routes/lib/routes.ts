@@ -46,6 +46,7 @@ import {
   SentenceTypes,
   SentenceType,
   AppearanceSearchFilterKeys,
+  CreateAppearanceConfirmation,
 } from "howdju-common";
 import {
   EntityNotFoundError,
@@ -1069,10 +1070,11 @@ export const serviceRoutes = {
       PathParams("appearanceId"),
       async (
         appProvider: ServicesProvider,
-        { pathParams: { appearanceId } }
+        { authToken, pathParams: { appearanceId } }
       ) => {
         const appearance =
           await appProvider.appearancesService.readAppearanceForId(
+            { authToken },
             appearanceId
           );
         return { body: { appearance } };
@@ -1116,6 +1118,67 @@ export const serviceRoutes = {
   },
 
   /*
+   * Appearance Confirmations
+   */
+  createAppearanceConfirmation: {
+    path: "appearances/:appearanceId/confirmations",
+    method: httpMethods.POST,
+    request: handler(
+      Authed.merge(
+        PathParams("appearanceId").merge(
+          Body(
+            CreateAppearanceConfirmation.omit({
+              appearanceId: true,
+            }).shape
+          )
+        )
+      ),
+      async (
+        appProvider: ServicesProvider,
+        { authToken, pathParams: { appearanceId }, body: createConfirmation }
+      ) => {
+        const confirmationStatus =
+          await appProvider.appearanceConfirmationsService.createAppearanceConfirmation(
+            { authToken },
+            { ...createConfirmation, appearanceId }
+          );
+        return {
+          body: {
+            appearance: {
+              id: appearanceId,
+              confirmationStatus,
+            },
+          },
+        };
+      }
+    ),
+  },
+  deleteAppearanceConfirmation: {
+    path: "appearances/:appearanceId/confirmations",
+    method: httpMethods.DELETE,
+    request: handler(
+      Authed.merge(PathParams("appearanceId")),
+      async (
+        appProvider: ServicesProvider,
+        { authToken, pathParams: { appearanceId } }
+      ) => {
+        await appProvider.appearanceConfirmationsService.deleteAppearanceConfirmation(
+          { authToken },
+          appearanceId
+        );
+        return {
+          body: {
+            appearance: {
+              id: appearanceId,
+              confirmationStatus: null,
+            },
+          },
+        };
+      }
+    ),
+  },
+
+  /*
    * FactChecks
    */
   readFactCheck: {
@@ -1125,7 +1188,7 @@ export const serviceRoutes = {
       QueryStringParams("userIds", "urlIds", "sourceIds"),
       async (
         appProvider: ServicesProvider,
-        { queryStringParams: { userIds, urlIds, sourceIds } }
+        { authToken, queryStringParams: { userIds, urlIds, sourceIds } }
       ) => {
         if (!userIds) {
           throw new InvalidRequestError("Missing userIds");
@@ -1137,6 +1200,7 @@ export const serviceRoutes = {
         }
         const { appearances, users, urls, sources } =
           await appProvider.factChecksService.readFactCheck(
+            { authToken },
             userIds.split(","),
             urlIds?.split(",") ?? [],
             sourceIds?.split(",") ?? []

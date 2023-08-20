@@ -71,6 +71,40 @@ export default function AppearancePage(props: Props) {
             appearance.mediaExcerpt.locators.urlLocators.map((l) => l.url.id)
           )}
         />,
+        appearance.confirmationStatus === "CONFIRMED" ? (
+          <ListItem
+            primaryText="Unconfirm this appearance"
+            key="unconfirm-appearance"
+            title="Remove your confirmation that the entity appears at this media excerpt."
+            leftIcon={<MaterialSymbol icon="unpublished" />}
+            onClick={() => dispatch(api.unconfirmAppearance(appearanceId))}
+          />
+        ) : (
+          <ListItem
+            primaryText="Confirm this appearance"
+            key="confirm-appearance"
+            title="Confirm that the entity appears at this media excerpt."
+            leftIcon={<MaterialSymbol icon="check_circle" />}
+            onClick={() => dispatch(api.confirmAppearance(appearanceId))}
+          />
+        ),
+        appearance.confirmationStatus === "DISCONFIRMED" ? (
+          <ListItem
+            primaryText="Undisconfirm this appearance"
+            key="undisconfirm-appearance"
+            title="Remove your assertion that the entity does NOT appear at this media excerpt."
+            leftIcon={<MaterialSymbol icon="do_not_disturb_off" />}
+            onClick={() => dispatch(api.undisconfirmAppearance(appearanceId))}
+          />
+        ) : (
+          <ListItem
+            primaryText="Disconfirm this appearance"
+            key="disconfirm-appearance"
+            title="Assert that the entity does NOT appear at this media excerpt."
+            leftIcon={<MaterialSymbol icon="do_not_disturb_on" />}
+            onClick={() => dispatch(api.disconfirmAppearance(appearanceId))}
+          />
+        ),
       ]}
     />
   ) : undefined;

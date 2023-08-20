@@ -95,7 +95,12 @@ export default handleActions(
       api.updatePersorg.response,
       api.updateSource.response,
       api.updateProposition.response,
-      api.updateWritQuote.response
+      api.updateWritQuote.response,
+
+      api.confirmAppearance.response,
+      api.unconfirmAppearance.response,
+      api.disconfirmAppearance.response,
+      api.undisconfirmAppearance.response
     )]: {
       next: (state, action) => {
         const { entities } = normalize(

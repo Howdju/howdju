@@ -70,8 +70,8 @@ export class AppearancesService {
     );
 
     await this.appearanceConfirmationsService.createAppearanceConfirmation(
-      { appearanceId: id, polarity: "POSITIVE" },
-      { userId }
+      { userId },
+      { appearanceId: id, polarity: "POSITIVE" }
     );
 
     const isExtant = isExtantApparitionEntity && isExtantAppearance;
@@ -108,17 +108,24 @@ export class AppearancesService {
     }
   }
 
-  async readAppearanceForId(appearanceId: EntityId): Promise<AppearanceOut> {
-    const [appearance] = await this.readAppearancesForIds([appearanceId]);
+  async readAppearanceForId(
+    userIdent: UserIdent,
+    appearanceId: EntityId
+  ): Promise<AppearanceOut> {
+    const [appearance] = await this.readAppearancesForIds(userIdent, [
+      appearanceId,
+    ]);
     return appearance;
   }
 
   async readAppearancesForIds(
+    userIdent: UserIdent,
     appearanceIds: EntityId[]
   ): Promise<AppearanceOut[]> {
-    const appearances = await this.appearancesDao.readAppearancesForIds(
-      appearanceIds
-    );
+    const [appearances, userId] = await Promise.all([
+      this.appearancesDao.readAppearancesForIds(appearanceIds),
+      this.authService.readOptionalUserIdForUserIdent(userIdent),
+    ]);
     const missingIds = appearances
       .map((a, i) => (!a ? appearanceIds[i] : undefined))
       .filter(isDefined);
@@ -140,32 +147,50 @@ export class AppearancesService {
       }
     );
 
-    const [mediaExcerpts, propositions, creators] = await Promise.all([
-      this.mediaExcerptsService.readMediaExcerptsForIds(
-        Array.from(relatedIds.mediaExcerptIds)
-      ),
-      this.propositionsService.readPropositionsForIds(
-        Array.from(relatedIds.propositionIds)
-      ),
-      this.usersService.readUserBlurbsForIds(
-        Array.from(relatedIds.creatorUserIds)
-      ),
-    ]);
+    const [mediaExcerpts, propositions, creators, confirmationStatuses] =
+      await Promise.all([
+        this.mediaExcerptsService.readMediaExcerptsForIds(
+          Array.from(relatedIds.mediaExcerptIds)
+        ),
+        this.propositionsService.readPropositionsForIds(
+          Array.from(relatedIds.propositionIds)
+        ),
+        this.usersService.readUserBlurbsForIds(
+          Array.from(relatedIds.creatorUserIds)
+        ),
+        userId !== undefined
+          ? this.appearanceConfirmationsService.readAppearanceConfirmationStatusesForAppearanceIds(
+              userId,
+              appearanceIds
+            )
+          : undefined,
+      ]);
     const mediaExcerptsById = keyBy(mediaExcerpts, "id");
     const propositionsById = keyBy(propositions, "id");
     const creatorsById = keyBy(creators, "id");
+    const confirmationStatusesByAppearanceId = confirmationStatuses
+      ? keyBy(confirmationStatuses, "appearanceId")
+      : undefined;
 
     return appearances.map(
-      ({ id, mediaExcerptId, propositionId, creatorUserId, created }) => ({
-        id,
-        mediaExcerpt: mediaExcerptsById[mediaExcerptId],
-        apparition: {
-          type: "PROPOSITION",
-          entity: propositionsById[propositionId],
-        },
-        creator: creatorsById[creatorUserId],
-        created,
-      })
+      ({ id, mediaExcerptId, propositionId, creatorUserId, created }) => {
+        const appearance: AppearanceOut = {
+          id,
+          mediaExcerpt: mediaExcerptsById[mediaExcerptId],
+          apparition: {
+            type: "PROPOSITION",
+            entity: propositionsById[propositionId],
+          },
+          creator: creatorsById[creatorUserId],
+          created,
+        };
+        if (confirmationStatusesByAppearanceId) {
+          appearance.confirmationStatus =
+            confirmationStatusesByAppearanceId[id]?.confirmationStatus ??
+            undefined;
+        }
+        return appearance;
+      }
     );
   }
 
@@ -195,6 +220,7 @@ export class AppearancesService {
     const unambiguousSorts = concat(sorts, [
       { property: "id", direction: "ascending" },
     ]);
+    // TODO return the IDs and then read them. (Didn't we do this in another service recently too?)
     const appearances = await this.appearancesDao.readAppearances(
       filters,
       unambiguousSorts,
@@ -236,6 +262,7 @@ export class AppearancesService {
   }
 
   async readAppearancesWithOverlappingMediaExcerptsForUsers(
+    userIdent: UserIdent,
     userIds: EntityId[],
     urlIds: EntityId[],
     sourceIds: EntityId[]
@@ -246,6 +273,6 @@ export class AppearancesService {
         urlIds,
         sourceIds
       );
-    return this.readAppearancesForIds(appearanceIds);
+    return this.readAppearancesForIds(userIdent, appearanceIds);
   }
 }
