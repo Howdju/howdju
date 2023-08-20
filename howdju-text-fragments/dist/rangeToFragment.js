@@ -32828,6 +32828,7 @@
     ActionTargetTypes: () => ActionTargetTypes,
     ActionTypes: () => ActionTypes2,
     Appearance: () => Appearance,
+    AppearanceSearchFilterKeys: () => AppearanceSearchFilterKeys,
     AudSegment: () => AudSegment,
     ContentReport: () => ContentReport,
     ContentReportRef: () => ContentReportRef,
@@ -33382,6 +33383,11 @@
      * ignoring the trailing slash. Both the `url` and `canonical_url` are considered.
      */
     "url"
+  ];
+  var AppearanceSearchFilterKeys = [
+    "creatorUserId",
+    "propositionId",
+    "mediaExcerptId"
   ];
 
   // ../howdju-common/lib/codes/apiErrorCodes.ts

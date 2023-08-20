@@ -116,6 +116,12 @@ export interface ErrorOut<T extends object> {
   errors: ModelErrors<T>;
 }
 
+export interface CreateAppearanceConfirmation {
+  appearanceId: EntityId;
+  /** Tracks appearance_vote_polarity. */
+  polarity: "POSITIVE" | "NEGATIVE";
+}
+
 export interface PropositionOut
   extends Persisted<Proposition>,
     TaggedEntityOut {
@@ -285,6 +291,15 @@ export const MediaExcerptSearchFilterKeys = [
 ] as const;
 export type MediaExcerptSearchFilter = ToFilter<
   typeof MediaExcerptSearchFilterKeys
+>;
+
+export const AppearanceSearchFilterKeys = [
+  "creatorUserId",
+  "propositionId",
+  "mediaExcerptId",
+] as const;
+export type AppearanceSearchFilter = ToFilter<
+  typeof AppearanceSearchFilterKeys
 >;
 
 export interface SortDescription {

@@ -45,6 +45,7 @@ import {
   CreateAppearance,
   SentenceTypes,
   SentenceType,
+  AppearanceSearchFilterKeys,
 } from "howdju-common";
 import {
   EntityNotFoundError,
@@ -1078,12 +1079,47 @@ export const serviceRoutes = {
       }
     ),
   },
+  readAppearances: {
+    path: "appearances",
+    method: httpMethods.GET,
+    request: handler(
+      QueryStringParams("filters", "sorts", "continuationToken", "count"),
+      async (
+        appProvider: ServicesProvider,
+        {
+          queryStringParams: {
+            filters: encodedFilters,
+            sorts: encodedSorts,
+            continuationToken: prevContinuationToken,
+            count,
+          },
+        }
+      ) => {
+        const filters = decodeQueryStringObject(
+          encodedFilters,
+          AppearanceSearchFilterKeys
+        );
+
+        const sorts = decodeSorts(encodedSorts);
+        const { appearances, continuationToken } =
+          await appProvider.appearancesService.readAppearances(
+            filters,
+            sorts,
+            prevContinuationToken,
+            isDefined(count) ? toNumber(count) : undefined
+          );
+        return {
+          body: { appearances, continuationToken },
+        };
+      }
+    ),
+  },
 
   /*
    * FactChecks
    */
   readFactCheck: {
-    path: "fact-checks/",
+    path: "fact-checks",
     method: httpMethods.GET,
     request: handler(
       QueryStringParams("userIds", "urlIds", "sourceIds"),

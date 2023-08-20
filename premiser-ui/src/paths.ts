@@ -117,10 +117,11 @@ class Paths {
 
   createAppearance = (mediaExcerptId: EntityId) =>
     `/media-excerpts/${mediaExcerptId}/appearances/new`;
-  factCheck(userId: EntityId, sourceIds: EntityId[], urlIds: EntityId[]) {
+  factCheck(userIds: EntityId[], sourceIds: EntityId[], urlIds: EntityId[]) {
     return createPath({
       pathname: `/fact-checks/`,
-      search: "?" + queryString.stringify({ userId, sourceIds, urlIds }),
+      search:
+        "?" + queryString.stringify({ userId: userIds, sourceIds, urlIds }),
     });
   }
 

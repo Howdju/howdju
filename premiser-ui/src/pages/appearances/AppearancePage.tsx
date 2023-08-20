@@ -1,6 +1,8 @@
 import React, { useEffect } from "react";
-import { CircularProgress } from "react-md";
+import { CircularProgress, ListItem, MenuButton } from "react-md";
 import { RouteComponentProps } from "react-router";
+import { DropdownMenu } from "react-md";
+import { MaterialSymbol } from "react-material-symbols";
 
 import { EntityId } from "howdju-common";
 
@@ -9,6 +11,8 @@ import { useAppDispatch, useAppEntitySelector } from "@/hooks";
 import { appearanceSchema } from "@/normalizationSchemas";
 import AppearanceCard from "./AppearanceCard";
 import HowdjuHelmet from "@/Helmet";
+import paths from "@/paths";
+import Link from "@/Link";
 
 interface MatchParams {
   appearanceId: EntityId;
@@ -45,6 +49,32 @@ export default function AppearancePage(props: Props) {
   const appearance = useAppEntitySelector(appearanceId, appearanceSchema);
   const title = `Appearance ${appearanceId}`;
 
+  // TODO(17): pass props directly after upgrading react-md to a version with correct types
+  const menuClassNameProps = { menuClassName: "context-menu" } as any;
+  const menu = appearance ? (
+    <MenuButton
+      icon
+      id="appearance-page-menu"
+      {...menuClassNameProps}
+      children={"more_vert"}
+      position={DropdownMenu.Positions.TOP_RIGHT}
+      menuItems={[
+        <ListItem
+          primaryText="User&rsquo;s fact-check"
+          key="user-fact-check"
+          title="See all this user&rsquo;s appearances in the same Source and URL."
+          leftIcon={<MaterialSymbol icon="how_to_reg" />}
+          component={Link}
+          to={paths.factCheck(
+            [appearance.creator.id],
+            appearance.mediaExcerpt.citations.map((c) => c.source.id),
+            appearance.mediaExcerpt.locators.urlLocators.map((l) => l.url.id)
+          )}
+        />,
+      ]}
+    />
+  ) : undefined;
+
   return (
     <div className="md-grid">
       <HowdjuHelmet>
@@ -55,6 +85,7 @@ export default function AppearancePage(props: Props) {
         <AppearanceCard
           id="appearance-page--appearance-card"
           appearance={appearance}
+          menu={menu}
         />
       ) : (
         <CircularProgress id="appearance-page--progress" />

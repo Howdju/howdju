@@ -1,8 +1,13 @@
+import { concat, keyBy } from "lodash";
+
 import {
   AppearanceOut,
+  AppearanceSearchFilter,
+  ContinuationToken,
   CreateAppearance,
   EntityId,
   isDefined,
+  SortDescription,
   utcNow,
 } from "howdju-common";
 
@@ -14,14 +19,20 @@ import { readWriteReread } from "./patterns";
 import { PropositionsService } from "./PropositionsService";
 import { UsersService } from "./UsersService";
 import { UserIdent } from "./types";
-import { EntityNotFoundError } from "..";
-import { keyBy } from "lodash";
+import { EntityNotFoundError, InvalidRequestError } from "..";
+import { AppearanceConfirmationsService } from "../services";
+import {
+  createContinuationToken,
+  createNextContinuationToken,
+  decodeContinuationToken,
+} from "./pagination";
 
 export class AppearancesService {
   constructor(
     private readonly authService: AuthService,
     private readonly mediaExcerptsService: MediaExcerptsService,
     private readonly propositionsService: PropositionsService,
+    private readonly appearanceConfirmationsService: AppearanceConfirmationsService,
     private readonly usersService: UsersService,
     private readonly appearancesDao: AppearancesDao
   ) {}
@@ -56,6 +67,11 @@ export class AppearancesService {
           { propositionId },
           created
         )
+    );
+
+    await this.appearanceConfirmationsService.createAppearanceConfirmation(
+      { appearanceId: id, polarity: "POSITIVE" },
+      { userId }
     );
 
     const isExtant = isExtantApparitionEntity && isExtantAppearance;
@@ -151,6 +167,72 @@ export class AppearancesService {
         created,
       })
     );
+  }
+
+  async readAppearances(
+    filters: AppearanceSearchFilter | undefined,
+    sorts: SortDescription[],
+    continuationToken?: ContinuationToken,
+    count = 25
+  ) {
+    if (!isFinite(count)) {
+      throw new InvalidRequestError(
+        `count must be a number. ${count} is not ${typeof count}.`
+      );
+    }
+
+    if (!continuationToken) {
+      return this.readInitialAppearances(filters, sorts, count);
+    }
+    return this.readMoreAppearances(continuationToken, count);
+  }
+
+  async readInitialAppearances(
+    filters: AppearanceSearchFilter | undefined,
+    sorts: SortDescription[],
+    count: number
+  ) {
+    const unambiguousSorts = concat(sorts, [
+      { property: "id", direction: "ascending" },
+    ]);
+    const appearances = await this.appearancesDao.readAppearances(
+      filters,
+      unambiguousSorts,
+      count
+    );
+
+    const continuationToken = createContinuationToken(
+      unambiguousSorts,
+      appearances,
+      filters
+    ) as ContinuationToken;
+    return {
+      appearances,
+      continuationToken,
+    };
+  }
+
+  async readMoreAppearances(
+    prevContinuationToken: ContinuationToken,
+    count: number
+  ) {
+    const { filters, sorts } = decodeContinuationToken(prevContinuationToken);
+    const appearances = await this.appearancesDao.readMoreAppearances(
+      filters,
+      sorts,
+      count
+    );
+
+    const continuationToken =
+      (createNextContinuationToken(
+        sorts,
+        appearances,
+        filters
+      ) as ContinuationToken) || prevContinuationToken;
+    return {
+      appearances,
+      continuationToken,
+    };
   }
 
   async readAppearancesWithOverlappingMediaExcerptsForUsers(

@@ -59,6 +59,7 @@ export default handleActions(
       api.createProposition.response,
       api.createStatement.response,
       api.fetchContextTrail.response,
+      api.fetchFactCheck.response,
       api.fetchIndirectPropositionStatements.response,
       api.fetchJustificationsSearch.response,
       api.fetchMainSearchResults.response,
