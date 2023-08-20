@@ -1,7 +1,6 @@
 import {
   set,
   assign,
-  assignWith,
   concat,
   filter,
   forEach,
@@ -19,9 +18,11 @@ import {
   union,
   without,
   reduce,
+  isPlainObject,
 } from "lodash";
 import { normalize } from "normalizr";
 import { combineActions, handleActions } from "redux-actions";
+import deepMerge from "deepmerge";
 
 import {
   httpStatusCodes,
@@ -117,20 +118,19 @@ export default handleActions(
             ["mediaExcerpts"],
             ["persorgs"],
             ["propositionCompounds"],
-            ["propositions", entityAssignWithCustomizer],
+            ["propositions"],
             ["propositionTagVotes"],
             ["sources"],
             ["sourceExcerptParaphrases"],
-            ["statements", entityAssignWithCustomizer],
+            ["statements"],
             ["tags"],
             ["urlLocators"],
             ["users"],
             ["urls"],
-            ["writQuotes", stubSkippingCustomizer("quoteText")],
-            ["writs", stubSkippingCustomizer("title")],
+            ["writQuotes"],
+            ["writs"],
           ],
-          ([entitiesKey, customizer]) =>
-            createEntityUpdate(state, entities, entitiesKey, customizer)
+          ([entitiesKey]) => createEntityUpdate(state, entities, entitiesKey)
         );
         const nonEmptyUpdates = filter(updates, (u) => isTruthy(u));
 
@@ -616,55 +616,40 @@ export function makeUpdateRemovingJustificationFromTarget(
   return updates;
 }
 
-/** Returning undefined from a customizer to assignWith invokes its default behavior */
-function defaultCustomizer() {
+/**
+ * The API can send partial updates, which only update the fields returned. If
+ * the API wants to clear a field, it must return null for that field. The null
+ * is converted to undefined.
+ */
+function createEntityUpdate(state, payloadEntities, key) {
+  if (has(payloadEntities, key)) {
+    return {
+      // Use deep merge because lodash's merge doesn't allow us to overwrite
+      // with the value undefined.
+      [key]: deepMerge(state[key], payloadEntities[key], {
+        // Overwrite arrays. This prevents us from merging arrays of objects, but since we store our
+        // entities normalized, most objects we care about merging will be top-level entities.
+        arrayMerge: (_targetArray, sourceArray, _options) => sourceArray,
+        // Don't copy the properties of Moment objects (or else we lose their methods.)
+        isMergeableObject: isPlainObject,
+        // The API sends null where undefined is meant (JSON doesn't have an undefined type, and our
+        // code base doesn't use null.)
+        customMerge: (_key) => nullToUndefined,
+      }),
+    };
+  }
   return undefined;
 }
 
-/** Identifies non-stubs (objects that have more than the ID) by testing for the presence of a property */
-function stubSkippingCustomizer(testPropertyName) {
-  return (objValue, srcValue, key, object, source) => {
-    if (has(srcValue, testPropertyName)) {
-      return srcValue;
-    }
-    return objValue;
-  };
-}
-
-/** Responses from the API may not contain all entity properties.  Only update an entity in the store with
- * values that are defined. (Don't overwrite properties that aren't present on the new value)
- */
-function entityAssignWithCustomizer(oldEntity, newEntity, key, object, source) {
-  // If either the new or old entity is missing, then updates don't make sense
-  if (!oldEntity || !newEntity) {
-    return newEntity;
+function nullToUndefined(targetValue, srcValue) {
+  if (srcValue === null) {
+    return undefined;
   }
-
-  let updatedEntity = oldEntity;
-  forEach(newEntity, (prop, name) => {
-    if (prop !== oldEntity[name]) {
-      // Copy-on-write
-      if (updatedEntity === oldEntity) {
-        updatedEntity = { ...oldEntity };
-      }
-      updatedEntity[name] = prop;
-    }
+  return deepMerge(targetValue, srcValue, {
+    customMerge(_key) {
+      return nullToUndefined;
+    },
   });
-  return updatedEntity;
-}
-
-function createEntityUpdate(state, payloadEntities, key, customizer) {
-  if (has(payloadEntities, key)) {
-    return {
-      [key]: assignWith(
-        {},
-        state[key],
-        payloadEntities[key],
-        customizer || defaultCustomizer
-      ),
-    };
-  }
-  return null;
 }
 
 function optimisticPropositionTagVote(state, action) {

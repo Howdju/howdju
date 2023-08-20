@@ -1089,6 +1089,7 @@ export const serviceRoutes = {
       async (
         appProvider: ServicesProvider,
         {
+          authToken,
           queryStringParams: {
             filters: encodedFilters,
             sorts: encodedSorts,
@@ -1105,6 +1106,7 @@ export const serviceRoutes = {
         const sorts = decodeSorts(encodedSorts);
         const { appearances, continuationToken } =
           await appProvider.appearancesService.readAppearances(
+            { authToken },
             filters,
             sorts,
             prevContinuationToken,

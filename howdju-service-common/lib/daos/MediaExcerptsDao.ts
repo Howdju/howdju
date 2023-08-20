@@ -20,7 +20,6 @@ import {
   UrlLocatorOut,
   UrlLocatorRef,
   SortDescription,
-  isDefined,
   MediaExcerptSearchFilter,
   UrlOut,
   SourceOut,
@@ -966,7 +965,7 @@ export class MediaExcerptsDao {
     );
   }
 
-  async readMediaExcerpts(
+  async readMediaExcerptIds(
     filters: MediaExcerptSearchFilter | undefined,
     sorts: SortDescription[],
     count: number
@@ -1004,13 +1003,10 @@ export class MediaExcerptsDao {
       ${limitSql}
       `;
     const { rows } = await this.database.query("readMediaExcerpts", sql, args);
-    const mediaExcerpts = await Promise.all(
-      rows.map((row) => this.readMediaExcerptForId(row.media_excerpt_id))
-    );
-    return mediaExcerpts.filter(isDefined);
+    return rows.map((row) => toIdString(row.media_excerpt_id));
   }
 
-  async readMoreMediaExcerpts(
+  async readMoreMediaExcerptIds(
     filters: MediaExcerptSearchFilter | undefined,
     sorts: SortDescription[],
     count: number
@@ -1076,10 +1072,7 @@ export class MediaExcerptsDao {
       sql,
       args
     );
-    const mediaExcerpts = await Promise.all(
-      rows.map((row) => this.readMediaExcerptForId(row.media_excerpt_id))
-    );
-    return mediaExcerpts.filter(isDefined);
+    return rows.map((row) => toIdString(row.media_excerpt_id));
   }
 
   async deleteMediaExcerpt(mediaExcerptId: string, deletedAt: Moment) {

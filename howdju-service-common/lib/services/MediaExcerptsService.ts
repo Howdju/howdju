@@ -434,11 +434,12 @@ export class MediaExcerptsService {
     const unambiguousSorts = concat(sorts, [
       { property: "id", direction: "ascending" },
     ]);
-    const mediaExcerpts = await this.mediaExcerptsDao.readMediaExcerpts(
+    const mediaExcerptIds = await this.mediaExcerptsDao.readMediaExcerptIds(
       filters,
       unambiguousSorts,
       count
     );
+    const mediaExcerpts = await this.readMediaExcerptsForIds(mediaExcerptIds);
 
     const continuationToken = createContinuationToken(
       unambiguousSorts,
@@ -456,11 +457,12 @@ export class MediaExcerptsService {
     count: number
   ) {
     const { filters, sorts } = decodeContinuationToken(prevContinuationToken);
-    const mediaExcerpts = await this.mediaExcerptsDao.readMoreMediaExcerpts(
+    const mediaExcerptIds = await this.mediaExcerptsDao.readMoreMediaExcerptIds(
       filters,
       sorts,
       count
     );
+    const mediaExcerpts = await this.readMediaExcerptsForIds(mediaExcerptIds);
 
     const continuationToken =
       (createNextContinuationToken(

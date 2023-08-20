@@ -1,8 +1,7 @@
 import { Moment } from "moment";
 
 import {
-  AppearanceConfirmationStatus,
-  ConfirmationStatusPolarity,
+  AppearanceConfirmationPolarity,
   CreateAppearanceConfirmation,
   EntityId,
 } from "howdju-common";
@@ -28,13 +27,24 @@ export class AppearanceConfirmationsDao {
     );
   }
 
-  async readAppearanceConfirmationStatusesForAppearanceIds(
-    userId: string,
-    appearanceIds: string[]
+  async readAppearanceConfirmationForAppearanceId(
+    userId: EntityId,
+    appearanceId: EntityId
+  ) {
+    const [confirmation] =
+      await this.readAppearanceConfirmationsForAppearanceIds(userId, [
+        appearanceId,
+      ]);
+    return confirmation;
+  }
+
+  async readAppearanceConfirmationsForAppearanceIds(
+    userId: EntityId,
+    appearanceIds: EntityId[]
   ): Promise<
     {
-      appearanceId: string;
-      confirmationStatus: AppearanceConfirmationStatus;
+      appearanceId: EntityId;
+      polarity: AppearanceConfirmationPolarity;
     }[]
   > {
     const { rows } = await this.db.query(
@@ -52,23 +62,10 @@ export class AppearanceConfirmationsDao {
       [userId, appearanceIds]
     );
 
-    const statuses = [] as {
-      appearanceId: string;
-      confirmationStatus: AppearanceConfirmationStatus;
-    }[];
-    const remainingIds = new Set(appearanceIds);
-    rows.forEach(({ appearance_id, polarity }) => {
-      const appearanceId = toIdString(appearance_id);
-      remainingIds.delete(appearanceId);
-      statuses.push({
-        appearanceId,
-        confirmationStatus: confirmationStatusPolarityToStatus(polarity),
-      });
-    });
-    remainingIds.forEach((appearanceId) => {
-      statuses.push({ appearanceId, confirmationStatus: undefined });
-    });
-    return statuses;
+    return rows.map(({ appearance_id, polarity }) => ({
+      appearanceId: toIdString(appearance_id),
+      polarity,
+    }));
   }
 
   deleteAppearanceConfirmation(
@@ -88,10 +85,4 @@ export class AppearanceConfirmationsDao {
       [userId, appearanceId, deletedAt]
     );
   }
-}
-
-export function confirmationStatusPolarityToStatus(
-  polarity: ConfirmationStatusPolarity
-): AppearanceConfirmationStatus {
-  return polarity === "POSITIVE" ? "CONFIRMED" : "DISCONFIRMED";
 }

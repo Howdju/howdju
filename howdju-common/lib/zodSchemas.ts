@@ -732,14 +732,14 @@ export const CreateAppearanceInput = z.object({
 });
 export type CreateAppearanceInput = z.output<typeof CreateAppearanceInput>;
 
-export const ConfirmationStatusPolarity = z.enum(["POSITIVE", "NEGATIVE"]);
-export type ConfirmationStatusPolarity = z.output<
-  typeof ConfirmationStatusPolarity
+export const AppearanceConfirmationPolarity = z.enum(["POSITIVE", "NEGATIVE"]);
+export type AppearanceConfirmationPolarity = z.output<
+  typeof AppearanceConfirmationPolarity
 >;
 export const CreateAppearanceConfirmation = z.object({
   appearanceId: z.string(),
   /** Tracks appearance_vote_polarity. */
-  polarity: ConfirmationStatusPolarity,
+  polarity: AppearanceConfirmationPolarity,
 });
 export type CreateAppearanceConfirmation = z.output<
   typeof CreateAppearanceConfirmation

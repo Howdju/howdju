@@ -537,7 +537,6 @@ export const api = {
     (appearanceId: EntityId) => ({
       pathParams: { appearanceId },
       body: { polarity: "POSITIVE" as const },
-      // TODO remove this schema if we can't get partial update to work.
       normalizationSchema: { appearance: appearanceSchema },
     })
   ),

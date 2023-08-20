@@ -1,7 +1,6 @@
 import {
   AppearanceSearchFilter,
   EntityId,
-  isDefined,
   Logger,
   SortDescription,
   toJson,
@@ -60,7 +59,7 @@ export class AppearancesDao {
     }));
   }
 
-  async readAppearances(
+  async readAppearanceIds(
     filters: AppearanceSearchFilter | undefined,
     sorts: SortDescription[],
     count: number
@@ -97,14 +96,11 @@ export class AppearancesDao {
       ${orderBySql}
       ${limitSql}
       `;
-    const { rows } = await this.database.query("readAppearances", sql, args);
-    const appearances = await Promise.all(
-      rows.map((row) => this.readAppearanceForId(row.appearance_id))
-    );
-    return appearances.filter(isDefined);
+    const { rows } = await this.database.query("readAppearanceIds", sql, args);
+    return rows.map((row) => toIdString(row.appearance_id));
   }
 
-  async readMoreAppearances(
+  async readMoreAppearanceIds(
     filters: AppearanceSearchFilter | undefined,
     sorts: SortDescription[],
     count: number
@@ -170,10 +166,7 @@ export class AppearancesDao {
       sql,
       args
     );
-    const appearances = await Promise.all(
-      rows.map((row) => this.readAppearanceForId(row.appearance_id))
-    );
-    return appearances.filter(isDefined);
+    return rows.map((row) => toIdString(row.appearance_id));
   }
 
   private makeFilterSubselects(filters: AppearanceSearchFilter | undefined) {
@@ -262,6 +255,7 @@ export class AppearancesDao {
         and url_id = any($2)
         and source_id = any($3)
         and ac.user_id = any($1)
+        and ac.polarity = 'POSITIVE'
       `,
       [userIds, urlIds, sourceIds]
     );

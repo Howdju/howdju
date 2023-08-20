@@ -479,7 +479,7 @@ describe("MediaExcerptsDao", () => {
         );
 
         // Act
-        const readMediaExcerpts = await dao.readMediaExcerpts(
+        const readMediaExcerpts = await dao.readMediaExcerptIds(
           {
             url: "https://www.example.com/the-path?otherKey=otherValue#other-fragment",
           },
@@ -488,9 +488,7 @@ describe("MediaExcerptsDao", () => {
         );
 
         // Assert
-        expect(readMediaExcerpts).toIncludeSameMembers([
-          expectToBeSameMomentDeep(mediaExcerpt),
-        ]);
+        expect(readMediaExcerpts).toIncludeSameMembers([mediaExcerpt.id]);
       }
     );
     test.each([
@@ -543,7 +541,7 @@ describe("MediaExcerptsDao", () => {
         );
 
         // Act
-        const readMediaExcerpts = await dao.readMediaExcerpts(
+        const readMediaExcerpts = await dao.readMediaExcerptIds(
           {
             url: "https://www.example.com/the-path?otherKey=otherValue#other-fragment",
           },
@@ -605,16 +603,14 @@ describe("MediaExcerptsDao", () => {
         );
 
         // Act
-        const readMediaExcerpts = await dao.readMediaExcerpts(
+        const readMediaExcerpts = await dao.readMediaExcerptIds(
           { domain: "www.example.com" },
           [],
           5
         );
 
         // Assert
-        expect(readMediaExcerpts).toIncludeSameMembers([
-          expectToBeSameMomentDeep(mediaExcerpt),
-        ]);
+        expect(readMediaExcerpts).toIncludeSameMembers([mediaExcerpt.id]);
       }
     );
     test.each([
@@ -661,7 +657,7 @@ describe("MediaExcerptsDao", () => {
         );
 
         // Act
-        const readMediaExcerpts = await dao.readMediaExcerpts(
+        const readMediaExcerpts = await dao.readMediaExcerptIds(
           { domain: "www.example.com" },
           [],
           5

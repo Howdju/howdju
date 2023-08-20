@@ -195,6 +195,7 @@ export class AppearancesService {
   }
 
   async readAppearances(
+    userIdent: UserIdent,
     filters: AppearanceSearchFilter | undefined,
     sorts: SortDescription[],
     continuationToken?: ContinuationToken,
@@ -207,12 +208,13 @@ export class AppearancesService {
     }
 
     if (!continuationToken) {
-      return this.readInitialAppearances(filters, sorts, count);
+      return this.readInitialAppearances(userIdent, filters, sorts, count);
     }
-    return this.readMoreAppearances(continuationToken, count);
+    return this.readMoreAppearances(userIdent, continuationToken, count);
   }
 
   async readInitialAppearances(
+    userIdent: UserIdent,
     filters: AppearanceSearchFilter | undefined,
     sorts: SortDescription[],
     count: number
@@ -220,11 +222,14 @@ export class AppearancesService {
     const unambiguousSorts = concat(sorts, [
       { property: "id", direction: "ascending" },
     ]);
-    // TODO return the IDs and then read them. (Didn't we do this in another service recently too?)
-    const appearances = await this.appearancesDao.readAppearances(
+    const appearanceIds = await this.appearancesDao.readAppearanceIds(
       filters,
       unambiguousSorts,
       count
+    );
+    const appearances = await this.readAppearancesForIds(
+      userIdent,
+      appearanceIds
     );
 
     const continuationToken = createContinuationToken(
@@ -239,14 +244,19 @@ export class AppearancesService {
   }
 
   async readMoreAppearances(
+    userIdent: UserIdent,
     prevContinuationToken: ContinuationToken,
     count: number
   ) {
     const { filters, sorts } = decodeContinuationToken(prevContinuationToken);
-    const appearances = await this.appearancesDao.readMoreAppearances(
+    const appearanceIds = await this.appearancesDao.readMoreAppearanceIds(
       filters,
       sorts,
       count
+    );
+    const appearances = await this.readAppearancesForIds(
+      userIdent,
+      appearanceIds
     );
 
     const continuationToken =

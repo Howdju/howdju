@@ -1,16 +1,14 @@
 import { Moment } from "moment";
 
 import {
+  AppearanceConfirmationPolarity,
   AppearanceConfirmationStatus,
   CreateAppearanceConfirmation,
   EntityId,
   utcNow,
 } from "howdju-common";
 
-import {
-  AppearanceConfirmationsDao,
-  confirmationStatusPolarityToStatus,
-} from "../daos";
+import { AppearanceConfirmationsDao } from "../daos";
 import { AuthService } from "./AuthService";
 import { UserIdent } from "./types";
 
@@ -26,8 +24,26 @@ export class AppearanceConfirmationsService {
     createdAt: Moment = utcNow()
   ) {
     const userId = await this.authService.readUserIdForUserIdent(userIdent);
-    // TODO read overlapping confirmation. If same polarity, do nothing. If different polarity,
-    // delete it and re-create.
+    const existingConfirmation =
+      await this.appearanceConfirmationsDao.readAppearanceConfirmationForAppearanceId(
+        userId,
+        createAppearanceConfirmation.appearanceId
+      );
+    if (existingConfirmation) {
+      if (
+        existingConfirmation.polarity === createAppearanceConfirmation.polarity
+      ) {
+        return confirmationStatusPolarityToStatus(
+          existingConfirmation.polarity
+        );
+      }
+      await this.appearanceConfirmationsDao.deleteAppearanceConfirmation(
+        userId,
+        createAppearanceConfirmation.appearanceId,
+        createdAt
+      );
+    }
+
     await this.appearanceConfirmationsDao.createAppearanceConfirmation(
       createAppearanceConfirmation,
       userId,
@@ -38,7 +54,7 @@ export class AppearanceConfirmationsService {
     );
   }
 
-  readAppearanceConfirmationStatusesForAppearanceIds(
+  async readAppearanceConfirmationStatusesForAppearanceIds(
     userId: EntityId,
     appearanceIds: string[]
   ): Promise<
@@ -47,10 +63,28 @@ export class AppearanceConfirmationsService {
       confirmationStatus: AppearanceConfirmationStatus;
     }[]
   > {
-    return this.appearanceConfirmationsDao.readAppearanceConfirmationStatusesForAppearanceIds(
-      userId,
-      appearanceIds
-    );
+    const appearanceConfirmations =
+      await this.appearanceConfirmationsDao.readAppearanceConfirmationsForAppearanceIds(
+        userId,
+        appearanceIds
+      );
+
+    const statuses = [] as {
+      appearanceId: string;
+      confirmationStatus: AppearanceConfirmationStatus;
+    }[];
+    const remainingIds = new Set(appearanceIds);
+    appearanceConfirmations.forEach(({ appearanceId, polarity }) => {
+      remainingIds.delete(appearanceId);
+      statuses.push({
+        appearanceId,
+        confirmationStatus: confirmationStatusPolarityToStatus(polarity),
+      });
+    });
+    remainingIds.forEach((appearanceId) => {
+      statuses.push({ appearanceId, confirmationStatus: undefined });
+    });
+    return statuses;
   }
 
   async deleteAppearanceConfirmation(
@@ -65,4 +99,10 @@ export class AppearanceConfirmationsService {
       deletedAt
     );
   }
+}
+
+export function confirmationStatusPolarityToStatus(
+  polarity: AppearanceConfirmationPolarity
+): AppearanceConfirmationStatus {
+  return polarity === "POSITIVE" ? "CONFIRMED" : "DISCONFIRMED";
 }
