@@ -85,18 +85,6 @@ const defaultRecentPropositionsWidgetState = {
   isFetching: false,
   didError: false,
 } as BaseListEntitiesState;
-const defaultRecentWritsWidgetState = {
-  recentWrits: [],
-  continuationToken: undefined,
-  isFetching: false,
-  didError: false,
-} as BaseListEntitiesState;
-const defaultRecentWritQuotesWidgetState = {
-  recentWritQuotes: [],
-  continuationToken: undefined,
-  isFetching: false,
-  didError: false,
-} as BaseListEntitiesState;
 const defaultRecentMediaExcerptsWidgetState = {
   recentMediaExcerpts: [],
   continuationToken: undefined,
@@ -137,28 +125,6 @@ export default handleActions<
         "recentPropositions",
         "propositionId"
       ),
-    },
-    [str(api.fetchRecentWrits)]: widgetRequestReducer(
-      defaultRecentWritsWidgetState
-    ),
-    [str(api.fetchRecentWrits.response)]: {
-      next: widgetResponseReducer(
-        defaultRecentWritsWidgetState,
-        "recentWrits",
-        "writs"
-      ),
-      throw: widgetResponseErrorReducer(defaultRecentWritsWidgetState),
-    },
-    [str(api.fetchRecentWritQuotes)]: widgetRequestReducer(
-      defaultRecentWritQuotesWidgetState
-    ),
-    [str(api.fetchRecentWritQuotes.response)]: {
-      next: widgetResponseReducer(
-        defaultRecentWritQuotesWidgetState,
-        "recentWritQuotes",
-        "writQuotes"
-      ),
-      throw: widgetResponseErrorReducer(defaultRecentWritQuotesWidgetState),
     },
     [str(api.fetchRecentMediaExcerpts)]: widgetRequestReducer(
       defaultRecentMediaExcerptsWidgetState
