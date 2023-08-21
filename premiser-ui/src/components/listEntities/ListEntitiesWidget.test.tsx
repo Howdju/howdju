@@ -1,8 +1,18 @@
 import React from "react";
 import { rest } from "msw";
 import { screen, waitFor } from "@testing-library/react";
+import { drop, take, toNumber } from "lodash";
+import moment from "moment";
 
-import RecentPropositionsWidget from "./RecentPropositionsWidget";
+import {
+  httpStatusCodes,
+  fromJson,
+  toJson,
+  PropositionRef,
+} from "howdju-common";
+import { InferResponseBody, serviceRoutes } from "howdju-service-routes";
+
+import RecentPropositionsWidget from "@/RecentPropositionsWidget";
 import {
   renderWithProviders,
   withFakeTimers,
@@ -10,15 +20,6 @@ import {
   setupUserEvent,
   progressToBeGone,
 } from "@/testUtils";
-import {
-  httpStatusCodes,
-  fromJson,
-  toJson,
-  PropositionRef,
-} from "howdju-common";
-import { drop, take, toNumber } from "lodash";
-import moment from "moment";
-import { InferResponseBody, serviceRoutes } from "howdju-service-routes";
 
 withFakeTimers({ now: new Date("2023-01-12T16:44:00-08:00") });
 const server = withMockServer();
