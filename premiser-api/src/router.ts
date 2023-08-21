@@ -50,9 +50,8 @@ export async function routeRequest(
     return ok({ callback });
   }
 
-  const { route, routedRequest } = selectRoute(appProvider, request);
-
   try {
+    const { route, routedRequest } = selectRoute(appProvider, request);
     if ("authToken" in route.request.schema.shape) {
       if (!request.authToken) {
         throw new AuthenticationError("Must send auth token");

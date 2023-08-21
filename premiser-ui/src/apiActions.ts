@@ -46,6 +46,7 @@ import {
   UrlLocatorOut,
   CreateAppearance,
   JustificationView,
+  AppearanceSearchFilter,
 } from "howdju-common";
 import {
   InferPathParams,
@@ -122,7 +123,10 @@ const makeApiActionTypes = (type: string) => {
 
 export type ApiResponseActionMeta<N, M> = {
   normalizationSchema: N;
-  requestMeta: M;
+  requestId: string;
+  requestMeta: M & {
+    fetchInit: FetchInit;
+  };
 };
 
 /** Properties that may be present on API responses */
@@ -195,6 +199,12 @@ type ApiActionConfig<Route extends ServiceRoute> = {
     : key]: BaseApiActionConfig<Route>[key];
 };
 
+interface FetchInit {
+  method: HttpMethod;
+  body: JsonObject;
+  requestId: string;
+}
+
 type ApiConfig<Route extends ServiceRoute> = {
   endpoint: string;
   /** The schema for normalizing the response entities. */
@@ -202,11 +212,7 @@ type ApiConfig<Route extends ServiceRoute> = {
     InferResponseBodyEntities<Route>,
     schema.Entity<any>
   >;
-  fetchInit: {
-    method: HttpMethod;
-    body: JsonObject;
-    requestId: string;
-  };
+  fetchInit: FetchInit;
   canSkipRehydrate: boolean;
   cancelKey: string;
   /** Optional: whether to log cancelation of the API call. */
@@ -347,7 +353,7 @@ type ContinuationQueryStringParams = {
   sorts?: string;
 };
 
-interface JustificationSearchQueryStringParams {
+interface SearchQueryStringParams {
   filters?: string;
   includeUrls?: string;
   sorts?: string;
@@ -494,6 +500,66 @@ export const api = {
   fetchAppearance: apiActionCreator(
     "FETCH_APPEARANCE",
     serviceRoutes.readAppearance,
+    (appearanceId: EntityId) => ({
+      pathParams: { appearanceId },
+      normalizationSchema: { appearance: appearanceSchema },
+    })
+  ),
+  fetchAppearances: apiActionCreator(
+    "FETCH_APPEARANCES",
+    serviceRoutes.readAppearances,
+    (
+      filters: AppearanceSearchFilter,
+      count: number,
+      continuationToken?: ContinuationToken
+    ) => {
+      const queryStringParams: SearchQueryStringParams = {
+        filters: encodeQueryStringObject(filters),
+        continuationToken,
+        count: toString(count),
+      };
+      if (!queryStringParams.continuationToken) {
+        queryStringParams.sorts = defaultSorts;
+      }
+      return {
+        config: {
+          queryStringParams,
+          normalizationSchema: { appearances: appearancesSchema },
+        },
+        meta: { filters },
+      };
+    }
+  ),
+
+  confirmAppearance: apiActionCreator(
+    "CONFIRM_APPEARANCE",
+    serviceRoutes.createAppearanceConfirmation,
+    (appearanceId: EntityId) => ({
+      pathParams: { appearanceId },
+      body: { polarity: "POSITIVE" as const },
+      normalizationSchema: { appearance: appearanceSchema },
+    })
+  ),
+  disconfirmAppearance: apiActionCreator(
+    "DISCONFIRM_APPEARANCE",
+    serviceRoutes.createAppearanceConfirmation,
+    (appearanceId: EntityId) => ({
+      pathParams: { appearanceId },
+      body: { polarity: "NEGATIVE" as const },
+      normalizationSchema: { appearance: appearanceSchema },
+    })
+  ),
+  unconfirmAppearance: apiActionCreator(
+    "UNCONFIRM_APPEARANCE",
+    serviceRoutes.deleteAppearanceConfirmation,
+    (appearanceId: EntityId) => ({
+      pathParams: { appearanceId },
+      normalizationSchema: { appearance: appearanceSchema },
+    })
+  ),
+  undisconfirmAppearance: apiActionCreator(
+    "UNDISCONFIRM_APPEARANCE",
+    serviceRoutes.deleteAppearanceConfirmation,
     (appearanceId: EntityId) => ({
       pathParams: { appearanceId },
       normalizationSchema: { appearance: appearanceSchema },
@@ -729,6 +795,30 @@ export const api = {
       };
     }
   ),
+  fetchRecentAppearances: apiActionCreator(
+    "FETCH_RECENT_APPEARANCES",
+    serviceRoutes.readAppearances,
+    (
+      widgetId: WidgetId,
+      count: number,
+      continuationToken?: ContinuationToken
+    ) => {
+      const queryStringParams: ContinuationQueryStringParams = {
+        continuationToken,
+        count: toString(count),
+      };
+      if (!queryStringParams.continuationToken) {
+        queryStringParams.sorts = defaultSorts;
+      }
+      return {
+        config: {
+          queryStringParams,
+          normalizationSchema: { appearances: appearancesSchema },
+        },
+        meta: { widgetId },
+      };
+    }
+  ),
   fetchRecentJustifications: apiActionCreator(
     "FETCH_RECENT_JUSTIFICATIONS",
     serviceRoutes.readJustifications,
@@ -804,7 +894,7 @@ export const api = {
       count: number;
       continuationToken?: ContinuationToken;
     }) => {
-      const queryStringParams: JustificationSearchQueryStringParams = {};
+      const queryStringParams: SearchQueryStringParams = {};
 
       if (!isEmpty(filters)) {
         queryStringParams.filters = encodeQueryStringObject(filters);

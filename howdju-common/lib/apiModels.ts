@@ -83,6 +83,11 @@ export interface UrlLocatorOut extends ToPersistedEntity<UrlLocator> {
   autoConfirmationStatus: UrlLocatorAutoConfirmationStatus;
 }
 
+export type AppearanceConfirmationStatus =
+  | "CONFIRMED"
+  | "DISCONFIRMED"
+  | undefined;
+
 export interface AppearanceOut {
   id: EntityId;
   mediaExcerpt: MediaExcerptOut;
@@ -90,6 +95,7 @@ export interface AppearanceOut {
     type: "PROPOSITION";
     entity: PropositionOut;
   };
+  confirmationStatus?: AppearanceConfirmationStatus;
   created: Moment;
   creator: CreatorBlurb;
 }
@@ -285,6 +291,15 @@ export const MediaExcerptSearchFilterKeys = [
 ] as const;
 export type MediaExcerptSearchFilter = ToFilter<
   typeof MediaExcerptSearchFilterKeys
+>;
+
+export const AppearanceSearchFilterKeys = [
+  "creatorUserId",
+  "propositionId",
+  "mediaExcerptId",
+] as const;
+export type AppearanceSearchFilter = ToFilter<
+  typeof AppearanceSearchFilterKeys
 >;
 
 export interface SortDescription {

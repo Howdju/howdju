@@ -1,10 +1,22 @@
-import { EntityId } from "howdju-common";
+import {
+  AppearanceSearchFilter,
+  EntityId,
+  Logger,
+  SortDescription,
+  toJson,
+} from "howdju-common";
+import { concat, snakeCase } from "lodash";
 import { Moment } from "moment";
-import { Database } from "..";
-import { toIdString } from "./daosUtil";
+import { Database, InvalidRequestError } from "..";
+import { toDbDirection } from "./daoModels";
+import { renumberSqlArgs, toIdString } from "./daosUtil";
+import { SqlClause } from "./daoTypes";
 
 export class AppearancesDao {
-  constructor(private readonly database: Database) {}
+  constructor(
+    private readonly database: Database,
+    private readonly logger: Logger
+  ) {}
 
   async createAppearanceReturningId(
     creatorUserId: EntityId,
@@ -47,6 +59,173 @@ export class AppearancesDao {
     }));
   }
 
+  async readAppearanceIds(
+    filters: AppearanceSearchFilter | undefined,
+    sorts: SortDescription[],
+    count: number
+  ) {
+    const args: any[] = [count];
+    const limitSql = `limit $${args.length}`;
+
+    const whereSqls = ["deleted is null"];
+    const orderBySqls: string[] = [];
+    sorts.forEach((sort) => {
+      const columnName =
+        sort.property === "id" ? "appearance_id" : snakeCase(sort.property);
+      const direction = toDbDirection(sort.direction);
+      whereSqls.push(`${columnName} is not null`);
+      orderBySqls.push(`${columnName} ${direction}`);
+    });
+
+    const filterSubselects = this.makeFilterSubselects(filters);
+    filterSubselects.forEach(({ sql, args: subselectArgs }) => {
+      const renumberedSql = renumberSqlArgs(sql, args.length);
+      whereSqls.push(`appearance_id in (${renumberedSql})`);
+      args.push(...subselectArgs);
+    });
+
+    const whereSql = whereSqls.join("\nand ");
+    const orderBySql =
+      orderBySqls.length > 0 ? "order by " + orderBySqls.join(",") : "";
+
+    const sql = `
+      select appearance_id
+      from appearances
+        where
+          ${whereSql}
+      ${orderBySql}
+      ${limitSql}
+      `;
+    const { rows } = await this.database.query("readAppearanceIds", sql, args);
+    return rows.map((row) => toIdString(row.appearance_id));
+  }
+
+  async readMoreAppearanceIds(
+    filters: AppearanceSearchFilter | undefined,
+    sorts: SortDescription[],
+    count: number
+  ) {
+    const args: any[] = [count];
+    const countSql = `\nlimit $${args.length}`;
+
+    const whereSqls = ["deleted is null"];
+    const continuationWhereSqls: string[] = [];
+    const prevWhereSqls: string[] = [];
+    const orderBySqls: string[] = [];
+    sorts.forEach((sort) => {
+      const value = sort.value;
+      if (!value) {
+        this.logger.error(
+          `readMoreAppearances sort description missing value.`
+        );
+        throw new InvalidRequestError("Invalid continuation.");
+      }
+      const direction = toDbDirection(sort.direction);
+      const columnName =
+        sort.property === "id" ? "appearance_id" : snakeCase(sort.property);
+      const operator = direction === "asc" ? ">" : "<";
+      args.push(value);
+      const currContinuationWhereSql = concat(prevWhereSqls, [
+        `${columnName} ${operator} $${args.length}`,
+      ]);
+      continuationWhereSqls.push(currContinuationWhereSql.join(" and "));
+      prevWhereSqls.push(`${columnName} = $${args.length}`);
+      whereSqls.push(`${columnName} is not null`);
+      orderBySqls.push(`${columnName} ${direction}`);
+    });
+
+    const filterSubselects = this.makeFilterSubselects(filters);
+    const filterWhereSqls: string[] = [];
+    filterSubselects.forEach(({ sql, args: subselectArgs }) => {
+      const renumberedSql = renumberSqlArgs(sql, args.length);
+      filterWhereSqls.push(`appearance_id in (${renumberedSql})`);
+      args.push(...subselectArgs);
+    });
+
+    const whereSql = whereSqls.join("\nand ");
+    const continuationWhereSql = continuationWhereSqls.join("\n or ");
+    const filterWhereSql = filterWhereSqls.join("\nand ");
+    const orderBySql =
+      orderBySqls.length > 0 ? "order by " + orderBySqls.join(",") : "";
+
+    const sql = `
+      select
+          appearance_id
+      from appearances
+        where
+          ${whereSql}
+        and (
+          ${continuationWhereSql}
+        )
+        ${filterWhereSql ? `and (${filterWhereSql})` : ""}
+      ${orderBySql}
+      ${countSql}
+      `;
+    const { rows } = await this.database.query(
+      "readMoreAppearances",
+      sql,
+      args
+    );
+    return rows.map((row) => toIdString(row.appearance_id));
+  }
+
+  private makeFilterSubselects(filters: AppearanceSearchFilter | undefined) {
+    const filterSubselects: SqlClause[] = [];
+    if (!filters) {
+      return filterSubselects;
+    }
+    let filterName: keyof AppearanceSearchFilter;
+    for (filterName in filters) {
+      const value = filters[filterName];
+      if (!value) {
+        this.logger.error(
+          `makeFilterSubselects: filter value was mising for ${filterName} (filters ${toJson(
+            filters
+          )})`
+        );
+        continue;
+      }
+      switch (filterName) {
+        case "propositionId": {
+          const sql = `
+          select distinct a.appearance_id
+          from
+                 appearances a
+            join propositions p using (proposition_id)
+          where
+              proposition_id = $1
+          and a.deleted is null
+          and p.deleted is null
+        `;
+          const args = [value];
+          filterSubselects.push({ sql, args });
+          break;
+        }
+        case "creatorUserId": {
+          const sql = `
+          select distinct appearance_id
+          from appearances
+          where creator_user_id = $1 and deleted is null
+        `;
+          const args = [value];
+          filterSubselects.push({ sql, args });
+          break;
+        }
+        case "mediaExcerptId": {
+          const sql = `
+            select distinct appearance_id
+            from appearances
+            where media_excerpt_id = $1 and deleted is null
+          `;
+          const args = [value];
+          filterSubselects.push({ sql, args });
+          break;
+        }
+      }
+    }
+    return filterSubselects;
+  }
+
   async readOverlappingAppearanceIdsForUsers(
     userIds: EntityId[],
     urlIds: EntityId[],
@@ -72,10 +251,11 @@ export class AppearancesDao {
         and u.deleted is null
         and mec.deleted is null
         and s.deleted is null
-        and av.deleted is null
+        and ac.deleted is null
         and url_id = any($2)
         and source_id = any($3)
         and ac.user_id = any($1)
+        and ac.polarity = 'POSITIVE'
       `,
       [userIds, urlIds, sourceIds]
     );

@@ -70,12 +70,13 @@ export const setupStore = (
             "payload.itemFactory",
             // TODO(472) remove once we remove error-logging Saga.
             "errors.loggedErrors",
+            /payload\.meta\.normalizationSchema\.[^.]+/,
           ],
           ignoredPaths: [
             // TODO(484) figure out how to handle timestamps in a way that is acceptable to redux.
-            /entities.mediaExcerpts.[^.]+.created/,
-            /entities.urlLocators.[^.]+.created/,
-            /entities.urlLocators.[^.]+.autoConfirmationStatus.(earliest|latest)(Not)?FoundAt/,
+            /entities\.mediaExcerpts\.[^.]+\.created/,
+            /entities\.urlLocators\.[^.]+\.created/,
+            /entities\.urlLocators.[^.]+\.autoConfirmationStatus\.(earliest|latest)(Not)?FoundAt/,
           ],
         },
       }).concat([routerMiddleware(history), sagaMiddleware]),

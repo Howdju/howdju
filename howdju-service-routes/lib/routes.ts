@@ -45,6 +45,8 @@ import {
   CreateAppearance,
   SentenceTypes,
   SentenceType,
+  AppearanceSearchFilterKeys,
+  CreateAppearanceConfirmation,
 } from "howdju-common";
 import {
   EntityNotFoundError,
@@ -1068,13 +1070,112 @@ export const serviceRoutes = {
       PathParams("appearanceId"),
       async (
         appProvider: ServicesProvider,
-        { pathParams: { appearanceId } }
+        { authToken, pathParams: { appearanceId } }
       ) => {
         const appearance =
           await appProvider.appearancesService.readAppearanceForId(
+            { authToken },
             appearanceId
           );
         return { body: { appearance } };
+      }
+    ),
+  },
+  readAppearances: {
+    path: "appearances",
+    method: httpMethods.GET,
+    request: handler(
+      QueryStringParams("filters", "sorts", "continuationToken", "count"),
+      async (
+        appProvider: ServicesProvider,
+        {
+          authToken,
+          queryStringParams: {
+            filters: encodedFilters,
+            sorts: encodedSorts,
+            continuationToken: prevContinuationToken,
+            count,
+          },
+        }
+      ) => {
+        const filters = decodeQueryStringObject(
+          encodedFilters,
+          AppearanceSearchFilterKeys
+        );
+
+        const sorts = decodeSorts(encodedSorts);
+        const { appearances, continuationToken } =
+          await appProvider.appearancesService.readAppearances(
+            { authToken },
+            filters,
+            sorts,
+            prevContinuationToken,
+            isDefined(count) ? toNumber(count) : undefined
+          );
+        return {
+          body: { appearances, continuationToken },
+        };
+      }
+    ),
+  },
+
+  /*
+   * Appearance Confirmations
+   */
+  createAppearanceConfirmation: {
+    path: "appearances/:appearanceId/confirmations",
+    method: httpMethods.POST,
+    request: handler(
+      Authed.merge(
+        PathParams("appearanceId").merge(
+          Body(
+            CreateAppearanceConfirmation.omit({
+              appearanceId: true,
+            }).shape
+          )
+        )
+      ),
+      async (
+        appProvider: ServicesProvider,
+        { authToken, pathParams: { appearanceId }, body: createConfirmation }
+      ) => {
+        const confirmationStatus =
+          await appProvider.appearanceConfirmationsService.createAppearanceConfirmation(
+            { authToken },
+            { ...createConfirmation, appearanceId }
+          );
+        return {
+          body: {
+            appearance: {
+              id: appearanceId,
+              confirmationStatus,
+            },
+          },
+        };
+      }
+    ),
+  },
+  deleteAppearanceConfirmation: {
+    path: "appearances/:appearanceId/confirmations",
+    method: httpMethods.DELETE,
+    request: handler(
+      Authed.merge(PathParams("appearanceId")),
+      async (
+        appProvider: ServicesProvider,
+        { authToken, pathParams: { appearanceId } }
+      ) => {
+        await appProvider.appearanceConfirmationsService.deleteAppearanceConfirmation(
+          { authToken },
+          appearanceId
+        );
+        return {
+          body: {
+            appearance: {
+              id: appearanceId,
+              confirmationStatus: null,
+            },
+          },
+        };
       }
     ),
   },
@@ -1083,13 +1184,13 @@ export const serviceRoutes = {
    * FactChecks
    */
   readFactCheck: {
-    path: "fact-checks/",
+    path: "fact-checks",
     method: httpMethods.GET,
     request: handler(
       QueryStringParams("userIds", "urlIds", "sourceIds"),
       async (
         appProvider: ServicesProvider,
-        { queryStringParams: { userIds, urlIds, sourceIds } }
+        { authToken, queryStringParams: { userIds, urlIds, sourceIds } }
       ) => {
         if (!userIds) {
           throw new InvalidRequestError("Missing userIds");
@@ -1101,6 +1202,7 @@ export const serviceRoutes = {
         }
         const { appearances, users, urls, sources } =
           await appProvider.factChecksService.readFactCheck(
+            { authToken },
             userIds.split(","),
             urlIds?.split(",") ?? [],
             sourceIds?.split(",") ?? []

@@ -2,8 +2,10 @@ import React from "react";
 import { useLocation } from "react-router";
 import queryString from "query-string";
 import useDeepCompareEffect from "use-deep-compare-effect";
+import { isArray } from "lodash";
 
-import { api } from "@/apiActions";
+import { EntityId } from "howdju-common";
+
 import { useAppDispatch, useAppEntitySelector, useAppSelector } from "@/hooks";
 import {
   appearancesSchema,
@@ -13,9 +15,9 @@ import {
 } from "@/normalizationSchemas";
 import AppearanceCard from "@/pages/appearances/AppearanceCard";
 import HowdjuHelmet from "@/Helmet";
-import { isArray } from "lodash";
-import { EntityId } from "howdju-common";
 import CellList, { largeCellClasses } from "@/CellList";
+import page from "./factCheckPageSlice";
+import { CircularProgress } from "react-md";
 
 /**
  * A page displaying Appearances that are part of a FactCheck.
@@ -49,7 +51,7 @@ export default function FactCheckPage() {
   sourceIds = isArray(sourceIds) ? sourceIds : sourceIds?.split(",") ?? [];
 
   return (
-    <ValidFactCheckPage
+    <ValidParamsFactCheckPage
       userIds={userIds}
       urlIds={urlIds}
       sourceIds={sourceIds}
@@ -57,7 +59,7 @@ export default function FactCheckPage() {
   );
 }
 
-function ValidFactCheckPage({
+function ValidParamsFactCheckPage({
   userIds,
   urlIds,
   sourceIds,
@@ -68,7 +70,7 @@ function ValidFactCheckPage({
 }) {
   const dispatch = useAppDispatch();
   useDeepCompareEffect(() => {
-    dispatch(api.fetchFactCheck(userIds, urlIds, sourceIds));
+    dispatch(page.fetchFactCheck({ userIds, urlIds, sourceIds }));
   }, [dispatch, userIds, urlIds, sourceIds]);
 
   const { appearanceIds } = useAppSelector((state) => state.factCheckPage);
@@ -78,6 +80,14 @@ function ValidFactCheckPage({
   const urls = useAppEntitySelector(urlIds, urlsSchema);
   const sources = useAppEntitySelector(sourceIds, sourcesSchema);
   const title = `FactCheck`;
+
+  if (
+    users.some((user) => !user) ||
+    urls.some((url) => !url) ||
+    sources.some((source) => !source)
+  ) {
+    return <CircularProgress id="fact-check-page-progress" />;
+  }
 
   return (
     <div className="md-grid">
@@ -91,7 +101,7 @@ function ValidFactCheckPage({
       <ul className="md-cell md-cell--12">
         {users.map((user) => (
           <li key={user.id}>
-            {user.longName} ({user.username})
+            {user.longName} {user.username && <>({user.username})</>}
           </li>
         ))}
       </ul>

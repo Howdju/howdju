@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { call, put, race, take, takeEvery } from "typed-redux-saga";
+import { call, delay, put, race, take, takeEvery } from "typed-redux-saga";
 
 import { EntityId } from "howdju-common";
 
@@ -53,13 +53,20 @@ export function* factCheckPageSaga() {
           fetchInit: { requestId },
         },
       } = yield put(api.fetchFactCheck(userIds, urlIds, sourceIds));
-      const { responseAction, timeout } = yield race({
-        responseAction: call(getResponseAction, requestId),
-        timeout: delay(config.apiTimeoutMs),
-      });
+      const {
+        responseAction,
+        timeout,
+      }: { responseAction: FetchFactCheckResponseAction; timeout: true } =
+        yield race({
+          responseAction: call(getResponseAction, requestId),
+          timeout: delay(config.apiTimeoutMs),
+        });
       if (responseAction) {
         if (!responseAction.error) {
-          yield put(slice.actions.fetchFactCheckSuccess(responseAction));
+          const appearanceIds = responseAction.payload.appearances.map(
+            (a) => a.id
+          );
+          yield put(slice.actions.fetchFactCheckSuccess({ appearanceIds }));
         } else {
           yield put(slice.actions.fetchFactCheckFailure());
         }
@@ -72,11 +79,16 @@ export function* factCheckPageSaga() {
   );
 }
 
+type FetchFactCheckResponseAction = ReturnType<
+  typeof api.fetchFactCheck.response
+>;
+
 function* getResponseAction(requestId: string) {
   while (true) {
-    const resultAction: ReturnType<typeof api.fetchFactCheck.response> =
-      yield take(api.fetchFactCheck.response);
-    if (resultAction.meta.requestMeta.fetchInit.requestId === requestId) {
+    const resultAction: FetchFactCheckResponseAction = yield take(
+      api.fetchFactCheck.response
+    );
+    if (resultAction.meta.requestId === requestId) {
       return resultAction;
     }
   }

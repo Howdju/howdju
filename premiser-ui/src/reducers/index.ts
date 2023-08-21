@@ -10,7 +10,6 @@ import entities from "./entities";
 import errors from "./errors";
 import privacyConsent from "./privacyConsent";
 import ui from "./ui";
-import widgets from "./widgets";
 import { mainSearch } from "../components/mainSearchBox/mainSearchBoxSlice";
 import { mainSearchPage } from "../pages/mainSearch/mainSearchPageSlice";
 import { justificationsSearchPage } from "@/pages/justificationsSearch/justificationsSearchPageSlice";
@@ -27,6 +26,11 @@ import { registrationConfirmationPage } from "@/pages/registration/registrationC
 import { primaryContextTrail } from "@/components/contextTrail/primaryContextTrailSlice";
 import { urlLocatorsEditorFields } from "@/editors/urlLocatorsEditorFieldsSlice";
 import { factCheckPage } from "@/pages/factChecks/factCheckPageSlice";
+import listEntities from "@/components/listEntities/listEntitiesReducer";
+
+const widgets = combineReducers({
+  listEntities,
+});
 
 export default (history: History) =>
   combineReducers({

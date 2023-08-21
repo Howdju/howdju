@@ -5,6 +5,7 @@ import RecentWritsWidget from "./RecentWritsWidget";
 import RecentWritQuotesWidget from "./RecentWritQuotesWidget";
 import RecentJustificationsWidget from "./RecentJustificationsWidget";
 import RecentMediaExcerptsWidget from "./RecentMediaExcerptsWidget";
+import RecentAppearancesWidget from "./RecentAppearancesWidget";
 
 const recentPropositionsWidgetId =
   "RecentActivityPage.recentPropositionsWidgetId";
@@ -12,6 +13,8 @@ const recentWritsWidgetId = "RecentActivityPage.recentWritsWidgetId";
 const recentWritQuotesWidgetId = "RecentActivityPage.recentWritQuotesWidgetId";
 const recentMediaExcerptsWidgetId =
   "RecentActivityPage.recentMediaExcerptsWidgetId";
+const recentAppearancesWidgetId =
+  "RecentActivityPage.recentAppearancesWidgetId";
 const recentJustificationsWidgetId =
   "RecentActivityPage.recentJustificationsWidgetId";
 
@@ -29,6 +32,12 @@ export default function RecentActivityPage() {
       <RecentMediaExcerptsWidget
         className="md-grid md-cell md-cell--12 md-grid--card-list--tablet"
         widgetId={recentMediaExcerptsWidgetId}
+      />
+
+      <h1 className="md-cell--12">Recent appearances</h1>
+      <RecentAppearancesWidget
+        className="md-grid md-cell md-cell--12 md-grid--card-list--tablet"
+        widgetId={recentAppearancesWidgetId}
       />
 
       <h1 className="md-cell--12">Recent quotes</h1>

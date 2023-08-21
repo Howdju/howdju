@@ -37,6 +37,7 @@ import * as appSagas from "../app/appSagas";
 import * as justificationsSearchPageSagas from "../pages/justificationsSearch/justificationsSearchPageSagas";
 import * as justificationsPageSagas from "../pages/justifications/justificationPageSagas";
 import { factCheckPageSaga } from "@/pages/factChecks/factCheckPageSlice";
+import { mediaExcerptUsagesPageSaga } from "@/pages/mediaExcerptUsages/mediaExcerptUsagesPageSlice";
 
 export default () =>
   all([
@@ -72,6 +73,7 @@ export default () =>
     beginEditOfMediaExcerptFromInfo(),
 
     factCheckPageSaga(),
+    mediaExcerptUsagesPageSaga(),
 
     editorCommitEdit(),
 

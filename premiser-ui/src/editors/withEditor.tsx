@@ -176,6 +176,20 @@ export default function withEditor<
     Omit<FieldsProps, keyof EntityEditorFieldsProps<EntityProp, SchemaOutput>>
 > {
   return function EntityEditor(props: WithEditorProps) {
+    const { id, editorId = defaultEditorId(id) } = props;
+
+    const editorState = useSelector((state: RootState) =>
+      get(state.editors, [editorType, editorId])
+    ) as EditorState<SchemaInput, ApiModel>;
+
+    return editorState ? (
+      <ValidEntityEditor {...props} />
+    ) : (
+      <CircularProgress id={combineIds(id, "progress")} />
+    );
+  };
+
+  function ValidEntityEditor(props: WithEditorProps) {
     const {
       id,
       name,
@@ -326,7 +340,7 @@ export default function withEditor<
         </CardActions>
       </form>
     );
-  };
+  }
 }
 
 export function submitButtonTitle(

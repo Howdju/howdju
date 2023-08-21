@@ -35,6 +35,7 @@ import {
   WritQuoteUrlTargetsDao,
   VidSegmentsDao,
   AppearancesDao,
+  AppearanceConfirmationsDao,
 } from "../daos";
 
 import { DatabaseProvider } from "./databaseInit";
@@ -50,6 +51,7 @@ export function daosInitializer(provider: DatabaseProvider) {
 
   const accountSettingsDao = new AccountSettingsDao(logger, database);
   const actionsDao = new ActionsDao(database);
+  const appearanceConfirmationsDao = new AppearanceConfirmationsDao(database);
   const authDao = new AuthDao(database);
   const usersDao = new UsersDao(database);
   const canonicalUrlsDao = new CanonicalUrlsDao(database);
@@ -122,13 +124,14 @@ export function daosInitializer(provider: DatabaseProvider) {
   const propositionTagVotesDao = new PropositionTagVotesDao(database);
   const propositionTagsDao = new PropositionTagsDao(database, propositionsDao);
   const tagsDao = new TagsDao(logger, database);
-  const appearancesDao = new AppearancesDao(database);
+  const appearancesDao = new AppearancesDao(database, provider.logger);
 
   logger.debug("daosInit complete");
 
   return {
     accountSettingsDao,
     actionsDao,
+    appearanceConfirmationsDao,
     appearancesDao,
     authDao,
     canonicalUrlsDao,

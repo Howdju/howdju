@@ -732,6 +732,19 @@ export const CreateAppearanceInput = z.object({
 });
 export type CreateAppearanceInput = z.output<typeof CreateAppearanceInput>;
 
+export const AppearanceConfirmationPolarity = z.enum(["POSITIVE", "NEGATIVE"]);
+export type AppearanceConfirmationPolarity = z.output<
+  typeof AppearanceConfirmationPolarity
+>;
+export const CreateAppearanceConfirmation = z.object({
+  appearanceId: z.string(),
+  /** Tracks appearance_vote_polarity. */
+  polarity: AppearanceConfirmationPolarity,
+});
+export type CreateAppearanceConfirmation = z.output<
+  typeof CreateAppearanceConfirmation
+>;
+
 export const PropositionCompoundAtom = z.object({
   /**
    * A reference to this atom's parent compound.

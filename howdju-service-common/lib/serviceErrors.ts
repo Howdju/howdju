@@ -30,6 +30,7 @@ export class EntityValidationError extends HowdjuApiError {
   }
 }
 
+/** TODO(526) replace with InvalidRequestError */
 export class RequestValidationError extends HowdjuApiError {}
 
 /** The user did something that corresponds to HTTP 409 Conflict */

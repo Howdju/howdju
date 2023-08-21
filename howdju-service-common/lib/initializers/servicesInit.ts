@@ -42,6 +42,7 @@ import {
   WritQuotesService,
   EmailService,
   AppearancesService,
+  AppearanceConfirmationsService,
 } from "../services";
 import { AwsProvider } from "./awsInit";
 
@@ -291,10 +292,16 @@ export function servicesInitializer(provider: AwsProvider) {
   );
   const emailService = new EmailService(provider.logger, provider.sesv2);
 
+  const appearanceConfirmationsService = new AppearanceConfirmationsService(
+    authService,
+    provider.appearanceConfirmationsDao
+  );
+
   const appearancesService = new AppearancesService(
     authService,
     mediaExcerptsService,
     propositionsService,
+    appearanceConfirmationsService,
     usersService,
     provider.appearancesDao
   );
@@ -311,6 +318,7 @@ export function servicesInitializer(provider: AwsProvider) {
   return {
     accountSettingsService,
     actionsService,
+    appearanceConfirmationsService,
     appearancesService,
     authService,
     canonicalUrlsService,

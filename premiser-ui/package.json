@@ -132,6 +132,7 @@
     "axios": "^1.2.1",
     "classnames": "^2.3.1",
     "connected-react-router": "^6.9.1",
+    "deepmerge": "^4.3.1",
     "dompurify": "^2.2.9",
     "expiry-map": "^2.0.0",
     "history": "^4.10.1",

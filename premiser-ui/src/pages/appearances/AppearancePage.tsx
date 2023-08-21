@@ -1,6 +1,9 @@
 import React, { useEffect } from "react";
-import { CircularProgress } from "react-md";
+import { CircularProgress, ListItem, MenuButton } from "react-md";
 import { RouteComponentProps } from "react-router";
+import { DropdownMenu } from "react-md";
+import { MaterialSymbol } from "react-material-symbols";
+import { Link } from "react-router-dom";
 
 import { EntityId } from "howdju-common";
 
@@ -9,6 +12,7 @@ import { useAppDispatch, useAppEntitySelector } from "@/hooks";
 import { appearanceSchema } from "@/normalizationSchemas";
 import AppearanceCard from "./AppearanceCard";
 import HowdjuHelmet from "@/Helmet";
+import paths from "@/paths";
 
 interface MatchParams {
   appearanceId: EntityId;
@@ -45,6 +49,66 @@ export default function AppearancePage(props: Props) {
   const appearance = useAppEntitySelector(appearanceId, appearanceSchema);
   const title = `Appearance ${appearanceId}`;
 
+  // TODO(17): pass props directly after upgrading react-md to a version with correct types
+  const menuClassNameProps = { menuClassName: "context-menu" } as any;
+  const menu = appearance ? (
+    <MenuButton
+      icon
+      id="appearance-page-menu"
+      {...menuClassNameProps}
+      children={"more_vert"}
+      position={DropdownMenu.Positions.TOP_RIGHT}
+      menuItems={[
+        <ListItem
+          primaryText="User&rsquo;s fact-check"
+          key="user-fact-check"
+          title="See all this user&rsquo;s appearances in the same Source and URL."
+          leftIcon={<MaterialSymbol icon="how_to_reg" />}
+          component={Link}
+          to={paths.factCheck(
+            [appearance.creator.id],
+            appearance.mediaExcerpt.citations.map((c) => c.source.id),
+            appearance.mediaExcerpt.locators.urlLocators.map((l) => l.url.id)
+          )}
+        />,
+        appearance.confirmationStatus === "CONFIRMED" ? (
+          <ListItem
+            primaryText="Unconfirm this appearance"
+            key="unconfirm-appearance"
+            title="Remove your confirmation that the entity appears at this media excerpt."
+            leftIcon={<MaterialSymbol icon="unpublished" />}
+            onClick={() => dispatch(api.unconfirmAppearance(appearanceId))}
+          />
+        ) : (
+          <ListItem
+            primaryText="Confirm this appearance"
+            key="confirm-appearance"
+            title="Confirm that the entity appears at this media excerpt."
+            leftIcon={<MaterialSymbol icon="check_circle" />}
+            onClick={() => dispatch(api.confirmAppearance(appearanceId))}
+          />
+        ),
+        appearance.confirmationStatus === "DISCONFIRMED" ? (
+          <ListItem
+            primaryText="Undisconfirm this appearance"
+            key="undisconfirm-appearance"
+            title="Remove your assertion that the entity does NOT appear at this media excerpt."
+            leftIcon={<MaterialSymbol icon="do_not_disturb_off" />}
+            onClick={() => dispatch(api.undisconfirmAppearance(appearanceId))}
+          />
+        ) : (
+          <ListItem
+            primaryText="Disconfirm this appearance"
+            key="disconfirm-appearance"
+            title="Assert that the entity does NOT appear at this media excerpt."
+            leftIcon={<MaterialSymbol icon="do_not_disturb_on" />}
+            onClick={() => dispatch(api.disconfirmAppearance(appearanceId))}
+          />
+        ),
+      ]}
+    />
+  ) : undefined;
+
   return (
     <div className="md-grid">
       <HowdjuHelmet>
@@ -55,6 +119,7 @@ export default function AppearancePage(props: Props) {
         <AppearanceCard
           id="appearance-page--appearance-card"
           appearance={appearance}
+          menu={menu}
         />
       ) : (
         <CircularProgress id="appearance-page--progress" />

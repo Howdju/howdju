@@ -50,6 +50,7 @@ import MediaExcerptPage from "./pages/mediaExcerpt/MediaExcerptPage";
 import MediaExcerptUsagesPage from "./pages/mediaExcerptUsages/MediaExcerptUsagesPage";
 import CreateAppearancePage from "./pages/appearances/CreateAppearancePage";
 import AppearancePage from "./pages/appearances/AppearancePage";
+import FactCheckPage from "./pages/factChecks/FactCheckPage";
 
 const renderHomePath = (props: RouteProps) => {
   const mainSearchText =
@@ -206,6 +207,7 @@ const routesById = {
       component={AppearancePage}
     />
   ),
+  factCheck: <Route exact path="/fact-checks/" component={FactCheckPage} />,
   submitJustificationViaQueryString: (
     <Route
       exact
