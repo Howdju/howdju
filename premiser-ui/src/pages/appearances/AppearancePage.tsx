@@ -3,6 +3,7 @@ import { CircularProgress, ListItem, MenuButton } from "react-md";
 import { RouteComponentProps } from "react-router";
 import { DropdownMenu } from "react-md";
 import { MaterialSymbol } from "react-material-symbols";
+import { Link } from "react-router-dom";
 
 import { EntityId } from "howdju-common";
 
@@ -12,7 +13,6 @@ import { appearanceSchema } from "@/normalizationSchemas";
 import AppearanceCard from "./AppearanceCard";
 import HowdjuHelmet from "@/Helmet";
 import paths from "@/paths";
-import Link from "@/Link";
 
 interface MatchParams {
   appearanceId: EntityId;

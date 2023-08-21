@@ -1,11 +1,9 @@
 import { handleActions } from "redux-actions";
 import { AnyAction } from "@reduxjs/toolkit";
 import { normalize } from "normalizr";
-import get from "lodash/get";
-import union from "lodash/union";
-import { filter } from "lodash";
+import { get, union, filter } from "lodash";
 
-import { api, str } from "../../actions";
+import { api, str } from "@/actions";
 
 const widgetRequestReducer =
   <T extends BaseListEntitiesState>(defaultWidgetState: T) =>
@@ -105,6 +103,12 @@ const defaultRecentMediaExcerptsWidgetState = {
   isFetching: false,
   didError: false,
 } as BaseListEntitiesState;
+const defaultRecentAppearancesWidgetState = {
+  recentAppearances: [],
+  continuationToken: undefined,
+  isFetching: false,
+  didError: false,
+} as BaseListEntitiesState;
 const defaultRecentJustificationsWidgetState = {
   recentJustifications: [],
   continuationToken: undefined,
@@ -164,6 +168,17 @@ export default handleActions<
         defaultRecentMediaExcerptsWidgetState,
         "recentMediaExcerpts",
         "mediaExcerpts"
+      ),
+      throw: widgetResponseErrorReducer(defaultRecentJustificationsWidgetState),
+    },
+    [str(api.fetchRecentAppearances)]: widgetRequestReducer(
+      defaultRecentAppearancesWidgetState
+    ),
+    [str(api.fetchRecentAppearances.response)]: {
+      next: widgetResponseReducer(
+        defaultRecentAppearancesWidgetState,
+        "recentAppearances",
+        "appearances"
       ),
       throw: widgetResponseErrorReducer(defaultRecentJustificationsWidgetState),
     },

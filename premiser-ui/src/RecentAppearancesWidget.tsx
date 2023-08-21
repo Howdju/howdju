@@ -3,7 +3,7 @@ import React, { HTMLAttributes } from "react";
 import { AppearanceOut } from "howdju-common";
 
 import { largeCellClasses } from "./CellList";
-import ListEntitiesWidget from "./ListEntitiesWidget";
+import ListEntitiesWidget from "./components/listEntities/ListEntitiesWidget";
 import { api } from "./actions";
 import { appearancesSchema } from "./normalizationSchemas";
 import AppearanceCard from "./pages/appearances/AppearanceCard";

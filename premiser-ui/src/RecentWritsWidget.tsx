@@ -2,7 +2,7 @@ import React, { HTMLAttributes } from "react";
 
 import { WritOut } from "howdju-common";
 
-import ListEntitiesWidget from "./ListEntitiesWidget";
+import ListEntitiesWidget from "./components/listEntities/ListEntitiesWidget";
 import WritCard from "./WritCard";
 import { smallCellClasses } from "./CellList";
 import t from "./texts";

@@ -1,4 +1,5 @@
 import { schema } from "normalizr";
+import { merge } from "lodash";
 
 import {
   AccountSettings,
@@ -25,8 +26,8 @@ import {
   Writ,
   WritQuote,
 } from "howdju-common";
+
 import { applyCustomizations, momentConversion } from "./normalizationUtil";
-import { merge } from "lodash";
 
 export const userSchema = new schema.Entity<User>("users");
 export const usersSchema = new schema.Array(userSchema);
@@ -187,7 +188,7 @@ export const mediaExcerptSchema = new schema.Entity<MediaExcerptOut>(
           // Create a key on citations. Since they aren't a normalizr entity, we can update them here.
           citations: value?.citations.map((citation) => ({
             ...citation,
-            key: `${citation.source.id}-${citation.normalPincite}`,
+            key: `${citation.source.id}-${citation.normalPincite ?? ""}`,
           })),
         }),
         momentConversion("created")

@@ -3,7 +3,7 @@ import React, { HTMLAttributes } from "react";
 import { WritQuoteOut } from "howdju-common";
 
 import { smallCellClasses } from "./CellList";
-import ListEntitiesWidget from "./ListEntitiesWidget";
+import ListEntitiesWidget from "./components/listEntities/ListEntitiesWidget";
 import WritQuoteCard from "./WritQuoteCard";
 import t from "./texts";
 import { api } from "./actions";

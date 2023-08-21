@@ -2,7 +2,7 @@ import React, { HTMLAttributes } from "react";
 
 import { JustificationView } from "howdju-common";
 
-import ListEntitiesWidget from "./ListEntitiesWidget";
+import ListEntitiesWidget from "./components/listEntities/ListEntitiesWidget";
 import { largeCellClasses } from "./CellList";
 import JustificationCard from "./JustificationCard";
 import t from "./texts";

@@ -47,6 +47,7 @@ const defaultState = {
   sources: {},
   statements: {},
   tags: {},
+  urlLocators: {},
   users: {},
   writs: {},
   writQuotes: {},
@@ -74,6 +75,7 @@ export default handleActions(
       api.fetchPropositions.response,
       api.fetchPropositionRootJustificationTarget.response,
       api.fetchPropositionTextSuggestions.response,
+      api.fetchRecentAppearances.response,
       api.fetchRecentJustifications.response,
       api.fetchRecentPropositions.response,
       api.fetchRecentWrits.response,
@@ -616,6 +618,17 @@ export function makeUpdateRemovingJustificationFromTarget(
   return updates;
 }
 
+const deepMergeOptions = {
+  // Overwrite arrays. This prevents us from merging arrays of objects, but since we store our
+  // entities normalized, most objects we care about merging will be top-level entities.
+  arrayMerge: (_targetArray, sourceArray, _options) => sourceArray,
+  // Don't copy the properties of Moment objects (or else we lose their methods.)
+  isMergeableObject: isPlainObject,
+  // The API sends null where undefined is meant (JSON doesn't have an undefined type, and our
+  // code base doesn't use null.)
+  customMerge: (_key) => nullToUndefined,
+};
+
 /**
  * The API can send partial updates, which only update the fields returned. If
  * the API wants to clear a field, it must return null for that field. The null
@@ -623,19 +636,15 @@ export function makeUpdateRemovingJustificationFromTarget(
  */
 function createEntityUpdate(state, payloadEntities, key) {
   if (has(payloadEntities, key)) {
+    const newEntities = deepMerge(
+      state[key],
+      payloadEntities[key],
+      deepMergeOptions
+    );
     return {
       // Use deep merge because lodash's merge doesn't allow us to overwrite
       // with the value undefined.
-      [key]: deepMerge(state[key], payloadEntities[key], {
-        // Overwrite arrays. This prevents us from merging arrays of objects, but since we store our
-        // entities normalized, most objects we care about merging will be top-level entities.
-        arrayMerge: (_targetArray, sourceArray, _options) => sourceArray,
-        // Don't copy the properties of Moment objects (or else we lose their methods.)
-        isMergeableObject: isPlainObject,
-        // The API sends null where undefined is meant (JSON doesn't have an undefined type, and our
-        // code base doesn't use null.)
-        customMerge: (_key) => nullToUndefined,
-      }),
+      [key]: newEntities,
     };
   }
   return undefined;
@@ -645,11 +654,7 @@ function nullToUndefined(targetValue, srcValue) {
   if (srcValue === null) {
     return undefined;
   }
-  return deepMerge(targetValue, srcValue, {
-    customMerge(_key) {
-      return nullToUndefined;
-    },
-  });
+  return deepMerge(targetValue, srcValue, deepMergeOptions);
 }
 
 function optimisticPropositionTagVote(state, action) {

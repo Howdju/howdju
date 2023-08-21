@@ -3,7 +3,7 @@ import React, { HTMLAttributes } from "react";
 import { MediaExcerptOut } from "howdju-common";
 
 import { largeCellClasses } from "./CellList";
-import ListEntitiesWidget from "./ListEntitiesWidget";
+import ListEntitiesWidget from "./components/listEntities/ListEntitiesWidget";
 import { api } from "./actions";
 import { mediaExcerptsSchema } from "./normalizationSchemas";
 import MediaExcerptCard from "./components/mediaExcerpts/MediaExcerptCard";

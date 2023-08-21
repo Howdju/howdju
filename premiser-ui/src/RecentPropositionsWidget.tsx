@@ -3,7 +3,7 @@ import React, { HTMLAttributes } from "react";
 import { PropositionOut } from "howdju-common";
 
 import { smallCellClasses } from "./CellList";
-import ListEntitiesWidget from "./ListEntitiesWidget";
+import ListEntitiesWidget from "./components/listEntities/ListEntitiesWidget";
 import PropositionCard from "./PropositionCard";
 import t from "./texts";
 import { api } from "./actions";

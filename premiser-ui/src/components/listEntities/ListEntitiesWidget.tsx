@@ -5,9 +5,9 @@ import concat from "lodash/concat";
 import map from "lodash/map";
 import { denormalize, Schema } from "normalizr";
 
-import CellList, { smallCellClasses } from "./CellList";
-import FetchButton from "./FetchButton";
-import { useAppDispatch, useAppSelector } from "./hooks";
+import CellList, { smallCellClasses } from "../../CellList";
+import FetchButton from "../../FetchButton";
+import { useAppDispatch, useAppSelector } from "../../hooks";
 
 type ListEntitiesWidgetProps = {
   id?: string;
