@@ -1,10 +1,13 @@
 import assign from "lodash/assign";
 import throttle from "lodash/throttle";
-import * as Sentry from "@sentry/browser";
+import {
+  showReportDialog as sentryShowReportDialog,
+  init as sentryInit,
+} from "@sentry/browser";
 import { Integrations } from "@sentry/tracing";
-import { Severity } from "@sentry/types";
+import { Event, EventHint, Severity } from "@sentry/types";
 
-import { apiErrorCodes } from "howdju-common";
+import { apiErrorCodes, isCustomError } from "howdju-common";
 
 import config from "./config";
 import { uiErrorTypes } from "./uiErrors";
@@ -13,20 +16,22 @@ import {
   ERROR_REPORTING,
   FULL_ERROR_REPORTING,
 } from "./cookieConsent";
+import { isObject } from "lodash";
+import { ReportDialogOptions } from "@sentry/browser";
 
 export default () => {
   const integrations = [];
   if (cookieConsent.isAccepted(FULL_ERROR_REPORTING)) {
     integrations.push(new Integrations.BrowserTracing());
   }
-  Sentry.init(
+  sentryInit(
     assign(
       {
         integrations,
-        beforeSend(event, hint) {
+        beforeSend(event: Event, hint?: EventHint) {
           if (!cookieConsent.isAccepted(ERROR_REPORTING)) return null;
           if (event.exception) {
-            event = handleExceptionEvent(event, hint);
+            return handleExceptionEvent(event, hint);
           }
           return event;
         },
@@ -36,17 +41,22 @@ export default () => {
   );
 };
 
-function handleExceptionEvent(event, hint) {
+function handleExceptionEvent(event: Event, hint?: EventHint) {
   let isUnexpectedError = true;
 
-  switch (hint.originalException.errorType) {
-    // UI error types that we don't even want to report
-    case uiErrorTypes.COMMIT_EDIT_RESULT_ERROR:
-      return null;
-    case uiErrorTypes.API_RESPONSE_ERROR:
-      isUnexpectedError =
-        hint.originalException.body.errorCode ===
-        apiErrorCodes.UNEXPECTED_ERROR;
+  if (hint && isCustomError(hint?.originalException)) {
+    switch (hint.originalException.errorType) {
+      // UI error types that we don't even want to report
+      case uiErrorTypes.COMMIT_EDIT_RESULT_ERROR:
+        return null;
+      case uiErrorTypes.API_RESPONSE_ERROR:
+        isUnexpectedError =
+          "body" in hint.originalException &&
+          isObject(hint.originalException.body) &&
+          "errorCode" in hint.originalException.body &&
+          hint.originalException.body.errorCode ===
+            apiErrorCodes.UNEXPECTED_ERROR;
+    }
   }
 
   if (isUnexpectedError) {
@@ -62,8 +72,8 @@ function handleExceptionEvent(event, hint) {
   return event;
 }
 
-function showReportDialog(options) {
-  Sentry.showReportDialog(options);
+function showReportDialog(options?: ReportDialogOptions) {
+  sentryShowReportDialog(options);
 }
 
 const throttledShowReportDialog = throttle(
