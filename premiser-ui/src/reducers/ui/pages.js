@@ -14,7 +14,7 @@ const passwordResetRequestPageDefaultState = {
 };
 export const passwordResetRequestPage = handleActions(
   {
-    [pages.beginPasswordResetRequest]: (state, action) => ({
+    [pages.beginPasswordResetRequest]: () => ({
       ...passwordResetRequestPageDefaultState,
     }),
     [pages.passwordResetRequestPropertyChange]: (state, action) => {
@@ -24,7 +24,7 @@ export const passwordResetRequestPage = handleActions(
       };
       return { ...state, passwordResetRequest };
     },
-    [api.requestPasswordReset]: (state, action) => ({
+    [api.requestPasswordReset]: (state) => ({
       ...state,
       isSubmitting: true,
     }),
@@ -62,7 +62,7 @@ const passwordResetConfirmationPageDefaultState = {
 };
 export const passwordResetConfirmationPage = handleActions(
   {
-    [pages.beginPasswordResetConfirmation]: (state, action) => ({
+    [pages.beginPasswordResetConfirmation]: () => ({
       ...passwordResetConfirmationPageDefaultState,
     }),
     [pages.passwordResetConfirmationPropertyChange]: (state, action) => {
@@ -72,11 +72,11 @@ export const passwordResetConfirmationPage = handleActions(
       };
       return { ...state, passwordResetConfirmation };
     },
-    [api.confirmPasswordReset]: (state, action) => ({
+    [api.confirmPasswordReset]: (state) => ({
       ...state,
       isSubmitting: true,
     }),
-    [api.confirmPasswordReset.response]: (state, action) => ({
+    [api.confirmPasswordReset.response]: (state) => ({
       ...state,
       isSubmitting: false,
       isSubmitted: true,

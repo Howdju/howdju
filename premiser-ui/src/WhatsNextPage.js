@@ -1,7 +1,7 @@
 import React from "react";
 import { Card, CardText } from "react-md";
 
-const WhatsNextPage = (props) => (
+const WhatsNextPage = () => (
   <div className="md-grid">
     <Card className="md-cell--12">
       <CardText>

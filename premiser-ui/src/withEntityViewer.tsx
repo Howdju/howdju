@@ -1,6 +1,6 @@
 import React, { ComponentType, ReactNode } from "react";
 
-import { PersistedEntity } from "howdju-common";
+import { ContextTrailItem, PersistedEntity } from "howdju-common";
 
 import EntityViewer from "./EntityViewer";
 import { ComponentId, EditorId, SuggestionsKey } from "./types";
@@ -13,6 +13,7 @@ export type EntityComponentProps<
   editorId?: EditorId;
   suggestionsKey?: SuggestionsKey;
   showStatusText?: boolean;
+  contextTrailItems?: ContextTrailItem[];
 } & { [key in EntityPropName]: Entity };
 
 /**
@@ -43,7 +44,11 @@ export default function withEntityViewer<
     suggestionsKey?: SuggestionsKey;
     menu?: ReactNode;
     showStatusText?: boolean;
-  } & { [key in typeof entityPropName]: object };
+    contextTrailItems?: ContextTrailItem[];
+  } & { [key in typeof entityPropName]: object } & Omit<
+      ComponentProps,
+      keyof EntityComponentProps<EntityPropName, Model>
+    >;
   return function EntityViewerWrapper(props: EntityViewerWrapperProps) {
     const {
       component,
@@ -52,7 +57,9 @@ export default function withEntityViewer<
       editorId,
       suggestionsKey,
       menu,
+      contextTrailItems,
       showStatusText = true,
+      ...rest
     } = props;
     const entity = props[entityPropName];
     const entityProps = {
@@ -61,6 +68,8 @@ export default function withEntityViewer<
       editorId,
       suggestionsKey,
       showStatusText,
+      contextTrailItems,
+      ...rest,
     } as ComponentProps;
     return (
       <EntityViewer

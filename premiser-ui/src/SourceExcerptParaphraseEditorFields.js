@@ -24,8 +24,8 @@ export default class SourceExcerptParaphraseEditorFields extends Component {
         <div className="source-excerpt-paraphrase-editor-fields--paraphrasing-proposition-editor-fields">
           <PropositionEditorFields
             {...rest}
-            id={id + "--paraphrasing-proposition"}
-            name={name + ".paraphrasingProposition"}
+            id={`${id}--paraphrasing-proposition`}
+            name={`${name}.paraphrasingProposition`}
             proposition={sourceExcerptParaphrase.paraphrasingProposition}
             errors={get(errors, "fieldErrors.paraphrasingProposition")}
             onPropertyChange={onPropertyChange}
@@ -37,8 +37,8 @@ export default class SourceExcerptParaphraseEditorFields extends Component {
         <SourceExcerptEditorFields
           {...rest}
           sourceExcerpt={sourceExcerptParaphrase.sourceExcerpt}
-          id={id + "--source-excerpt"}
-          name={name + ".sourceExcerpt"}
+          id={`${id}--source-excerpt`}
+          name={`${name}.sourceExcerpt`}
           errors={get(errors, "fieldErrors.sourceExcerpt")}
           onPropertyChange={onPropertyChange}
           onAddWritQuoteUrl={onAddWritQuoteUrl}

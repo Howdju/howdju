@@ -2,13 +2,19 @@ import { invert, join, map, some, split } from "lodash";
 
 import {
   EntityId,
-  JustificationTargetType,
   RelationPolarity,
   logger,
   JustificationView,
+  AppearanceView,
 } from "howdju-common";
 
-import { JustificationWithRootOut } from "./apiModels";
+import {
+  AppearanceOut,
+  JustificationOut,
+  JustificationWithRootOut,
+  PropositionOut,
+  StatementOut,
+} from "./apiModels";
 
 /**
  * A representation of an item in a context trail sufficient to request the full information.
@@ -17,7 +23,7 @@ import { JustificationWithRootOut } from "./apiModels";
  * entity to fill in details about its target.
  */
 export interface ContextTrailItemInfo {
-  connectingEntityType: "JUSTIFICATION";
+  connectingEntityType: "JUSTIFICATION" | "APPEARANCE";
   connectingEntityId: EntityId;
   polarity: RelationPolarity;
 }
@@ -38,29 +44,67 @@ export interface ContextTrailItemInfo {
 export type ContextTrailItem = {
   connectingEntityId: EntityId;
   polarity: RelationPolarity;
-} & {
-  connectingEntityType: "JUSTIFICATION";
-  connectingEntity: JustificationView;
-};
+} & (
+  | {
+      connectingEntityType: "JUSTIFICATION";
+      connectingEntity: JustificationView;
+    }
+  | {
+      connectingEntityType: "APPEARANCE";
+      connectingEntity: AppearanceView;
+    }
+);
 export type ContextTrailItemOut = {
   connectingEntityId: EntityId;
   polarity: RelationPolarity;
-} & {
-  connectingEntityType: "JUSTIFICATION";
-  connectingEntity: JustificationWithRootOut;
-};
+} & (
+  | {
+      connectingEntityType: "JUSTIFICATION";
+      connectingEntity: JustificationWithRootOut;
+    }
+  | {
+      connectingEntityType: "APPEARANCE";
+      connectingEntity: AppearanceOut;
+    }
+);
+
+/**
+ * A client-only type-safe wrapper for a connecting entity type and entity.
+ *
+ * It helps the type system ensure that the type matches the entity.
+ */
+export type ConnectingEntityInfo =
+  | {
+      connectingEntityType: "JUSTIFICATION";
+      connectingEntity: JustificationView;
+    }
+  | { connectingEntityType: "APPEARANCE"; connectingEntity: AppearanceView };
+
+/**
+ * A cross-plat type-safe wrapper for a connecting entity type and entity.
+ *
+ * It helps the type system ensure that the type matches the entity.
+ */
+export type TrailConnection =
+  | {
+      connectingEntityType: "JUSTIFICATION";
+      connectingEntity: JustificationWithRootOut | JustificationView;
+    }
+  | {
+      connectingEntityType: "APPEARANCE";
+      connectingEntity: AppearanceOut | AppearanceView;
+    };
 
 export type ConnectingEntityOut = ContextTrailItemOut["connectingEntity"];
 export type ConnectingEntity = ContextTrailItem["connectingEntity"];
 export type ConnectingEntityType = ContextTrailItem["connectingEntityType"];
-// TODO(20): Union with Appearance target type
-export type ConnectingEntityTargetType = JustificationTargetType;
 // For now just reuse JustificationRootTargetType, but we will need to union with Appearance targets too.
-const focusEntityTypes = ["PROPOSITION", "STATEMENT"] as const;
+const focusEntityTypes = ["PROPOSITION", "STATEMENT", "APPEARANCE"] as const;
 export type FocusEntityType = typeof focusEntityTypes[number];
 
 export const contextTrailTypeByShortcut = {
   j: "JUSTIFICATION",
+  a: "APPEARANCE",
 } as const;
 export type ContextTrailTypeShortcut = keyof typeof contextTrailTypeByShortcut;
 
@@ -144,107 +188,163 @@ export function parseContextTrail(
   return { infos, invalidInfos, hasInvalidInfos: !!invalidInfos.length };
 }
 
-// TODO(20): When we add Appearances, expand this discriminated union.
-export type TypedConnectingEntity = {
-  type: "JUSTIFICATION";
-  entity: JustificationWithRootOut | JustificationView;
-};
-
-export type TypedConnectingEntityTargetId = {
-  type: ConnectingEntityTargetType;
-  id: EntityId;
-};
+export type TrailConnectionNode =
+  | {
+      type: "JUSTIFICATION";
+      entity: JustificationOut | JustificationWithRootOut | JustificationView;
+    }
+  | {
+      type: "PROPOSITION";
+      entity: PropositionOut;
+    }
+  | {
+      type: "STATEMENT";
+      entity: StatementOut;
+    }
+  | {
+      type: "APPEARANCE";
+      entity: AppearanceOut;
+    };
 
 /** `prev` is the previous entity in the chain. Usually this is displayed above the current (`curr`) one. */
 export function areAdjacentConnectingEntities(
-  prev: TypedConnectingEntity,
-  curr: TypedConnectingEntity
+  prev: TrailConnection,
+  curr: TrailConnection
 ) {
-  switch (curr.type) {
+  switch (curr.connectingEntityType) {
     case "JUSTIFICATION": {
-      const type = curr.entity.target.type;
-      const id = curr.entity.target.entity.id;
-      return areValidTargetAndConnectingEntity({ type, id }, prev);
+      return isValidTrailTarget(prev, curr.connectingEntity.target);
+    }
+    case "APPEARANCE": {
+      // Prev can be:
+      // - a proposition-compound-based justification in which case this
+      //   Appearance must connect to one of the atoms in the proposition compound.
+      // - or a MediaExcerpt-based justification, in which case this Appearance must
+      //   connect to the same media-excerpt.
+      switch (prev.connectingEntityType) {
+        case "APPEARANCE":
+          // Appearances can't connect to each other.
+          return false;
+        case "JUSTIFICATION":
+          switch (prev.connectingEntity.basis.type) {
+            case "PROPOSITION_COMPOUND":
+              if (curr.connectingEntity.apparition.type !== "PROPOSITION") {
+                return false;
+              }
+              return some(
+                prev.connectingEntity.basis.entity.atoms,
+                (a) =>
+                  a.entity.id === curr.connectingEntity.apparition.entity.id
+              );
+            case "MEDIA_EXCERPT":
+              return (
+                curr.connectingEntity.mediaExcerpt.id ===
+                prev.connectingEntity.basis.entity.id
+              );
+            case "WRIT_QUOTE":
+              // WritQuotes are deprecated and Appearances don't interfact with them.
+              return false;
+          }
+      }
     }
   }
 }
 
-export function areValidTargetAndConnectingEntity(
-  { type, id }: TypedConnectingEntityTargetId,
-  prev: TypedConnectingEntity
+/**
+ * Returns true iff the given connection is valid for the given target.
+ * @param connection The connection leading to the target.
+ * @param target The target the trail ends in.
+ */
+export function isValidTrailTarget(
+  connection: TrailConnection,
+  { type, entity }: TrailConnectionNode
 ) {
   switch (type) {
     case "JUSTIFICATION": {
-      return prev.type === "JUSTIFICATION" && id === prev.entity.id;
+      return (
+        connection.connectingEntityType === "JUSTIFICATION" &&
+        entity.id === connection.connectingEntity.id
+      );
     }
     case "PROPOSITION":
-      switch (prev.type) {
+      switch (connection.connectingEntityType) {
         case "JUSTIFICATION":
-          switch (prev.entity.basis.type) {
+          switch (connection.connectingEntity.basis.type) {
             case "PROPOSITION_COMPOUND":
               return some(
-                prev.entity.basis.entity.atoms,
-                (a) => a.entity.id === id
+                connection.connectingEntity.basis.entity.atoms,
+                (a) => a.entity.id === entity.id
               );
             case "WRIT_QUOTE":
-            // TODO(20): when we add Appearances, connect them to MediaExcerpts here.
             case "MEDIA_EXCERPT":
               return false;
           }
+        case "APPEARANCE":
+          return connection.connectingEntity.apparition.entity.id === entity.id;
       }
     case "STATEMENT":
       // Statements currently cannot appear in a context trail chain because they cannot
       // be the basis of a Justification.
       return false;
-  }
-}
-
-export function getConnectingEntitySourceInfo(
-  typedConnectingEntity: TypedConnectingEntity
-) {
-  switch (typedConnectingEntity.type) {
-    case "JUSTIFICATION":
-      return {
-        id: typedConnectingEntity.entity.basis.entity.id,
-        type: typedConnectingEntity.entity.basis.type,
-      };
+    case "APPEARANCE":
+      switch (connection.connectingEntityType) {
+        case "JUSTIFICATION":
+          switch (connection.connectingEntity.basis.type) {
+            case "PROPOSITION_COMPOUND":
+              return (
+                entity.apparition.type === "PROPOSITION" &&
+                some(
+                  connection.connectingEntity.basis.entity.atoms,
+                  (a) => a.entity.id === entity.apparition.entity.id
+                )
+              );
+            case "WRIT_QUOTE":
+              return false;
+            case "MEDIA_EXCERPT":
+              return (
+                connection.connectingEntity.basis.entity.id ===
+                entity.mediaExcerpt.id
+              );
+          }
+        case "APPEARANCE":
+          return false;
+      }
   }
 }
 
 export function nextContextTrailItem(
-  connectingEntityType: ConnectingEntityType,
-  connectingEntity: ConnectingEntity,
+  connectingEntityInfo: ConnectingEntityInfo,
   prevItemPolarity: RelationPolarity
 ): ContextTrailItem {
   const polarity = contextTrailItemPolarity(
-    connectingEntityType,
-    connectingEntity,
+    connectingEntityInfo,
     prevItemPolarity
   );
   return {
-    connectingEntityType,
-    connectingEntityId: connectingEntity.id,
-    connectingEntity,
+    ...connectingEntityInfo,
+    connectingEntityId: connectingEntityInfo.connectingEntity.id,
     polarity,
   };
 }
 
 export function contextTrailItemPolarity(
-  connectingEntityType: ConnectingEntityType,
-  connectingEntity: ConnectingEntity | ConnectingEntityOut,
+  connectingEntityInfo: TrailConnection,
   prevItemPolarity: RelationPolarity
 ) {
-  switch (connectingEntityType) {
+  switch (connectingEntityInfo.connectingEntityType) {
     case "JUSTIFICATION": {
-      switch (connectingEntity.target.type) {
+      switch (connectingEntityInfo.connectingEntity.target.type) {
         case "PROPOSITION":
         case "STATEMENT":
-          return connectingEntity.polarity;
+          return connectingEntityInfo.connectingEntity.polarity;
         case "JUSTIFICATION":
           // Counter justifications should have the opposite polarity as their target
           return negateRelationPolarity(prevItemPolarity);
       }
+      break;
     }
+    case "APPEARANCE":
+      return "POSITIVE";
   }
 }
 

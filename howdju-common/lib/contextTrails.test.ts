@@ -105,7 +105,10 @@ describe("nextContextTrailItem", () => {
     });
 
     expect(
-      nextContextTrailItem(connectingEntityType, connectingEntity, "POSITIVE")
+      nextContextTrailItem(
+        { connectingEntityType, connectingEntity },
+        "POSITIVE"
+      )
     ).toEqual({
       connectingEntityType: "JUSTIFICATION",
       connectingEntity,
@@ -158,7 +161,10 @@ describe("nextContextTrailItem", () => {
     });
 
     expect(
-      nextContextTrailItem(connectingEntityType, connectingEntity, "NEGATIVE")
+      nextContextTrailItem(
+        { connectingEntityType, connectingEntity },
+        "NEGATIVE"
+      )
     ).toEqual({
       connectingEntityType: "JUSTIFICATION",
       connectingEntity,

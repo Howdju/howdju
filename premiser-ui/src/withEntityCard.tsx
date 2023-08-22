@@ -2,9 +2,10 @@ import React, { ComponentType, ReactNode } from "react";
 import { Card, CardText } from "react-md";
 import cn from "classnames";
 
+import { ContextTrailItem } from "howdju-common";
+
 import { ComponentId, EditorId, SuggestionsKey } from "./types";
 import { combineIds } from "./viewModels";
-import { omit } from "lodash";
 
 export type EntityViewerProps<
   EntityPropName extends string,
@@ -17,11 +18,10 @@ export type EntityViewerProps<
 
 export default function withEntityCard<
   EntityPropName extends string,
-  Entity extends object
+  Entity extends object,
+  ComponentProps extends EntityViewerProps<EntityPropName, Entity>
 >(
-  EntityViewerComponent: ComponentType<
-    EntityViewerProps<EntityPropName, Entity>
-  >,
+  EntityViewerComponent: ComponentType<ComponentProps>,
   entityPropName: EntityPropName
 ) {
   type EntityCardProps = {
@@ -30,12 +30,23 @@ export default function withEntityCard<
     suggestionsKey?: SuggestionsKey;
     menu?: ReactNode;
     className?: string;
-  } & { [key in EntityPropName]: Entity };
+    contextTrailItems?: ContextTrailItem[];
+  } & { [key in EntityPropName]: Entity } & Omit<
+      ComponentProps,
+      keyof EntityViewerProps<EntityPropName, Entity>
+    >;
   // TODO(221) convert to functional component
   return class EntityCard extends React.Component<EntityCardProps> {
     render() {
-      const { id, editorId, menu, suggestionsKey, className, ...rest } =
-        this.props;
+      const {
+        id,
+        editorId,
+        menu,
+        suggestionsKey,
+        className,
+        contextTrailItems,
+        ...rest
+      } = this.props;
 
       const entityProps = {
         id: combineIds(id, "entity-viewer"),
@@ -43,12 +54,11 @@ export default function withEntityCard<
         editorId,
         suggestionsKey,
         menu,
-      } as EntityViewerProps<EntityPropName, Entity>;
+        contextTrailItems,
+        ...rest,
+      } as unknown as ComponentProps;
       return (
-        <Card
-          className={cn("entity-card", className)}
-          {...omit(rest, entityPropName)}
-        >
+        <Card className={cn("entity-card", className)}>
           <CardText className="entity-card-contents">
             <EntityViewerComponent {...entityProps} />
           </CardText>

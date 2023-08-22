@@ -151,7 +151,6 @@ exports.WritQuotesService = class WritQuotesService {
             userId,
             now
           );
-          // TODO(20): use createWritQuoteUrlTarget instead.
           await this.writQuotesDao.createWritQuoteUrls(
             equivalentWritQuote,
             urls,
@@ -183,7 +182,6 @@ exports.WritQuotesService = class WritQuotesService {
       userId,
       now
     );
-    // TODO(20): use createWritQuoteUrlTarget instead.
     await this.writQuotesDao.createWritQuoteUrls(
       writQuote,
       writQuote.urls,

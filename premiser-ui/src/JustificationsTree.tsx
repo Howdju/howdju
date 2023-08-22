@@ -58,11 +58,10 @@ export default function JustificationsTree({
 }: Props) {
   function toBranch(j: JustificationView) {
     const treeId = combineIds(id, "justification-tree", j.id);
-    const nextContextTrailItems = extendContextTrailItems(
-      contextTrailItems,
-      "JUSTIFICATION",
-      j
-    );
+    const nextContextTrailItems = extendContextTrailItems(contextTrailItems, {
+      connectingEntityType: "JUSTIFICATION",
+      connectingEntity: j,
+    });
     return (
       <FlipMoveWrapper key={treeId}>
         <JustificationBranch

@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useContext, useEffect } from "react";
 import { CircularProgress, ListItem, MenuButton } from "react-md";
 import { RouteComponentProps } from "react-router";
 import { DropdownMenu } from "react-md";
@@ -13,6 +13,8 @@ import { appearanceSchema } from "@/normalizationSchemas";
 import AppearanceCard from "./AppearanceCard";
 import HowdjuHelmet from "@/Helmet";
 import paths from "@/paths";
+import FocusValidatingContextTrail from "@/components/contextTrail/FocusValidatingContextTrail";
+import { PrimaryContextTrail } from "@/components/contextTrail/PrimaryContextTrailProvider";
 
 interface MatchParams {
   appearanceId: EntityId;
@@ -45,6 +47,8 @@ export default function AppearancePage(props: Props) {
   useEffect(() => {
     dispatch(api.fetchAppearance(appearanceId));
   }, [dispatch, appearanceId]);
+
+  const { contextTrailItems } = useContext(PrimaryContextTrail);
 
   const appearance = useAppEntitySelector(appearanceId, appearanceSchema);
   const title = `Appearance ${appearanceId}`;
@@ -115,10 +119,17 @@ export default function AppearancePage(props: Props) {
         <title>{title} — Howdju</title>
       </HowdjuHelmet>
       <h1 className="md-cell md-cell--12">{title}</h1>
+      <FocusValidatingContextTrail
+        id="appearance-page-context-trail"
+        focusEntityType="APPEARANCE"
+        focusEntityId={appearanceId}
+        className="md-cell md-cell--12"
+      />
       {appearance ? (
         <AppearanceCard
           id="appearance-page--appearance-card"
           appearance={appearance}
+          contextTrailItems={contextTrailItems}
           menu={menu}
         />
       ) : (

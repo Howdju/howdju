@@ -7,16 +7,18 @@ import useDeepCompareEffect from "use-deep-compare-effect";
 import { denormalize } from "normalizr";
 
 import {
+  ConnectingEntity,
   ContextTrailItem,
   ContextTrailItemInfo,
   parseContextTrail,
+  toJson,
 } from "howdju-common";
 
 import { logger } from "@/logger";
 import { useAppDispatch, useAppSelector } from "@/hooks";
 import { api } from "@/apiActions";
 import { RootState } from "@/setupStore";
-import { justificationSchema } from "@/normalizationSchemas";
+import { normalizationSchemaByEntityType } from "@/normalizationSchemas";
 
 interface Props extends RouteComponentProps {}
 
@@ -73,7 +75,9 @@ const contextTrailItemInfosFromLocation = (location: Location) => {
   let contextTrailParam = queryParams["context-trail"];
   if (isArray(contextTrailParam)) {
     logger.error(
-      `contextTrailParam can only appear once, but appeared multiple times: ${contextTrailParam}. Using first item.`
+      `contextTrailParam can only appear once, but appeared multiple times: ${toJson(
+        contextTrailParam
+      )}. Using first item.`
     );
     contextTrailParam = contextTrailParam[0];
   }
@@ -83,10 +87,6 @@ const contextTrailItemInfosFromLocation = (location: Location) => {
   const { infos, hasInvalidInfos } = parseContextTrail(contextTrailParam);
   return { infos, hasInvalidInfos };
 };
-
-const normalizationSchemaByConnectingEntityType = {
-  JUSTIFICATION: justificationSchema,
-} as const;
 
 function toContextTrailItems(state: RootState, infos: ContextTrailItemInfo[]) {
   const items = map(infos, (info) => toContextTrailItem(state, info));
@@ -99,17 +99,16 @@ function toContextTrailItem(
   info: ContextTrailItemInfo
 ): ContextTrailItem {
   const { connectingEntityType, connectingEntityId, polarity } = info;
-  const schema =
-    normalizationSchemaByConnectingEntityType[connectingEntityType];
+  const schema = normalizationSchemaByEntityType[connectingEntityType];
   const connectingEntity = denormalize(
     connectingEntityId,
     schema,
     state.entities
-  );
+  ) as ConnectingEntity;
   return {
     connectingEntityType,
     connectingEntityId,
     connectingEntity,
     polarity,
-  };
+  } as ContextTrailItem;
 }

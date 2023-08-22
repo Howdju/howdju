@@ -355,8 +355,7 @@ function JustificationBranch({
           const id = `counter-justification-${j.id}-branch`;
           const nextContextTrailItems = extendContextTrailItems(
             contextTrailItems,
-            "JUSTIFICATION",
-            j
+            { connectingEntityType: "JUSTIFICATION", connectingEntity: j }
           );
           return (
             <div id={id} key={id} className="counter-justification-branch">

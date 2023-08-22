@@ -1,4 +1,4 @@
-const { testFilePattern } = require("./constants");
+const { testFilePattern, typescriptRules } = require("./constants");
 
 /**
  * ESLint config for React Native
@@ -18,8 +18,17 @@ module.exports = {
   parserOptions: {
     sourceType: "module",
   },
-  plugins: ["react", "react-hooks"],
-  extends: ["eslint-config-howdju", "plugin:react/recommended", "prettier"],
+  // TODO(424) extend plugin:@typescript-eslint/strict-type-checked instead
+  parser: "@typescript-eslint/parser",
+  plugins: ["react", "react-hooks", "@typescript-eslint"],
+  extends: [
+    "eslint-config-howdju",
+    "plugin:react/recommended",
+    "prettier",
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:@typescript-eslint/recommended-requiring-type-checking",
+  ],
   settings: {
     react: {
       version: "detect",
@@ -58,6 +67,7 @@ module.exports = {
     ],
     "react-hooks/rules-of-hooks": "error",
     "react-hooks/exhaustive-deps": "warn",
+    ...typescriptRules,
   },
   overrides: [
     {

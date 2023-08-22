@@ -26,8 +26,6 @@ import {
   PropositionOut,
   SentenceOut,
   StatementOut,
-  ConnectingEntity,
-  ConnectingEntityType,
   ContextTrailItem,
   nextContextTrailItem,
   PropositionRef,
@@ -35,6 +33,7 @@ import {
   Justification,
   JustificationOut,
   JustificationView,
+  ConnectingEntityInfo,
 } from "howdju-common";
 
 import * as characters from "./characters";
@@ -232,12 +231,10 @@ export interface RootTargetInfo {
 
 export function extendContextTrailItems(
   contextTrailItems: ContextTrailItem[],
-  connectingEntityType: ConnectingEntityType,
-  connectingEntity: ConnectingEntity
+  connectingEntityInfo: ConnectingEntityInfo
 ): ContextTrailItem[] {
   const trailItem = nextContextTrailItem(
-    connectingEntityType,
-    connectingEntity,
+    connectingEntityInfo,
     contextTrailItems[contextTrailItems.length - 1]?.polarity
   );
   return concat(contextTrailItems, [trailItem]);

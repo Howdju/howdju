@@ -46,8 +46,8 @@ export default function SourceEditorFields(props: Props) {
     wasSubmitAttempted,
     dirtyFields,
     blurredFields,
-    // unused TODO(341) remove
-    editorDispatch,
+    // TODO(341) remove unused editorDispatch.
+    editorDispatch: _editorDispatch,
     ...rest
   } = props;
 

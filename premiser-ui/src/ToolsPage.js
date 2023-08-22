@@ -1,7 +1,7 @@
 import React from "react";
 import { Button } from "react-md";
 
-const ToolsPage = (props) => {
+const ToolsPage = () => {
   const bookmarklet = `(function(h,o,w,d,j,u){d=h.createElement(o),j=h.getElementsByTagName(o)[0];d.async=1;d.src=w;j.parentNode.insertBefore(d,j)})(document,'script','https://cdn.howdju.com/submit.js')`;
   const bookmarkletHref = "javascript:" + bookmarklet;
   return (

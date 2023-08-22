@@ -163,7 +163,7 @@ export function* goTo() {
 
   yield takeEvery(
     str(goto.newMediaExcerpt),
-    function* goToSubmitMediaExcerptWorker(action) {
+    function* goToSubmitMediaExcerptWorker() {
       yield put(push(paths.submitMediaExcerpt()));
     }
   );
