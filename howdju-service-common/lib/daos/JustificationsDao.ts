@@ -21,7 +21,6 @@ import {
   newExhaustedEnumError,
   newImpossibleError,
   pushAll,
-  requireArgs,
   SortDirections,
   SourceExcerptTypes,
   Logger,
@@ -79,44 +78,16 @@ import { ensurePresent } from "../services/patterns";
 export const MAX_COUNT = 1024;
 
 export class JustificationsDao {
-  logger: Logger;
-  database: Database;
-  statementsDao: StatementsDao;
-  propositionCompoundsDao: PropositionCompoundsDao;
-  mediaExcerptsDao: MediaExcerptsDao;
-  writQuotesDao: WritQuotesDao;
-  justificationBasisCompoundsDao: JustificationBasisCompoundsDao;
-  writQuoteUrlTargetsDao: WritQuoteUrlTargetsDao;
-
   constructor(
-    logger: Logger,
-    database: Database,
-    statementsDao: StatementsDao,
-    propositionCompoundsDao: PropositionCompoundsDao,
-    mediaExcerptsDao: MediaExcerptsDao,
-    writQuotesDao: WritQuotesDao,
-    justificationBasisCompoundsDao: JustificationBasisCompoundsDao,
-    writQuoteUrlTargetsDao: WritQuoteUrlTargetsDao
-  ) {
-    requireArgs({
-      logger,
-      database,
-      statementsDao,
-      propositionCompoundsDao,
-      mediaExcerptsDao,
-      writQuotesDao,
-      justificationBasisCompoundsDao,
-      writQuoteUrlTargetsDao,
-    });
-    this.logger = logger;
-    this.database = database;
-    this.statementsDao = statementsDao;
-    this.propositionCompoundsDao = propositionCompoundsDao;
-    this.mediaExcerptsDao = mediaExcerptsDao;
-    this.writQuotesDao = writQuotesDao;
-    this.justificationBasisCompoundsDao = justificationBasisCompoundsDao;
-    this.writQuoteUrlTargetsDao = writQuoteUrlTargetsDao;
-  }
+    private readonly logger: Logger,
+    private readonly database: Database,
+    private readonly statementsDao: StatementsDao,
+    private readonly propositionCompoundsDao: PropositionCompoundsDao,
+    private readonly mediaExcerptsDao: MediaExcerptsDao,
+    private readonly writQuotesDao: WritQuotesDao,
+    private readonly justificationBasisCompoundsDao: JustificationBasisCompoundsDao,
+    private readonly writQuoteUrlTargetsDao: WritQuoteUrlTargetsDao
+  ) {}
 
   async readJustifications(
     filters: JustificationFilters | undefined,
@@ -895,7 +866,25 @@ export class JustificationsDao {
   private async addMediaExcerpts(justifications: BasedJustificationDataOut[]) {
     const mediaExcerptIdSet = new Set<EntityId>();
     const justificationsByBasisMediaExcerptId = new Map();
-    for (const justification of justifications) {
+    for (let justification of justifications) {
+      // Follow counter-justification's targets until we reach the root justification.
+      if (justification.target.type === "JUSTIFICATION") {
+        // Check that the chain of counter-justifications has been materialized.
+        // TODO(#228) improve the types to confirm the materialization (retype
+        // justification.target.entity from `Ref<"Justification"> |
+        // BasedJustificationWithRootRef` to BasedJustificationDataOut) and remove the typecast below.
+        while (justification.target.type === "JUSTIFICATION") {
+          if (!("counterJustifications" in justification.target.entity)) {
+            this.logger.error(
+              `Counter justification was not materialized (ID ${justification.target.entity.id}))`
+            );
+            continue;
+          }
+          // TODO(#228) remove this typecast
+          justification = justification.target
+            .entity as BasedJustificationDataOut;
+        }
+      }
       if (justification.basis.type !== "MEDIA_EXCERPT") {
         continue;
       }

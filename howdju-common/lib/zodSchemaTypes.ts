@@ -133,7 +133,7 @@ export type BasedJustificationWithRootRef = Omit<
       }
     | {
         type: "JUSTIFICATION";
-        // TODO(228) remove EntityRef<Justification>
+        // TODO(#228) remove EntityRef<Justification>
         entity: BasedJustificationWithRootRef | EntityRef<Justification>;
       };
   basis:
