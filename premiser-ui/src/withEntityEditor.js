@@ -86,9 +86,8 @@ export default function withEntityEditor(
           isSaving,
           dirtyFields,
         },
-        // ignore
-        editors,
-        editorId,
+        editors: _editors,
+        editorId: _editorId,
         ...rest
       } = this.props;
 

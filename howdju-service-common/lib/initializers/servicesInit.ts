@@ -281,12 +281,6 @@ export function servicesInitializer(provider: AwsProvider) {
     provider.contentReportsDao
   );
 
-  const contextTrailsService = new ContextTrailsService(
-    provider.logger,
-    authService,
-    justificationsService
-  );
-
   const mediaExcerptInfosService = new MediaExcerptInfosService(
     provider.mediaExcerptsDao
   );
@@ -311,6 +305,13 @@ export function servicesInitializer(provider: AwsProvider) {
     usersService,
     urlsService,
     sourcesService
+  );
+
+  const contextTrailsService = new ContextTrailsService(
+    provider.logger,
+    authService,
+    justificationsService,
+    appearancesService
   );
 
   provider.logger.debug("servicesInit complete");

@@ -2,7 +2,11 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { Divider } from "react-md";
 
-import { sourceExcerptDescription, combineIds } from "./viewModels";
+import {
+  sourceExcerptDescription,
+  combineIds,
+  combineSuggestionsKeys,
+} from "./viewModels";
 
 import EntityViewer from "./EntityViewer";
 import SourceExcerptEntityViewer from "./SourceExcerptEntityViewer";
@@ -36,7 +40,10 @@ export default class SourceExcerptParaphraseEntityViewer extends Component {
               id={combineIds(id, "proposition")}
               proposition={paraphrasingProposition}
               editorId={paraphrasingPropositionEditorId}
-              suggestionsKey={suggestionsKey + "-paraphrasing-proposition"}
+              suggestionsKey={combineSuggestionsKeys(
+                suggestionsKey,
+                "paraphrasing-proposition"
+              )}
               showStatusText={showStatusText}
               contextTrailItems={contextTrailItems}
             />
@@ -47,7 +54,10 @@ export default class SourceExcerptParaphraseEntityViewer extends Component {
               id={combineIds(id, "source-excerpt")}
               sourceExcerpt={sourceExcerpt}
               editorId={sourceExcerptEditorId}
-              suggestionsKey={suggestionsKey + "-source-excerpt"}
+              suggestionsKey={combineSuggestionsKeys(
+                suggestionsKey,
+                "source-excerpt"
+              )}
               showStatusText={showStatusText}
               showUrls={showUrls}
             />

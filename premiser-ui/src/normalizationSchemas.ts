@@ -252,19 +252,6 @@ export const accountSettingsSchema = new schema.Entity<AccountSettings>(
   "accountSettings"
 );
 
-const connectingEntitySchema = new schema.Union(
-  {
-    // TODO(20): add Appearances
-    JUSTIFICATION: justificationSchema,
-  },
-  (_value, parent) => parent.connectingEntityType
-);
-export const contextTrailItemsSchema = new schema.Array(
-  new schema.Entity<ContextTrailItem>("contextTrailItems", {
-    connectingEntity: connectingEntitySchema,
-  })
-);
-
 export const appearanceSchema = new schema.Entity<AppearanceOut>(
   "appearances",
   {
@@ -281,6 +268,19 @@ export const appearanceSchema = new schema.Entity<AppearanceOut>(
 );
 export const appearancesSchema = new schema.Array(appearanceSchema);
 
+const connectingEntitySchema = new schema.Union(
+  {
+    JUSTIFICATION: justificationSchema,
+    APPEARANCE: appearanceSchema,
+  },
+  (_value, parent) => parent.connectingEntityType
+);
+export const contextTrailItemsSchema = new schema.Array(
+  new schema.Entity<ContextTrailItem>("contextTrailItems", {
+    connectingEntity: connectingEntitySchema,
+  })
+);
+
 export const mainSearchResultSchema = {
   mediaExcerpts: mediaExcerptsSchema,
   persorgs: persorgsSchema,
@@ -291,6 +291,13 @@ export const mainSearchResultSchema = {
   writQuoteUrls: writQuotesSchema,
   writTitles: writsSchema,
 };
+
+export const normalizationSchemaByEntityType = {
+  JUSTIFICATION: justificationSchema,
+  APPEARANCE: appearanceSchema,
+  PROPOSITION: propositionSchema,
+  STATEMENT: statementSchema,
+} as const;
 
 // TODO(482) remove this.
 export const nullSchema = new schema.Entity<null>("null");

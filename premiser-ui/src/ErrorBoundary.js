@@ -9,7 +9,7 @@ export default class ErrorBoundary extends React.Component {
     this.state = { error: null, errorInfo: null };
   }
 
-  static getDerivedStateFromError(error) {
+  static getDerivedStateFromError(_error) {
     return {
       hasError: true,
       errorCorrelationId: uuidv4(),

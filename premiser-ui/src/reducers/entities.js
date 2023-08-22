@@ -471,10 +471,10 @@ export function removeRelation(
 export function unionArraysDistinctIdsCustomizer(
   destVal,
   srcVal,
-  key,
-  object,
-  source,
-  stack
+  _key,
+  _object,
+  _source,
+  _stack
 ) {
   if (isArray(destVal) && isArray(srcVal)) {
     // For values that have IDs, overwrite dest values

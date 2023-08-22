@@ -2,7 +2,7 @@ import { zip } from "lodash";
 
 import {
   AuthToken,
-  TypedConnectingEntity,
+  TrailConnection,
   ContextTrailItemInfo,
   Logger,
   areAdjacentConnectingEntities,
@@ -14,6 +14,7 @@ import {
 } from "howdju-common";
 
 import {
+  AppearancesService,
   AuthService,
   ConflictError,
   InvalidRequestError,
@@ -21,19 +22,12 @@ import {
 } from "..";
 
 export class ContextTrailsService {
-  logger: Logger;
-  authService: AuthService;
-  justificationsService: JustificationsService;
-
   constructor(
-    logger: Logger,
-    authService: AuthService,
-    justificationsService: JustificationsService
-  ) {
-    this.logger = logger;
-    this.authService = authService;
-    this.justificationsService = justificationsService;
-  }
+    private readonly logger: Logger,
+    private readonly authService: AuthService,
+    private readonly justificationsService: JustificationsService,
+    private readonly appearancesService: AppearancesService
+  ) {}
 
   async readContextTrail(
     authToken: AuthToken | undefined,
@@ -48,13 +42,27 @@ export class ContextTrailsService {
     const typedConnectingEntities = await Promise.all(
       contextTrailInfos.map(async (info) => {
         switch (info.connectingEntityType) {
-          case "JUSTIFICATION":
-            return {
-              type: info.connectingEntityType,
-              entity: await this.justificationsService.readJustificationForId(
+          case "JUSTIFICATION": {
+            const connectingEntity =
+              await this.justificationsService.readJustificationForId(
                 info.connectingEntityId,
                 userId
-              ),
+              );
+            return {
+              connectingEntityType: info.connectingEntityType,
+              connectingEntity,
+              polarity: connectingEntity.polarity,
+            };
+          }
+          case "APPEARANCE":
+            return {
+              connectingEntityType: info.connectingEntityType,
+              connectingEntity:
+                await this.appearancesService.readAppearanceForId(
+                  { userId },
+                  info.connectingEntityId
+                ),
+              polarity: "POSITIVE" as const,
             };
         }
       })
@@ -63,21 +71,25 @@ export class ContextTrailsService {
     this.checkConnections(typedConnectingEntities);
     this.checkPolarities(contextTrailInfos, typedConnectingEntities);
 
-    return typedConnectingEntities.map(({ type, entity }) => ({
-      connectingEntity: entity,
-      connectingEntityId: entity.id,
-      connectingEntityType: type,
-      polarity: entity.polarity,
+    return typedConnectingEntities.map((info) => ({
+      ...info,
+      connectingEntityId: info.connectingEntity.id,
     }));
   }
 
-  private checkConnections(typedConnectingEntities: TypedConnectingEntity[]) {
+  private checkConnections(typedConnectingEntities: TrailConnection[]) {
     for (let i = 1; i < typedConnectingEntities.length; i++) {
       const prev = typedConnectingEntities[i - 1];
       const curr = typedConnectingEntities[i];
       if (!areAdjacentConnectingEntities(prev, curr)) {
-        const prevLogInfo = { type: prev.type, id: prev.entity.id };
-        const currLogInfo = { type: curr.type, id: curr.entity.id };
+        const prevLogInfo = {
+          type: prev.connectingEntityType,
+          id: prev.connectingEntity.id,
+        };
+        const currLogInfo = {
+          type: curr.connectingEntityType,
+          id: curr.connectingEntity.id,
+        };
         this.logger.error(
           `Invalid context trail. Previous ${toJson(
             prevLogInfo
@@ -90,7 +102,9 @@ export class ContextTrailsService {
 
   private checkPolarities(
     contextTrailInfos: ContextTrailItemInfo[],
-    typedConnectingEntities: TypedConnectingEntity[]
+    typedConnectingEntities: (TrailConnection & {
+      polarity: RelationPolarity;
+    })[]
   ) {
     let itemPolarity: RelationPolarity,
       prevItemPolarity: RelationPolarity | undefined = undefined;
@@ -101,14 +115,13 @@ export class ContextTrailsService {
             "typedConnectingEntities length must match contextTrailInfos"
           );
         }
-        const { entity, type } = typedEntity;
         itemPolarity = prevItemPolarity
-          ? contextTrailItemPolarity(type, entity, prevItemPolarity)
-          : entity.polarity;
+          ? contextTrailItemPolarity(typedEntity, prevItemPolarity)
+          : typedEntity.polarity;
         if (info.polarity !== itemPolarity) {
           this.logger.error(
             `Context trail polarity mismatch: ${toJson(info)} vs ${toJson(
-              entity
+              typedEntity.connectingEntity
             )}`
           );
           throw new ConflictError(`Context trail polarity mismatch`);

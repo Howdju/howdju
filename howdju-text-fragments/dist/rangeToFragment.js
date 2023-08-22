@@ -21358,7 +21358,7 @@
       });
     }
   }
-  var import_lodash6, Entity, CreateModel, PersistedEntity, UserExternalIds, User, UserBlurb, Proposition, UpdatePropositionInput, UpdateProposition, Tag, CreateTag, CreateTagInput, tagVotePolarities, PropositionTagVote, PropositionTagVotePolarities, CreatePropositionTagVote, CreatePropositionTagVoteInput, CreatePropositionInput, CreateProposition, Persorg, CreatePersorg, CreatePersorgInput, UpdatePersorg, UpdatePersorgInput, sentenceTypes, baseStatement, Statement, SentenceTypes, CreateStatementInput, CreateStatement, Writ, CreateWrit, CreateWritInput, UpdateWrit, UpdateWritInput, DomAnchor, CreateDomAnchor, UrlTarget, Url, CreateUrl, CreateUrlInput, UrlLocator, WritQuote, PicRegion, VidSegment, AudSegment, sourceExcerptTypes, SourceExcerpt, SourceExcerptTypes, CreateUrlLocator, CreateUrlLocatorInput, Source, CreateSource, CreateSourceInput, UpdateSource, UpdateSourceInput, MediaExcerptCitation, CreateMediaExcerptCitation, CreateMediaExcerptCitationInput, DeleteMediaExcerptCitation, MediaExcerptSpeaker, CreateMediaExcerptSpeaker, CreateMediaExcerptSpeakerInput, MediaExcerpt, Appearance, CreateAppearance, CreateAppearanceInput, AppearanceConfirmationPolarity, CreateAppearanceConfirmation, PropositionCompoundAtom, PropositionCompound, CreatePropositionCompoundAtomInput, UpdatePropositionCompoundAtomInput, CreatePropositionCompoundInput, CreatePropositionCompoundAtom, UpdatePropositionCompoundAtom, CreatePropositionCompound, UpdatePropositionCompoundInput, UpdatePropositionCompound, JustificationPolarity, JustificationPolarities, RelationPolarity2, JustificationRootPolarity, JustificationRootPolarities, JustificationBasisType, JustificationBasisTypes, justificationBaseShape, JustificationRootTargetType, JustificationRootTargetTypes, JustificationTargetType2, Justification, JustificationTargetTypes, PropositionRef, StatementRef, JustificationRef, JustificationVoteRef, PropositionCompoundRef, SourceExcerptRef, WritQuoteRef, WritRef, PersorgRef, TagRef, TagVoteRef, UrlRef, UserRef, PropositionTagVoteRef, RegistrationRequestRef, PasswordResetRequestRef, AccountSettingsRef, ContentReportRef, UrlLocatorRef, MediaExcerptRef, SourceRef, CreateWritQuoteInput, CreateWritQuote, UpdateWritQuoteInput, UpdateWritQuote, CreateVidSegmentInput, CreateVidSegment, CreateAudSegmentInput, CreateAudSegment, UpdateVidSegmentInput, UpdateVidSegment, CreatePicRegionInput, CreatePicRegion, UpdatePicRegionInput, UpdatePicRegion, CreateSourceExcerptInput, CreateSourceExcerpt, CreateMediaExcerptBase, CreateMediaExcerpt, CreateMediaExcerptInput, UpdateMediaExcerpt, UpdateMediaExcerptInput, CreateUrlLocatorsInput, createJustificationBaseShape, createJustificationInputBaseShape, CreateJustificationInput, CreateJustification, CreateCounterJustificationInput, CreateCounterJustification, justificationVotePolarities, JustificationVote, JustificationVotePolarities, CreateJustificationVote, DeleteJustificationVote, TaggableEntityType, TagVote, TagVotePolarities, CreateTagVote, EntityType, EntityTypes, ContentReportType, ContentReportTypes, ContentReport, CreateContentReport, CreateContentReportInput, CreateUser, AccountSettings, CreateAccountSettings, UpdateAccountSettings, CreateJustifiedSentenceInput, CreateJustifiedSentence, RegistrationRequest, CreateRegistrationRequest, CreateRegistrationRequestInput, Password, RegistrationConfirmation, CreateRegistrationConfirmation, CreateRegistrationConfirmationInput, PasswordResetRequest, Credentials;
+  var import_lodash6, Entity, CreateModel, PersistedEntity, UserExternalIds, User, UserBlurb, Proposition, UpdatePropositionInput, UpdateProposition, Tag, CreateTag, CreateTagInput, tagVotePolarities, PropositionTagVote, PropositionTagVotePolarities, CreatePropositionTagVote, CreatePropositionTagVoteInput, CreatePropositionInput, CreateProposition, Persorg, CreatePersorg, CreatePersorgInput, UpdatePersorg, UpdatePersorgInput, sentenceTypes, baseStatement, Statement, SentenceTypes, CreateStatementInput, CreateStatement, Writ, CreateWrit, CreateWritInput, UpdateWrit, UpdateWritInput, DomAnchor, CreateDomAnchor, UrlTarget, Url, CreateUrl, CreateUrlInput, UrlLocator, WritQuote, PicRegion, VidSegment, AudSegment, sourceExcerptTypes, SourceExcerpt, SourceExcerptTypes, CreateUrlLocator, CreateUrlLocatorInput, Source, CreateSource, CreateSourceInput, UpdateSource, UpdateSourceInput, MediaExcerptCitation, CreateMediaExcerptCitation, CreateMediaExcerptCitationInput, DeleteMediaExcerptCitation, MediaExcerptSpeaker, CreateMediaExcerptSpeaker, CreateMediaExcerptSpeakerInput, MediaExcerpt, Appearance, CreateAppearance, CreateAppearanceInput, AppearanceConfirmationPolarity, CreateAppearanceConfirmation, PropositionCompoundAtom, PropositionCompound, CreatePropositionCompoundAtomInput, UpdatePropositionCompoundAtomInput, CreatePropositionCompoundInput, CreatePropositionCompoundAtom, UpdatePropositionCompoundAtom, CreatePropositionCompound, UpdatePropositionCompoundInput, UpdatePropositionCompound, JustificationPolarity, JustificationPolarities, RelationPolarity2, JustificationRootPolarity, JustificationRootPolarities, JustificationBasisType, JustificationBasisTypes, justificationBaseShape, JustificationRootTargetType, JustificationRootTargetTypes, JustificationTargetType, Justification, JustificationTargetTypes, PropositionRef, StatementRef, JustificationRef, JustificationVoteRef, PropositionCompoundRef, SourceExcerptRef, WritQuoteRef, WritRef, PersorgRef, TagRef, TagVoteRef, UrlRef, UserRef, PropositionTagVoteRef, RegistrationRequestRef, PasswordResetRequestRef, AccountSettingsRef, ContentReportRef, UrlLocatorRef, MediaExcerptRef, SourceRef, CreateWritQuoteInput, CreateWritQuote, UpdateWritQuoteInput, UpdateWritQuote, CreateVidSegmentInput, CreateVidSegment, CreateAudSegmentInput, CreateAudSegment, UpdateVidSegmentInput, UpdateVidSegment, CreatePicRegionInput, CreatePicRegion, UpdatePicRegionInput, UpdatePicRegion, CreateSourceExcerptInput, CreateSourceExcerpt, CreateMediaExcerptBase, CreateMediaExcerpt, CreateMediaExcerptInput, UpdateMediaExcerpt, UpdateMediaExcerptInput, CreateUrlLocatorsInput, createJustificationBaseShape, createJustificationInputBaseShape, CreateJustificationInput, CreateJustification, CreateCounterJustificationInput, CreateCounterJustification, justificationVotePolarities, JustificationVote, JustificationVotePolarities, CreateJustificationVote, DeleteJustificationVote, TaggableEntityType, TagVote, TagVotePolarities, CreateTagVote, EntityType, EntityTypes, ContentReportType, ContentReportTypes, ContentReport, CreateContentReport, CreateContentReportInput, CreateUser, AccountSettings, CreateAccountSettings, UpdateAccountSettings, CreateJustifiedSentenceInput, CreateJustifiedSentence, RegistrationRequest, CreateRegistrationRequest, CreateRegistrationRequestInput, Password, RegistrationConfirmation, CreateRegistrationConfirmation, CreateRegistrationConfirmationInput, PasswordResetRequest, Credentials;
   var init_zodSchemas = __esm({
     "../howdju-common/lib/zodSchemas.ts"() {
       "use strict";
@@ -21906,7 +21906,7 @@
       };
       JustificationRootTargetType = mod.enum(["PROPOSITION", "STATEMENT"]);
       JustificationRootTargetTypes = JustificationRootTargetType.Enum;
-      JustificationTargetType2 = mod.enum([
+      JustificationTargetType = mod.enum([
         "PROPOSITION",
         "STATEMENT",
         "JUSTIFICATION"
@@ -21918,15 +21918,15 @@
             rootTarget: Proposition,
             target: mod.discriminatedUnion("type", [
               mod.object({
-                type: mod.literal(JustificationTargetType2.Enum.PROPOSITION),
+                type: mod.literal(JustificationTargetType.Enum.PROPOSITION),
                 entity: Proposition
               }),
               mod.object({
-                type: mod.literal(JustificationTargetType2.Enum.STATEMENT),
+                type: mod.literal(JustificationTargetType.Enum.STATEMENT),
                 entity: Statement
               }),
               mod.object({
-                type: mod.literal(JustificationTargetType2.Enum.JUSTIFICATION),
+                type: mod.literal(JustificationTargetType.Enum.JUSTIFICATION),
                 entity: Justification
               })
             ])
@@ -21936,22 +21936,22 @@
             rootTarget: Statement,
             target: mod.discriminatedUnion("type", [
               mod.object({
-                type: mod.literal(JustificationTargetType2.Enum.PROPOSITION),
+                type: mod.literal(JustificationTargetType.Enum.PROPOSITION),
                 entity: Proposition
               }),
               mod.object({
-                type: mod.literal(JustificationTargetType2.Enum.STATEMENT),
+                type: mod.literal(JustificationTargetType.Enum.STATEMENT),
                 entity: Statement
               }),
               mod.object({
-                type: mod.literal(JustificationTargetType2.Enum.JUSTIFICATION),
+                type: mod.literal(JustificationTargetType.Enum.JUSTIFICATION),
                 entity: Justification
               })
             ])
           }))
         ])
       );
-      JustificationTargetTypes = JustificationTargetType2.Enum;
+      JustificationTargetTypes = JustificationTargetType.Enum;
       PropositionRef = Entity.required().brand();
       StatementRef = Entity.required().brand();
       JustificationRef = Entity.required().brand();
@@ -32923,7 +32923,7 @@
     JustificationRootTargetType: () => JustificationRootTargetType,
     JustificationRootTargetTypes: () => JustificationRootTargetTypes,
     JustificationScoreTypes: () => JustificationScoreTypes,
-    JustificationTargetType: () => JustificationTargetType2,
+    JustificationTargetType: () => JustificationTargetType,
     JustificationTargetTypes: () => JustificationTargetTypes,
     JustificationVote: () => JustificationVote,
     JustificationVotePolarities: () => JustificationVotePolarities,
@@ -33008,7 +33008,6 @@
     apiErrorCodes: () => apiErrorCodes,
     approximateMatch: () => approximateMatch,
     areAdjacentConnectingEntities: () => areAdjacentConnectingEntities,
-    areValidTargetAndConnectingEntity: () => areValidTargetAndConnectingEntity,
     arrayToObject: () => arrayToObject,
     assert: () => assert,
     authorizationErrorCodes: () => authorizationErrorCodes,
@@ -33045,7 +33044,6 @@
     formatDuration: () => formatDuration,
     formatZodError: () => formatZodError,
     fromJson: () => fromJson,
-    getConnectingEntitySourceInfo: () => getConnectingEntitySourceInfo,
     getRangeOfTextInDoc: () => getRangeOfTextInDoc,
     getTextWithin: () => getTextWithin,
     hasQuote: () => hasQuote,
@@ -33074,6 +33072,7 @@
     isRootPositive: () => isRootPositive,
     isTruthy: () => isTruthy,
     isUrl: () => isUrl,
+    isValidTrailTarget: () => isValidTrailTarget,
     isWritQuoteBased: () => isWritQuoteBased,
     jsonPointerToObjectPath: () => jsonPointerToObjectPath,
     keysTo: () => keysTo,
@@ -33490,7 +33489,8 @@
   // ../howdju-common/lib/contextTrails.ts
   var import_lodash3 = __toESM(require_lodash());
   var contextTrailTypeByShortcut = {
-    j: "JUSTIFICATION"
+    j: "JUSTIFICATION",
+    a: "APPEARANCE"
   };
   var contextTrailPolarityByShortcut = {
     p: "POSITIVE",
@@ -33549,70 +33549,99 @@
     return { infos, invalidInfos, hasInvalidInfos: !!invalidInfos.length };
   }
   function areAdjacentConnectingEntities(prev, curr) {
-    switch (curr.type) {
+    switch (curr.connectingEntityType) {
       case "JUSTIFICATION": {
-        const type = curr.entity.target.type;
-        const id = curr.entity.target.entity.id;
-        return areValidTargetAndConnectingEntity({ type, id }, prev);
+        return isValidTrailTarget(prev, curr.connectingEntity.target);
+      }
+      case "APPEARANCE": {
+        switch (prev.connectingEntityType) {
+          case "APPEARANCE":
+            return false;
+          case "JUSTIFICATION":
+            switch (prev.connectingEntity.basis.type) {
+              case "PROPOSITION_COMPOUND":
+                if (curr.connectingEntity.apparition.type !== "PROPOSITION") {
+                  return false;
+                }
+                return (0, import_lodash3.some)(
+                  prev.connectingEntity.basis.entity.atoms,
+                  (a3) => a3.entity.id === curr.connectingEntity.apparition.entity.id
+                );
+              case "MEDIA_EXCERPT":
+                return curr.connectingEntity.mediaExcerpt.id === prev.connectingEntity.basis.entity.id;
+              case "WRIT_QUOTE":
+                return false;
+            }
+        }
       }
     }
   }
-  function areValidTargetAndConnectingEntity({ type, id }, prev) {
+  function isValidTrailTarget(connection, { type, entity }) {
     switch (type) {
       case "JUSTIFICATION": {
-        return prev.type === "JUSTIFICATION" && id === prev.entity.id;
+        return connection.connectingEntityType === "JUSTIFICATION" && entity.id === connection.connectingEntity.id;
       }
       case "PROPOSITION":
-        switch (prev.type) {
+        switch (connection.connectingEntityType) {
           case "JUSTIFICATION":
-            switch (prev.entity.basis.type) {
+            switch (connection.connectingEntity.basis.type) {
               case "PROPOSITION_COMPOUND":
                 return (0, import_lodash3.some)(
-                  prev.entity.basis.entity.atoms,
-                  (a3) => a3.entity.id === id
+                  connection.connectingEntity.basis.entity.atoms,
+                  (a3) => a3.entity.id === entity.id
                 );
               case "WRIT_QUOTE":
               case "MEDIA_EXCERPT":
                 return false;
             }
+          case "APPEARANCE":
+            return connection.connectingEntity.apparition.entity.id === entity.id;
         }
       case "STATEMENT":
         return false;
+      case "APPEARANCE":
+        switch (connection.connectingEntityType) {
+          case "JUSTIFICATION":
+            switch (connection.connectingEntity.basis.type) {
+              case "PROPOSITION_COMPOUND":
+                return entity.apparition.type === "PROPOSITION" && (0, import_lodash3.some)(
+                  connection.connectingEntity.basis.entity.atoms,
+                  (a3) => a3.entity.id === entity.apparition.entity.id
+                );
+              case "WRIT_QUOTE":
+                return false;
+              case "MEDIA_EXCERPT":
+                return connection.connectingEntity.basis.entity.id === entity.mediaExcerpt.id;
+            }
+          case "APPEARANCE":
+            return false;
+        }
     }
   }
-  function getConnectingEntitySourceInfo(typedConnectingEntity) {
-    switch (typedConnectingEntity.type) {
-      case "JUSTIFICATION":
-        return {
-          id: typedConnectingEntity.entity.basis.entity.id,
-          type: typedConnectingEntity.entity.basis.type
-        };
-    }
-  }
-  function nextContextTrailItem(connectingEntityType, connectingEntity, prevItemPolarity) {
+  function nextContextTrailItem(connectingEntityInfo, prevItemPolarity) {
     const polarity = contextTrailItemPolarity(
-      connectingEntityType,
-      connectingEntity,
+      connectingEntityInfo,
       prevItemPolarity
     );
-    return {
-      connectingEntityType,
-      connectingEntityId: connectingEntity.id,
-      connectingEntity,
+    return __spreadProps(__spreadValues({}, connectingEntityInfo), {
+      connectingEntityId: connectingEntityInfo.connectingEntity.id,
       polarity
-    };
+    });
   }
-  function contextTrailItemPolarity(connectingEntityType, connectingEntity, prevItemPolarity) {
-    switch (connectingEntityType) {
+  function contextTrailItemPolarity(connectingEntityInfo, prevItemPolarity) {
+    switch (connectingEntityInfo.connectingEntityType) {
       case "JUSTIFICATION": {
-        switch (connectingEntity.target.type) {
+        switch (connectingEntityInfo.connectingEntity.target.type) {
           case "PROPOSITION":
           case "STATEMENT":
-            return connectingEntity.polarity;
+            return connectingEntityInfo.connectingEntity.polarity;
           case "JUSTIFICATION":
             return negateRelationPolarity(prevItemPolarity);
         }
+        break;
       }
+      case "APPEARANCE":
+        return "POSITIVE";
     }
   }
   function negateRelationPolarity(polarity) {

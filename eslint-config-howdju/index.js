@@ -1,4 +1,4 @@
-const { testFilePattern } = require("./constants");
+const { testFilePattern, typescriptRules } = require("./constants");
 
 /** The base ESLint config. Other ESLint configs should extend this. */
 module.exports = {
@@ -78,52 +78,16 @@ module.exports = {
     },
     {
       files: "*.{ts,tsx}",
-      // TODO(424) extend plugin:@typescript-eslint/strict-type-checked instead
       plugins: ["@typescript-eslint"],
       parser: "@typescript-eslint/parser",
       extends: [
         "eslint:recommended",
+        // TODO(#424) extend plugin:@typescript-eslint/strict-type-checked instead
         "plugin:@typescript-eslint/recommended",
         "plugin:@typescript-eslint/recommended-requiring-type-checking",
         "prettier",
       ],
-      rules: {
-        // This rule has false positives when an exhaustive switch statement's cases all have `return`s.
-        // We can instead rely on Typescript to detect missing case statements.
-        "no-fallthrough": "off",
-        // Rely on @typescript-eslint/no-unused-vars instead
-        "no-unused-vars": "off",
-        "@typescript-eslint/no-explicit-any": "off",
-        "@typescript-eslint/no-unused-vars": [
-          "error",
-          {
-            argsIgnorePattern: "^_",
-            // We intentionallly extract unused props to prevent passing them to child React components
-            ignoreRestSiblings: true,
-          },
-        ],
-        "@typescript-eslint/ban-ts-comment": [
-          "error",
-          {
-            "ts-ignore": "allow-with-description",
-          },
-        ],
-        // TODO(254): replace these global overrides with specific per instance overrides
-        "@typescript-eslint/no-unsafe-argument": "off",
-        "@typescript-eslint/no-unsafe-assignment": "off",
-        "@typescript-eslint/no-unsafe-return": "off",
-        "@typescript-eslint/no-unsafe-member-access": "off",
-        "@typescript-eslint/no-unsafe-call": "off",
-        "@typescript-eslint/restrict-template-expressions": "off",
-        "@typescript-eslint/switch-exhaustiveness-check": "error",
-        "@typescript-eslint/no-empty-interface": [
-          "error",
-          { allowSingleExtends: true },
-        ],
-        // I don't see any problem with triple-slash references. Also I don't understand how to
-        // replace them with imports that only import types.
-        "@typescript-eslint/triple-slash-reference": "off",
-      },
+      rules: typescriptRules,
     },
   ],
 };

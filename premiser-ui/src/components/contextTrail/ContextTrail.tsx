@@ -8,6 +8,7 @@ import {
   StatementOut,
   ContextTrailItem,
   JustificationView,
+  AppearanceView,
 } from "howdju-common";
 
 import PropositionCard from "@/PropositionCard";
@@ -16,6 +17,8 @@ import JustificationCard from "@/JustificationCard";
 import TreePolarity from "@/components/TreePolarity";
 import { ComponentId } from "@/types";
 import PropositionCompoundCard from "@/PropositionCompoundCard";
+import AppearanceCard from "@/pages/appearances/AppearanceCard";
+import { combineIds } from "@/viewModels";
 
 export default function ContextTrail({
   id,
@@ -26,86 +29,6 @@ export default function ContextTrail({
   trailItems: ContextTrailItem[];
   className?: string;
 }) {
-  function toCard(trailItem: ContextTrailItem, trailItems: ContextTrailItem[]) {
-    switch (trailItem.connectingEntityType) {
-      case "JUSTIFICATION": {
-        const justificationTarget = trailItem.connectingEntity.target;
-        switch (justificationTarget.type) {
-          case "PROPOSITION":
-            return propositionToCard(justificationTarget.entity, trailItems);
-          case "STATEMENT":
-            return statementToCard(justificationTarget.entity, trailItems);
-          case "JUSTIFICATION":
-            return justificationToCard(justificationTarget.entity, trailItems);
-        }
-      }
-    }
-  }
-
-  function propositionToCard(
-    proposition: PropositionOut,
-    trailItems: ContextTrailItem[]
-  ) {
-    const cardId = `${id}-proposition-${proposition.id}`;
-    const prevTrailItem = trailItems[trailItems.length - 1];
-    if (
-      prevTrailItem &&
-      prevTrailItem.connectingEntityType === "JUSTIFICATION" &&
-      prevTrailItem.connectingEntity.basis.type === "PROPOSITION_COMPOUND" &&
-      prevTrailItem.connectingEntity.basis.entity.atoms.length > 1
-    ) {
-      return (
-        <PropositionCompoundCard
-          id={cardId}
-          propositionCompound={prevTrailItem.connectingEntity.basis.entity}
-          highlightedProposition={proposition}
-          contextTrailItems={trailItems}
-          showStatusText={false}
-        />
-      );
-    }
-    return (
-      <PropositionCard
-        id={cardId}
-        proposition={proposition}
-        contextTrailItems={trailItems}
-        showStatusText={false}
-      />
-    );
-  }
-
-  function statementToCard(
-    statement: StatementOut,
-    trailItems: ContextTrailItem[]
-  ) {
-    const cardId = `${id}-statement-${statement.id}`;
-    return (
-      <StatementCard
-        id={cardId}
-        statement={statement}
-        contextTrailItems={trailItems}
-        showStatusText={false}
-      />
-    );
-  }
-
-  function justificationToCard(
-    justification: JustificationView,
-    trailItems: ContextTrailItem[]
-  ) {
-    const cardId = `${id}-justification-${justification.id}`;
-    return (
-      <JustificationCard
-        id={cardId}
-        justification={justification}
-        doShowControls={false}
-        doShowTargets={false}
-        contextTrailItems={trailItems}
-        showStatusText={false}
-      />
-    );
-  }
-
   return trailItems.length > 0 ? (
     <ul className={cn(className, "context-trail")}>
       {map(trailItems, (trailItem, i) => {
@@ -113,7 +36,7 @@ export default function ContextTrail({
         return (
           <li key={i}>
             <TreePolarity polarity={polarity}>
-              {toCard(trailItem, take(trailItems, i))}
+              {toCard(id, trailItem, take(trailItems, i))}
             </TreePolarity>
           </li>
         );
@@ -121,5 +44,124 @@ export default function ContextTrail({
     </ul>
   ) : (
     <div />
+  );
+}
+
+function toCard(
+  id: ComponentId,
+  trailItem: ContextTrailItem,
+  prevTrailItems: ContextTrailItem[]
+) {
+  switch (trailItem.connectingEntityType) {
+    case "JUSTIFICATION":
+      {
+        const justificationTarget = trailItem.connectingEntity.target;
+        switch (justificationTarget.type) {
+          case "PROPOSITION":
+            return propositionToCard(
+              id,
+              justificationTarget.entity,
+              prevTrailItems
+            );
+          case "STATEMENT":
+            return statementToCard(
+              id,
+              justificationTarget.entity,
+              prevTrailItems
+            );
+          case "JUSTIFICATION":
+            return justificationToCard(
+              id,
+              justificationTarget.entity,
+              prevTrailItems
+            );
+        }
+      }
+      break;
+    case "APPEARANCE": {
+      return appearanceToCard(id, trailItem.connectingEntity, prevTrailItems);
+    }
+  }
+}
+
+function propositionToCard(
+  id: ComponentId,
+  proposition: PropositionOut,
+  trailItems: ContextTrailItem[]
+) {
+  const cardId = `${id}-proposition-${proposition.id}`;
+  const prevTrailItem = trailItems[trailItems.length - 1];
+  if (
+    prevTrailItem &&
+    prevTrailItem.connectingEntityType === "JUSTIFICATION" &&
+    prevTrailItem.connectingEntity.basis.type === "PROPOSITION_COMPOUND" &&
+    prevTrailItem.connectingEntity.basis.entity.atoms.length > 1
+  ) {
+    return (
+      <PropositionCompoundCard
+        id={cardId}
+        propositionCompound={prevTrailItem.connectingEntity.basis.entity}
+        highlightedProposition={proposition}
+        contextTrailItems={trailItems}
+        showStatusText={false}
+      />
+    );
+  }
+  return (
+    <PropositionCard
+      id={cardId}
+      proposition={proposition}
+      contextTrailItems={trailItems}
+      showStatusText={false}
+    />
+  );
+}
+
+function statementToCard(
+  id: ComponentId,
+  statement: StatementOut,
+  trailItems: ContextTrailItem[]
+) {
+  const cardId = `${id}-statement-${statement.id}`;
+  return (
+    <StatementCard
+      id={cardId}
+      statement={statement}
+      contextTrailItems={trailItems}
+      showStatusText={false}
+    />
+  );
+}
+
+function appearanceToCard(
+  id: ComponentId,
+  appearance: AppearanceView,
+  trailItems: ContextTrailItem[]
+) {
+  return (
+    <AppearanceCard
+      id={combineIds(id, "appearance", appearance.id)}
+      appearance={appearance}
+      contextTrailItems={trailItems}
+      mode="CONTEXT_TRAIL"
+    />
+  );
+}
+
+function justificationToCard(
+  id: ComponentId,
+  justification: JustificationView,
+  trailItems: ContextTrailItem[]
+) {
+  const cardId = `${id}-justification-${justification.id}`;
+  return (
+    <JustificationCard
+      id={cardId}
+      justification={justification}
+      doShowControls={false}
+      doShowTargets={false}
+      contextTrailItems={trailItems}
+      showStatusText={false}
+    />
   );
 }

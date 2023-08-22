@@ -31,9 +31,8 @@ export default class StatementViewer extends React.Component {
       showStatusText,
       contextTrailItems,
       showJustificationCount,
-      // ignore
-      editorId,
-      suggestionsKey,
+      editorId: _editorId,
+      suggestionsKey: _suggestionsKey,
       ...rest
     } = this.props;
 

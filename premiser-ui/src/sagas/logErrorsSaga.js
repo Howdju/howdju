@@ -32,7 +32,7 @@ export function* logErrors() {
 
   yield takeEvery(
     str(errors.clearLoggedErrors),
-    function* clearLoggedErrorsWorker(action) {
+    function* clearLoggedErrorsWorker() {
       // Periodically clear the logged errors since the find above is linear
       yield call(delay, 10000);
       yield put(errors.clearLoggedErrors());

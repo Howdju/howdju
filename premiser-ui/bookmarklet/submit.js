@@ -6,7 +6,7 @@
     description: document.title,
     quoteText:
       window.getSelection() ||
-      document.getSelection ||
+      "getSelection" in document ||
       document.getSelection() ||
       document.selection ||
       document.selection.createRange().text,

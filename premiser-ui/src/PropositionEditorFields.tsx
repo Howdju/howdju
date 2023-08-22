@@ -35,8 +35,8 @@ export default function PropositionEditorFields(props: Props) {
     dirtyFields,
     blurredFields,
     autoFocus,
-    // ignore
-    editorDispatch,
+    // TODO(341) remove unused editorDispatch.
+    editorDispatch: _editorDispatch,
     ...rest
   } = props;
 

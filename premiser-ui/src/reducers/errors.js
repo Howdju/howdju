@@ -10,7 +10,7 @@ export default handleActions(
       }
       return { ...state, loggedErrors: state.loggedErrors.concat([error]) };
     },
-    [errors.clearLoggedErrors]: (state, action) => {
+    [errors.clearLoggedErrors]: (state) => {
       return { ...state, loggedErrors: [] };
     },
   },

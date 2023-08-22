@@ -1,10 +1,12 @@
 import React, { useContext } from "react";
 
 import {
-  areValidTargetAndConnectingEntity,
+  isValidTrailTarget,
   EntityId,
   FocusEntityType,
   toJson,
+  TrailConnectionNode,
+  ContextTrailItem,
 } from "howdju-common";
 
 import ErrorMessages from "@/ErrorMessages";
@@ -12,6 +14,10 @@ import ContextTrail from "./ContextTrail";
 import { PrimaryContextTrail } from "./PrimaryContextTrailProvider";
 import { ComponentId } from "@/types";
 import { logger } from "@/logger";
+import { useAppEntitySelector } from "@/hooks";
+import { normalizationSchemaByEntityType } from "@/normalizationSchemas";
+import { CircularProgress } from "react-md";
+import { combineIds } from "@/viewModels";
 
 interface Props {
   focusEntityType: FocusEntityType;
@@ -32,39 +38,49 @@ export default function FocusValidatingContextTrail({
 }: Props) {
   const { contextTrailItems, isInvalid } = useContext(PrimaryContextTrail);
 
-  function lastConnectionsSourceMatchesFocus() {
-    const lastTrailEntity = contextTrailItems[contextTrailItems.length - 1];
-    const focusInfo = { type: focusEntityType, id: focusEntityId };
-    if (
-      lastTrailEntity &&
-      !areValidTargetAndConnectingEntity(focusInfo, {
-        type: lastTrailEntity.connectingEntityType,
-        entity: lastTrailEntity.connectingEntity,
-      })
-    ) {
-      const lastItemInfo = {
-        type: lastTrailEntity.connectingEntityType,
-        id: lastTrailEntity.connectingEntity.id,
-      };
-      logger.error(
-        `Invalid context trail. Last context trail item (${toJson(
-          lastItemInfo
-        )}) does not match focus entity: ${toJson(focusInfo)}.`
-      );
-      return false;
-    }
-    return true;
+  const schema = normalizationSchemaByEntityType[focusEntityType];
+  const nodeEntity = useAppEntitySelector(focusEntityId, schema);
+  if (!nodeEntity) {
+    return <CircularProgress id={combineIds(componentId, "progress")} />;
   }
 
-  const trailMatchesFocus = lastConnectionsSourceMatchesFocus();
+  const trailMatchesFocus = lastConnectionsSourceMatchesFocus(
+    contextTrailItems,
+    {
+      type: focusEntityType,
+      entity: nodeEntity,
+    } as TrailConnectionNode
+  );
 
-  return isInvalid || !trailMatchesFocus ? (
-    <ErrorMessages errors={["The context trail was invalid"]} />
-  ) : (
+  if (isInvalid || !trailMatchesFocus) {
+    return <ErrorMessages errors={["The context trail was invalid"]} />;
+  }
+
+  return (
     <ContextTrail
       id={componentId}
       trailItems={contextTrailItems}
       className={className}
     />
   );
+}
+
+function lastConnectionsSourceMatchesFocus(
+  contextTrailItems: ContextTrailItem[],
+  connectionNode: TrailConnectionNode
+) {
+  const lastTrailItem = contextTrailItems[contextTrailItems.length - 1];
+  if (lastTrailItem && !isValidTrailTarget(lastTrailItem, connectionNode)) {
+    const lastItemInfo = {
+      type: lastTrailItem.connectingEntityType,
+      id: lastTrailItem.connectingEntity.id,
+    };
+    logger.error(
+      `Invalid context trail. Last context trail item (${toJson(
+        lastItemInfo
+      )}) does not match focus entity: ${toJson(connectionNode)}.`
+    );
+    return false;
+  }
+  return true;
 }

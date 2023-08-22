@@ -66,17 +66,23 @@ export default function JustificationRootTargetViewer({
       }
 
       const { connectingEntityType, connectingEntity } = contextTrailItem;
-      if (
-        connectingEntityType !== "JUSTIFICATION" ||
-        connectingEntity.basis.type !== "PROPOSITION_COMPOUND"
-      ) {
+
+      if (connectingEntityType === "APPEARANCE") {
+        return propositionViewer(rootTarget);
+      }
+
+      if (connectingEntity.basis.type !== "PROPOSITION_COMPOUND") {
         logger.error(
-          `A root target proposition's context trail item must be based on a proposition compound, but it was ${connectingEntity.basis.type}`
+          `If a root target proposition's context trail item is a Justification, it must be based on a proposition compound, but it was ${connectingEntity.basis.type}`
         );
         return propositionViewer(rootTarget);
       }
 
-      if (connectingEntity.basis.entity.atoms.length === 1) {
+      if (
+        connectingEntityType === "JUSTIFICATION" &&
+        connectingEntity.basis.type === "PROPOSITION_COMPOUND" &&
+        connectingEntity.basis.entity.atoms.length === 1
+      ) {
         return propositionViewer(rootTarget);
       }
 
