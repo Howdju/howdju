@@ -24,7 +24,7 @@ const config = {
     traceLimit: 25,
   },
   sentry: {
-    enabled: process.env.SENTRY_ENABLED,
+    enabled: !!process.env.SENTRY_ENABLED,
     dsn: "https://05b15a6447f3427db2f4977950149202@o92193.ingest.sentry.io/200909",
     release: `web-ui@${process.env.PACKAGE_VERSION} (${process.env.GIT_COMMIT_HASH_SHORT})`,
     environment: process.env.SENTRY_ENV,
