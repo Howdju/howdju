@@ -98,7 +98,6 @@ export type TrailConnection =
 export type ConnectingEntityOut = ContextTrailItemOut["connectingEntity"];
 export type ConnectingEntity = ContextTrailItem["connectingEntity"];
 export type ConnectingEntityType = ContextTrailItem["connectingEntityType"];
-// For now just reuse JustificationRootTargetType, but we will need to union with Appearance targets too.
 const focusEntityTypes = ["PROPOSITION", "STATEMENT", "APPEARANCE"] as const;
 export type FocusEntityType = typeof focusEntityTypes[number];
 

@@ -18,7 +18,6 @@ module.exports = {
   parserOptions: {
     sourceType: "module",
   },
-  // TODO(424) extend plugin:@typescript-eslint/strict-type-checked instead
   parser: "@typescript-eslint/parser",
   plugins: ["react", "react-hooks", "@typescript-eslint"],
   extends: [
@@ -26,6 +25,7 @@ module.exports = {
     "plugin:react/recommended",
     "prettier",
     "eslint:recommended",
+    // TODO(#424) extend plugin:@typescript-eslint/strict-type-checked instead
     "plugin:@typescript-eslint/recommended",
     "plugin:@typescript-eslint/recommended-requiring-type-checking",
   ],
