@@ -5,7 +5,7 @@ import {
   init as sentryInit,
 } from "@sentry/browser";
 import { Integrations } from "@sentry/tracing";
-import { Event, EventHint, Severity } from "@sentry/types";
+import { Event, EventHint } from "@sentry/types";
 
 import { apiErrorCodes, isCustomError } from "howdju-common";
 
@@ -63,10 +63,10 @@ function handleExceptionEvent(event: Event, hint?: EventHint) {
     // Only prompt the user when we don't know what is going on, and only prompte them occassionally
     // (E.g., if all fetches on a page fail, we don't want to show them the dialog for each failure.)
     throttledShowReportDialog({ eventId: event.event_id });
-    event.level = Severity.Error;
+    event.level = "error";
   } else {
     // Expected exceptions are just informational
-    event.level = Severity.Info;
+    event.level = "info";
   }
 
   return event;

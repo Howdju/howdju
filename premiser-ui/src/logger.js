@@ -1,6 +1,5 @@
 import config from "./config";
 import * as sentry from "./sentry";
-import { Severity } from "@sentry/types";
 
 /* eslint-disable no-console */
 const logFunctions = {
@@ -14,11 +13,11 @@ const logFunctions = {
 export const logger = {
   error: (message) => {
     logFunctions.error(message);
-    sentry.captureMessage(message, Severity.Error);
+    sentry.captureMessage(message, "error");
   },
   warn: (message) => {
     logFunctions.warn(message);
-    sentry.captureMessage(message, Severity.Warning);
+    sentry.captureMessage(message, "warning");
   },
   info: logFunctions.info,
   debug: logFunctions.debug,
