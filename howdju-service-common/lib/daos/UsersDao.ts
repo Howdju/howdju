@@ -84,7 +84,15 @@ export class UsersDao {
   async readUserBlurbsForIds(userIds: EntityId[]) {
     const { rows } = await this.database.query(
       "readUserBlurbsForIds",
-      "select user_id, long_name from users where user_id = ANY($1) and deleted is null",
+      `
+      select
+          user_id
+        , long_name
+      from users
+            where user_id = ANY($1)
+        and deleted is null
+      order by array_position($1, user_id)
+      `,
       [userIds]
     );
     return rows.map((row) =>

@@ -84,7 +84,9 @@ export class PropositionsDao {
         from propositions p
           where
               p.proposition_id = any($1)
-          and p.deleted is null`,
+          and p.deleted is null
+        order by array_position($1, p.proposition_id)
+      `,
       [propositionIds]
     );
 

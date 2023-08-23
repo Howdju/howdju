@@ -209,9 +209,11 @@ export class StatementsDao extends BaseDao {
       "readStatementsWithoutSentencesForIds",
       `
         select
-            s.*
+          s.*
         from statements s
-          where s.statement_id = any($1) and s.deleted is null
+              where s.statement_id = any($1)
+          and s.deleted is null
+        order by array_position($1, s.statement_id)
       `,
       [statementIds]
     );
