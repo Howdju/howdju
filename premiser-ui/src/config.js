@@ -33,7 +33,7 @@ const config = {
     replaysOnErrorSampleRate: 1.0,
     ignoreErrors: [
       // TODO(#533) remove this exception
-      "ResizeObserver loop limit exceeded",
+      "ResizeObserver loop completed with undelivered notifications",
     ],
   },
   sentryShowReportDialogThrottleMs: 5000,
