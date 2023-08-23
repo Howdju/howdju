@@ -63,7 +63,12 @@ export class SourcesDao {
   async readSourcesForIds(sourceIds: EntityId[]) {
     const { rows } = await this.db.query<SourceRow>(
       "readSourcesForIds",
-      `SELECT * FROM sources WHERE source_id = ANY($1) and deleted is null`,
+      `
+      select *
+      from sources
+            where source_id = any($1)
+        and deleted is null
+      order by array_position($1, source_id)`,
       [sourceIds]
     );
     // Get the distinct user IDs, index them by their user ID, and then add them to the sources.

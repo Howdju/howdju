@@ -95,7 +95,12 @@ export class PersorgsDao extends BaseDao {
   async readPersorgsForIds(persorgIds: EntityId[]): Promise<PersorgOut[]> {
     const { rows } = await this.db.query(
       "readPersorgsForIds",
-      `select * from persorgs where persorg_id = any($1) and deleted is null`,
+      `
+      select *
+      from persorgs
+            where persorg_id = any($1)
+        and deleted is null
+      order by array_position($1, persorg_id)`,
       [persorgIds]
     );
     const creatorUserIds = rows.map((row) => toIdString(row.creator_user_id));

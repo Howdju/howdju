@@ -44,7 +44,12 @@ export class UrlsDao {
   async readUrlsForIds(urlIds: EntityId[]) {
     const { rows } = await this.database.query(
       "readUrlsForIds",
-      "select * from urls where url_id = any($1) and deleted is null",
+      `
+      select *
+      from urls
+            where url_id = any($1)
+        and deleted is null
+      order by array_position($1, url_id)`,
       [urlIds]
     );
     return rows.map((row) => ({

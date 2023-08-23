@@ -120,7 +120,8 @@ export class MediaExcerptsDao {
       from media_excerpts
       where
           media_excerpt_id = any($1)
-      and deleted is null
+        and deleted is null
+      order by array_position($1, media_excerpt_id)
       `,
       [mediaExcerptIds]
     );

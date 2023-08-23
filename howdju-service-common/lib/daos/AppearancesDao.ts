@@ -44,10 +44,17 @@ export class AppearancesDao {
   async readAppearancesForIds(appearanceIds: EntityId[]) {
     const { rows } = await this.database.query(
       `readAppearancesForIds`,
-      `select appearance_id, media_excerpt_id, proposition_id, creator_user_id, created
-       from appearances
-       where appearance_id = any($1)
-         and deleted is null`,
+      `
+      select
+          appearance_id
+        , media_excerpt_id
+        , proposition_id
+        , creator_user_id
+        , created
+      from appearances
+      where appearance_id = any($1)
+        and deleted is null
+      order by array_position($1, appearance_id)`,
       [appearanceIds]
     );
     return rows.map((row) => ({
