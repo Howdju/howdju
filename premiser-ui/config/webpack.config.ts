@@ -5,6 +5,7 @@ import webpack, { WebpackPluginInstance } from "webpack";
 import { merge } from "webpack-merge";
 import Debug from "debug";
 import path from "path";
+import { assign } from "lodash";
 import HtmlWebpackPlugin from "html-webpack-plugin";
 import MiniCssExtractPlugin from "mini-css-extract-plugin";
 import { BundleAnalyzerPlugin } from "webpack-bundle-analyzer";
@@ -47,7 +48,7 @@ const htmlWebpackPluginConfig = merge(
   envHtmlWebpackPluginConfig
 );
 
-const definePluginConfig = merge(
+const definePluginConfig = assign(
   {
     "process.env.NODE_ENV": JSON.stringify(process.env.NODE_ENV),
     "process.env.SENTRY_ENV": JSON.stringify(process.env.SENTRY_ENV),

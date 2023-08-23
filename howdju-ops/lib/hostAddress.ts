@@ -1,7 +1,9 @@
 import os from "os";
-import forEach from "lodash/forEach";
+import { forEach } from "lodash";
 import isIpPrivate from "private-ip";
 import Debug from "debug";
+
+import { logger } from "./logger";
 
 const debug = Debug("howdju-ops:addressUtils");
 
@@ -19,9 +21,16 @@ export function devApiServerPort() {
 export function getApiHost() {
   const envHost = process.env["API_HOST"];
   if (envHost) {
+    logger.info(`Using API host from env API_HOST: ${envHost}`);
     return envHost;
   }
-  return doEnableLocalNetworkAccess() ? localAddress() : "localhost";
+  if (doEnableLocalNetworkAccess()) {
+    const host = localAddress();
+    logger.info(`Using local network address for API host: ${host}`);
+    return host;
+  }
+  logger.info(`Using default API host: localhost`);
+  return "localhost";
 }
 
 export function getApiRoot() {
