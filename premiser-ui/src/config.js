@@ -31,6 +31,10 @@ const config = {
     tracesSampleRate: 1.0,
     replaysSessionSampleRate: 0.1,
     replaysOnErrorSampleRate: 1.0,
+    ignoreErrors: [
+      // TODO(#533) remove this exception
+      "ResizeObserver loop limit exceeded",
+    ],
   },
   sentryShowReportDialogThrottleMs: 5000,
   ui: {
