@@ -19,13 +19,29 @@ export const htmlWebpackPluginConfig: HtmlWebpackPlugin.Options = {
   // },
 };
 
-const apiRoot = process.env.USE_PROD_LOCAL_API_ROOT
-  ? getApiRoot()
-  : process.env.API_ROOT || "https://api.howdju.com/api/";
+function apiRoot() {
+  if (process.env.USE_PROD_LOCAL_API_ROOT) {
+    const prodLocalApiRoot = getApiRoot();
+    console.log(
+      `USE_PROD_LOCAL_API_ROOT is set: using prod local API root: ${prodLocalApiRoot}`
+    );
+    return prodLocalApiRoot;
+  }
+  if (process.env.API_ROOT) {
+    console.log(
+      `API_ROOT is set: using API root from env: ${process.env.API_ROOT}`
+    );
+    return process.env.API_ROOT;
+  }
+  console.log(`Using default API root: https://api.howdju.com/api/`);
+  return "https://api.howdju.com/api/";
+}
 export const definePluginConfig = {
-  "process.env.API_ROOT": JSON.stringify(apiRoot),
+  "process.env.API_ROOT": JSON.stringify(apiRoot()),
   "process.env.DO_ASSERT": JSON.stringify(false),
-  "process.env.SENTRY_ENABLED": JSON.stringify(true),
+  "process.env.SENTRY_ENABLED": JSON.stringify(
+    !process.env.USE_PROD_LOCAL_API_ROOT
+  ),
 };
 
 /*

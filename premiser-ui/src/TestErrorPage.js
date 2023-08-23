@@ -8,37 +8,41 @@ import {
   FocusContainer,
   SelectField,
 } from "react-md";
+
 import SingleLineTextField from "./SingleLineTextField";
 import * as sentry from "./sentry";
-import { Severity } from "@sentry/types";
 
 const LEVELS = [
   {
     label: "Fatal",
-    value: Severity.Fatal,
-  },
-  {
-    label: "Critical",
-    value: Severity.Critical,
+    value: "fatal",
   },
   {
     label: "Error",
-    value: Severity.Error,
+    value: "error",
   },
   {
     label: "Warning",
-    value: Severity.Warning,
+    value: "warning",
+  },
+  {
+    label: "Log",
+    value: "log",
+  },
+  {
+    label: "Info",
+    value: "info",
   },
   {
     label: "Debug",
-    value: Severity.Debug,
+    value: "debug",
   },
 ];
 
 class TestErrorPage extends Component {
   constructor(props) {
     super(props);
-    this.state = { message: "", level: Severity.Error };
+    this.state = { message: "", level: "error" };
   }
 
   onMessageChange = (properties) => {

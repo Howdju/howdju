@@ -1,6 +1,5 @@
 import Axios, { AxiosError, AxiosResponse, Cancel } from "axios";
-import get from "lodash/get";
-import pick from "lodash/pick";
+import { get, pick } from "lodash";
 import { CANCEL } from "redux-saga";
 
 import { HttpMethod, httpMethods } from "howdju-common";

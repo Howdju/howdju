@@ -29,6 +29,8 @@ const config = {
     release: `web-ui@${process.env.PACKAGE_VERSION} (${process.env.GIT_COMMIT_HASH_SHORT})`,
     environment: process.env.SENTRY_ENV,
     tracesSampleRate: 1.0,
+    replaysSessionSampleRate: 0.1,
+    replaysOnErrorSampleRate: 1.0,
   },
   sentryShowReportDialogThrottleMs: 5000,
   ui: {

@@ -4,11 +4,11 @@ import {
   configureScope,
   captureException as sentryCaptureException,
 } from "@sentry/browser";
-import { CaptureContext, Extras, Severity, User } from "@sentry/types";
+import { CaptureContext, Extras, SeverityLevel, User } from "@sentry/types";
 
 export const captureMessage = (
   message: string,
-  captureContext?: CaptureContext | Severity | undefined
+  captureContext?: CaptureContext | SeverityLevel | undefined
 ) => sentryCaptureMessage(message, captureContext);
 export const setUserContext = (sentryExternalId: string) => {
   const user: User = { id: sentryExternalId };
