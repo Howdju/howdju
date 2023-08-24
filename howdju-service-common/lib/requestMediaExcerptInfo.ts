@@ -21,18 +21,38 @@ export async function requestMediaExcerptInfo(
   url: string,
   quotation: string | undefined
 ): Promise<MediaExcerptInfo> {
-  const html = await fetchUrl(url);
-  const dom = new JSDOM(html, { url, runScripts: "outside-only" });
+  const { extractedQuotation, anchoredBibliographicInfo } = await fetchUrl(
+    url,
+    (html) => {
+      const dom = new JSDOM(html, { url, runScripts: "outside-only" });
 
-  const extractedQuotation = extractQuotationFromTextFragment(url, {
-    doc: dom.window.document,
-  });
+      const extractedQuotation = extractQuotationFromTextFragment(url, {
+        doc: dom.window.document,
+      });
 
-  const anchoredBibliographicInfo = inferAnchoredBibliographicInfo(
-    dom.window.document,
-    // Try to provide a quotation to get the anchors
-    extractedQuotation || quotation
+      const anchoredBibliographicInfo = inferAnchoredBibliographicInfo(
+        dom.window.document,
+        // Try to provide a quotation to get the anchors
+        extractedQuotation || quotation
+      );
+
+      const status =
+        extractedQuotation && anchoredBibliographicInfo.anchors?.length
+          ? "SUCCESS"
+          : extractedQuotation ||
+            anchoredBibliographicInfo.anchors?.length ||
+            anchoredBibliographicInfo.authors
+          ? "PARTIAL_SUCCESS"
+          : "FAILURE";
+
+      return {
+        status,
+        extractedQuotation,
+        anchoredBibliographicInfo,
+      };
+    }
   );
+
   return {
     // Only return a quotation if we found one.
     quotation: extractedQuotation,
