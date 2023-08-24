@@ -1,7 +1,7 @@
 import React from "react";
 import { Card, CardText } from "react-md";
 
-import mdSource from "./About.md";
+import mdSource from "./AboutPage.md";
 
 import "./AboutPage.scss";
 
