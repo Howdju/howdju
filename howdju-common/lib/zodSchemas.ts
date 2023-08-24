@@ -413,6 +413,7 @@ export const WritQuote = Entity.extend({
   quoteText: z.string().min(1).max(4096),
   writ: Writ,
   urls: z.array(Url),
+  creatorUserId: z.string(),
   created: momentObject,
 });
 export type WritQuote = z.infer<typeof WritQuote>;
@@ -1169,7 +1170,8 @@ export type CreateSourceExcerpt = z.infer<typeof CreateSourceExcerpt>;
 
 const CreateMediaExcerptBase = MediaExcerpt.omit({
   id: true,
-  created: true,
+  // TODO uncomment
+  // created: true,
   creatorUserId: true,
   creator: true,
 })

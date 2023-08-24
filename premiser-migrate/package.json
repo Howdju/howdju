@@ -6,14 +6,20 @@
   "author": "Carl Gieringer <carl@howdju.com>",
   "license": "AGPL-3.0-or-later",
   "scripts": {
-    "migrate:local": "node bin/migrate-howdju.js",
-    "migrate:prod": "NODE_ENV=production node bin/migrate-howdju.js"
+    "migrate-2017-local": "node bin/migrate-howdju.js",
+    "migrate-2017-prod": "NODE_ENV=production node bin/migrate-howdju.js",
+    "migrate-writ-quotes-local": "env-cmd -f ../config/local.env ../bin/build-and-run-script.sh bin/migrate-writ-quotes.ts",
+    "migrate-writ-quotes-preprod": "env-cmd -f ../config/preprod-tunnel.env ../bin/build-and-run-script.sh bin/migrate-writ-quotes.ts"
   },
   "dependencies": {
-    "argparse": "^1.0.9",
+    "argparse": "^2.0.1",
     "bluebird": "^3.5.0",
     "lodash": "^4.17.4",
     "mysql": "^2.13.0",
-    "pg": "^6.4.1"
+    "pg": "^8.11.3"
+  },
+  "devDependencies": {
+    "env-cmd": "^10.1.0",
+    "esbuild": "^0.19.2"
   }
 }

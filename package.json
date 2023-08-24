@@ -48,6 +48,7 @@
       "lambdas/*",
       "premiser-api",
       "premiser-ext",
+      "premiser-migrate",
       "premiser-processing",
       "premiser-ui"
     ]

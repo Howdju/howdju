@@ -84,7 +84,8 @@ export class MediaExcerptsService {
     createMediaExcerpt: CreateMediaExcerpt
   ): Promise<{ isExtant: boolean; mediaExcerpt: MediaExcerptOut }> {
     const creator = await this.authService.readUserBlurbForUserIdent(userIdent);
-    const createdAt = utcNow();
+    // TODO remove createMediaExcerpt.created
+    const createdAt = createMediaExcerpt.created || utcNow();
     const createCitations = createMediaExcerpt.citations ?? [];
     const createUrlLocators = createMediaExcerpt.locators?.urlLocators ?? [];
 
