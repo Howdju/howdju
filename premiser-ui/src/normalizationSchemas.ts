@@ -287,9 +287,6 @@ export const mainSearchResultSchema = {
   propositions: propositionsSchema,
   sources: sourcesSchema,
   tags: tagsSchema,
-  writQuoteQuoteTexts: writQuotesSchema,
-  writQuoteUrls: writQuotesSchema,
-  writTitles: writsSchema,
 };
 
 export const normalizationSchemaByEntityType = {

@@ -1,14 +1,11 @@
 import Bluebird from "bluebird";
 
-import { WritQuotesService } from "./WritQuotesService";
 import { TagsService } from "./TagsService";
 import {
   MediaExcerptsSearcher,
   PersorgsNameSearcher,
   PropositionTextSearcher,
   SourceDescriptionSearcher,
-  WritQuoteQuoteTextSearcher,
-  WritTitleSearcher,
 } from "../searchers";
 import { MediaExcerptsService } from "./MediaExcerptsService";
 import { isDomain, isUrl } from "howdju-common";
@@ -22,9 +19,6 @@ export class MainSearchService {
     private sourceDescriptionSearcher: SourceDescriptionSearcher,
     private mediaExcerptsSearcher: MediaExcerptsSearcher,
     private mediaExcerptsService: MediaExcerptsService,
-    private writsTitleSearcher: WritTitleSearcher,
-    private writQuotesQuoteTextSearcher: WritQuoteQuoteTextSearcher,
-    private writQuotesService: WritQuotesService,
     private persorgsNameSearcher: PersorgsNameSearcher
   ) {}
 
@@ -37,9 +31,6 @@ export class MainSearchService {
         propositions: [],
         sources: [],
         tags: [],
-        writTitles: [],
-        writQuoteQuoteTexts: [],
-        writQuoteUrls: [],
       });
     }
     // TODO(466) combine search clauses per entity.
@@ -51,12 +42,6 @@ export class MainSearchService {
       propositions: this.propositionsTextSearcher.search(searchText),
       sources: this.sourceDescriptionSearcher.search(searchText),
       tags: this.tagsService.readTagsLikeTagName(searchText),
-      writTitles: this.writsTitleSearcher.search(searchText),
-      writQuoteQuoteTexts: this.writQuotesQuoteTextSearcher.search(searchText),
-      writQuoteUrls:
-        this.writQuotesService.readWritQuotesHavingUrlContainingText(
-          searchText
-        ),
     });
   }
 
