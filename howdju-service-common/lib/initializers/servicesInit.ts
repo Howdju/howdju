@@ -248,9 +248,6 @@ export function servicesInitializer(provider: AwsProvider) {
     provider.sourceDescriptionSearcher,
     provider.mediaExcerptsSearcher,
     mediaExcerptsService,
-    provider.writsTitleSearcher,
-    provider.writQuotesQuoteTextSearcher,
-    writQuotesService,
     provider.persorgsNameSearcher
   );
 

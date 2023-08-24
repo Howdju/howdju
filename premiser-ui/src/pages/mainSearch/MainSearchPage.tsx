@@ -10,14 +10,10 @@ import {
   PersorgOut,
   PropositionOut,
   SourceOut,
-  WritOut,
-  WritQuoteOut,
 } from "howdju-common";
 
 import mainSearcher from "../../mainSearcher";
 import PropositionCard from "../../PropositionCard";
-import WritCard from "../../WritCard";
-import WritQuoteCard from "../../WritQuoteCard";
 import { smallCellClasses } from "../../CellList";
 import { api, goto } from "../../actions";
 import { mainSearchResultSchema } from "../../normalizationSchemas";
@@ -43,16 +39,8 @@ export default function MainSearchPage() {
     (state) => state.mainSearchPage
   );
 
-  const {
-    mediaExcerpts,
-    persorgs,
-    propositions,
-    sources,
-    tags,
-    writQuoteQuoteTexts,
-    writQuoteUrls,
-    writTitles,
-  } = useAppEntitySelector(normalizedResult, mainSearchResultSchema);
+  const { mediaExcerpts, persorgs, propositions, sources, tags } =
+    useAppEntitySelector(normalizedResult, mainSearchResultSchema);
 
   const goToTag = (tagName: string, _index: number, _event: UIEvent) => {
     const tag = find(tags, (t) => t.name === tagName);
@@ -126,37 +114,6 @@ export default function MainSearchPage() {
         {map(mediaExcerpts, toMediaExcerptCard)}
       </FlipMove>
       {!isFetching && mediaExcerpts.length < 1 && noResults}
-
-      <h2 className="md-cell md-cell--12">Writs</h2>
-      <FlipMove
-        className="md-cell md-cell--12 md-grid md-grid--card-list--tablet"
-        {...config.ui.flipMove}
-      >
-        {map(writTitles, toWritCard)}
-      </FlipMove>
-      {!isFetching && writTitles.length < 1 && noResults}
-
-      <h2 className="md-cell md-cell--12">
-        Writ quotes (text appears within quote)
-      </h2>
-      <FlipMove
-        className="md-cell md-cell--12 md-grid md-grid--card-list--tablet"
-        {...config.ui.flipMove}
-      >
-        {map(writQuoteQuoteTexts, toWritQuoteCard)}
-      </FlipMove>
-      {!isFetching && writQuoteQuoteTexts.length < 1 && noResults}
-
-      <h2 className="md-cell md-cell--12">
-        Writ quotes (text appears within URL)
-      </h2>
-      <FlipMove
-        className="md-cell md-cell--12 md-grid md-grid--card-list--tablet"
-        {...config.ui.flipMove}
-      >
-        {map(writQuoteUrls, toWritQuoteWithUrlsCard)}
-      </FlipMove>
-      {!isFetching && writQuoteUrls.length < 1 && noResults}
     </div>
   );
 }
@@ -207,34 +164,4 @@ function toPersorgCard(persorg: PersorgOut) {
       className={smallCellClasses}
     />
   );
-}
-
-function toWritQuoteCard(writQuote: WritQuoteOut) {
-  const id = `writ-quote-card-${writQuote.id}`;
-  return (
-    <WritQuoteCard
-      writQuote={writQuote}
-      id={id}
-      key={id}
-      className={smallCellClasses}
-    />
-  );
-}
-
-function toWritQuoteWithUrlsCard(writQuote: WritQuoteOut) {
-  const id = `writ-quote-card-${writQuote.id}`;
-  return (
-    <WritQuoteCard
-      writQuote={writQuote}
-      id={id}
-      key={id}
-      className={smallCellClasses}
-      showUrls={true}
-    />
-  );
-}
-
-function toWritCard(writ: WritOut) {
-  const id = `writ-card-${writ.id}`;
-  return <WritCard writ={writ} id={id} key={id} className={smallCellClasses} />;
 }
