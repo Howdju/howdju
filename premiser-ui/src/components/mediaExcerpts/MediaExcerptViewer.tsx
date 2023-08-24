@@ -1,5 +1,6 @@
 import React from "react";
 import { MaterialSymbol } from "react-material-symbols";
+import { Moment } from "moment";
 
 import {
   MediaExcerptView,
@@ -16,13 +17,19 @@ import CreationInfo from "../creationInfo/CreationInfo";
 import config from "../../config";
 
 import "./MediaExcerptViewer.scss";
-import { Moment } from "moment";
+import { useAppDispatch } from "@/hooks";
+import { makeExtensionHighlightOnClickUrlLocatorCallback } from "@/extensionCallbacks";
+import { OnClickUrlLocator } from "@/types";
 
 interface Props {
+  id: string;
   mediaExcerpt: MediaExcerptView;
 }
 
 export default function MediaExcerptViewer({ mediaExcerpt }: Props) {
+  const dispatch = useAppDispatch();
+  const onClickUrlLocator =
+    makeExtensionHighlightOnClickUrlLocatorCallback(dispatch);
   return (
     <div>
       <CollapsibleTextViewer
@@ -36,7 +43,7 @@ export default function MediaExcerptViewer({ mediaExcerpt }: Props) {
       <ul className="url-locators">
         {mediaExcerpt.locators.urlLocators.map((urlLocator: UrlLocatorView) => (
           <li key={urlLocator.key} className="url">
-            {toAnchorElement(mediaExcerpt, urlLocator)}
+            {toAnchorElement(mediaExcerpt, urlLocator, onClickUrlLocator)}
           </li>
         ))}
       </ul>
@@ -60,7 +67,8 @@ export default function MediaExcerptViewer({ mediaExcerpt }: Props) {
 
 function toAnchorElement(
   mediaExcerpt: MediaExcerptView,
-  urlLocator: UrlLocatorView
+  urlLocator: UrlLocatorView,
+  onClickUrlLocator: OnClickUrlLocator
 ) {
   const displayUrl = urlLocator.url.url;
   const textFragmentUrl =
@@ -82,8 +90,12 @@ function toAnchorElement(
       />
     ) : null;
 
+  function onClick(e: React.MouseEvent) {
+    onClickUrlLocator(e, mediaExcerpt, urlLocator);
+  }
+
   return (
-    <a href={textFragmentUrl}>
+    <a href={textFragmentUrl} onClick={onClick}>
       {displayUrl} {confirmationStatus} {creationInfo}
     </a>
   );

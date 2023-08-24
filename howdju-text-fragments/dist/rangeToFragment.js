@@ -8906,7 +8906,7 @@
             updateInProgress = false;
           }
         }
-        function isMoment(obj) {
+        function isMoment2(obj) {
           return obj instanceof Moment3 || obj != null && obj._isAMomentObject != null;
         }
         function warn(msg) {
@@ -10747,7 +10747,7 @@
           if (typeof input === "string") {
             config._i = input = config._locale.preparse(input);
           }
-          if (isMoment(input)) {
+          if (isMoment2(input)) {
             return new Moment3(checkOverflow(input));
           } else if (isDate(input)) {
             config._d = input;
@@ -10956,7 +10956,7 @@
           var res, diff2;
           if (model._isUTC) {
             res = model.clone();
-            diff2 = (isMoment(input) || isDate(input) ? input.valueOf() : createLocal(input).valueOf()) - res.valueOf();
+            diff2 = (isMoment2(input) || isDate(input) ? input.valueOf() : createLocal(input).valueOf()) - res.valueOf();
             res._d.setTime(res._d.valueOf() + diff2);
             hooks.updateOffset(res, false);
             return res;
@@ -11210,7 +11210,7 @@
           return typeof input === "string" || input instanceof String;
         }
         function isMomentInput(input) {
-          return isMoment(input) || isDate(input) || isString3(input) || isNumber2(input) || isNumberOrStringArray(input) || isMomentInputObject(input) || input === null || input === void 0;
+          return isMoment2(input) || isDate(input) || isString3(input) || isNumber2(input) || isNumberOrStringArray(input) || isMomentInputObject(input) || input === null || input === void 0;
         }
         function isMomentInputObject(input) {
           var objectTest = isObject3(input) && !isObjectEmpty(input), propertyTest = false, properties = [
@@ -11295,7 +11295,7 @@
           return new Moment3(this);
         }
         function isAfter(input, units) {
-          var localInput = isMoment(input) ? input : createLocal(input);
+          var localInput = isMoment2(input) ? input : createLocal(input);
           if (!(this.isValid() && localInput.isValid())) {
             return false;
           }
@@ -11307,7 +11307,7 @@
           }
         }
         function isBefore(input, units) {
-          var localInput = isMoment(input) ? input : createLocal(input);
+          var localInput = isMoment2(input) ? input : createLocal(input);
           if (!(this.isValid() && localInput.isValid())) {
             return false;
           }
@@ -11319,7 +11319,7 @@
           }
         }
         function isBetween(from2, to2, units, inclusivity) {
-          var localFrom = isMoment(from2) ? from2 : createLocal(from2), localTo = isMoment(to2) ? to2 : createLocal(to2);
+          var localFrom = isMoment2(from2) ? from2 : createLocal(from2), localTo = isMoment2(to2) ? to2 : createLocal(to2);
           if (!(this.isValid() && localFrom.isValid() && localTo.isValid())) {
             return false;
           }
@@ -11327,7 +11327,7 @@
           return (inclusivity[0] === "(" ? this.isAfter(localFrom, units) : !this.isBefore(localFrom, units)) && (inclusivity[1] === ")" ? this.isBefore(localTo, units) : !this.isAfter(localTo, units));
         }
         function isSame(input, units) {
-          var localInput = isMoment(input) ? input : createLocal(input), inputMs;
+          var localInput = isMoment2(input) ? input : createLocal(input), inputMs;
           if (!(this.isValid() && localInput.isValid())) {
             return false;
           }
@@ -11451,7 +11451,7 @@
           return this.localeData().postformat(output);
         }
         function from(time, withoutSuffix) {
-          if (this.isValid() && (isMoment(time) && time.isValid() || createLocal(time).isValid())) {
+          if (this.isValid() && (isMoment2(time) && time.isValid() || createLocal(time).isValid())) {
             return createDuration({ to: this, from: time }).locale(this.locale()).humanize(!withoutSuffix);
           } else {
             return this.localeData().invalidDate();
@@ -11461,7 +11461,7 @@
           return this.from(createLocal(), withoutSuffix);
         }
         function to(time, withoutSuffix) {
-          if (this.isValid() && (isMoment(time) && time.isValid() || createLocal(time).isValid())) {
+          if (this.isValid() && (isMoment2(time) && time.isValid() || createLocal(time).isValid())) {
             return createDuration({ from: this, to: time }).locale(this.locale()).humanize(!withoutSuffix);
           } else {
             return this.localeData().invalidDate();
@@ -12604,7 +12604,7 @@
         hooks.locale = getSetGlobalLocale;
         hooks.invalid = createInvalid;
         hooks.duration = createDuration;
-        hooks.isMoment = isMoment;
+        hooks.isMoment = isMoment2;
         hooks.weekdays = listWeekdays;
         hooks.parseZone = createInZone;
         hooks.localeData = getLocale;
@@ -12979,6 +12979,9 @@
         }
         requestPasswordReset() {
           return "/request-password-reset";
+        }
+        searchMediaExcerpts() {
+          return "/search-media-excerpts";
         }
       };
       module.exports.commonPaths = new module.exports.CommonPaths();
@@ -30882,19 +30885,6 @@
     }
   });
 
-  // ../node_modules/lodash/cloneDeep.js
-  var require_cloneDeep = __commonJS({
-    "../node_modules/lodash/cloneDeep.js"(exports, module) {
-      var baseClone = require_baseClone();
-      var CLONE_DEEP_FLAG = 1;
-      var CLONE_SYMBOLS_FLAG = 4;
-      function cloneDeep5(value) {
-        return baseClone(value, CLONE_DEEP_FLAG | CLONE_SYMBOLS_FLAG);
-      }
-      module.exports = cloneDeep5;
-    }
-  });
-
   // ../node_modules/lodash/_assignMergeValue.js
   var require_assignMergeValue = __commonJS({
     "../node_modules/lodash/_assignMergeValue.js"(exports, module) {
@@ -33044,6 +33034,7 @@
     demuxJustificationBasisSourceExcerptInput: () => demuxJustificationBasisSourceExcerptInput,
     differenceDuration: () => differenceDuration,
     doTargetSameRoot: () => doTargetSameRoot,
+    domSerializationSafe: () => domSerializationSafe,
     emptyValidationResult: () => emptyValidationResult,
     encodeQueryStringObject: () => encodeQueryStringObject,
     encodeSorts: () => encodeSorts,
@@ -34928,9 +34919,19 @@
   __reExport(lib_exports, __toESM(require_standaloneValidation()));
 
   // ../howdju-common/lib/serialization.ts
-  var import_cloneDeep = __toESM(require_cloneDeep());
+  var import_lodash11 = __toESM(require_lodash());
+  var import_moment5 = __toESM(require_moment());
+  init_general();
+  function domSerializationSafe(obj) {
+    return mapValuesDeep(obj, (value) => {
+      if ((0, import_moment5.isMoment)(value)) {
+        return value.toISOString();
+      }
+      return value;
+    });
+  }
   function decircularizeJustification(justification) {
-    const decircularized = (0, import_cloneDeep.default)(justification);
+    const decircularized = (0, import_lodash11.cloneDeep)(justification);
     if (decircularized.rootTarget.id) {
       decircularized.rootTarget = { id: decircularized.rootTarget.id };
     }
@@ -35113,7 +35114,7 @@
   }
 
   // ../howdju-common/lib/validation.ts
-  var import_lodash11 = __toESM(require_lodash());
+  var import_lodash12 = __toESM(require_lodash());
   init_logger();
   var EmptyBespokeValidationErrors = {
     hasErrors: false,
@@ -35121,16 +35122,16 @@
     fieldErrors: {}
   };
   function newBespokeValidationErrors() {
-    return (0, import_lodash11.cloneDeep)(
+    return (0, import_lodash12.cloneDeep)(
       EmptyBespokeValidationErrors
     );
   }
   var onlyFieldError = (fieldError, code) => {
-    const errors = (0, import_lodash11.filter)(fieldError, (fe) => (0, import_lodash11.isObject)(fe) && fe.code === code);
+    const errors = (0, import_lodash12.filter)(fieldError, (fe) => (0, import_lodash12.isObject)(fe) && fe.code === code);
     if (errors.length > 1) {
       logger.error(`Multiple field errors have the code ${code}.`);
     }
-    return (0, import_lodash11.head)(errors);
+    return (0, import_lodash12.head)(errors);
   };
 
   // ../howdju-common/lib/index.ts
@@ -35150,6 +35151,12 @@
           ),
           url
         }
+      })
+    ),
+    highlightUrlLocator: createAction(
+      "EXTENSION/HIGHLIGHT_URL_LOCATOR",
+      (mediaExcerpt, urlLocator) => ({
+        payload: { mediaExcerpt, urlLocator }
       })
     ),
     messageHandlerReady: createAction("EXTENSION/MESSAGE_HANDLER_READY")
@@ -35361,7 +35368,7 @@
 
   // ../howdju-client-common/lib/models.ts
   var import_merge = __toESM(require_merge2());
-  var import_lodash12 = __toESM(require_lodash());
+  var import_lodash13 = __toESM(require_lodash());
 
   // ../howdju-client-common/lib/target.ts
   var textPosition2 = __toESM(require_dom_anchor_text_position2());

@@ -12,6 +12,7 @@ import { Exact } from "type-fest";
 import {
   logger,
   PersistedJustificationWithRootRef,
+  UrlLocator,
   UrlOut,
 } from "howdju-common";
 import {
@@ -27,7 +28,7 @@ import {
   WindowMessageSource,
 } from "howdju-client-common";
 
-import { annotateSelection, annotateTarget } from "./annotate";
+import { annotateAnchors, annotateSelection, annotateTarget } from "./annotate";
 import { getFrameApi, showSidebar, toggleSidebar } from "./sidebar";
 import { getOption } from "./options";
 import { FramePanelApi } from "./framePanel";
@@ -90,6 +91,11 @@ function routeWindowMessage(action: actions.ExtensionAction) {
         payload as PayloadOf<typeof actions.extension.highlightTarget>
       );
       break;
+    case `${actions.extension.highlightUrlLocator}`:
+      highlightUrlLocator(
+        payload as PayloadOf<typeof actions.extension.highlightUrlLocator>
+      );
+      break;
     case `${actions.extension.messageHandlerReady}`:
       setMessageHandlerReady(true);
       break;
@@ -101,6 +107,13 @@ function routeWindowMessage(action: actions.ExtensionAction) {
   if (isRecognized) {
     // Let the app know we got it
     postActionMessageToFrame(actions.extensionFrame.ackMessage());
+  }
+}
+
+function highlightUrlLocator({ urlLocator }: { urlLocator: UrlLocator }) {
+  const { anchors } = urlLocator;
+  if (anchors?.length) {
+    runCommands([{ annotateUrlLocatorAnchors: anchors }]);
   }
 }
 
@@ -179,6 +192,19 @@ function runCommand<T extends Exact<ContentScriptCommand, T>>(command: T) {
     });
     return;
   }
+  if ("annotateUrlLocatorAnchors" in command) {
+    // TODO(38) remove any typecast
+    const annotation = annotateAnchors(
+      command.annotateUrlLocatorAnchors as any
+    );
+    annotation.nodes[0].scrollIntoView({
+      behavior: "smooth",
+      block: "center",
+      inline: "center",
+    });
+    return;
+  }
+
   logger.error(`Unrecognized command ${command}`);
 }
 

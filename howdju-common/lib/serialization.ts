@@ -1,7 +1,9 @@
-import cloneDeep from "lodash/cloneDeep";
-import { JustificationOut, JustificationWithRootOut } from "./apiModels";
-import { JustificationView } from "./viewModels";
+import { cloneDeep } from "lodash";
+import { isMoment } from "moment";
 
+import { JustificationOut, JustificationWithRootOut } from "./apiModels";
+import { mapValuesDeep } from "./general";
+import { JustificationView } from "./viewModels";
 import { Entity, Proposition, SourceExcerpt } from "./zodSchemas";
 
 // Recursively replace all Entity subtypes with Entity so that they can be
@@ -11,6 +13,15 @@ export type Decircularized<T> = {
     ? Decircularized<T[key]> | Entity
     : Decircularized<T[key]>;
 };
+
+export function domSerializationSafe(obj: any) {
+  return mapValuesDeep(obj, (value) => {
+    if (isMoment(value)) {
+      return value.toISOString();
+    }
+    return value;
+  });
+}
 
 export function decircularizeJustification(
   justification: JustificationOut | JustificationWithRootOut | JustificationView

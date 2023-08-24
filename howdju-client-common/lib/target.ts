@@ -9,6 +9,7 @@ import {
   UrlTarget,
   makeDomAnchor,
   nodeIsBefore,
+  DomAnchor,
 } from "howdju-common";
 
 import { getPreviousLeafNode } from "./dom";
@@ -48,8 +49,12 @@ function rangeToAnchor(range: Range): CreateDomAnchor {
 }
 
 export function targetToRanges(target: UrlTarget) {
+  return anchorsToRanges(target.anchors as [DomAnchor]);
+}
+
+export function anchorsToRanges(anchors: DomAnchor[]) {
   const ranges = [];
-  for (const anchor of target.anchors) {
+  for (const anchor of anchors) {
     let options = {};
     if (anchor.startOffset) {
       // The average of the start and end seems like a good idea

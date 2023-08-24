@@ -67,6 +67,7 @@ export default handleActions(
       api.fetchMainSearchResults.response,
       api.fetchMainSearchSuggestions.response,
       api.fetchMediaExcerpt.response,
+      api.fetchMediaExcerpts.response,
       api.fetchPersorg.response,
       api.fetchPersorgNameSuggestions.response,
       api.fetchProposition.response,

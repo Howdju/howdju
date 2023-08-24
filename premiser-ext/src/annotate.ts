@@ -1,7 +1,7 @@
 import concat from "lodash/concat";
 import { isUndefined } from "lodash";
 
-import { logger, UrlTarget, nodeIsBefore } from "howdju-common";
+import { logger, UrlTarget, nodeIsBefore, DomAnchor } from "howdju-common";
 import {
   getSelection,
   clearSelection,
@@ -13,6 +13,7 @@ import {
   isCoextensive,
   insertNodeAfter,
   insertNodeBefore,
+  anchorsToRanges,
 } from "howdju-client-common";
 
 import { getNodeData } from "./node-data";
@@ -54,6 +55,12 @@ export function annotateSelection(): AnnotatedExcerpt | undefined {
 
 export function annotateTarget(target: UrlTarget) {
   const ranges = targetToRanges(target);
+  const nodes = rangesToNodes(ranges);
+  return getOrCreateAnnotation(nodes);
+}
+
+export function annotateAnchors(anchors: DomAnchor[]) {
+  const ranges = anchorsToRanges(anchors);
   const nodes = rangesToNodes(ranges);
   return getOrCreateAnnotation(nodes);
 }

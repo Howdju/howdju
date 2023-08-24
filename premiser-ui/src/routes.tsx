@@ -51,6 +51,7 @@ import MediaExcerptUsagesPage from "./pages/mediaExcerptUsages/MediaExcerptUsage
 import CreateAppearancePage from "./pages/appearances/CreateAppearancePage";
 import AppearancePage from "./pages/appearances/AppearancePage";
 import FactCheckPage from "./pages/factChecks/FactCheckPage";
+import MediaExcerptsSearchPage from "./pages/mediaExcerptsSearch/MediaExcerptsSearchPage";
 
 const renderHomePath = (props: RouteProps) => {
   const mainSearchText =
@@ -170,6 +171,13 @@ const routesById = {
       exact
       path="/media-excerpts/:mediaExcerptId/:slug?"
       component={MediaExcerptPage}
+    />
+  ),
+  mediaExcerptsSearch: (
+    <Route
+      exact
+      path={commonPaths.searchMediaExcerpts()}
+      component={MediaExcerptsSearchPage}
     />
   ),
 
