@@ -1,6 +1,6 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { ActionCreator, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { normalize } from "normalizr";
-import { call, delay, put, race, take, takeEvery } from "typed-redux-saga";
+import { all, call, delay, put, race, take, takeEvery } from "typed-redux-saga";
 
 import { ContinuationToken, EntityId } from "howdju-common";
 
@@ -22,7 +22,7 @@ export const slice = createSlice({
       state,
       _action: PayloadAction<{
         mediaExcerptId: EntityId;
-        continuationToken: ContinuationToken | undefined;
+        continuationToken?: ContinuationToken;
       }>
     ) {
       state.isFetchingJustifications = true;
@@ -48,7 +48,7 @@ export const slice = createSlice({
       state,
       _action: PayloadAction<{
         mediaExcerptId: EntityId;
-        continuationToken: ContinuationToken | undefined;
+        continuationToken?: ContinuationToken;
       }>
     ) {
       state.isFetchingAppearances = true;
@@ -87,6 +87,13 @@ type FetchAppearancesResponseAction = ReturnType<
 >;
 
 export function* mediaExcerptUsagesPageSaga() {
+  yield all([
+    mediaExcerptUsagesPageJustificationsSaga(),
+    mediaExcerptUsagesPageAppearancesSaga(),
+  ]);
+}
+
+export function* mediaExcerptUsagesPageJustificationsSaga() {
   yield takeEvery(
     slice.actions.fetchJustifications,
     // TODO(525) factor out the duplicate logic in these sagas. Use it in factCheckPageSliceSaga too.
@@ -107,7 +114,11 @@ export function* mediaExcerptUsagesPageSaga() {
         timeout,
       }: { responseAction: FetchJustificationsResponseAction; timeout: true } =
         yield race({
-          responseAction: call(getResponseAction, requestId),
+          responseAction: call(
+            getResponseAction,
+            requestId,
+            api.fetchJustificationsSearch.response
+          ),
           timeout: delay(config.apiTimeoutMs),
         });
       if (responseAction) {
@@ -135,6 +146,8 @@ export function* mediaExcerptUsagesPageSaga() {
       }
     }
   );
+}
+export function* mediaExcerptUsagesPageAppearancesSaga() {
   yield takeEvery(
     slice.actions.fetchAppearances,
     function* ({ payload: { mediaExcerptId, continuationToken } }) {
@@ -150,7 +163,11 @@ export function* mediaExcerptUsagesPageSaga() {
         timeout,
       }: { responseAction: FetchAppearancesResponseAction; timeout: true } =
         yield race({
-          responseAction: call(getResponseAction, requestId),
+          responseAction: call(
+            getResponseAction,
+            requestId,
+            api.fetchAppearances.response
+          ),
           timeout: delay(config.apiTimeoutMs),
         });
       if (responseAction) {
@@ -182,9 +199,9 @@ export function* mediaExcerptUsagesPageSaga() {
 
 function* getResponseAction<
   T extends PayloadAction<any, string, ApiResponseActionMeta<any, any>>
->(requestId: string) {
+>(requestId: string, responseActionCreator: ActionCreator<any>) {
   while (true) {
-    const resultAction: T = yield take(api.fetchAppearances.response);
+    const resultAction: T = yield take(responseActionCreator);
     if (resultAction.meta.requestId === requestId) {
       return resultAction;
     }

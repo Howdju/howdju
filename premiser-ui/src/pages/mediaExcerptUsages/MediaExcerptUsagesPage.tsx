@@ -8,7 +8,6 @@ import FlipMove from "react-flip-move";
 
 import { AppearanceView, EntityId, JustificationView } from "howdju-common";
 
-import { api } from "../../actions";
 import {
   appearancesSchema,
   justificationsSchema,
@@ -20,8 +19,6 @@ import ErrorPage from "@/ErrorPage";
 import FlipMoveWrapper from "@/FlipMoveWrapper";
 import AppearanceCard from "../appearances/AppearanceCard";
 import page from "./mediaExcerptUsagesPageSlice";
-
-const fetchCount = 20;
 
 interface MatchParams {
   mediaExcerptId: EntityId;
@@ -45,12 +42,8 @@ interface ValidProps {
 function ValidMediaExcerptUsagesPage({ mediaExcerptId }: ValidProps) {
   const dispatch = useAppDispatch();
   useEffect(() => {
-    dispatch(
-      api.fetchJustificationsSearch({
-        filters: { mediaExcerptId },
-        count: fetchCount,
-      })
-    );
+    dispatch(page.fetchJustifications({ mediaExcerptId }));
+    dispatch(page.fetchAppearances({ mediaExcerptId }));
   }, [dispatch, mediaExcerptId]);
 
   const pageState = useAppSelector((state) => state.mediaExcerptUsagesPage);

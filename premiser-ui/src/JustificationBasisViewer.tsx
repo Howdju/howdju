@@ -12,7 +12,7 @@ import WritQuoteEntityViewer from "./WritQuoteEntityViewer";
 import { ComponentId } from "./types";
 import { OnClickWritQuoteUrl } from "./WritQuoteViewer";
 import { combineEditorIds } from "./viewModels";
-import MediaExcerptViewer from "./components/mediaExcerpts/MediaExcerptViewer";
+import MediaExcerptEntityViewer from "./components/mediaExcerpts/MediaExcerptEntityViewer";
 
 import "./JustificationBasisViewer.scss";
 
@@ -51,7 +51,7 @@ function makeBasisViewer({
         />
       );
     case "MEDIA_EXCERPT":
-      return <MediaExcerptViewer mediaExcerpt={basis.entity} />;
+      return <MediaExcerptEntityViewer id={id} mediaExcerpt={basis.entity} />;
     case JustificationBasisTypes.WRIT_QUOTE:
       return (
         <WritQuoteEntityViewer
