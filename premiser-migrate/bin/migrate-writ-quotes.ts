@@ -19,7 +19,7 @@ const args = parser.parse_args();
 
 const provider = new MigrateProvider() as ServicesProvider;
 
-const count = args.test_one_only ? 1 : 1000;
+const count = args.test_one_only ? 1 : 100;
 
 convertAllWritQuotesToMediaExcerpts()
   .finally(() => provider.pool.end())
@@ -59,9 +59,9 @@ async function convertWritQuotesToMediaExcerpts(writQuotes: WritQuoteOut[]) {
      non-empty quotation, so we can't translate them. We can look at them manually later to see if
      we want to find a quotation for them. If not, we will delete them.
     */
-    if (writQuote.quoteText.length === 0) {
+    if (!writQuote.quoteText) {
       provider.logger.info(
-        `Skipping empty quote ${writQuote.id} from writ ${writQuote.writ.id}`
+        `Skipping empty quote ${writQuote.id} with writ ${writQuote.writ.id}`
       );
       continue;
     }
@@ -71,6 +71,8 @@ async function convertWritQuotesToMediaExcerpts(writQuotes: WritQuoteOut[]) {
       "read write",
       async (client) => {
         const provider = new MigrateProvider() as ServicesProvider;
+
+        // Overwrite service/dao database with txn client so that they participate in the transaction.
 
         // @ts-ignore commit crimes against code by creating a fake transaction method that just
         // reuses the current transaction.
@@ -96,6 +98,7 @@ async function convertWritQuotesToMediaExcerpts(writQuotes: WritQuoteOut[]) {
             { userId },
             createMediaExcerpt
           );
+        // justifications can be WritQuote-based or Justificaiton
         const { justifications } =
           await provider.justificationsService.readJustifications({
             filters: { writQuoteId: writQuote.id },
@@ -105,11 +108,23 @@ async function convertWritQuotesToMediaExcerpts(writQuotes: WritQuoteOut[]) {
             count: 1000,
             includeUrls: false,
           });
+        const writQuoteJustifications = justifications.filter(
+          (j) =>
+            // Compound-based justifications will be addressed separately.
+            j.basis.type === "WRIT_QUOTE" &&
+            // There is one compound-based counter-justification. We will address it manually
+            j.target.type === "PROPOSITION"
+        );
+
         provider.logger.info(
           `Created media excerpt ${mediaExcerpt.id} for writ quote ${writQuote.id}`
         );
         await Promise.all([
-          updateJustificationsBasis(client, justifications, mediaExcerpt.id),
+          updateJustificationsBasis(
+            client,
+            writQuoteJustifications,
+            mediaExcerpt.id
+          ),
           writeWritQuoteTranslation(client, writQuote.id, mediaExcerpt.id),
           deleteWritQuoteForId(client, writQuote.id),
         ]);
@@ -144,10 +159,13 @@ function updateJustificationsBasis(
   justifications: JustificationOut[],
   mediaExcerptId: EntityId
 ) {
+  const writQuoteBasedJustifications = justifications.filter(
+    (j) => j.basis.type === "WRIT_QUOTE"
+  );
   return client.query(
     "updateJustificationsBasis",
     `update justifications set basis_id = $2, basis_type = 'MEDIA_EXCERPT' where justification_id = any ($1)`,
-    [justifications.map((j) => j.id), mediaExcerptId]
+    [writQuoteBasedJustifications.map((j) => j.id), mediaExcerptId]
   );
 }
 

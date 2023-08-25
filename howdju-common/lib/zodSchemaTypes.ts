@@ -111,7 +111,8 @@ export type PersistedJustificationWithRootRef = Omit<
           type: "MEDIA_EXCERPT";
           entity: MediaExcerptOut;
         }
-      | { type: "WRIT_QUOTE"; entity: Persisted<WritQuote> };
+      | { type: "WRIT_QUOTE"; entity: Persisted<WritQuote> }
+      | { type: "JUSTIFICATION_BASIS_COMPOUND"; entity: PersistedEntity };
   };
 
 /**
@@ -145,8 +146,11 @@ export type BasedJustificationWithRootRef = Omit<
         type: "MEDIA_EXCERPT";
         entity: MediaExcerptOut | MediaExcerptRef;
       }
-    | { type: "SOURCE_EXCERPT"; entity: Persisted<SourceExcerpt> }
-    | { type: "WRIT_QUOTE"; entity: Persisted<WritQuote> };
+    | { type: "WRIT_QUOTE"; entity: Persisted<WritQuote> }
+    | {
+        type: "SOURCE_EXCERPT" | "JUSTIFICATION_BASIS_COMPOUND";
+        entity: PersistedEntity;
+      };
 };
 
 /**

@@ -2,7 +2,7 @@
 -- canonicalizing the first (#494).
 create table url_normalization_progress (
   normalized_url_id int not null,
-  new_normal_url text,
+  old_url text,
   replacement_url_id int
 );
 

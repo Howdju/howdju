@@ -11,6 +11,12 @@ To migrate:
 - in old db: delete from migration_translations
 - yarn run migrate:prod
 
+## Normalize URLs
+
+```sh
+yarn run normalize-urls-preprod
+```
+
 ## WritQuote to MediaExcerpt migration
 
 - Backup DB:
@@ -35,7 +41,7 @@ To migrate:
   ```sh
   yarn run db:tunnel
   pg_dump_file_name=premiser_prod_dump-$(date -u +"%Y-%m-%dT%H:%M:%SZ").sql
-  pg_dump -h 127.0.0.1 -p 5433 howdju -U premiser_rds > $pg_dump_file_name
+  pg_dump -h 127.0.0.1 -p 5433 premiser -U premiser_rds > $pg_dump_file_name
   ```
 
 - Add history table
@@ -56,3 +62,11 @@ To migrate:
   ```sh
   yarn run migrate-writ-quotes-local
   ```
+
+### Create new preprod db
+
+```sh
+echo 'create database howdju_pre_prod_2;' | psql -h localhost -p 5433 -U premiser_rds postgres
+psql -h localhost -p 5433 -U premiser_rds howdju_pre_prod_2 < premiser-api/db/migrations/0000_db-users-privileges.sql
+psql -h localhost -p 5433 -U premiser_rds --set ON_ERROR_STOP=on howdju_pre_prod_2 < premiser-migrate/dumps/premiser_preprod_dump-2023-08-25T03:36:34Z.sql
+```

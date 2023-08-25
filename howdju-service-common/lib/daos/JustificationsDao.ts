@@ -880,6 +880,22 @@ export class JustificationsDao {
             );
             continue;
           }
+
+          // TODO(#228) remove this block
+          // Counter-justifications should only ever be PropositionCompound-based, but it's possible
+          // that we may find some. We should ensure we have a check to prevent creating them,
+          // check the DB for any existing ones, migrate them if necessary, and then remove this block.
+          if (justification.basis.type === "MEDIA_EXCERPT") {
+            const mediaExcerptId = justification.basis.entity.id;
+            if (!justificationsByBasisMediaExcerptId.has(mediaExcerptId)) {
+              justificationsByBasisMediaExcerptId.set(mediaExcerptId, []);
+            }
+            justificationsByBasisMediaExcerptId
+              .get(mediaExcerptId)
+              .push(justification);
+            mediaExcerptIdSet.add(mediaExcerptId);
+          }
+
           // TODO(#228) remove this typecast
           justification = justification.target
             .entity as BasedJustificationDataOut;

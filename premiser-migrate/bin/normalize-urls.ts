@@ -58,12 +58,12 @@ async function convertAllWritQuotesToMediaExcerpts() {
             client.query(
               "normalizeUrl",
               `update urls set url = $2 where url_id = $1`,
-              [url.id, normalizeUrl(url.url)]
+              [url.id, normalUrl]
             ),
             client.query(
               "writeUrlNormalizationProgress",
-              `insert into url_normalization_progress (normalized_url_id, new_normal_url) values ($1, $2)`,
-              [url.id, normalUrl]
+              `insert into url_normalization_progress (normalized_url_id, old_url) values ($1, $2)`,
+              [url.id, url.url]
             ),
           ]);
           return;
