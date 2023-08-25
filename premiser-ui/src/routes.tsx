@@ -6,7 +6,7 @@ import { pathToRegexp, Key as PathToRegexpKey } from "path-to-regexp";
 import { JustificationRootTargetTypes, commonPaths } from "howdju-common";
 
 import AccountSettingsPage from "./pages/accountSettings/AccountSettingsPage";
-import AboutPage from "./AboutPage";
+import AboutPage from "@/pages/about/AboutPage";
 import CreatePropositionPage from "./CreatePropositionPage";
 import { history } from "./history";
 import IconPage from "./IconPage";
@@ -33,7 +33,7 @@ import SubmitMediaExcerptPage from "./pages/SubmitMediaExcerptPage";
 import TagPage from "./pages/tag/TagPage";
 import TestErrorPage from "./TestErrorPage";
 import ToolsPage from "./ToolsPage";
-import WhatsNextPage from "./WhatsNextPage";
+import WhatsNextPage from "./pages/whatsNext/WhatsNextPage";
 
 import principlesInnerHtml from "./policies/principles.md";
 import userAgreementInnerHtml from "./policies/user-agreement.md";
