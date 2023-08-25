@@ -9,7 +9,9 @@
     "migrate-2017-local": "node bin/migrate-howdju.js",
     "migrate-2017-prod": "NODE_ENV=production node bin/migrate-howdju.js",
     "migrate-writ-quotes-local": "env-cmd -f ../config/local.env ../bin/build-and-run-script.sh bin/migrate-writ-quotes.ts",
-    "migrate-writ-quotes-preprod": "env-cmd -f ../config/preprod-tunnel.env ../bin/build-and-run-script.sh bin/migrate-writ-quotes.ts"
+    "migrate-writ-quotes-preprod": "env-cmd -f ../config/preprod-tunnel.env ../bin/build-and-run-script.sh bin/migrate-writ-quotes.ts",
+    "normalize-urls-local": "env-cmd -f ../config/local.env ../bin/build-and-run-script.sh bin/normalize-urls.ts",
+    "normalize-urls-preprod": "env-cmd -f ../config/preprod-tunnel.env ../bin/build-and-run-script.sh bin/normalize-urls.ts"
   },
   "dependencies": {
     "argparse": "^2.0.1",

@@ -83,4 +83,9 @@ export class UrlsService {
     ensurePresent(urlIds, urls, "URL");
     return urls;
   }
+
+  // TODO remove
+  readAllUrls(skipUrlIds: number[]) {
+    return this.urlsDao.readAllUrls(skipUrlIds);
+  }
 }
