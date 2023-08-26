@@ -31,6 +31,7 @@ import {
   filterDefined,
   JustificationFilters,
   SortDescription,
+  toJson,
 } from "howdju-common";
 
 import {
@@ -874,11 +875,17 @@ export class JustificationsDao {
         // justification.target.entity from `Ref<"Justification"> |
         // BasedJustificationWithRootRef` to BasedJustificationDataOut) and remove the typecast below.
         while (justification.target.type === "JUSTIFICATION") {
+          if (!justification.target.entity) {
+            this.logger.error(
+              `Incorrectly materialized justification: ${toJson(justification)}`
+            );
+            break;
+          }
           if (!("counterJustifications" in justification.target.entity)) {
             this.logger.error(
               `Counter justification was not materialized (ID ${justification.target.entity.id}))`
             );
-            continue;
+            break;
           }
 
           // TODO(#228) remove this block

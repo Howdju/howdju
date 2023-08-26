@@ -70,3 +70,23 @@ echo 'create database howdju_pre_prod_2;' | psql -h localhost -p 5433 -U premise
 psql -h localhost -p 5433 -U premiser_rds howdju_pre_prod_2 < premiser-api/db/migrations/0000_db-users-privileges.sql
 psql -h localhost -p 5433 -U premiser_rds --set ON_ERROR_STOP=on howdju_pre_prod_2 < premiser-migrate/dumps/premiser_preprod_dump-2023-08-25T03:36:34Z.sql
 ```
+
+Check for active connections (canont rename database with them):
+
+```psql
+premiser_migrated=> select pid as process_id,
+       usename as username,
+       datname as database_name,
+       client_addr as client_address,
+       application_name,
+       backend_start,
+       state,
+       state_change
+from pg_stat_activity;
+
+-- Use process_id from above query
+SELECT pg_terminate_backend(7967);
+
+alter database premiser rename to premiser_old;
+alter database premiser_migrated rename to premiser;
+```

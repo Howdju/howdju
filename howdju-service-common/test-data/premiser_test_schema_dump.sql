@@ -1148,6 +1148,16 @@ ALTER SEQUENCE public.url_locators_url_locator_id_seq OWNED BY public.url_locato
 
 
 --
+-- Name: url_normalization_replacements; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.url_normalization_replacements (
+    replaced_url_id integer NOT NULL,
+    replacement_url_id integer NOT NULL
+);
+
+
+--
 -- Name: urls; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -1307,6 +1317,16 @@ CREATE SEQUENCE public.votes_vote_id_seq
 --
 
 ALTER SEQUENCE public.votes_vote_id_seq OWNED BY public.justification_votes.justification_vote_id;
+
+
+--
+-- Name: writ_quote_translations; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.writ_quote_translations (
+    writ_quote_id integer NOT NULL,
+    media_excerpt_id integer NOT NULL
+);
 
 
 --

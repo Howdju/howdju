@@ -92,6 +92,7 @@ export default class LandingPage extends Component {
             }),
           ],
           created,
+          creatorUserId: "test-user",
         },
       },
     });
@@ -166,6 +167,7 @@ export default class LandingPage extends Component {
                 "https://code.dccouncil.gov/us/dc/council/code/sections/6-601.05",
             }),
           ],
+          creatorUserId: "test-user",
         },
       },
     });

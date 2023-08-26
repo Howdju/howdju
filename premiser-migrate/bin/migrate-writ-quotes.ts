@@ -60,10 +60,7 @@ async function convertWritQuotesToMediaExcerpts(writQuotes: WritQuoteOut[]) {
      we want to find a quotation for them. If not, we will delete them.
     */
     if (!writQuote.quoteText) {
-      provider.logger.info(
-        `Skipping empty quote ${writQuote.id} with writ ${writQuote.writ.id}`
-      );
-      continue;
+      writQuote.quoteText = "migrated_with_empty_quotation";
     }
     await provider.database.transaction(
       "convertWritQuoteToMediaExcerpt",
@@ -98,7 +95,7 @@ async function convertWritQuotesToMediaExcerpts(writQuotes: WritQuoteOut[]) {
             { userId },
             createMediaExcerpt
           );
-        // justifications can be WritQuote-based or Justificaiton
+        // justifications can be WritQuote-based or JustificationBasisCompound-based.
         const { justifications } =
           await provider.justificationsService.readJustifications({
             filters: { writQuoteId: writQuote.id },
@@ -110,9 +107,9 @@ async function convertWritQuotesToMediaExcerpts(writQuotes: WritQuoteOut[]) {
           });
         const writQuoteJustifications = justifications.filter(
           (j) =>
-            // Compound-based justifications will be addressed separately.
+            // Compound-based justifications will be addressed separately in #545.
             j.basis.type === "WRIT_QUOTE" &&
-            // There is one compound-based counter-justification. We will address it manually
+            // There is one compound-based counter-justification. We will address it in #545.
             j.target.type === "PROPOSITION"
         );
 
@@ -126,6 +123,8 @@ async function convertWritQuotesToMediaExcerpts(writQuotes: WritQuoteOut[]) {
             mediaExcerpt.id
           ),
           writeWritQuoteTranslation(client, writQuote.id, mediaExcerpt.id),
+          // Delete the writ quote even if it is still used by a JustificationBasisCompound's
+          // SourceExcerptParaphrase. When we read those we will ignore deletion.
           deleteWritQuoteForId(client, writQuote.id),
         ]);
       }
