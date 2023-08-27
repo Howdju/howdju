@@ -1,5 +1,4 @@
 import { Moment } from "moment";
-import { ArgumentParser } from "argparse";
 
 import {
   CreateAppearance,
@@ -11,12 +10,6 @@ import { ServicesProvider } from "howdju-service-common";
 import { groupBy } from "lodash";
 
 import { MigrateProvider } from "./init/MigrateProvider";
-
-const parser = new ArgumentParser({
-  description: "Convert WritQuotes to MediaExcerpts",
-});
-parser.add_argument("--test-one-only", { action: "store_true" });
-const args = parser.parse_args();
 
 const provider = new MigrateProvider() as ServicesProvider;
 
@@ -37,6 +30,7 @@ async function migrateJustificationBasisCompounds() {
         , p.text as proposition_atom_text
         , pp.text as paraphrasing_proposition_text
         , wq.writ_quote_id
+        , sep.source_excerpt_paraphrase_id
         , sep.creator_user_id as source_excerpt_paraphrase_creator_user_id
         , sep.created as source_excerpt_paraphrase_created
       from justification_basis_compound_atoms jbca
@@ -81,7 +75,7 @@ async function migrateJustificationBasisCompounds() {
   );
 
   // For each compound-based justification:
-  // - Each paraphrasing proposition should become an appearance of its WritQuote's
+  // - Each paraphrasing proposition should move to an indepenedent Appearance of its WritQuote's
   //   MediaExcerpt.
   // - All propositions (atom or paraphrasing) should become atoms of a new PropositionCompound-based justification
   //   of the same target.
@@ -124,6 +118,7 @@ async function migrateJustificationBasisCompounds() {
                     row.paraphrasing_proposition_text,
                   mediaExcerptId:
                     mediaExcerptIdsByWritQuoteId[row.writ_quote_id],
+                  sourceExcerptParaphraseId: row.source_excerpt_paraphrase_id,
                   creatorUserId: row.source_excerpt_paraphrase_creator_user_id,
                   createdAt: row.source_excerpt_paraphrase_created,
                 }
@@ -132,17 +127,20 @@ async function migrateJustificationBasisCompounds() {
           .filter(isDefined);
         const createAppearanceInfos: {
           createAppearance: CreateAppearance;
+          sourceExcerptParaphraseId: EntityId;
           creatorUserId: EntityId;
           createdAt: Moment;
         }[] = paraphraseInfos.map(
           ({
             creatorUserId,
             createdAt,
+            sourceExcerptParaphraseId,
             paraphrasingPropositionText,
             mediaExcerptId,
           }) => ({
             creatorUserId,
             createdAt,
+            sourceExcerptParaphraseId,
             createAppearance: {
               mediaExcerptId: mediaExcerptId,
               apparition: {
@@ -155,13 +153,31 @@ async function migrateJustificationBasisCompounds() {
           })
         );
         // userId should be the same as created the source_excerpt_paraphrase.
-        await Promise.all(
+        const appearanceInfos = await Promise.all(
           createAppearanceInfos.map(
-            ({ creatorUserId, createdAt, createAppearance }) =>
-              provider.appearancesService.createAppearance(
-                { userId: creatorUserId },
-                createAppearance,
-                createdAt
+            async ({
+              creatorUserId,
+              createdAt,
+              createAppearance,
+              sourceExcerptParaphraseId,
+            }) => ({
+              sourceExcerptParaphraseId,
+              appearanceResult:
+                await provider.appearancesService.createAppearance(
+                  { userId: creatorUserId },
+                  createAppearance,
+                  createdAt
+                ),
+            })
+          )
+        );
+        await Promise.all(
+          appearanceInfos.map(
+            ({ appearanceResult: { appearance }, sourceExcerptParaphraseId }) =>
+              client.query(
+                "writeSourceExcerptParaphraseTranslation",
+                `insert into source_excerpt_paraphrase_translations (source_excerpt_paraphrase_id, appearance_id) values ($1, $2)`,
+                [sourceExcerptParaphraseId, appearance.id]
               )
           )
         );
@@ -191,11 +207,18 @@ async function migrateJustificationBasisCompounds() {
               userId,
               createdAt
             );
-          await client.query(
-            "switchJustificationToPropositionCompound",
-            `update justifications set basis_type = 'PROPOSITION_COMPOUND', basis_id = $2 where justification_id = $1`,
-            [justificationId, propositionCompound.id]
-          );
+          await Promise.all([
+            client.query(
+              "switchJustificationToPropositionCompound",
+              `update justifications set basis_type = 'PROPOSITION_COMPOUND', basis_id = $2 where justification_id = $1`,
+              [justificationId, propositionCompound.id]
+            ),
+            client.query(
+              "writeJustificationBasisCompoundTranslation",
+              `insert into justification_basis_compound_translations (justification_basis_compound_id, proposition_compound_id) values ($1, $2)`,
+              [compoundId, propositionCompound.id]
+            ),
+          ]);
         }
       }
     );

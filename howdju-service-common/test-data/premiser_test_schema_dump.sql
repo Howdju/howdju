@@ -397,6 +397,18 @@ ALTER SEQUENCE public.justification_basis_compound__justification_basis_compound
 
 
 --
+-- Name: justification_basis_compound_translations; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.justification_basis_compound_translations (
+    justification_basis_compound_id integer NOT NULL,
+    justification_basis_compound_atom_id integer NOT NULL,
+    proposition_compound_id integer NOT NULL,
+    proposition_compound_atom_id integer NOT NULL
+);
+
+
+--
 -- Name: justification_basis_compounds; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -914,6 +926,16 @@ ALTER SEQUENCE public.registration_requests_registration_request_id_seq OWNED BY
 
 
 --
+-- Name: source_excerpt_paraphrase_translations; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.source_excerpt_paraphrase_translations (
+    source_excerpt_paraphrase_id integer NOT NULL,
+    appearance_id integer NOT NULL
+);
+
+
+--
 -- Name: source_excerpt_paraphrases; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -1148,12 +1170,13 @@ ALTER SEQUENCE public.url_locators_url_locator_id_seq OWNED BY public.url_locato
 
 
 --
--- Name: url_normalization_replacements; Type: TABLE; Schema: public; Owner: -
+-- Name: url_normalization_progress; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.url_normalization_replacements (
-    replaced_url_id integer NOT NULL,
-    replacement_url_id integer NOT NULL
+CREATE TABLE public.url_normalization_progress (
+    normalized_url_id integer NOT NULL,
+    old_url text,
+    replacement_url_id integer
 );
 
 

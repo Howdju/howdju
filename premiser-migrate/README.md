@@ -63,7 +63,25 @@ yarn run normalize-urls-preprod
   yarn run migrate-writ-quotes-local
   ```
 
+### Example env file:
+
+```env
+DB_USER=...
+DB_NAME=howdju_pre_prod_2
+DB_PASSWORD=...
+DB_HOST=localhost
+DB_PORT=5434
+LOG_LEVEL=silly
+DEBUG_PRINT_DB_QUERIES=true
+MESSAGES_TOPIC_ARN=...
+DEFAULT_AWS_REGION=us-east-1
+AWS_ACCESS_KEY_ID=...
+AWS_SECRET_ACCESS_KEY=...
+```
+
 ### Create new preprod db
+
+It's easier to run the migration on a copy of the data and then rename the database.
 
 ```sh
 echo 'create database howdju_pre_prod_2;' | psql -h localhost -p 5433 -U premiser_rds postgres
@@ -86,7 +104,11 @@ from pg_stat_activity;
 
 -- Use process_id from above query
 SELECT pg_terminate_backend(7967);
+```
 
+Do the rename:
+
+```psql
 alter database premiser rename to premiser_old;
 alter database premiser_migrated rename to premiser;
 ```

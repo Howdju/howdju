@@ -13,11 +13,11 @@ const args = parser.parse_args();
 
 const provider = new MigrateProvider() as ServicesProvider;
 
-convertAllWritQuotesToMediaExcerpts()
+normalizeAllUrls()
   .finally(() => provider.pool.end())
   .catch((err) => provider.logger.error({ err }));
 
-async function convertAllWritQuotesToMediaExcerpts() {
+async function normalizeAllUrls() {
   const { rows } = await provider.database.query(
     "readUrlNormalizationProgress",
     `select normalized_url_id from url_normalization_progress`
