@@ -22030,8 +22030,6 @@
           // urlLocators can become optional if we add other locator types.
           urlLocators: mod.array(CreateUrlLocator)
         }).optional(),
-        // TODO remove created
-        created: momentObject.optional(),
         citations: mod.array(CreateMediaExcerptCitation).optional(),
         speakers: mod.array(CreateMediaExcerptSpeaker).optional()
       });

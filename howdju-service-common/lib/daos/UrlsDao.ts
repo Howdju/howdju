@@ -41,16 +41,6 @@ export class UrlsDao {
     return this.readUrlForId(row.url_id);
   }
 
-  // TODO remove
-  async readAllUrls(skipUrlIds: number[]) {
-    const { rows } = await this.database.query(
-      "readUrlIds",
-      `select url_id from urls where url_id <> all ($1) order by created asc`,
-      [skipUrlIds]
-    );
-    return this.readUrlsForIds(rows.map((row) => row.url_id));
-  }
-
   async readUrlsForIds(urlIds: EntityId[]) {
     const { rows } = await this.database.query(
       "readUrlsForIds",

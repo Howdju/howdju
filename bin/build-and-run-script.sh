@@ -11,7 +11,7 @@ set -e
 echo "Building & running ${@}"
 script_path=$1
 echo "Building script ${script_path}"
-# TODO remove pg-native and canvas?
+# TODO(545) remove pg-native and canvas?
 esbuild "${script_path}" --bundle --platform=node\
  --external:esbuild --external:dns-sync\
  --external:pg-native --external:canvas\

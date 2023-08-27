@@ -1195,8 +1195,6 @@ const CreateMediaExcerptBase = MediaExcerpt.omit({
         urlLocators: z.array(CreateUrlLocator),
       })
       .optional(),
-    // TODO remove created
-    created: momentObject.optional(),
     citations: z.array(CreateMediaExcerptCitation).optional(),
     speakers: z.array(CreateMediaExcerptSpeaker).optional(),
   });
