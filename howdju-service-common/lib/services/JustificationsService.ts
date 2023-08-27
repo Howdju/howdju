@@ -531,6 +531,11 @@ export class JustificationsService extends EntityService<
           entity,
         };
       }
+      case "JUSTIFICATION_BASIS_COMPOUND":
+        return {
+          type: "JUSTIFICATION_BASIS_COMPOUND" as const,
+          entity: justificationBasis.entity,
+        };
     }
   }
 

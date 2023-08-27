@@ -226,6 +226,10 @@ export type JustificationWithRootOut = Omit<
       | {
           type: "WRIT_QUOTE";
           entity: WritQuoteOut;
+        }
+      | {
+          type: "JUSTIFICATION_BASIS_COMPOUND";
+          entity: PersistedEntity;
         };
   };
 

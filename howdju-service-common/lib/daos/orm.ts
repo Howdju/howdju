@@ -20,7 +20,6 @@ import {
   logger,
   MediaExcerptRef,
   newExhaustedEnumError,
-  newImpossibleError,
   newProgrammingError,
   newUnimplementedError,
   PasswordResetRequestRef,
@@ -524,7 +523,14 @@ function extractJustificationBasis(
     }
 
     case "SOURCE_EXCERPT":
-      throw newImpossibleError(`Unsupported JustificationBasisTypes: ${type}`);
+    case "JUSTIFICATION_BASIS_COMPOUND":
+      logger.error(
+        `Unsupported JustificationBasisTypes: ${type} ${row.basis_id}`
+      );
+      return {
+        type,
+        entity: { id: toIdString(row.basis_id) },
+      };
 
     default:
       throw newExhaustedEnumError(type);

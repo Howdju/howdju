@@ -21605,6 +21605,7 @@
         quoteText: mod.string().min(1).max(4096),
         writ: Writ,
         urls: mod.array(Url),
+        creatorUserId: mod.string(),
         created: momentObject
       });
       PicRegion = Entity;
@@ -21873,6 +21874,9 @@
       JustificationBasisType = mod.enum([
         "PROPOSITION_COMPOUND",
         "MEDIA_EXCERPT",
+        /** @deprecated */
+        "JUSTIFICATION_BASIS_COMPOUND",
+        /** @deprecated */
         "SOURCE_EXCERPT",
         /** @deprecated */
         "WRIT_QUOTE",
@@ -21899,6 +21903,10 @@
           mod.object({
             type: mod.literal(JustificationBasisTypes.SOURCE_EXCERPT),
             entity: SourceExcerpt
+          }),
+          mod.object({
+            type: mod.literal("JUSTIFICATION_BASIS_COMPOUND"),
+            entity: Entity
           })
         ]),
         rootPolarity: JustificationRootPolarity,
@@ -33570,6 +33578,7 @@
               case "MEDIA_EXCERPT":
                 return curr.connectingEntity.mediaExcerpt.id === prev.connectingEntity.basis.entity.id;
               case "WRIT_QUOTE":
+              case "JUSTIFICATION_BASIS_COMPOUND":
                 return false;
             }
         }
@@ -33592,6 +33601,7 @@
                 );
               case "WRIT_QUOTE":
               case "MEDIA_EXCERPT":
+              case "JUSTIFICATION_BASIS_COMPOUND":
                 return false;
             }
           case "APPEARANCE":
@@ -33609,6 +33619,7 @@
                   (a3) => a3.entity.id === entity.apparition.entity.id
                 );
               case "WRIT_QUOTE":
+              case "JUSTIFICATION_BASIS_COMPOUND":
                 return false;
               case "MEDIA_EXCERPT":
                 return connection.connectingEntity.basis.entity.id === entity.mediaExcerpt.id;
@@ -34771,6 +34782,10 @@
           type: "WRIT_QUOTE",
           entity: basis.writQuote
         };
+      case "JUSTIFICATION_BASIS_COMPOUND":
+        throw newUnimplementedError(
+          "JUSTIFICATION_BASIS_COMPOUND is not supported."
+        );
       case "SOURCE_EXCERPT":
         return {
           type: "SOURCE_EXCERPT",

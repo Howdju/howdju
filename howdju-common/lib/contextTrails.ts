@@ -241,6 +241,7 @@ export function areAdjacentConnectingEntities(
                 prev.connectingEntity.basis.entity.id
               );
             case "WRIT_QUOTE":
+            case "JUSTIFICATION_BASIS_COMPOUND":
               // WritQuotes are deprecated and Appearances don't interfact with them.
               return false;
           }
@@ -276,6 +277,7 @@ export function isValidTrailTarget(
               );
             case "WRIT_QUOTE":
             case "MEDIA_EXCERPT":
+            case "JUSTIFICATION_BASIS_COMPOUND":
               return false;
           }
         case "APPEARANCE":
@@ -298,6 +300,7 @@ export function isValidTrailTarget(
                 )
               );
             case "WRIT_QUOTE":
+            case "JUSTIFICATION_BASIS_COMPOUND":
               return false;
             case "MEDIA_EXCERPT":
               return (

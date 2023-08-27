@@ -413,6 +413,7 @@ export const WritQuote = Entity.extend({
   quoteText: z.string().min(1).max(4096),
   writ: Writ,
   urls: z.array(Url),
+  creatorUserId: z.string(),
   created: momentObject,
 });
 export type WritQuote = z.infer<typeof WritQuote>;
@@ -875,7 +876,12 @@ export type Justification = Entity & {
         type: "MEDIA_EXCERPT";
         entity: MediaExcerpt;
       }
-    /* @deprecated TODO(38) Replace with MediaExcerpt */
+    /* @deprecated TODO(#38) remove */
+    | {
+        type: "JUSTIFICATION_BASIS_COMPOUND";
+        entity: Entity;
+      }
+    /* @deprecated TODO(#38) Replace with MediaExcerpt */
     | {
         type: "SOURCE_EXCERPT";
         entity: SourceExcerpt;
@@ -908,6 +914,9 @@ export type CounterJustification = Justification & {
 export const JustificationBasisType = z.enum([
   "PROPOSITION_COMPOUND",
   "MEDIA_EXCERPT",
+  /** @deprecated */
+  "JUSTIFICATION_BASIS_COMPOUND",
+  /** @deprecated */
   "SOURCE_EXCERPT",
   /** @deprecated */
   "WRIT_QUOTE",
@@ -935,6 +944,10 @@ const justificationBaseShape = {
     z.object({
       type: z.literal(JustificationBasisTypes.SOURCE_EXCERPT),
       entity: SourceExcerpt,
+    }),
+    z.object({
+      type: z.literal("JUSTIFICATION_BASIS_COMPOUND"),
+      entity: Entity,
     }),
   ]),
   rootPolarity: JustificationRootPolarity,

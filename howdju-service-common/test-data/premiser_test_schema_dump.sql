@@ -397,6 +397,18 @@ ALTER SEQUENCE public.justification_basis_compound__justification_basis_compound
 
 
 --
+-- Name: justification_basis_compound_translations; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.justification_basis_compound_translations (
+    justification_basis_compound_id integer NOT NULL,
+    justification_basis_compound_atom_id integer NOT NULL,
+    proposition_compound_id integer NOT NULL,
+    proposition_compound_atom_id integer NOT NULL
+);
+
+
+--
 -- Name: justification_basis_compounds; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -914,6 +926,16 @@ ALTER SEQUENCE public.registration_requests_registration_request_id_seq OWNED BY
 
 
 --
+-- Name: source_excerpt_paraphrase_translations; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.source_excerpt_paraphrase_translations (
+    source_excerpt_paraphrase_id integer NOT NULL,
+    appearance_id integer NOT NULL
+);
+
+
+--
 -- Name: source_excerpt_paraphrases; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -1148,6 +1170,17 @@ ALTER SEQUENCE public.url_locators_url_locator_id_seq OWNED BY public.url_locato
 
 
 --
+-- Name: url_normalization_progress; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.url_normalization_progress (
+    normalized_url_id integer NOT NULL,
+    old_url text,
+    replacement_url_id integer
+);
+
+
+--
 -- Name: urls; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -1307,6 +1340,16 @@ CREATE SEQUENCE public.votes_vote_id_seq
 --
 
 ALTER SEQUENCE public.votes_vote_id_seq OWNED BY public.justification_votes.justification_vote_id;
+
+
+--
+-- Name: writ_quote_translations; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.writ_quote_translations (
+    writ_quote_id integer NOT NULL,
+    media_excerpt_id integer NOT NULL
+);
 
 
 --

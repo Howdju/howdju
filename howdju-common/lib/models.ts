@@ -9,6 +9,7 @@ import {
   newImpossibleError,
   newExhaustedEnumError,
   newProgrammingError,
+  newUnimplementedError,
 } from "./commonErrors";
 import { EntityId } from "./entities";
 import { isDefined } from "./general";
@@ -586,11 +587,16 @@ const demuxCreateJustificationInputBasis = (
         entity: basis.mediaExcerpt,
       };
     case "WRIT_QUOTE":
-      // TODO(201) WritQuote bases are temporarily supported until we support SourceExcerpt bases.
+      // TODO(#201) remove WritQuote support
       return {
         type: "WRIT_QUOTE",
         entity: basis.writQuote,
       };
+    case "JUSTIFICATION_BASIS_COMPOUND":
+      // TODO(#201) remove JUSTIFICATION_BASIS_COMPOUND
+      throw newUnimplementedError(
+        "JUSTIFICATION_BASIS_COMPOUND is not supported."
+      );
     case "SOURCE_EXCERPT":
       return {
         type: "SOURCE_EXCERPT",
