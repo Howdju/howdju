@@ -6,6 +6,7 @@ import {
   EntityId,
   isDefined,
   toJson,
+  utcNow,
 } from "howdju-common";
 import { ServicesProvider } from "howdju-service-common";
 import { groupBy, uniqBy, zip } from "lodash";
@@ -238,7 +239,7 @@ async function convertCompound(
             throw new Error(`Unexpected entity_type: ${row.entity_type}`);
         }
       });
-      // Some (rare) compounds have multiple atoms with the same proposition text.
+      // Some compounds have multiple atoms with the same proposition text.
       createPropositionCompoundAtomInfos = uniqBy(
         createPropositionCompoundAtomInfos,
         (info) => info.propositionText
@@ -286,8 +287,28 @@ async function convertCompound(
               [justificationId, propositionCompound.id]
             )
         );
+
+        const deletedAt = utcNow();
+        const deleteCompoundPromise = client.query(
+          "deleteJustificationBasisCompound",
+          `update justification_basis_compounds set deleted = $2 where justification_basis_compound_id = $1`,
+          [compoundId, deletedAt]
+        );
+        const deleteSourceExcerptParaphrasePromises = compoundAtomRows
+          .filter((row) => row.entity_type === "SOURCE_EXCERPT_PARAPHRASE")
+          .map((row) =>
+            client.query(
+              "deleteSourceExcerptParaphrase",
+              `update source_excerpt_paraphrases set deleted = $2 where source_excerpt_paraphrase_id = $1`,
+              [row.source_excerpt_paraphrase_id, deletedAt]
+            )
+          );
+
         await Promise.all(
-          switchJustificationBasisPromises.concat(translationRecordPromises)
+          switchJustificationBasisPromises
+            .concat(translationRecordPromises)
+            .concat([deleteCompoundPromise])
+            .concat(deleteSourceExcerptParaphrasePromises)
         );
       }
     }

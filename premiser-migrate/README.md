@@ -104,6 +104,9 @@ from pg_stat_activity;
 
 -- Use process_id from above query
 SELECT pg_terminate_backend(7967);
+
+-- All connections to a database
+SELECT pg_terminate_backend(pid) from pg_stat_activity where datname = 'howdju_pre_prod';
 ```
 
 Do the rename:
