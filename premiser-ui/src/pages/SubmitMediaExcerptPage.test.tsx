@@ -14,6 +14,7 @@ import {
 import { InferResponseBody, serviceRoutes } from "howdju-service-routes";
 
 import {
+  clickEnabledButton,
   makeRouteComponentProps,
   renderWithProviders,
   setupUserEvent,
@@ -135,7 +136,7 @@ describe("SubmitMediaExcerptPage", () => {
     );
 
     // Act
-    await user.click(screen.getByRole("button", { name: /create/i }));
+    await clickEnabledButton(user, /create/i);
 
     // Assert
     jest.runAllTimers();
@@ -264,7 +265,7 @@ describe("SubmitMediaExcerptPage", () => {
       await user.type(screen.getByLabelText(/Pincite/i), pincite);
 
       // Act
-      await user.click(screen.getByRole("button", { name: /create/i }));
+      await clickEnabledButton(user, /create/i);
 
       // Assert
       jest.runAllTimers();

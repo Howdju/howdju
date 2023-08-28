@@ -1,4 +1,4 @@
-import React from "react";
+import React, { ReactNode } from "react";
 
 import EntityViewer from "./EntityViewer";
 import PropositionCompoundViewer from "./PropositionCompoundViewer";
@@ -8,15 +8,17 @@ import {
   PropositionCompoundOut,
   PropositionOut,
 } from "howdju-common";
+import { MaterialSymbol } from "react-material-symbols";
 
 interface Props {
   id: ComponentId;
   propositionCompound: PropositionCompoundOut;
-  contextTrailItems: ContextTrailItem[];
+  contextTrailItems?: ContextTrailItem[];
   highlightedProposition?: PropositionOut;
   showStatusText?: boolean;
   showJustificationCount?: boolean;
   className?: string;
+  menu?: ReactNode;
 }
 
 export default function PropositionCompoundEntityViewer({
@@ -27,10 +29,11 @@ export default function PropositionCompoundEntityViewer({
   showStatusText = true,
   contextTrailItems,
   showJustificationCount = true,
+  menu,
 }: Props) {
   return (
     <EntityViewer
-      icon="short_text"
+      icon={<MaterialSymbol icon="list" />}
       className={className}
       iconTitle="Proposition compound"
       entity={
@@ -43,6 +46,7 @@ export default function PropositionCompoundEntityViewer({
           showJustificationCount={showJustificationCount}
         />
       }
+      menu={menu}
     />
   );
 }

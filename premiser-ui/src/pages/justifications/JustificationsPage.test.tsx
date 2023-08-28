@@ -21,6 +21,7 @@ import {
 } from "howdju-service-routes";
 
 import {
+  clickEnabledButton,
   makeRouteComponentProps,
   renderWithProviders,
   setupUserEvent,
@@ -168,7 +169,7 @@ describe("JustificationsPage", () => {
     const propositionTextInput = screen.getByLabelText(/Text/i);
     await user.clear(propositionTextInput);
     await user.type(propositionTextInput, updatedText);
-    await user.click(screen.getByRole("button", { name: "Save" }));
+    await clickEnabledButton(user, "Save");
 
     // Assert
     jest.runAllTimers();
@@ -275,14 +276,14 @@ describe("JustificationsPage", () => {
     await user.click(screen.getByRole("button", { name: /Add one now/i }));
     await user.type(screen.getByLabelText(/Text/i), basisText1);
     await user.click(screen.getByRole("button", { description: /add atom/i }));
-    await user.type(screen.getAllByLabelText(/Text/i)[0], basisText2);
-    await user.click(screen.getByRole("button", { name: /Create/i }));
+    await user.type(screen.getAllByLabelText(/Text/i)[1], basisText2);
+    await clickEnabledButton(user, /Create/i);
 
     // Assert
+    jest.runAllTimers();
     expect(await screen.findByText(basisText1)).toBeInTheDocument();
     expect(await screen.findByText(basisText2)).toBeInTheDocument();
 
-    jest.runAllTimers();
     expect(container).toMatchSnapshot();
   });
 });

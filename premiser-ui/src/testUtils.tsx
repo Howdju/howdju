@@ -1,6 +1,6 @@
 import React, { PropsWithChildren } from "react";
-import { render } from "@testing-library/react";
-import type { RenderOptions } from "@testing-library/react";
+import { render, screen, RenderOptions } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import type { PreloadedState } from "@reduxjs/toolkit";
 import { Provider } from "react-redux";
 import { Router } from "react-router-dom";
@@ -8,7 +8,6 @@ import { createMemoryHistory, History, createLocation } from "history";
 import { persistStore, PersistorOptions } from "redux-persist";
 import { compile } from "path-to-regexp";
 import { match } from "react-router";
-import userEvent from "@testing-library/user-event";
 import { setupServer } from "msw/node";
 import { Saga } from "redux-saga";
 import { head } from "lodash";
@@ -166,10 +165,27 @@ export async function testSaga(saga: Saga<any[]>) {
   await sagaMiddleware.run(saga).toPromise();
 }
 
+export type UserEvent = ReturnType<typeof userEvent.setup>;
 export function setupUserEvent() {
   // userEvent delays between actions, so make sure it advances the fake timers.
   // (https://github.com/testing-library/user-event/issues/833#issuecomment-1171452841)
   return userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
+}
+
+/**
+ * Helper to ensure a button is enabled an click it.
+ *
+ * We have a pattern of leaving buttons enabled DOM-wise, but rendering them as disabled
+ * and preventing their onClick if the form is not valid. This pattern allows us to show all form
+ * errors upon button click. Otherwise, a DOM-disabled button doesn't even fire an onClick.
+ *
+ * But a downside of that pattern is that our tests can silently fail when they click a button that
+ * is disabled due to some earlier problem with the test.
+ */
+export function clickEnabledButton(user: UserEvent, name: string | RegExp) {
+  const button = screen.getByRole("button", { name });
+  expect(button).not.toHaveClass("md-text--disabled");
+  return user.click(button);
 }
 
 /** Throws if progress is in the document and visible. */

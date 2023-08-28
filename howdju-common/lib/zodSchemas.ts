@@ -767,6 +767,8 @@ export type PropositionCompound = z.infer<typeof PropositionCompound>;
 
 export const CreatePropositionCompoundAtomInput = z.object({
   entity: CreatePropositionInput,
+  /** Distinguishes the input from others in a list */
+  key: z.string(),
 });
 export type CreatePropositionCompoundAtomInput = z.infer<
   typeof CreatePropositionCompoundAtomInput
@@ -774,6 +776,8 @@ export type CreatePropositionCompoundAtomInput = z.infer<
 
 export const UpdatePropositionCompoundAtomInput = z.object({
   entity: UpdatePropositionInput,
+  /** Distinguishes the input from others in a list */
+  key: z.string(),
 });
 export type UpdatePropositionCompoundAtomInput = z.infer<
   typeof UpdatePropositionCompoundAtomInput

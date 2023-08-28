@@ -73,6 +73,8 @@ export default handleActions(
       api.tagProposition.response,
       api.fetchAppearance.response,
       api.fetchPropositions.response,
+      api.fetchPropositionAppearances.response,
+      api.fetchPropositionCompounds.response,
       api.fetchPropositionRootJustificationTarget.response,
       api.fetchPropositionTextSuggestions.response,
       api.fetchRecentAppearances.response,

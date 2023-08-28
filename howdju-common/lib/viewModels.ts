@@ -73,6 +73,13 @@ export interface MediaExcerptView extends MediaExcerptOut {
   })[];
 }
 
+export interface PropositionCompoundView extends PropositionCompoundOut {
+  atoms: (PropositionCompoundOut["atoms"][number] & {
+    /** A key uniquely identifying an atom relative to others. */
+    key: string;
+  })[];
+}
+
 export interface AppearanceView extends AppearanceOut {
   mediaExcerpt: MediaExcerptView;
 }

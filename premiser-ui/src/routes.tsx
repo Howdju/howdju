@@ -144,7 +144,11 @@ const routesById = {
     />
   ),
   propositionUsages: (
-    <Route exact path="/proposition-usages" component={PropositionUsagesPage} />
+    <Route
+      exact
+      path="/propositions/:propositionId/usages"
+      component={PropositionUsagesPage}
+    />
   ),
   mediaExcerptUsages: (
     <Route

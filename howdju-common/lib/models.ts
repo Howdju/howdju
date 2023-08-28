@@ -1,10 +1,8 @@
-import { cloneDeep } from "lodash";
-import assign from "lodash/assign";
-import merge from "lodash/merge";
-import asString from "lodash/toString";
+import { cloneDeep, assign, merge, toString as asString } from "lodash";
 import { PartialDeep } from "type-fest";
-import { JustificationOut } from "./apiModels";
+import { v4 as uuidv4 } from "uuid";
 
+import { JustificationOut } from "./apiModels";
 import {
   newImpossibleError,
   newExhaustedEnumError,
@@ -180,12 +178,13 @@ export const makeCreatePropositionCompoundInput =
 export const makeCreatePropositionCompoundInputFromProposition = (
   proposition: CreatePropositionInput
 ): CreatePropositionCompoundInput => ({
-  atoms: [{ entity: proposition }],
+  atoms: [{ entity: proposition, key: uuidv4() }],
 });
 
 export const makeCreatePropositionCompoundAtomInput =
   (): CreatePropositionCompoundAtomInput => ({
     entity: makeCreatePropositionInput(),
+    key: uuidv4(),
   });
 
 export const makeUrl = (props?: Partial<Url>): Url => merge({ url: "" }, props);

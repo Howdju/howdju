@@ -15376,392 +15376,6 @@
     }
   });
 
-  // ../node_modules/lodash/_apply.js
-  var require_apply = __commonJS({
-    "../node_modules/lodash/_apply.js"(exports, module) {
-      function apply(func, thisArg, args) {
-        switch (args.length) {
-          case 0:
-            return func.call(thisArg);
-          case 1:
-            return func.call(thisArg, args[0]);
-          case 2:
-            return func.call(thisArg, args[0], args[1]);
-          case 3:
-            return func.call(thisArg, args[0], args[1], args[2]);
-        }
-        return func.apply(thisArg, args);
-      }
-      module.exports = apply;
-    }
-  });
-
-  // ../node_modules/lodash/_overRest.js
-  var require_overRest = __commonJS({
-    "../node_modules/lodash/_overRest.js"(exports, module) {
-      var apply = require_apply();
-      var nativeMax = Math.max;
-      function overRest(func, start, transform) {
-        start = nativeMax(start === void 0 ? func.length - 1 : start, 0);
-        return function() {
-          var args = arguments, index = -1, length = nativeMax(args.length - start, 0), array = Array(length);
-          while (++index < length) {
-            array[index] = args[start + index];
-          }
-          index = -1;
-          var otherArgs = Array(start + 1);
-          while (++index < start) {
-            otherArgs[index] = args[index];
-          }
-          otherArgs[start] = transform(array);
-          return apply(func, this, otherArgs);
-        };
-      }
-      module.exports = overRest;
-    }
-  });
-
-  // ../node_modules/lodash/constant.js
-  var require_constant = __commonJS({
-    "../node_modules/lodash/constant.js"(exports, module) {
-      function constant(value) {
-        return function() {
-          return value;
-        };
-      }
-      module.exports = constant;
-    }
-  });
-
-  // ../node_modules/lodash/_baseSetToString.js
-  var require_baseSetToString = __commonJS({
-    "../node_modules/lodash/_baseSetToString.js"(exports, module) {
-      var constant = require_constant();
-      var defineProperty = require_defineProperty();
-      var identity = require_identity();
-      var baseSetToString = !defineProperty ? identity : function(func, string) {
-        return defineProperty(func, "toString", {
-          "configurable": true,
-          "enumerable": false,
-          "value": constant(string),
-          "writable": true
-        });
-      };
-      module.exports = baseSetToString;
-    }
-  });
-
-  // ../node_modules/lodash/_shortOut.js
-  var require_shortOut = __commonJS({
-    "../node_modules/lodash/_shortOut.js"(exports, module) {
-      var HOT_COUNT = 800;
-      var HOT_SPAN = 16;
-      var nativeNow = Date.now;
-      function shortOut(func) {
-        var count = 0, lastCalled = 0;
-        return function() {
-          var stamp = nativeNow(), remaining = HOT_SPAN - (stamp - lastCalled);
-          lastCalled = stamp;
-          if (remaining > 0) {
-            if (++count >= HOT_COUNT) {
-              return arguments[0];
-            }
-          } else {
-            count = 0;
-          }
-          return func.apply(void 0, arguments);
-        };
-      }
-      module.exports = shortOut;
-    }
-  });
-
-  // ../node_modules/lodash/_setToString.js
-  var require_setToString = __commonJS({
-    "../node_modules/lodash/_setToString.js"(exports, module) {
-      var baseSetToString = require_baseSetToString();
-      var shortOut = require_shortOut();
-      var setToString = shortOut(baseSetToString);
-      module.exports = setToString;
-    }
-  });
-
-  // ../node_modules/lodash/_baseRest.js
-  var require_baseRest = __commonJS({
-    "../node_modules/lodash/_baseRest.js"(exports, module) {
-      var identity = require_identity();
-      var overRest = require_overRest();
-      var setToString = require_setToString();
-      function baseRest(func, start) {
-        return setToString(overRest(func, start, identity), func + "");
-      }
-      module.exports = baseRest;
-    }
-  });
-
-  // ../node_modules/lodash/_isIterateeCall.js
-  var require_isIterateeCall = __commonJS({
-    "../node_modules/lodash/_isIterateeCall.js"(exports, module) {
-      var eq = require_eq();
-      var isArrayLike = require_isArrayLike();
-      var isIndex = require_isIndex();
-      var isObject3 = require_isObject();
-      function isIterateeCall(value, index, object) {
-        if (!isObject3(object)) {
-          return false;
-        }
-        var type = typeof index;
-        if (type == "number" ? isArrayLike(object) && isIndex(index, object.length) : type == "string" && index in object) {
-          return eq(object[index], value);
-        }
-        return false;
-      }
-      module.exports = isIterateeCall;
-    }
-  });
-
-  // ../node_modules/lodash/_createAssigner.js
-  var require_createAssigner = __commonJS({
-    "../node_modules/lodash/_createAssigner.js"(exports, module) {
-      var baseRest = require_baseRest();
-      var isIterateeCall = require_isIterateeCall();
-      function createAssigner(assigner) {
-        return baseRest(function(object, sources) {
-          var index = -1, length = sources.length, customizer = length > 1 ? sources[length - 1] : void 0, guard = length > 2 ? sources[2] : void 0;
-          customizer = assigner.length > 3 && typeof customizer == "function" ? (length--, customizer) : void 0;
-          if (guard && isIterateeCall(sources[0], sources[1], guard)) {
-            customizer = length < 3 ? void 0 : customizer;
-            length = 1;
-          }
-          object = Object(object);
-          while (++index < length) {
-            var source = sources[index];
-            if (source) {
-              assigner(object, source, index, customizer);
-            }
-          }
-          return object;
-        });
-      }
-      module.exports = createAssigner;
-    }
-  });
-
-  // ../node_modules/lodash/assign.js
-  var require_assign = __commonJS({
-    "../node_modules/lodash/assign.js"(exports, module) {
-      var assignValue = require_assignValue();
-      var copyObject = require_copyObject();
-      var createAssigner = require_createAssigner();
-      var isArrayLike = require_isArrayLike();
-      var isPrototype = require_isPrototype();
-      var keys4 = require_keys();
-      var objectProto = Object.prototype;
-      var hasOwnProperty = objectProto.hasOwnProperty;
-      var assign4 = createAssigner(function(object, source) {
-        if (isPrototype(source) || isArrayLike(source)) {
-          copyObject(source, keys4(source), object);
-          return;
-        }
-        for (var key in source) {
-          if (hasOwnProperty.call(source, key)) {
-            assignValue(object, key, source[key]);
-          }
-        }
-      });
-      module.exports = assign4;
-    }
-  });
-
-  // ../node_modules/lodash/_assignMergeValue.js
-  var require_assignMergeValue = __commonJS({
-    "../node_modules/lodash/_assignMergeValue.js"(exports, module) {
-      var baseAssignValue = require_baseAssignValue();
-      var eq = require_eq();
-      function assignMergeValue(object, key, value) {
-        if (value !== void 0 && !eq(object[key], value) || value === void 0 && !(key in object)) {
-          baseAssignValue(object, key, value);
-        }
-      }
-      module.exports = assignMergeValue;
-    }
-  });
-
-  // ../node_modules/lodash/isArrayLikeObject.js
-  var require_isArrayLikeObject = __commonJS({
-    "../node_modules/lodash/isArrayLikeObject.js"(exports, module) {
-      var isArrayLike = require_isArrayLike();
-      var isObjectLike = require_isObjectLike();
-      function isArrayLikeObject(value) {
-        return isObjectLike(value) && isArrayLike(value);
-      }
-      module.exports = isArrayLikeObject;
-    }
-  });
-
-  // ../node_modules/lodash/isPlainObject.js
-  var require_isPlainObject = __commonJS({
-    "../node_modules/lodash/isPlainObject.js"(exports, module) {
-      var baseGetTag = require_baseGetTag();
-      var getPrototype = require_getPrototype();
-      var isObjectLike = require_isObjectLike();
-      var objectTag = "[object Object]";
-      var funcProto = Function.prototype;
-      var objectProto = Object.prototype;
-      var funcToString = funcProto.toString;
-      var hasOwnProperty = objectProto.hasOwnProperty;
-      var objectCtorString = funcToString.call(Object);
-      function isPlainObject2(value) {
-        if (!isObjectLike(value) || baseGetTag(value) != objectTag) {
-          return false;
-        }
-        var proto = getPrototype(value);
-        if (proto === null) {
-          return true;
-        }
-        var Ctor = hasOwnProperty.call(proto, "constructor") && proto.constructor;
-        return typeof Ctor == "function" && Ctor instanceof Ctor && funcToString.call(Ctor) == objectCtorString;
-      }
-      module.exports = isPlainObject2;
-    }
-  });
-
-  // ../node_modules/lodash/_safeGet.js
-  var require_safeGet = __commonJS({
-    "../node_modules/lodash/_safeGet.js"(exports, module) {
-      function safeGet(object, key) {
-        if (key === "constructor" && typeof object[key] === "function") {
-          return;
-        }
-        if (key == "__proto__") {
-          return;
-        }
-        return object[key];
-      }
-      module.exports = safeGet;
-    }
-  });
-
-  // ../node_modules/lodash/toPlainObject.js
-  var require_toPlainObject = __commonJS({
-    "../node_modules/lodash/toPlainObject.js"(exports, module) {
-      var copyObject = require_copyObject();
-      var keysIn = require_keysIn();
-      function toPlainObject(value) {
-        return copyObject(value, keysIn(value));
-      }
-      module.exports = toPlainObject;
-    }
-  });
-
-  // ../node_modules/lodash/_baseMergeDeep.js
-  var require_baseMergeDeep = __commonJS({
-    "../node_modules/lodash/_baseMergeDeep.js"(exports, module) {
-      var assignMergeValue = require_assignMergeValue();
-      var cloneBuffer = require_cloneBuffer();
-      var cloneTypedArray = require_cloneTypedArray();
-      var copyArray = require_copyArray();
-      var initCloneObject = require_initCloneObject();
-      var isArguments = require_isArguments();
-      var isArray3 = require_isArray();
-      var isArrayLikeObject = require_isArrayLikeObject();
-      var isBuffer = require_isBuffer();
-      var isFunction2 = require_isFunction();
-      var isObject3 = require_isObject();
-      var isPlainObject2 = require_isPlainObject();
-      var isTypedArray = require_isTypedArray();
-      var safeGet = require_safeGet();
-      var toPlainObject = require_toPlainObject();
-      function baseMergeDeep(object, source, key, srcIndex, mergeFunc, customizer, stack) {
-        var objValue = safeGet(object, key), srcValue = safeGet(source, key), stacked = stack.get(srcValue);
-        if (stacked) {
-          assignMergeValue(object, key, stacked);
-          return;
-        }
-        var newValue = customizer ? customizer(objValue, srcValue, key + "", object, source, stack) : void 0;
-        var isCommon = newValue === void 0;
-        if (isCommon) {
-          var isArr = isArray3(srcValue), isBuff = !isArr && isBuffer(srcValue), isTyped = !isArr && !isBuff && isTypedArray(srcValue);
-          newValue = srcValue;
-          if (isArr || isBuff || isTyped) {
-            if (isArray3(objValue)) {
-              newValue = objValue;
-            } else if (isArrayLikeObject(objValue)) {
-              newValue = copyArray(objValue);
-            } else if (isBuff) {
-              isCommon = false;
-              newValue = cloneBuffer(srcValue, true);
-            } else if (isTyped) {
-              isCommon = false;
-              newValue = cloneTypedArray(srcValue, true);
-            } else {
-              newValue = [];
-            }
-          } else if (isPlainObject2(srcValue) || isArguments(srcValue)) {
-            newValue = objValue;
-            if (isArguments(objValue)) {
-              newValue = toPlainObject(objValue);
-            } else if (!isObject3(objValue) || isFunction2(objValue)) {
-              newValue = initCloneObject(srcValue);
-            }
-          } else {
-            isCommon = false;
-          }
-        }
-        if (isCommon) {
-          stack.set(srcValue, newValue);
-          mergeFunc(newValue, srcValue, srcIndex, customizer, stack);
-          stack["delete"](srcValue);
-        }
-        assignMergeValue(object, key, newValue);
-      }
-      module.exports = baseMergeDeep;
-    }
-  });
-
-  // ../node_modules/lodash/_baseMerge.js
-  var require_baseMerge = __commonJS({
-    "../node_modules/lodash/_baseMerge.js"(exports, module) {
-      var Stack = require_Stack();
-      var assignMergeValue = require_assignMergeValue();
-      var baseFor = require_baseFor();
-      var baseMergeDeep = require_baseMergeDeep();
-      var isObject3 = require_isObject();
-      var keysIn = require_keysIn();
-      var safeGet = require_safeGet();
-      function baseMerge(object, source, srcIndex, customizer, stack) {
-        if (object === source) {
-          return;
-        }
-        baseFor(source, function(srcValue, key) {
-          stack || (stack = new Stack());
-          if (isObject3(srcValue)) {
-            baseMergeDeep(object, source, key, srcIndex, baseMerge, customizer, stack);
-          } else {
-            var newValue = customizer ? customizer(safeGet(object, key), srcValue, key + "", object, source, stack) : void 0;
-            if (newValue === void 0) {
-              newValue = srcValue;
-            }
-            assignMergeValue(object, key, newValue);
-          }
-        }, keysIn);
-      }
-      module.exports = baseMerge;
-    }
-  });
-
-  // ../node_modules/lodash/merge.js
-  var require_merge = __commonJS({
-    "../node_modules/lodash/merge.js"(exports, module) {
-      var baseMerge = require_baseMerge();
-      var createAssigner = require_createAssigner();
-      var merge4 = createAssigner(function(object, source, srcIndex) {
-        baseMerge(object, source, srcIndex);
-      });
-      module.exports = merge4;
-    }
-  });
-
   // ../node_modules/zod/lib/index.mjs
   function setErrorMap(map4) {
     overrideErrorMap = map4;
@@ -18664,7 +18278,7 @@
   });
 
   // ../node_modules/validator/lib/util/merge.js
-  var require_merge2 = __commonJS({
+  var require_merge = __commonJS({
     "../node_modules/validator/lib/util/merge.js"(exports, module) {
       "use strict";
       Object.defineProperty(exports, "__esModule", {
@@ -18695,7 +18309,7 @@
       });
       exports.default = isFQDN;
       var _assertString = _interopRequireDefault(require_assertString());
-      var _merge = _interopRequireDefault(require_merge2());
+      var _merge = _interopRequireDefault(require_merge());
       function _interopRequireDefault(obj) {
         return obj && obj.__esModule ? obj : { default: obj };
       }
@@ -18809,7 +18423,7 @@
       var _assertString = _interopRequireDefault(require_assertString());
       var _isFQDN = _interopRequireDefault(require_isFQDN());
       var _isIP = _interopRequireDefault(require_isIP());
-      var _merge = _interopRequireDefault(require_merge2());
+      var _merge = _interopRequireDefault(require_merge());
       function _interopRequireDefault(obj) {
         return obj && obj.__esModule ? obj : { default: obj };
       }
@@ -21843,10 +21457,14 @@
         creatorUserId: mod.string().optional()
       });
       CreatePropositionCompoundAtomInput = mod.object({
-        entity: CreatePropositionInput
+        entity: CreatePropositionInput,
+        /** Distinguishes the input from others in a list */
+        key: mod.string()
       });
       UpdatePropositionCompoundAtomInput = mod.object({
-        entity: UpdatePropositionInput
+        entity: UpdatePropositionInput,
+        /** Distinguishes the input from others in a list */
+        key: mod.string()
       });
       CreatePropositionCompoundInput = Entity.extend({
         atoms: mod.array(CreatePropositionCompoundAtomInput).min(1)
@@ -29628,6 +29246,203 @@
     }
   });
 
+  // ../node_modules/lodash/_apply.js
+  var require_apply = __commonJS({
+    "../node_modules/lodash/_apply.js"(exports, module) {
+      function apply(func, thisArg, args) {
+        switch (args.length) {
+          case 0:
+            return func.call(thisArg);
+          case 1:
+            return func.call(thisArg, args[0]);
+          case 2:
+            return func.call(thisArg, args[0], args[1]);
+          case 3:
+            return func.call(thisArg, args[0], args[1], args[2]);
+        }
+        return func.apply(thisArg, args);
+      }
+      module.exports = apply;
+    }
+  });
+
+  // ../node_modules/lodash/_overRest.js
+  var require_overRest = __commonJS({
+    "../node_modules/lodash/_overRest.js"(exports, module) {
+      var apply = require_apply();
+      var nativeMax = Math.max;
+      function overRest(func, start, transform) {
+        start = nativeMax(start === void 0 ? func.length - 1 : start, 0);
+        return function() {
+          var args = arguments, index = -1, length = nativeMax(args.length - start, 0), array = Array(length);
+          while (++index < length) {
+            array[index] = args[start + index];
+          }
+          index = -1;
+          var otherArgs = Array(start + 1);
+          while (++index < start) {
+            otherArgs[index] = args[index];
+          }
+          otherArgs[start] = transform(array);
+          return apply(func, this, otherArgs);
+        };
+      }
+      module.exports = overRest;
+    }
+  });
+
+  // ../node_modules/lodash/constant.js
+  var require_constant = __commonJS({
+    "../node_modules/lodash/constant.js"(exports, module) {
+      function constant(value) {
+        return function() {
+          return value;
+        };
+      }
+      module.exports = constant;
+    }
+  });
+
+  // ../node_modules/lodash/_baseSetToString.js
+  var require_baseSetToString = __commonJS({
+    "../node_modules/lodash/_baseSetToString.js"(exports, module) {
+      var constant = require_constant();
+      var defineProperty = require_defineProperty();
+      var identity = require_identity();
+      var baseSetToString = !defineProperty ? identity : function(func, string) {
+        return defineProperty(func, "toString", {
+          "configurable": true,
+          "enumerable": false,
+          "value": constant(string),
+          "writable": true
+        });
+      };
+      module.exports = baseSetToString;
+    }
+  });
+
+  // ../node_modules/lodash/_shortOut.js
+  var require_shortOut = __commonJS({
+    "../node_modules/lodash/_shortOut.js"(exports, module) {
+      var HOT_COUNT = 800;
+      var HOT_SPAN = 16;
+      var nativeNow = Date.now;
+      function shortOut(func) {
+        var count = 0, lastCalled = 0;
+        return function() {
+          var stamp = nativeNow(), remaining = HOT_SPAN - (stamp - lastCalled);
+          lastCalled = stamp;
+          if (remaining > 0) {
+            if (++count >= HOT_COUNT) {
+              return arguments[0];
+            }
+          } else {
+            count = 0;
+          }
+          return func.apply(void 0, arguments);
+        };
+      }
+      module.exports = shortOut;
+    }
+  });
+
+  // ../node_modules/lodash/_setToString.js
+  var require_setToString = __commonJS({
+    "../node_modules/lodash/_setToString.js"(exports, module) {
+      var baseSetToString = require_baseSetToString();
+      var shortOut = require_shortOut();
+      var setToString = shortOut(baseSetToString);
+      module.exports = setToString;
+    }
+  });
+
+  // ../node_modules/lodash/_baseRest.js
+  var require_baseRest = __commonJS({
+    "../node_modules/lodash/_baseRest.js"(exports, module) {
+      var identity = require_identity();
+      var overRest = require_overRest();
+      var setToString = require_setToString();
+      function baseRest(func, start) {
+        return setToString(overRest(func, start, identity), func + "");
+      }
+      module.exports = baseRest;
+    }
+  });
+
+  // ../node_modules/lodash/_isIterateeCall.js
+  var require_isIterateeCall = __commonJS({
+    "../node_modules/lodash/_isIterateeCall.js"(exports, module) {
+      var eq = require_eq();
+      var isArrayLike = require_isArrayLike();
+      var isIndex = require_isIndex();
+      var isObject3 = require_isObject();
+      function isIterateeCall(value, index, object) {
+        if (!isObject3(object)) {
+          return false;
+        }
+        var type = typeof index;
+        if (type == "number" ? isArrayLike(object) && isIndex(index, object.length) : type == "string" && index in object) {
+          return eq(object[index], value);
+        }
+        return false;
+      }
+      module.exports = isIterateeCall;
+    }
+  });
+
+  // ../node_modules/lodash/_createAssigner.js
+  var require_createAssigner = __commonJS({
+    "../node_modules/lodash/_createAssigner.js"(exports, module) {
+      var baseRest = require_baseRest();
+      var isIterateeCall = require_isIterateeCall();
+      function createAssigner(assigner) {
+        return baseRest(function(object, sources) {
+          var index = -1, length = sources.length, customizer = length > 1 ? sources[length - 1] : void 0, guard = length > 2 ? sources[2] : void 0;
+          customizer = assigner.length > 3 && typeof customizer == "function" ? (length--, customizer) : void 0;
+          if (guard && isIterateeCall(sources[0], sources[1], guard)) {
+            customizer = length < 3 ? void 0 : customizer;
+            length = 1;
+          }
+          object = Object(object);
+          while (++index < length) {
+            var source = sources[index];
+            if (source) {
+              assigner(object, source, index, customizer);
+            }
+          }
+          return object;
+        });
+      }
+      module.exports = createAssigner;
+    }
+  });
+
+  // ../node_modules/lodash/assign.js
+  var require_assign = __commonJS({
+    "../node_modules/lodash/assign.js"(exports, module) {
+      var assignValue = require_assignValue();
+      var copyObject = require_copyObject();
+      var createAssigner = require_createAssigner();
+      var isArrayLike = require_isArrayLike();
+      var isPrototype = require_isPrototype();
+      var keys4 = require_keys();
+      var objectProto = Object.prototype;
+      var hasOwnProperty = objectProto.hasOwnProperty;
+      var assign4 = createAssigner(function(object, source) {
+        if (isPrototype(source) || isArrayLike(source)) {
+          copyObject(source, keys4(source), object);
+          return;
+        }
+        for (var key in source) {
+          if (hasOwnProperty.call(source, key)) {
+            assignValue(object, key, source[key]);
+          }
+        }
+      });
+      module.exports = assign4;
+    }
+  });
+
   // ../node_modules/lodash/_baseSet.js
   var require_baseSet = __commonJS({
     "../node_modules/lodash/_baseSet.js"(exports, module) {
@@ -29927,7 +29742,7 @@
     return (0, import_standalone.default)(ajv);
   }
   function makeAjv(extraOpts) {
-    const opts = (0, import_assign2.default)(
+    const opts = (0, import_assign.default)(
       {},
       {
         // https://github.com/epoberezkin/ajv#options
@@ -30026,7 +29841,7 @@
       return (0, import_lodash10.isNaN)(parsed) ? val : parsed;
     });
   }
-  var import_ajv, import_ajv_formats, import_standalone, import_mapValues, import_assign2, import_pick, import_set, import_reduce2, import_values, import_lodash10, schemaIds;
+  var import_ajv, import_ajv_formats, import_standalone, import_mapValues, import_assign, import_pick, import_set, import_reduce2, import_values, import_lodash10, schemaIds;
   var init_schemaValidation = __esm({
     "../howdju-common/lib/schemaValidation.ts"() {
       "use strict";
@@ -30034,7 +29849,7 @@
       import_ajv_formats = __toESM(require_dist());
       import_standalone = __toESM(require_standalone());
       import_mapValues = __toESM(require_mapValues());
-      import_assign2 = __toESM(require_assign());
+      import_assign = __toESM(require_assign());
       import_pick = __toESM(require_pick());
       import_set = __toESM(require_set());
       import_reduce2 = __toESM(require_reduce());
@@ -31077,6 +30892,195 @@
         return baseClone(value, CLONE_DEEP_FLAG | CLONE_SYMBOLS_FLAG);
       }
       module.exports = cloneDeep5;
+    }
+  });
+
+  // ../node_modules/lodash/_assignMergeValue.js
+  var require_assignMergeValue = __commonJS({
+    "../node_modules/lodash/_assignMergeValue.js"(exports, module) {
+      var baseAssignValue = require_baseAssignValue();
+      var eq = require_eq();
+      function assignMergeValue(object, key, value) {
+        if (value !== void 0 && !eq(object[key], value) || value === void 0 && !(key in object)) {
+          baseAssignValue(object, key, value);
+        }
+      }
+      module.exports = assignMergeValue;
+    }
+  });
+
+  // ../node_modules/lodash/isArrayLikeObject.js
+  var require_isArrayLikeObject = __commonJS({
+    "../node_modules/lodash/isArrayLikeObject.js"(exports, module) {
+      var isArrayLike = require_isArrayLike();
+      var isObjectLike = require_isObjectLike();
+      function isArrayLikeObject(value) {
+        return isObjectLike(value) && isArrayLike(value);
+      }
+      module.exports = isArrayLikeObject;
+    }
+  });
+
+  // ../node_modules/lodash/isPlainObject.js
+  var require_isPlainObject = __commonJS({
+    "../node_modules/lodash/isPlainObject.js"(exports, module) {
+      var baseGetTag = require_baseGetTag();
+      var getPrototype = require_getPrototype();
+      var isObjectLike = require_isObjectLike();
+      var objectTag = "[object Object]";
+      var funcProto = Function.prototype;
+      var objectProto = Object.prototype;
+      var funcToString = funcProto.toString;
+      var hasOwnProperty = objectProto.hasOwnProperty;
+      var objectCtorString = funcToString.call(Object);
+      function isPlainObject2(value) {
+        if (!isObjectLike(value) || baseGetTag(value) != objectTag) {
+          return false;
+        }
+        var proto = getPrototype(value);
+        if (proto === null) {
+          return true;
+        }
+        var Ctor = hasOwnProperty.call(proto, "constructor") && proto.constructor;
+        return typeof Ctor == "function" && Ctor instanceof Ctor && funcToString.call(Ctor) == objectCtorString;
+      }
+      module.exports = isPlainObject2;
+    }
+  });
+
+  // ../node_modules/lodash/_safeGet.js
+  var require_safeGet = __commonJS({
+    "../node_modules/lodash/_safeGet.js"(exports, module) {
+      function safeGet(object, key) {
+        if (key === "constructor" && typeof object[key] === "function") {
+          return;
+        }
+        if (key == "__proto__") {
+          return;
+        }
+        return object[key];
+      }
+      module.exports = safeGet;
+    }
+  });
+
+  // ../node_modules/lodash/toPlainObject.js
+  var require_toPlainObject = __commonJS({
+    "../node_modules/lodash/toPlainObject.js"(exports, module) {
+      var copyObject = require_copyObject();
+      var keysIn = require_keysIn();
+      function toPlainObject(value) {
+        return copyObject(value, keysIn(value));
+      }
+      module.exports = toPlainObject;
+    }
+  });
+
+  // ../node_modules/lodash/_baseMergeDeep.js
+  var require_baseMergeDeep = __commonJS({
+    "../node_modules/lodash/_baseMergeDeep.js"(exports, module) {
+      var assignMergeValue = require_assignMergeValue();
+      var cloneBuffer = require_cloneBuffer();
+      var cloneTypedArray = require_cloneTypedArray();
+      var copyArray = require_copyArray();
+      var initCloneObject = require_initCloneObject();
+      var isArguments = require_isArguments();
+      var isArray3 = require_isArray();
+      var isArrayLikeObject = require_isArrayLikeObject();
+      var isBuffer = require_isBuffer();
+      var isFunction2 = require_isFunction();
+      var isObject3 = require_isObject();
+      var isPlainObject2 = require_isPlainObject();
+      var isTypedArray = require_isTypedArray();
+      var safeGet = require_safeGet();
+      var toPlainObject = require_toPlainObject();
+      function baseMergeDeep(object, source, key, srcIndex, mergeFunc, customizer, stack) {
+        var objValue = safeGet(object, key), srcValue = safeGet(source, key), stacked = stack.get(srcValue);
+        if (stacked) {
+          assignMergeValue(object, key, stacked);
+          return;
+        }
+        var newValue = customizer ? customizer(objValue, srcValue, key + "", object, source, stack) : void 0;
+        var isCommon = newValue === void 0;
+        if (isCommon) {
+          var isArr = isArray3(srcValue), isBuff = !isArr && isBuffer(srcValue), isTyped = !isArr && !isBuff && isTypedArray(srcValue);
+          newValue = srcValue;
+          if (isArr || isBuff || isTyped) {
+            if (isArray3(objValue)) {
+              newValue = objValue;
+            } else if (isArrayLikeObject(objValue)) {
+              newValue = copyArray(objValue);
+            } else if (isBuff) {
+              isCommon = false;
+              newValue = cloneBuffer(srcValue, true);
+            } else if (isTyped) {
+              isCommon = false;
+              newValue = cloneTypedArray(srcValue, true);
+            } else {
+              newValue = [];
+            }
+          } else if (isPlainObject2(srcValue) || isArguments(srcValue)) {
+            newValue = objValue;
+            if (isArguments(objValue)) {
+              newValue = toPlainObject(objValue);
+            } else if (!isObject3(objValue) || isFunction2(objValue)) {
+              newValue = initCloneObject(srcValue);
+            }
+          } else {
+            isCommon = false;
+          }
+        }
+        if (isCommon) {
+          stack.set(srcValue, newValue);
+          mergeFunc(newValue, srcValue, srcIndex, customizer, stack);
+          stack["delete"](srcValue);
+        }
+        assignMergeValue(object, key, newValue);
+      }
+      module.exports = baseMergeDeep;
+    }
+  });
+
+  // ../node_modules/lodash/_baseMerge.js
+  var require_baseMerge = __commonJS({
+    "../node_modules/lodash/_baseMerge.js"(exports, module) {
+      var Stack = require_Stack();
+      var assignMergeValue = require_assignMergeValue();
+      var baseFor = require_baseFor();
+      var baseMergeDeep = require_baseMergeDeep();
+      var isObject3 = require_isObject();
+      var keysIn = require_keysIn();
+      var safeGet = require_safeGet();
+      function baseMerge(object, source, srcIndex, customizer, stack) {
+        if (object === source) {
+          return;
+        }
+        baseFor(source, function(srcValue, key) {
+          stack || (stack = new Stack());
+          if (isObject3(srcValue)) {
+            baseMergeDeep(object, source, key, srcIndex, baseMerge, customizer, stack);
+          } else {
+            var newValue = customizer ? customizer(safeGet(object, key), srcValue, key + "", object, source, stack) : void 0;
+            if (newValue === void 0) {
+              newValue = srcValue;
+            }
+            assignMergeValue(object, key, newValue);
+          }
+        }, keysIn);
+      }
+      module.exports = baseMerge;
+    }
+  });
+
+  // ../node_modules/lodash/merge.js
+  var require_merge2 = __commonJS({
+    "../node_modules/lodash/merge.js"(exports, module) {
+      var baseMerge = require_baseMerge();
+      var createAssigner = require_createAssigner();
+      var merge4 = createAssigner(function(object, source, srcIndex) {
+        baseMerge(object, source, srcIndex);
+      });
+      module.exports = merge4;
     }
   });
 
@@ -34393,9 +34397,56 @@
 
   // ../howdju-common/lib/models.ts
   var import_lodash7 = __toESM(require_lodash());
-  var import_assign = __toESM(require_assign());
-  var import_merge = __toESM(require_merge());
-  var import_toString = __toESM(require_toString());
+
+  // ../node_modules/uuid/dist/esm-browser/rng.js
+  var getRandomValues;
+  var rnds8 = new Uint8Array(16);
+  function rng() {
+    if (!getRandomValues) {
+      getRandomValues = typeof crypto !== "undefined" && crypto.getRandomValues && crypto.getRandomValues.bind(crypto);
+      if (!getRandomValues) {
+        throw new Error("crypto.getRandomValues() not supported. See https://github.com/uuidjs/uuid#getrandomvalues-not-supported");
+      }
+    }
+    return getRandomValues(rnds8);
+  }
+
+  // ../node_modules/uuid/dist/esm-browser/stringify.js
+  var byteToHex = [];
+  for (let i3 = 0; i3 < 256; ++i3) {
+    byteToHex.push((i3 + 256).toString(16).slice(1));
+  }
+  function unsafeStringify(arr, offset = 0) {
+    return (byteToHex[arr[offset + 0]] + byteToHex[arr[offset + 1]] + byteToHex[arr[offset + 2]] + byteToHex[arr[offset + 3]] + "-" + byteToHex[arr[offset + 4]] + byteToHex[arr[offset + 5]] + "-" + byteToHex[arr[offset + 6]] + byteToHex[arr[offset + 7]] + "-" + byteToHex[arr[offset + 8]] + byteToHex[arr[offset + 9]] + "-" + byteToHex[arr[offset + 10]] + byteToHex[arr[offset + 11]] + byteToHex[arr[offset + 12]] + byteToHex[arr[offset + 13]] + byteToHex[arr[offset + 14]] + byteToHex[arr[offset + 15]]).toLowerCase();
+  }
+
+  // ../node_modules/uuid/dist/esm-browser/native.js
+  var randomUUID = typeof crypto !== "undefined" && crypto.randomUUID && crypto.randomUUID.bind(crypto);
+  var native_default = {
+    randomUUID
+  };
+
+  // ../node_modules/uuid/dist/esm-browser/v4.js
+  function v4(options, buf, offset) {
+    if (native_default.randomUUID && !buf && !options) {
+      return native_default.randomUUID();
+    }
+    options = options || {};
+    const rnds = options.random || (options.rng || rng)();
+    rnds[6] = rnds[6] & 15 | 64;
+    rnds[8] = rnds[8] & 63 | 128;
+    if (buf) {
+      offset = offset || 0;
+      for (let i3 = 0; i3 < 16; ++i3) {
+        buf[offset + i3] = rnds[i3];
+      }
+      return buf;
+    }
+    return unsafeStringify(rnds);
+  }
+  var v4_default = v4;
+
+  // ../howdju-common/lib/models.ts
   init_commonErrors();
   init_general();
   init_zodSchemas();
@@ -34469,17 +34520,17 @@
         throw newImpossibleError(rootPolarity);
     }
   };
-  var makeCredentials = (props) => (0, import_assign.default)({ email: "", password: "" }, props);
+  var makeCredentials = (props) => (0, import_lodash7.assign)({ email: "", password: "" }, props);
   var makeCreateRegistrationRequestInput = (props) => {
-    return (0, import_assign.default)({ email: "" }, props);
+    return (0, import_lodash7.assign)({ email: "" }, props);
   };
-  var makeCreateRegistrationRequest = (props) => (0, import_assign.default)(
+  var makeCreateRegistrationRequest = (props) => (0, import_lodash7.assign)(
     {
       email: ""
     },
     props
   );
-  var makeCreateRegistrationConfirmationInput = (props) => (0, import_assign.default)(
+  var makeCreateRegistrationConfirmationInput = (props) => (0, import_lodash7.assign)(
     {
       registrationCode: "",
       username: "",
@@ -34494,7 +34545,7 @@
     props
   );
   var makeCreateRegistrationConfirmation = makeCreateRegistrationConfirmationInput;
-  var makeAccountSettings = (props) => (0, import_assign.default)(
+  var makeAccountSettings = (props) => (0, import_lodash7.assign)(
     {
       paidContributionsDisclosure: ""
     },
@@ -34504,15 +34555,16 @@
     atoms: [makeCreatePropositionCompoundAtomInput()]
   });
   var makeCreatePropositionCompoundInputFromProposition = (proposition) => ({
-    atoms: [{ entity: proposition }]
+    atoms: [{ entity: proposition, key: v4_default() }]
   });
   var makeCreatePropositionCompoundAtomInput = () => ({
-    entity: makeCreatePropositionInput()
+    entity: makeCreatePropositionInput(),
+    key: v4_default()
   });
-  var makeUrl = (props) => (0, import_merge.default)({ url: "" }, props);
-  var makeCreateUrl = (props) => (0, import_merge.default)({ url: "" }, props);
-  var makeCreateUrlLocatorInput = (props) => (0, import_merge.default)({ url: makeCreateUrl() }, props);
-  var makeCreateMediaExcerptSpeakerInput = (props) => (0, import_merge.default)(
+  var makeUrl = (props) => (0, import_lodash7.merge)({ url: "" }, props);
+  var makeCreateUrl = (props) => (0, import_lodash7.merge)({ url: "" }, props);
+  var makeCreateUrlLocatorInput = (props) => (0, import_lodash7.merge)({ url: makeCreateUrl() }, props);
+  var makeCreateMediaExcerptSpeakerInput = (props) => (0, import_lodash7.merge)(
     {
       persorg: makeCreatePersorg()
     },
@@ -34526,8 +34578,8 @@
     twitterUrl: void 0,
     wikipediaUrl: void 0
   });
-  var idEqual = (id1, id2) => isDefined(id1) && isDefined(id2) && (0, import_toString.default)(id1) === (0, import_toString.default)(id2);
-  var makeTag = (props) => (0, import_merge.default)(
+  var idEqual = (id1, id2) => isDefined(id1) && isDefined(id2) && (0, import_lodash7.toString)(id1) === (0, import_lodash7.toString)(id2);
+  var makeTag = (props) => (0, import_lodash7.merge)(
     {
       name: ""
     },
@@ -34558,7 +34610,7 @@
     // whether to have the justification controls expanded and to create a justification along with the proposition
     doCreateJustification: !!justificationProps
   });
-  var makeCreateStatementInput = (props) => (0, import_merge.default)(
+  var makeCreateStatementInput = (props) => (0, import_lodash7.merge)(
     {
       speaker: makeCreatePersorg(),
       sentenceType: "PROPOSITION",
@@ -34566,9 +34618,9 @@
     },
     props
   );
-  var makeCreatePropositionInput = (props) => (0, import_assign.default)({ text: "" }, props);
+  var makeCreatePropositionInput = (props) => (0, import_lodash7.assign)({ text: "" }, props);
   var makeCreateJustificationInput = (props) => {
-    const model = (0, import_merge.default)(
+    const model = (0, import_lodash7.merge)(
       {
         rootTargetType: "PROPOSITION",
         rootTarget: { text: "" },
@@ -34595,7 +34647,7 @@
     return model;
   };
   function makeCreateMediaExcerptInput(props) {
-    return (0, import_merge.default)(
+    return (0, import_lodash7.merge)(
       {
         localRep: {
           quotation: ""
@@ -34611,7 +34663,7 @@
   }
   var makeWritInput = () => ({ title: "" });
   var makeUrlInput = () => ({ url: "" });
-  var makeCreateWritQuoteInput = (props) => (0, import_merge.default)(
+  var makeCreateWritQuoteInput = (props) => (0, import_lodash7.merge)(
     {
       writ: makeWritInput(),
       quoteText: "",
@@ -34640,7 +34692,7 @@
     model.rootPolarity = rootPolarity;
   }
   function makeCreateSourceExcerptInput(props) {
-    return (0, import_merge.default)(
+    return (0, import_lodash7.merge)(
       {
         type: "WRIT_QUOTE",
         writQuote: makeCreateWritQuoteInput(),
@@ -34682,7 +34734,7 @@
   function demuxCreateJustificationInput(input) {
     const basis = demuxCreateJustificationInputBasis(input.basis);
     const target = demuxCreateJustificationInputTarget(input.target);
-    const creation = (0, import_assign.default)((0, import_lodash7.cloneDeep)(input), {
+    const creation = (0, import_lodash7.assign)((0, import_lodash7.cloneDeep)(input), {
       target,
       basis
     });
@@ -34691,7 +34743,7 @@
   var muxCreateJustificationErrors = (create, createErrors) => {
     const basis = createErrors.basis && muxCreateJustificationBasisErrors(create.basis, createErrors.basis);
     const target = createErrors.target && muxCreateJustificationTargetErrors(create.target, createErrors.target);
-    const inputErrors = (0, import_assign.default)((0, import_lodash7.cloneDeep)(createErrors), {
+    const inputErrors = (0, import_lodash7.assign)((0, import_lodash7.cloneDeep)(createErrors), {
       target,
       basis
     });
@@ -35308,7 +35360,7 @@
   }
 
   // ../howdju-client-common/lib/models.ts
-  var import_merge2 = __toESM(require_merge());
+  var import_merge = __toESM(require_merge2());
   var import_lodash12 = __toESM(require_lodash());
 
   // ../howdju-client-common/lib/target.ts

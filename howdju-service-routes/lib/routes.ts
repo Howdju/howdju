@@ -472,6 +472,31 @@ export const serviceRoutes = {
       }
     ),
   },
+
+  /*
+   * PropositionCompounds
+   */
+  readPropositionCompounds: {
+    path: "proposition-compounds",
+    method: httpMethods.GET,
+    request: handler(
+      QueryStringParams("propositionIds"),
+      async (
+        appProvider: ServicesProvider,
+        { queryStringParams: { propositionIds } }
+      ) => {
+        if (!propositionIds) {
+          throw new InvalidRequestError("propositionIds is required");
+        }
+        const propositionCompounds =
+          await appProvider.propositionCompoundsService.readPropositionCompoundsForPropositionIds(
+            split(propositionIds, ",")
+          );
+        return { body: { propositionCompounds } };
+      }
+    ),
+  },
+
   /*
    * Persorgs
    */

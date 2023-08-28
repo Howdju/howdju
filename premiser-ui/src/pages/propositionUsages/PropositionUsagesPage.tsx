@@ -1,34 +1,41 @@
 import React, { UIEvent, useEffect } from "react";
 import { Button, CircularProgress } from "react-md";
-import isEmpty from "lodash/isEmpty";
-import map from "lodash/map";
-import { denormalize } from "normalizr";
+import { map, isEmpty } from "lodash";
+import { RouteComponentProps } from "react-router";
 
-import { JustificationView } from "howdju-common";
+import { EntityId } from "howdju-common";
 
 import { api } from "../../actions";
 import CellList from "../../CellList";
 import {
   justificationsSchema,
   statementsSchema,
+  appearancesSchema,
+  propositionCompoundsSchema,
+  propositionSchema,
 } from "../../normalizationSchemas";
 import StatementCard from "../../StatementCard";
 import { combineIds } from "../../viewModels";
 import FlipMove from "react-flip-move";
 import JustificationCard from "../../JustificationCard";
 import config from "../../config";
-import { useLocation } from "react-router";
-import { useAppDispatch, useAppSelector } from "@/hooks";
-import { getQueryParam } from "@/util";
+import { useAppDispatch, useAppEntitySelector, useAppSelector } from "@/hooks";
 import ErrorPage from "@/ErrorPage";
 import FlipMoveWrapper from "@/FlipMoveWrapper";
+import AppearanceCard from "../appearances/AppearanceCard";
+import PropositionCompoundCard from "@/PropositionCompoundCard";
+import PropositionCard from "@/PropositionCard";
 
 const pageId = "proposition-usages-page";
 const fetchCount = 20;
 
-export default function PropositionUsagesPage() {
-  const location = useLocation();
-  const propositionId = getQueryParam(location, "propositionId");
+interface MatchParams {
+  propositionId: EntityId;
+}
+type Props = RouteComponentProps<MatchParams>;
+
+export default function PropositionUsagesPage(props: Props) {
+  const { propositionId } = props.match.params;
   if (!propositionId) {
     return <ErrorPage message={"Invalid URL (propositionId is required.)"} />;
   }
@@ -42,7 +49,7 @@ interface ValidProps {
 function ValidPropositionUsagesPage({ propositionId }: ValidProps) {
   const dispatch = useAppDispatch();
   useEffect(() => {
-    // TODO(20): add fetchPropositionAppearances
+    dispatch(api.fetchProposition(propositionId));
     dispatch(api.fetchSentenceStatements("PROPOSITION", propositionId));
     dispatch(api.fetchIndirectPropositionStatements(propositionId));
     dispatch(
@@ -51,30 +58,39 @@ function ValidPropositionUsagesPage({ propositionId }: ValidProps) {
         count: fetchCount,
       })
     );
+    dispatch(api.fetchPropositionAppearances(propositionId));
+    dispatch(api.fetchPropositionCompounds(propositionId));
   }, [dispatch, propositionId]);
 
+  const proposition = useAppEntitySelector(propositionId, propositionSchema);
   const pageState = useAppSelector((state) => state.propositionUsagesPage);
   const {
     isFetchingDirect,
     isFetchingIndirect,
     isFetchingJustifications,
+    isFetchingAppearances,
+    isFetchingPropositionCompounds,
     justificationsContinuationToken,
   } = pageState;
-  const entities = useAppSelector((state) => state.entities);
-  const directStatements = denormalize(
+  const directStatements = useAppEntitySelector(
     pageState.directStatements,
-    statementsSchema,
-    entities
+    statementsSchema
   );
-  const indirectStatements = denormalize(
+  const indirectStatements = useAppEntitySelector(
     pageState.indirectStatements,
-    statementsSchema,
-    entities
+    statementsSchema
   );
-  const justifications: JustificationView[] = denormalize(
+  const justifications = useAppEntitySelector(
     pageState.justifications,
-    justificationsSchema,
-    entities
+    justificationsSchema
+  );
+  const appearances = useAppEntitySelector(
+    pageState.appearanceIds,
+    appearancesSchema
+  );
+  const propositionCompounds = useAppEntitySelector(
+    pageState.propositionCompoundIds,
+    propositionCompoundsSchema
   );
 
   const fetchMoreJustifications = (event: UIEvent) => {
@@ -92,6 +108,8 @@ function ValidPropositionUsagesPage({ propositionId }: ValidProps) {
   const hasIndirectStatements =
     indirectStatements && indirectStatements.length > 0;
   const hasJustifications = !isEmpty(justifications);
+  const hasAppearances = !isEmpty(appearances);
+  const hasPropositionCompounds = !isEmpty(propositionCompounds);
 
   const fetchMoreJustificationsButton = (
     <Button
@@ -105,7 +123,15 @@ function ValidPropositionUsagesPage({ propositionId }: ValidProps) {
 
   return (
     <div className="md-grid">
-      <h1 className="md-cell md-cell--12">Direct Statements</h1>
+      <h1 className="md-cell md-cell--12">Proposition Usages</h1>
+      {proposition && (
+        <PropositionCard
+          id={combineIds(pageId, "proposition")}
+          proposition={proposition}
+        />
+      )}
+
+      <h2 className="md-cell md-cell--12">Direct Statements</h2>
       <CellList className="md-cell md-cell--12 center-text">
         {map(directStatements, (s) => {
           const id = combineIds(pageId, "statement", s.id);
@@ -130,7 +156,7 @@ function ValidPropositionUsagesPage({ propositionId }: ValidProps) {
         </div>
       )}
 
-      <h1 className="md-cell md-cell--12">Indirect Statements</h1>
+      <h2 className="md-cell md-cell--12">Indirect Statements</h2>
       <CellList className="md-cell md-cell--12 center-text">
         {map(indirectStatements, (s) => {
           const id = combineIds(pageId, "statement", s.id);
@@ -155,7 +181,7 @@ function ValidPropositionUsagesPage({ propositionId }: ValidProps) {
         </div>
       )}
 
-      <h1 className="md-cell md-cell--12">Justifications</h1>
+      <h2 className="md-cell md-cell--12">Justifications</h2>
       <FlipMove
         {...config.ui.flipMove}
         className="md-cell md-cell--12 center-text"
@@ -184,6 +210,62 @@ function ValidPropositionUsagesPage({ propositionId }: ValidProps) {
       <div className="md-cell md-cell--12 cell--centered-contents">
         {fetchMoreJustificationsButton}
       </div>
+
+      <h2 className="md-cell md-cell--12">Appearances</h2>
+      <FlipMove
+        {...config.ui.flipMove}
+        className="md-cell md-cell--12 center-text"
+      >
+        {map(appearances, (a) => {
+          const id = `appearance-card-${a.id}`;
+          return (
+            <FlipMoveWrapper key={id}>
+              <AppearanceCard
+                className="md-cell md-cell--12"
+                id={id}
+                appearance={a}
+              />
+            </FlipMoveWrapper>
+          );
+        })}
+      </FlipMove>
+      {!isFetchingAppearances && !hasAppearances && (
+        <div className="md-cell md-cell--12 text-center">No Appearances</div>
+      )}
+      {isFetchingAppearances && (
+        <div className="md-cell md-cell--12 cell--centered-contents">
+          <CircularProgress id={`appearances-progress`} />
+        </div>
+      )}
+
+      <h2 className="md-cell md-cell--12">PropositionCompounds</h2>
+      <FlipMove
+        {...config.ui.flipMove}
+        className="md-cell md-cell--12 center-text"
+      >
+        {map(propositionCompounds, (pc) => {
+          const id = `proposition-compound-card-${pc.id}`;
+          return (
+            <FlipMoveWrapper key={id}>
+              <PropositionCompoundCard
+                className="md-cell md-cell--12"
+                id={id}
+                propositionCompound={pc}
+              />
+            </FlipMoveWrapper>
+          );
+        })}
+      </FlipMove>
+      {!isFetchingPropositionCompounds && !hasPropositionCompounds && (
+        <div className="md-cell md-cell--12 text-center">
+          No PropositionCompounds
+        </div>
+      )}
+      {isFetchingPropositionCompounds && (
+        <div className="md-cell md-cell--12 cell--centered-contents">
+          <CircularProgress id={`proposition-compounds-progress`} />
+        </div>
+      )}
     </div>
   );
 }

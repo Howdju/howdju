@@ -136,7 +136,7 @@ class Paths {
       search: "?" + window.encodeURIComponent(mainSearchText),
     });
   propositionUsages = (propositionId: EntityId) =>
-    `/proposition-usages?propositionId=${propositionId}`;
+    `/propositions/${propositionId}/usages`;
   mediaExcerptUsages = (mediaExcerptId: EntityId) =>
     `/media-excerpts/${mediaExcerptId}/usages`;
   statementUsages = (statementId: EntityId) =>

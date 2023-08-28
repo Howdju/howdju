@@ -163,6 +163,7 @@ class JustificationsPage extends Component<Props> {
 
     const rootTargetProps = {
       rootTargetType,
+      rootTargetId,
       rootTarget,
     } as RootTargetProps;
 
