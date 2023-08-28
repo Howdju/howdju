@@ -57,7 +57,7 @@ export default function PropositionCompoundEditorFields(props: Props) {
         editorType,
         editorId,
         combineNames(name, "atoms"),
-        index,
+        index + 1,
         makeCreatePropositionCompoundAtomInput
       )
     );
@@ -144,7 +144,7 @@ export default function PropositionCompoundEditorFields(props: Props) {
             <SingleLineTextField {...inputProps} />
           );
         return (
-          <div key={`atom ${atom.entity.id}`}>
+          <div key={`atom ${atom.key}`}>
             {input}
             <ErrorMessages errors={errors?.atoms?.[index]?._errors} />
             <ErrorMessages errors={errors?.atoms?.[index]?.entity?._errors} />

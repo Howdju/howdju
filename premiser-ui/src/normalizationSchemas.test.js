@@ -86,11 +86,11 @@ describe("normalizationSchemas", () => {
           },
           propositionCompounds: {
             4: {
-              atoms: [{ entity: 2 }],
+              atoms: [{ entity: 2, key: "atom 2" }],
               id: 4,
             },
             5: {
-              atoms: [{ entity: 3 }],
+              atoms: [{ entity: 3, key: "atom 3" }],
               id: 5,
             },
           },

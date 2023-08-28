@@ -71,6 +71,7 @@ export default function JustificationEntityViewer({
 
   const rootTargetProps = {
     rootTargetType: justification.rootTargetType,
+    rootTargetId: justification.rootTarget.id,
     rootTarget: justification.rootTarget,
   } as RootTargetProps;
 

@@ -53,6 +53,9 @@ Howdju’s intended qualities are:
 
 Howdju’s intended organization is as a non-profit:
 
+- All income must come from sources that will preserve the platform's independent nature. The
+  platform will not sell advertisements, but instead will receive donations and possibly offer
+  subscription-only features appropriate for organizations.
 - Profits will be reinvested into R&D for the platform or donated to causes relating to media
   literacy and critical thinking.
 - An [open source software project](https://github.com/Howdju/howdju/)

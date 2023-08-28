@@ -25,6 +25,7 @@ import { expectToBeSameMomentDeep } from "howdju-test-common";
 
 import {
   ariaVisibleOne,
+  clickEnabledButton,
   getElementByQuerySelector,
   getTextContent,
   makeRouteComponentProps,
@@ -375,7 +376,7 @@ describe("CreatePropositionPage", () => {
         await user.type(screen.getByLabelText(/name/i), speakerName);
 
         // Act
-        await user.click(screen.getByRole("button", { name: /create/i }));
+        await clickEnabledButton(user, /create/i);
 
         // Assert
         jest.runAllTimers();

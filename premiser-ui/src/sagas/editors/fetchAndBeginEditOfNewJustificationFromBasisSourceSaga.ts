@@ -19,9 +19,9 @@ import {
   makeCreateWritQuoteInput,
   PropositionOut,
   WritQuoteOut,
-  PropositionCompoundOut,
   MediaExcerptOut,
   makeCreateMediaExcerptInput,
+  PropositionCompoundView,
 } from "howdju-common";
 
 import { api, editors, flows, str } from "@/actions";
@@ -133,7 +133,7 @@ function fetchActionCreatorForBasisSourceType(
 type JustificationBasisAlternatives =
   | {
       basisType: "PROPOSITION_COMPOUND";
-      propositionCompound: PropositionCompoundOut;
+      propositionCompound: PropositionCompoundView;
       writQuote: undefined;
       proposition: undefined;
       mediaExcerpt: undefined;

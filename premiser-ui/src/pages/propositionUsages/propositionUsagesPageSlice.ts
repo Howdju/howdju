@@ -9,10 +9,14 @@ export const propositionUsagesPageSlice = createSlice({
     isFetchingDirect: false,
     isFetchingIndirect: false,
     isFetchingJustifications: false,
+    isFetchingAppearances: false,
+    isFetchingPropositionCompounds: false,
     directStatements: [],
     indirectStatements: [],
     justifications: [],
     justificationsContinuationToken: undefined as ContinuationToken | undefined,
+    appearanceIds: [],
+    propositionCompoundIds: [],
   },
   reducers: {},
   extraReducers(builder) {
@@ -57,7 +61,31 @@ export const propositionUsagesPageSlice = createSlice({
       );
       state.justifications = result.justifications;
       state.justificationsContinuationToken = action.payload.continuationToken;
-      state.isFetchingJustifications = false;
+    });
+    builder.addCase(api.fetchPropositionAppearances, (state) => {
+      state.isFetchingAppearances = true;
+    });
+    builder.addCase(
+      api.fetchPropositionAppearances.response,
+      (state, action) => {
+        state.isFetchingAppearances = false;
+        const { result } = normalize(
+          action.payload,
+          action.meta.normalizationSchema
+        );
+        state.appearanceIds = result.appearances;
+      }
+    );
+    builder.addCase(api.fetchPropositionCompounds, (state) => {
+      state.isFetchingPropositionCompounds = true;
+    });
+    builder.addCase(api.fetchPropositionCompounds.response, (state, action) => {
+      state.isFetchingPropositionCompounds = false;
+      const { result } = normalize(
+        action.payload,
+        action.meta.normalizationSchema
+      );
+      state.propositionCompoundIds = result.propositionCompounds;
     });
   },
 });

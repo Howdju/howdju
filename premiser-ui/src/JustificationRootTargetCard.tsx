@@ -1,7 +1,6 @@
 import React from "react";
 import cn from "classnames";
 import concat from "lodash/concat";
-import get from "lodash/get";
 import some from "lodash/some";
 import {
   Card,
@@ -20,7 +19,6 @@ import {
   isNegative,
   isPositive,
   JustificationBasisSourceTypes,
-  JustificationRootTargetOut,
   JustificationRootTargetType,
   JustificationRootTargetTypes,
   logger,
@@ -84,6 +82,7 @@ class JustificationRootTargetCard extends React.Component<Props> {
       editorId,
       suggestionsKey,
       rootTargetType,
+      rootTargetId,
       rootTarget,
       extraMenuItems,
       contextTrailItem,
@@ -108,7 +107,7 @@ class JustificationRootTargetCard extends React.Component<Props> {
       />,
     ];
     const { entity: typeEntityMenuItems, edit: typeEditMenuItems } =
-      this.menuItemsForType(rootTargetType, rootTarget);
+      this.menuItemsForType(rootTargetType, rootTargetId);
 
     const entityMenuItems = concat(extraMenuItems, typeEntityMenuItems);
     const editMenuItems = concat(typeEditMenuItems, baseEditMenuItems);
@@ -146,6 +145,7 @@ class JustificationRootTargetCard extends React.Component<Props> {
 
     const rootTargetProps = {
       rootTargetType,
+      rootTargetId,
       rootTarget,
     } as RootTargetProps;
 
@@ -224,11 +224,10 @@ class JustificationRootTargetCard extends React.Component<Props> {
 
   menuItemsForType(
     rootTargetType: JustificationRootTargetType,
-    rootTarget: JustificationRootTargetOut
+    rootTargetId: EntityId
   ): { entity: JSX.Element[]; edit: JSX.Element[] } {
     switch (rootTargetType) {
       case JustificationRootTargetTypes.PROPOSITION: {
-        const propositionId = get(rootTarget, "id");
         return {
           entity: [
             <ListItem
@@ -237,7 +236,7 @@ class JustificationRootTargetCard extends React.Component<Props> {
               title="Justify another proposition with this one"
               leftIcon={<FontIcon>call_made</FontIcon>}
               component={Link}
-              to={this.createJustificationPath(propositionId)}
+              to={this.createJustificationPath(rootTargetId)}
             />,
             <ListItem
               primaryText="See usages"
@@ -245,7 +244,7 @@ class JustificationRootTargetCard extends React.Component<Props> {
               title={`See usages of this proposition`}
               leftIcon={<FontIcon>call_merge</FontIcon>}
               component={Link}
-              to={paths.propositionUsages(propositionId)}
+              to={paths.propositionUsages(rootTargetId)}
             />,
           ],
           edit: [

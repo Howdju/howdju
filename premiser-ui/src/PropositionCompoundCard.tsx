@@ -15,7 +15,7 @@ interface Props {
   id: ComponentId;
   propositionCompound: PropositionCompoundOut;
   highlightedProposition?: PropositionOut;
-  contextTrailItems: ContextTrailItem[];
+  contextTrailItems?: ContextTrailItem[];
   showStatusText?: boolean;
   className?: string;
 }

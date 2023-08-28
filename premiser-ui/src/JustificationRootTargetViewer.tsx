@@ -6,21 +6,24 @@ import {
   PropositionOut,
   StatementOut,
   ContextTrailItem,
+  EntityId,
 } from "howdju-common";
 
 import PropositionEntityViewer from "./PropositionEntityViewer";
 import StatementEntityViewer from "./StatementEntityViewer";
 import { ComponentId, EditorId, SuggestionsKey } from "./types";
-import PropositionCompoundViewer from "./PropositionCompoundViewer";
 import { logger } from "./logger";
+import PropositionCompoundEntityViewer from "./PropositionCompoundEntityViewer";
 
 export type RootTargetProps =
   | {
       rootTargetType: "PROPOSITION";
+      rootTargetId: EntityId;
       rootTarget: PropositionOut;
     }
   | {
       rootTargetType: "STATEMENT";
+      rootTargetId: EntityId;
       rootTarget: StatementOut;
     };
 type Props = {
@@ -87,11 +90,12 @@ export default function JustificationRootTargetViewer({
       }
 
       return (
-        <PropositionCompoundViewer
+        <PropositionCompoundEntityViewer
           id={id}
           propositionCompound={connectingEntity.basis.entity}
           showStatusText={showStatusText}
           highlightedProposition={rootTarget}
+          menu={menu}
         />
       );
     }

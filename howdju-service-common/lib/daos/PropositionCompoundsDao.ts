@@ -333,6 +333,30 @@ export class PropositionCompoundsDao {
       });
   }
 
+  async readPropositionCompoundsForPropositionIds(propositionIds: EntityId[]) {
+    const { rows } = await this.database.query(
+      "readPropositionCompoundsForPropositionIds",
+      `
+        select proposition_compound_id
+        from proposition_compound_atoms pca
+          join proposition_compounds pc using (proposition_compound_id)
+          join propositions p using (proposition_id)
+          join proposition_compound_atoms pca2 using (proposition_compound_id)
+        where pca.proposition_id = any ($1)
+          and pc.deleted is null
+          and p.deleted is null
+        group by proposition_compound_id
+        having count(pca2.proposition_id) > 1
+      `,
+      [propositionIds]
+    );
+    return Promise.all(
+      rows.map(({ proposition_compound_id }) =>
+        this.read(proposition_compound_id)
+      )
+    );
+  }
+
   readPropositionCompoundsByIdForRootPropositionId(propositionId: EntityId) {
     return this.readPropositionCompoundsByIdForRootTarget(
       JustificationRootTargetTypes.PROPOSITION,

@@ -5,17 +5,18 @@ import {
   AccountSettings,
   AppearanceOut,
   ContextTrailItem,
-  Justification,
+  JustificationView,
   JustificationVote,
   MediaExcerptOut,
   Persorg,
   PicRegion,
-  Proposition,
-  PropositionCompound,
+  PropositionCompoundOut,
+  PropositionCompoundView,
+  PropositionOut,
   PropositionTagVote,
   SourceExcerptParaphrase,
   SourceOut,
-  Statement,
+  StatementOut,
   Tag,
   TagVote,
   toSlug,
@@ -48,7 +49,7 @@ export const tagVoteSchema = new schema.Entity<TagVote>("tagVotes", {
 });
 const tagVotesSchema = new schema.Array(tagVoteSchema);
 
-export const propositionSchema = new schema.Entity<Proposition>(
+export const propositionSchema = new schema.Entity<PropositionOut>(
   "propositions",
   {
     tags: tagsSchema,
@@ -85,7 +86,7 @@ const sentenceSchema = new schema.Union(
   {},
   (_value, parent) => parent.sentenceType
 );
-export const statementSchema = new schema.Entity<Statement>("statements", {
+export const statementSchema = new schema.Entity<StatementOut>("statements", {
   speaker: persorgSchema,
   sentence: sentenceSchema,
   // justifications added below via justificationTargetSchema
@@ -96,15 +97,30 @@ sentenceSchema.define({
   STATEMENT: statementSchema,
 });
 
-export const propositionCompoundSchema = new schema.Entity<PropositionCompound>(
-  "propositionCompounds",
-  {
-    atoms: [
-      {
-        entity: propositionSchema,
+export const propositionCompoundSchema =
+  new schema.Entity<PropositionCompoundView>(
+    "propositionCompounds",
+    {
+      atoms: [
+        {
+          entity: propositionSchema,
+        },
+      ],
+    },
+    {
+      processStrategy: (value: PropositionCompoundOut) => {
+        return merge({}, value, {
+          // Create a key on citations. Since they aren't a normalizr entity, we can update them here.
+          atoms: value?.atoms.map((atom) => ({
+            ...atom,
+            key: `atom ${atom.entity.id}`,
+          })),
+        });
       },
-    ],
-  }
+    }
+  );
+export const propositionCompoundsSchema = new schema.Array(
+  propositionCompoundSchema
 );
 export const writSchema = new schema.Entity<Writ>("writs");
 export const writsSchema = new schema.Array(writSchema);
@@ -219,7 +235,7 @@ const justificationRootTargetSchema = new schema.Union(
   (_value, parent) => parent.rootTargetType
 );
 
-export const justificationSchema = new schema.Entity<Justification>(
+export const justificationSchema = new schema.Entity<JustificationView>(
   "justifications"
 );
 justificationSchema.define({

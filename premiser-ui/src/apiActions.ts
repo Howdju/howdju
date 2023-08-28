@@ -73,6 +73,7 @@ import {
   persorgSchema,
   persorgsSchema,
   propositionCompoundSchema,
+  propositionCompoundsSchema,
   propositionSchema,
   propositionsSchema,
   propositionTagVoteSchema,
@@ -668,6 +669,26 @@ export const api = {
     (rootPropositionId) => ({
       queryStringParams: { rootPropositionId, indirect: null },
       normalizationSchema: { statements: statementsSchema },
+    })
+  ),
+  fetchPropositionAppearances: apiActionCreator(
+    "FETCH_PROPOSITION_APPEARANCES",
+    serviceRoutes.readAppearances,
+    (propositionId: EntityId) => ({
+      queryStringParams: {
+        filters: encodeQueryStringObject({ propositionId }),
+      },
+      normalizationSchema: { appearances: appearancesSchema },
+    })
+  ),
+  fetchPropositionCompounds: apiActionCreator(
+    "FETCH_PROPOSITION_COMPOUNDS",
+    serviceRoutes.readPropositionCompounds,
+    (propositionId: EntityId) => ({
+      queryStringParams: {
+        propositionIds: propositionId,
+      },
+      normalizationSchema: { propositionCompounds: propositionCompoundsSchema },
     })
   ),
 

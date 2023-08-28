@@ -37,6 +37,12 @@ export class PropositionCompoundsService {
     return propositionCompound;
   }
 
+  readPropositionCompoundsForPropositionIds(propositionIds: EntityId[]) {
+    return this.propositionCompoundsDao.readPropositionCompoundsForPropositionIds(
+      propositionIds
+    );
+  }
+
   async createValidPropositionCompoundAsUser(
     createPropositionCompound: CreatePropositionCompound,
     userId: EntityId,
