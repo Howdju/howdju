@@ -41,7 +41,7 @@ export class AppearancesService {
   async createAppearance(
     userIdent: UserIdent,
     createAppearance: CreateAppearance,
-    // TODO remove
+    // TODO(#28) remove
     createdAt?: Moment
   ): Promise<EntityWrapper<AppearanceOut>> {
     const userId = await this.authService.readUserIdForUserIdent(userIdent);
