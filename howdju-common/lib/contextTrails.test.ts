@@ -5,6 +5,7 @@ import {
   serializeContextTrail,
 } from "./contextTrails";
 import { utcNow } from "./general";
+import { JustificationView } from "./viewModels";
 import {
   JustificationRef,
   PropositionCompoundRef,
@@ -102,7 +103,7 @@ describe("nextContextTrailItem", () => {
       rootPolarity: "NEGATIVE" as const,
       rootTargetType: "PROPOSITION" as const,
       rootTarget: proposition,
-    });
+    } as JustificationView);
 
     expect(
       nextContextTrailItem(
@@ -158,7 +159,7 @@ describe("nextContextTrailItem", () => {
       rootPolarity: "NEGATIVE" as const,
       rootTargetType: "PROPOSITION" as const,
       rootTarget: proposition,
-    });
+    } as JustificationView);
 
     expect(
       nextContextTrailItem(

@@ -202,7 +202,7 @@ async function migrateJustificationBasisCompounds() {
             compoundAtomRows[0];
           const justificationId = compoundAtomRows[0].justification_id;
           const { propositionCompound } =
-            await provider.propositionCompoundsService.createPropositionCompoundAsUser(
+            await provider.propositionCompoundsService.createValidPropositionCompoundAsUser(
               createPropositionCompound,
               userId,
               createdAt

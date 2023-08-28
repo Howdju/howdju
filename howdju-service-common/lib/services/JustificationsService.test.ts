@@ -86,7 +86,7 @@ describe("JustificationsService", () => {
       };
       const now = moment();
       const { propositionCompound: propositionCompoundOut } =
-        await propositionCompoundsService.createPropositionCompoundAsUser(
+        await propositionCompoundsService.createValidPropositionCompoundAsUser(
           createPropositionCompound,
           user.id,
           now

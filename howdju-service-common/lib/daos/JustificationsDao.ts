@@ -557,8 +557,7 @@ export class JustificationsDao {
       ),
       this.readPropositionCompoundsByIdForRootTarget(
         rootTargetType,
-        rootTargetId,
-        { userId }
+        rootTargetId
       ),
       this.writQuotesDao.readWritQuotesByIdForRootTarget(
         rootTargetType,
@@ -1177,16 +1176,12 @@ export class JustificationsDao {
 
   private async readPropositionCompoundsByIdForRootTarget(
     rootTargetType: JustificationRootTargetType,
-    rootTargetId: EntityId,
-    { userId }: { userId: EntityId }
+    rootTargetId: EntityId
   ): Promise<Record<EntityId, ReadPropositionCompoundDataOut>> {
     const propositionCompoundsById =
       await this.propositionCompoundsDao.readPropositionCompoundsByIdForRootTarget(
         rootTargetType,
-        rootTargetId,
-        {
-          userId,
-        }
+        rootTargetId
       );
     return this.addRootJustificationCountByPolarity(propositionCompoundsById);
   }

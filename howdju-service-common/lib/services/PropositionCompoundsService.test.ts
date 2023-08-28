@@ -43,7 +43,7 @@ describe("PropositionCompoundsService", () => {
       const created = utcNow();
 
       const { propositionCompound } =
-        await service.createPropositionCompoundAsUser(
+        await service.createValidPropositionCompoundAsUser(
           createPropositionCompound,
           user.id,
           created
@@ -60,7 +60,7 @@ describe("PropositionCompoundsService", () => {
     });
   });
 
-  describe("createPropositionCompoundAsUser", () => {
+  describe("createValidPropositionCompoundAsUser", () => {
     test("creates a proposition compound", async () => {
       const { user } = await testHelper.makeUser();
       const createPropositionCompound: CreatePropositionCompound = {
@@ -72,7 +72,7 @@ describe("PropositionCompoundsService", () => {
       const created = utcNow();
 
       const { propositionCompound, isExtant } =
-        await service.createPropositionCompoundAsUser(
+        await service.createValidPropositionCompoundAsUser(
           createPropositionCompound,
           user.id,
           created
@@ -99,7 +99,7 @@ describe("PropositionCompoundsService", () => {
       const created = utcNow();
 
       const { propositionCompound: extantPropositionCompound } =
-        await service.createPropositionCompoundAsUser(
+        await service.createValidPropositionCompoundAsUser(
           createPropositionCompound,
           user.id,
           created
@@ -107,7 +107,7 @@ describe("PropositionCompoundsService", () => {
 
       // Act
       const { propositionCompound, isExtant } =
-        await service.createPropositionCompoundAsUser(
+        await service.createValidPropositionCompoundAsUser(
           createPropositionCompound,
           user.id,
           created
@@ -132,7 +132,7 @@ describe("PropositionCompoundsService", () => {
       const created = utcNow();
 
       const { propositionCompound: extantPropositionCompound } =
-        await service.createPropositionCompoundAsUser(
+        await service.createValidPropositionCompoundAsUser(
           createPropositionCompound,
           user.id,
           created
@@ -146,7 +146,7 @@ describe("PropositionCompoundsService", () => {
 
       // Act
       const { propositionCompound, isExtant } =
-        await service.createPropositionCompoundAsUser(
+        await service.createValidPropositionCompoundAsUser(
           createPropositionCompound2,
           user.id,
           created

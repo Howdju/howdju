@@ -720,8 +720,18 @@ export class JustificationsService extends EntityService<
       }
 
       case JustificationBasisTypes.PROPOSITION_COMPOUND: {
+        if (isOnlyRef(justificationBasis.entity)) {
+          const propositionCompound =
+            await this.propositionCompoundsService.readPropositionCompoundForId(
+              justificationBasis.entity.id
+            );
+          return {
+            isExtant: true,
+            basis: { type, entity: propositionCompound },
+          };
+        }
         const { isExtant, propositionCompound } = await prefixErrorPath(
-          this.propositionCompoundsService.createPropositionCompoundAsUser(
+          this.propositionCompoundsService.createValidPropositionCompoundAsUser(
             justificationBasis.entity,
             userId,
             now

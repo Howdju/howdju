@@ -21832,7 +21832,7 @@
         /**
          * A reference to this atom's parent compound.
          *
-         * TODO(440) do we need this?
+         * TODO(#440) do we need this?
          */
         propositionCompoundId: mod.string(),
         entity: Proposition
@@ -22193,6 +22193,7 @@
         "PASSWORD_RESET_REQUEST",
         "PERSORG",
         "PROPOSITION",
+        "PROPOSITION_COMPOUND",
         "PROPOSITION_TAG_VOTE",
         "REGISTRATION_REQUEST",
         "SOURCE",
@@ -30052,7 +30053,7 @@
     "../howdju-common/lib/standaloneAjv.js"(exports) {
       "use strict";
       exports["https://howdju.com/schemas/content-report.schema.json"] = validate10;
-      var schema27 = { "$id": "https://howdju.com/schemas/content-report.schema.json", "$schema": "http://json-schema.org/draft-07/schema#", "title": "Content Report", "description": "A user-submitted report of content that may violate our policies.", "type": "object", "required": ["url", "types"], "properties": { "entityType": { "description": "The type of entity being reported, if the report can pertain to a particular entity.", "enum": ["APPEARANCE", "JUSTIFICATION", "JUSTIFICATION_VOTE", "MEDIA_EXCERPT", "PASSWORD_HASH", "PASSWORD_RESET_REQUEST", "PERSORG", "PROPOSITION", "PROPOSITION_TAG_VOTE", "REGISTRATION_REQUEST", "SOURCE", "STATEMENT", "TAG_VOTE", "URL", "URL_LOCATOR", "USER", "WRIT", "WRIT_QUOTE"] }, "entityId": { "$ref": "definitions.json#/definitions/entityId" }, "url": { "description": "The URL upon which the user made the report, and so likely an URL where the content appears.", "type": "string", "format": "uri" }, "types": { "type": "array", "uniqueItems": true, "items": { "enum": ["HARASSMENT", "THREATENING_VIOLENCE", "HATEFUL", "OBSCENE", "SEXUALIZATION_OF_MINORS", "SHARING_PRIVATE_PERSONAL_INFORMATION", "PORNOGRAPHY", "ILLEGAL_ACTIVITY", "IMPERSONATION", "COPYRIGHT_VIOLATION", "TRADEMARK_VIOLATION", "SPAM", "OTHER"] }, "minItems": 1 }, "description": { "description": "The user's description of the report.", "type": "string", "maxLength": 4096 } } };
+      var schema27 = { "$id": "https://howdju.com/schemas/content-report.schema.json", "$schema": "http://json-schema.org/draft-07/schema#", "title": "Content Report", "description": "A user-submitted report of content that may violate our policies.", "type": "object", "required": ["url", "types"], "properties": { "entityType": { "description": "The type of entity being reported, if the report can pertain to a particular entity.", "enum": ["APPEARANCE", "JUSTIFICATION", "JUSTIFICATION_VOTE", "MEDIA_EXCERPT", "PASSWORD_HASH", "PASSWORD_RESET_REQUEST", "PERSORG", "PROPOSITION", "PROPOSITION_COMPOUND", "PROPOSITION_TAG_VOTE", "REGISTRATION_REQUEST", "SOURCE", "STATEMENT", "TAG_VOTE", "URL", "URL_LOCATOR", "USER", "WRIT", "WRIT_QUOTE"] }, "entityId": { "$ref": "definitions.json#/definitions/entityId" }, "url": { "description": "The URL upon which the user made the report, and so likely an URL where the content appears.", "type": "string", "format": "uri" }, "types": { "type": "array", "uniqueItems": true, "items": { "enum": ["HARASSMENT", "THREATENING_VIOLENCE", "HATEFUL", "OBSCENE", "SEXUALIZATION_OF_MINORS", "SHARING_PRIVATE_PERSONAL_INFORMATION", "PORNOGRAPHY", "ILLEGAL_ACTIVITY", "IMPERSONATION", "COPYRIGHT_VIOLATION", "TRADEMARK_VIOLATION", "SPAM", "OTHER"] }, "minItems": 1 }, "description": { "description": "The user's description of the report.", "type": "string", "maxLength": 4096 } } };
       var schema29 = { "type": "string", "format": "int32", "description": "An identifier for an entity. Usually used in the database to identify the entity. A positive integer formatted as a string.", "examples": ["1", "2", "42"] };
       var func0 = require_equal().default;
       var func7 = require_ucs2length().default;
@@ -30083,7 +30084,7 @@
           }
           if (data.entityType !== void 0) {
             let data0 = data.entityType;
-            if (!(data0 === "APPEARANCE" || data0 === "JUSTIFICATION" || data0 === "JUSTIFICATION_VOTE" || data0 === "MEDIA_EXCERPT" || data0 === "PASSWORD_HASH" || data0 === "PASSWORD_RESET_REQUEST" || data0 === "PERSORG" || data0 === "PROPOSITION" || data0 === "PROPOSITION_TAG_VOTE" || data0 === "REGISTRATION_REQUEST" || data0 === "SOURCE" || data0 === "STATEMENT" || data0 === "TAG_VOTE" || data0 === "URL" || data0 === "URL_LOCATOR" || data0 === "USER" || data0 === "WRIT" || data0 === "WRIT_QUOTE")) {
+            if (!(data0 === "APPEARANCE" || data0 === "JUSTIFICATION" || data0 === "JUSTIFICATION_VOTE" || data0 === "MEDIA_EXCERPT" || data0 === "PASSWORD_HASH" || data0 === "PASSWORD_RESET_REQUEST" || data0 === "PERSORG" || data0 === "PROPOSITION" || data0 === "PROPOSITION_COMPOUND" || data0 === "PROPOSITION_TAG_VOTE" || data0 === "REGISTRATION_REQUEST" || data0 === "SOURCE" || data0 === "STATEMENT" || data0 === "TAG_VOTE" || data0 === "URL" || data0 === "URL_LOCATOR" || data0 === "USER" || data0 === "WRIT" || data0 === "WRIT_QUOTE")) {
               const err2 = { instancePath: instancePath + "/entityType", schemaPath: "#/properties/entityType/enum", keyword: "enum", params: { allowedValues: schema27.properties.entityType.enum }, message: "must be equal to one of the allowed values", schema: schema27.properties.entityType.enum, parentSchema: schema27.properties.entityType, data: data0 };
               if (vErrors === null) {
                 vErrors = [err2];
