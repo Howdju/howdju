@@ -139,7 +139,6 @@ export function servicesInitializer(provider: AwsProvider) {
   );
 
   const propositionCompoundsService = new PropositionCompoundsService(
-    provider.propositionCompoundValidator,
     actionsService,
     propositionsService,
     provider.propositionCompoundsDao

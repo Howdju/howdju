@@ -1,0 +1,2 @@
+drop index idx_statement_compound_atoms_statement_compound_atom_id;
+alter table proposition_compound_atoms add primary key (proposition_compound_id, proposition_id);

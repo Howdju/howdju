@@ -26,6 +26,7 @@ import {
   createNextContinuationToken,
   decodeContinuationToken,
 } from "./pagination";
+import { Moment } from "moment";
 
 export class AppearancesService {
   constructor(
@@ -39,7 +40,9 @@ export class AppearancesService {
 
   async createAppearance(
     userIdent: UserIdent,
-    createAppearance: CreateAppearance
+    createAppearance: CreateAppearance,
+    // TODO(#28) remove
+    createdAt?: Moment
   ): Promise<EntityWrapper<AppearanceOut>> {
     const userId = await this.authService.readUserIdForUserIdent(userIdent);
 
@@ -54,7 +57,7 @@ export class AppearancesService {
       this.usersService.readUserBlurbForId(userId),
     ]);
 
-    const created = utcNow();
+    const created = createdAt || utcNow();
     const { entity: id, isExtant: isExtantAppearance } = await readWriteReread(
       () =>
         this.appearancesDao.readEquivalentAppearanceId(userId, mediaExcerptId, {

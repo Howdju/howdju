@@ -750,7 +750,7 @@ export const PropositionCompoundAtom = z.object({
   /**
    * A reference to this atom's parent compound.
    *
-   * TODO(440) do we need this?
+   * TODO(#440) do we need this?
    */
   propositionCompoundId: z.string(),
   entity: Proposition,
@@ -1520,6 +1520,7 @@ const EntityType = z.enum([
   "PASSWORD_RESET_REQUEST",
   "PERSORG",
   "PROPOSITION",
+  "PROPOSITION_COMPOUND",
   "PROPOSITION_TAG_VOTE",
   "REGISTRATION_REQUEST",
   "SOURCE",

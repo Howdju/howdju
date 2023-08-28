@@ -83,7 +83,7 @@ describe("ContextTrailsService", () => {
         );
       const now = moment();
       const { propositionCompound: propositionCompound1 } =
-        await propositionCompoundsService.createPropositionCompoundAsUser(
+        await propositionCompoundsService.createValidPropositionCompoundAsUser(
           {
             atoms: [{ entity: basisProposition1 }],
           },
@@ -112,7 +112,7 @@ describe("ContextTrailsService", () => {
           }
         );
       const { propositionCompound: propositionCompound2 } =
-        await propositionCompoundsService.createPropositionCompoundAsUser(
+        await propositionCompoundsService.createValidPropositionCompoundAsUser(
           {
             atoms: [{ entity: basisProposition2 }],
           },
@@ -203,7 +203,7 @@ describe("ContextTrailsService", () => {
         );
       const now = moment();
       const { propositionCompound: propositionCompound1 } =
-        await propositionCompoundsService.createPropositionCompoundAsUser(
+        await propositionCompoundsService.createValidPropositionCompoundAsUser(
           {
             atoms: [{ entity: basisProposition1 }],
           },
@@ -241,7 +241,7 @@ describe("ContextTrailsService", () => {
           }
         );
       const { propositionCompound: propositionCompound2 } =
-        await propositionCompoundsService.createPropositionCompoundAsUser(
+        await propositionCompoundsService.createValidPropositionCompoundAsUser(
           {
             atoms: [{ entity: basisProposition2 }],
           },
@@ -299,7 +299,7 @@ describe("ContextTrailsService", () => {
         );
       const now = moment();
       const { propositionCompound: propositionCompound1 } =
-        await propositionCompoundsService.createPropositionCompoundAsUser(
+        await propositionCompoundsService.createValidPropositionCompoundAsUser(
           {
             atoms: [{ entity: basisProposition1 }],
           },

@@ -746,8 +746,8 @@ ALTER SEQUENCE public.perspectives_perspective_id_seq OWNED BY public.perspectiv
 --
 
 CREATE TABLE public.proposition_compound_atoms (
-    proposition_compound_id integer,
-    proposition_id integer,
+    proposition_compound_id integer NOT NULL,
+    proposition_id integer NOT NULL,
     order_position integer
 );
 
@@ -1691,6 +1691,14 @@ ALTER TABLE ONLY public.persorgs
 
 
 --
+-- Name: proposition_compound_atoms proposition_compound_atoms_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.proposition_compound_atoms
+    ADD CONSTRAINT proposition_compound_atoms_pkey PRIMARY KEY (proposition_compound_id, proposition_id);
+
+
+--
 -- Name: proposition_tag_scores proposition_tag_scores_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1873,13 +1881,6 @@ CREATE INDEX idx_registration_requests_email ON public.registration_requests USI
 --
 
 CREATE UNIQUE INDEX idx_source_excerpt_paraphrases_source_excerpt_paraphrase_id ON public.source_excerpt_paraphrases USING btree (source_excerpt_paraphrase_id);
-
-
---
--- Name: idx_statement_compound_atoms_statement_compound_atom_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX idx_statement_compound_atoms_statement_compound_atom_id ON public.proposition_compound_atoms USING btree (proposition_compound_id);
 
 
 --
