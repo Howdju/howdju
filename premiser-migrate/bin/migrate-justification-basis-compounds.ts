@@ -27,6 +27,7 @@ async function migrateJustificationBasisCompounds() {
           jbca.justification_basis_compound_id
         , jbca.justification_basis_compound_atom_id
         , jbca.entity_type
+        , jbca.order_position
         , jbc.creator_user_id as compound_creator_id
         , jbc.created as compound_created
         , p.text as proposition_atom_text
@@ -53,6 +54,7 @@ async function migrateJustificationBasisCompounds() {
           on
                 sep.source_excerpt_type = 'WRIT_QUOTE'
             and sep.source_excerpt_id = wq.writ_quote_id
+      order by justification_basis_compound_id, jbca.order_position
     `
   );
   const rowsByCompoundId = groupBy(
