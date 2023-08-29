@@ -1,4 +1,18 @@
-## Can I delete my Howdju content?
+# Frequenty asked questions
+
+## How does Howdju expect to be effective if so few people bother to do a Google search before sharing a headline they see?
+
+We hypothesize that Howdju does not need to be widely used in order to be effective. We hypothesize
+that if a dedicated cadre of ‘citizen infoteers’ uses Howdju both to:
+
+1. educate themselves to form justified background beliefs and
+2. to find or recall factual support for their beliefs while engaged in debate,
+
+then they can amplify Howdju‘s effect by connecting others to valid, factual, and informed
+information. These infoteers will have a ‘misinformation innoculation’ effect through their social
+interactions with groups that don‘t use Howdju directly.
+
+## Will I be able to delete my Howdju content?
 
 Howdju provides value by accepting user submitted content and allowing users to build on top of other user's submitted
 content. Examples include one user adding a justification for another user's proposition, one user countering another
@@ -6,20 +20,20 @@ user's justification, or one user critiquing another user's summary justificatio
 value to its users if users remove their content because doing so would invalidate the content of other users
 that was built on top of it. For that reason, content you submit to Howdju may persist indefinitely.
 
-That said, Howdju recognizes the importance of allowing users to change their minds. Currently we support disassociating
+That said, Howdju recognizes the importance of allowing users to change their minds. We plan to support disassociating
 a user from a particular piece of content. In the future we plan to support versioned edits.
 
 If there are extenuating circumstances which require immediate disassociation of a user from content, or deletion of
 content, please report the content or email us at
 <span data-type="email" data-email-user="report" data-email-domain="howdju.com"></span>.
 
-## Can I delete my Howdju account?
+## Will I be able to delete my Howdju account?
 
 Howdju believes that the subjects with which a user chooses to interact and the ways that a user behaves provide
 important context to understanding the user's motivations and authenticity. Other users deserve some ability to access
 this context instead of seeing content divorced from the context of the person who was motivated to create it.
 
-For this reason, Howdju balances users' needs to disassociate themselves personally from Howdua and their created
+For this reason, Howdju plans to balance users' needs to disassociate themselves personally from Howdju and their created
 content by replacing accounts with anonymized accounts rather than complete deletion. This approach allows other users
 the opportunity to see the content in context, while disassociating the creator from the activity.
 
@@ -47,4 +61,6 @@ disjustifications, such as how old a proposition is and how many unique persons 
 
 While we have attempted both to inform about and to provide control over our collection of personal information, Howdju
 lacks the expertise or resources to confirm our compliance with the General Data Protection Regulation. We apologize for
-any inconvenience, but we require that you not submit any personal information to Howdju if you are subject to the GDPR.
+any inconvenience, but we require that you not submit any personal information to Howdju if you are
+subject to the GDPR. Please see [this Github issue](https://github.com/Howdju/howdju/issues/24) for
+more background.

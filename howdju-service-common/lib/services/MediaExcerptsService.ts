@@ -259,7 +259,9 @@ export class MediaExcerptsService {
   async createUrlLocators(
     userIdent: UserIdent,
     mediaExcerptId: EntityId,
-    createUrlLocators: CreateUrlLocator[]
+    createUrlLocators: CreateUrlLocator[],
+    // TODO remove
+    created?: Moment
   ) {
     const creator = await this.authService.readUserBlurbForUserIdent(userIdent);
     const mediaExcerpt = await this.mediaExcerptsDao.readMediaExcerptForId(
@@ -269,7 +271,7 @@ export class MediaExcerptsService {
       throw new EntityNotFoundError("MEDIA_EXCERPT", mediaExcerptId);
     }
 
-    const createdAt = utcNow();
+    const createdAt = created || utcNow();
     const urls = await this.urlsService.readOrCreateUrlsAsUser(
       createUrlLocators.map((u) => u.url),
       creator.id,

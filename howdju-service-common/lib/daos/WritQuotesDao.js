@@ -39,8 +39,9 @@ exports.WritQuotesDao = class WritQuotesDao {
           from writ_quotes wq join writs w on
                 wq.writ_quote_id = $1
             and wq.writ_id = w.writ_id
-            and wq.deleted is null
-            and w.deleted is null
+            -- TODO remove
+            -- and wq.deleted is null
+            -- and w.deleted is null
           `,
         [writQuoteId]
       ),
@@ -176,7 +177,10 @@ exports.WritQuotesDao = class WritQuotesDao {
       `;
     return this.database
       .query("readMoreWritQuotes", sql, args)
-      .then(({ rows }) => map(rows, toWritQuote));
+      .then(({ rows }) => map(rows, ({ writ_quote_id }) => writ_quote_id))
+      .then((writQuoteIds) =>
+        Promise.all(writQuoteIds.map((id) => this.readWritQuoteForId(id)))
+      );
   }
 
   readWritQuotesByIdForRootPropositionId(propositionId) {
