@@ -79,14 +79,6 @@ async function addMissingUrl(
 
       // @ts-ignore commit crimes against code by overwriting the database with the txn client
       provider.mediaExcerptsDao.database = client;
-      // @ts-ignore commit crimes against code by overwriting the database with the txn client
-      provider.urlsDao.database = client;
-      // @ts-ignore commit crimes against code by overwriting the database with the txn client
-      provider.sourcesDao.db = client;
-      // @ts-ignore commit crimes against code by overwriting the database with the txn client
-      provider.usersDao.database = client;
-      // @ts-ignore commit crimes against code by overwriting the database with the txn client
-      provider.urlLocatorAutoConfirmationDao.database = client;
 
       const normalUrl = normalizeUrl(url);
       if (url !== normalUrl) {

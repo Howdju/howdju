@@ -269,7 +269,7 @@ export class MediaExcerptsService {
       throw new EntityNotFoundError("MEDIA_EXCERPT", mediaExcerptId);
     }
 
-    const createdAt = created || utcNow();
+    const createdAt = utcNow();
     const urls = await this.urlsService.readOrCreateUrlsAsUser(
       createUrlLocators.map((u) => u.url),
       creator.id,
