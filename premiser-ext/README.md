@@ -45,8 +45,8 @@ yarn run package
 ```
 
 Upload `dist/howdju.zip` to the [Chrome Developer
-Dashboard](https://chrome.google.com/webstore/developer/dashboard). (Ensure the version has already
-been incremented.)
+Dashboard](https://chrome.google.com/webstore/developer/dashboard) (Build > Package > Upload new
+package). (Ensure the version has already been incremented.)
 
 Increment the version in `package.json`.
 
