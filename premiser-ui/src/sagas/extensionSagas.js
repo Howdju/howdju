@@ -4,12 +4,17 @@ import { actions, inIframe } from "howdju-client-common";
 import { logger } from "../logger";
 
 import config from "../config";
+import { domSerializationSafe, toJson } from "howdju-common";
 
 // const EXTENSION_ID = 'amnnpakeakkebmgkgjjenjkbkhkgkadh'
 
 export function* postExtensionMessages() {
   yield takeEvery(
-    [actions.extension.highlightTarget, actions.extension.messageHandlerReady],
+    [
+      actions.extension.highlightTarget,
+      actions.extension.highlightUrlLocator,
+      actions.extension.messageHandlerReady,
+    ],
     function* postExtensionMessagesWorker(action) {
       if (!inIframe()) {
         throw new Error(
@@ -19,8 +24,16 @@ export function* postExtensionMessages() {
       logger.trace(
         `difficult postExtensionMessagesWorker ${JSON.stringify({ action })}`
       );
-      // The extension's content script could be on any page, so allow any target origin ('*')
-      window.parent.postMessage(action, "*");
+      try {
+        // The extension's content script could be on any page, so allow any target origin ('*')
+        window.parent.postMessage(domSerializationSafe(action), "*");
+      } catch (err) {
+        const errMessage = err instanceof Error ? err.message : toJson(err);
+        logger.error(
+          `Error posting extension message ${toJson({ action, errMessage })}`,
+          err
+        );
+      }
 
       // For some reason the content script doesn't always see the first message
       const { ack, timeout } = yield race({

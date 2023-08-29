@@ -1,4 +1,5 @@
-// TODO(196): ensure that these paths follow a pattern compatible with the web app paths.
+// TODO(#196): ensure that these paths follow a pattern compatible with the web app paths. Maybe
+// move all paths here so that the extension and mobile app can access them.
 module.exports.CommonPaths = class CommonPaths {
   confirmRegistration() {
     return "/complete-registration";
@@ -11,6 +12,9 @@ module.exports.CommonPaths = class CommonPaths {
   }
   requestPasswordReset() {
     return "/request-password-reset";
+  }
+  searchMediaExcerpts() {
+    return "/search-media-excerpts";
   }
 };
 

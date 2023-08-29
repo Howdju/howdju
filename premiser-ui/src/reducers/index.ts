@@ -13,6 +13,7 @@ import ui from "./ui";
 import { mainSearch } from "../components/mainSearchBox/mainSearchBoxSlice";
 import { mainSearchPage } from "../pages/mainSearch/mainSearchPageSlice";
 import { justificationsSearchPage } from "@/pages/justificationsSearch/justificationsSearchPageSlice";
+import { mediaExcerptsSearchPage } from "@/pages/mediaExcerptsSearch/mediaExcerptsSearchPageSlice";
 import { tagPage } from "@/pages/tag/tagPageSlice";
 import { persorgPage } from "@/pages/persorg/persorgPageSlice";
 import { sourcePage } from "@/pages/source/sourcePageSlice";
@@ -48,6 +49,7 @@ export default (history: History) =>
     mainSearch,
     mainSearchPage,
     mediaExcerptPage,
+    mediaExcerptsSearchPage,
     persorgPage,
     primaryContextTrail,
     privacyConsent,

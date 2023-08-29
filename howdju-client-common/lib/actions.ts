@@ -7,6 +7,8 @@ import {
   PersistedJustificationWithRootRef,
   UrlOut,
   JustificationView,
+  UrlLocator,
+  MediaExcerptView,
 } from "howdju-common";
 
 /**
@@ -33,6 +35,12 @@ export const extension = {
         ) as PersistedJustificationWithRootRef,
         url,
       },
+    })
+  ),
+  highlightUrlLocator: createAction(
+    "EXTENSION/HIGHLIGHT_URL_LOCATOR",
+    (mediaExcerpt: MediaExcerptView, urlLocator: UrlLocator) => ({
+      payload: { mediaExcerpt, urlLocator },
     })
   ),
   messageHandlerReady: createAction("EXTENSION/MESSAGE_HANDLER_READY"),

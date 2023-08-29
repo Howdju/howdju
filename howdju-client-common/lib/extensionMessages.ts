@@ -1,4 +1,4 @@
-import { UrlTarget } from "howdju-common";
+import { DomAnchor, UrlTarget } from "howdju-common";
 import { RequireExactlyOne } from "type-fest";
 import { actions } from ".";
 import { ExtensionFrameActionName } from "./actions";
@@ -30,6 +30,9 @@ export type ContentScriptCommand =
     }
   | {
       annotateTarget: [UrlTarget];
+    }
+  | {
+      annotateUrlLocatorAnchors: DomAnchor[];
     };
 
 export const toggleSidebar = () => ({ type: "TOGGLE_SIDEBAR" } as const);

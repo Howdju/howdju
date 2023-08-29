@@ -71,6 +71,11 @@ export const setupStore = (
             // TODO(472) remove once we remove error-logging Saga.
             "errors.loggedErrors",
             /payload\.meta\.normalizationSchema\.[^.]+/,
+            "payload.mediaExcerpt.created",
+            /payload\.mediaExcerpt\.locators\.urlLocators\.\d+\.created/,
+            /payload\.mediaExcerpt\.locators\.urlLocators\.\d+\.autoConfirmationStatus\.(earliest|latest)(Not)?FoundAt/,
+            "payload.urlLocator.created",
+            /payload\.urlLocator\.autoConfirmationStatus\.(earliest|latest)(Not)?FoundAt/,
           ],
           ignoredPaths: [
             // TODO(484) figure out how to handle timestamps in a way that is acceptable to redux.

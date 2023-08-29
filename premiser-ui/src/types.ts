@@ -1,4 +1,10 @@
-import { Entity, JustificationView, UrlOut } from "howdju-common";
+import {
+  Entity,
+  JustificationView,
+  MediaExcerptView,
+  UrlLocator,
+  UrlOut,
+} from "howdju-common";
 import { FocusEvent, MouseEvent } from "react";
 import { logger } from "./logger";
 
@@ -95,6 +101,12 @@ export type OnClickJustificationWritQuoteUrl = (
   event: MouseEvent,
   justification: JustificationView,
   url: UrlOut
+) => void;
+
+export type OnClickUrlLocator = (
+  event: MouseEvent,
+  mediaExcerpt: MediaExcerptView,
+  urlLocator: UrlLocator
 ) => void;
 
 export type ListEventCallback<T, E extends React.UIEvent = React.UIEvent> = (

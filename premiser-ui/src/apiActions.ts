@@ -47,6 +47,7 @@ import {
   CreateAppearance,
   JustificationView,
   AppearanceSearchFilter,
+  MediaExcerptSearchFilter,
 } from "howdju-common";
 import {
   InferPathParams,
@@ -489,6 +490,31 @@ export const api = {
       pathParams: { mediaExcerptId },
     })
   ),
+  fetchMediaExcerpts: apiActionCreator(
+    "FETCH_MEDIA_EXCERPTS",
+    serviceRoutes.readMediaExcerpts,
+    (
+      filters: MediaExcerptSearchFilter,
+      count: number,
+      continuationToken?: ContinuationToken
+    ) => {
+      const queryStringParams: SearchQueryStringParams = {
+        filters: encodeQueryStringObject(filters),
+        continuationToken,
+        count: toString(count),
+      };
+      if (!queryStringParams.continuationToken) {
+        queryStringParams.sorts = defaultSorts;
+      }
+      return {
+        config: {
+          queryStringParams,
+          normalizationSchema: { mediaExcerpts: mediaExcerptsSchema },
+        },
+        meta: { filters },
+      };
+    }
+  ),
 
   createAppearance: apiActionCreator(
     "CREATE_APPEARANCE",
@@ -712,7 +738,7 @@ export const api = {
     })
   ),
   fetchMoreSourceMediaExcerpts: apiActionCreator(
-    "FETCH_SOURCE_MEDIA_EXCERPTS",
+    "FETCH_MORE_SOURCE_MEDIA_EXCERPTS",
     serviceRoutes.readMediaExcerpts,
     (continuationToken: ContinuationToken) => ({
       queryStringParams: { continuationToken },
