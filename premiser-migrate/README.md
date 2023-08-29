@@ -67,7 +67,7 @@ yarn run normalize-urls-preprod
 
 ```env
 DB_USER=...
-DB_NAME=howdju_pre_prod_2
+DB_NAME=howdju_pre_prod
 DB_PASSWORD=...
 DB_HOST=localhost
 DB_PORT=5434

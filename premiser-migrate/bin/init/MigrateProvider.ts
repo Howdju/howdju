@@ -14,6 +14,7 @@ import {
   BaseProvider,
   AwsProvider,
   DaosProvider,
+  TxnClient,
 } from "howdju-service-common";
 
 /**
@@ -26,10 +27,13 @@ import {
  */
 export class MigrateProvider implements BaseProvider {
   appConfig: object;
-  constructor() {
+  constructor(client?: TxnClient) {
     assign(this, loggerInit(this));
     this.appConfig = {};
     assign(this, databaseInit(this as unknown as ConfigProvider));
+    if (client) {
+      assign(this, { database: client });
+    }
     assign(this, daosInitializer(this as unknown as DatabaseProvider));
     assign(this, searchersInitializer(this as unknown as DaosProvider));
     assign(this, validatorsInitializer(this as unknown as LoggerProvider));

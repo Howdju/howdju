@@ -176,7 +176,10 @@ exports.WritQuotesDao = class WritQuotesDao {
       `;
     return this.database
       .query("readMoreWritQuotes", sql, args)
-      .then(({ rows }) => map(rows, toWritQuote));
+      .then(({ rows }) => map(rows, ({ writ_quote_id }) => writ_quote_id))
+      .then((writQuoteIds) =>
+        Promise.all(writQuoteIds.map((id) => this.readWritQuoteForId(id)))
+      );
   }
 
   readWritQuotesByIdForRootPropositionId(propositionId) {
