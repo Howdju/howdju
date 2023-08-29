@@ -15,7 +15,7 @@ export function databaseInit(provider: ConfigProvider) {
     password: provider.getConfigVal("DB_PASSWORD"),
     host: provider.getConfigVal("DB_HOST"),
     port: toNumber(provider.getConfigVal("DB_PORT", "5432")),
-    max: toNumber(provider.getConfigVal("DB_POOL_MAX_CLIENTS", "10")),
+    max: toNumber(provider.getConfigVal("DB_POOL_MAX_CLIENTS", "100")),
     // min: 1,
     // ssl: true,
     idleTimeoutMillis: toNumber(

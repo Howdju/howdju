@@ -39,9 +39,8 @@ exports.WritQuotesDao = class WritQuotesDao {
           from writ_quotes wq join writs w on
                 wq.writ_quote_id = $1
             and wq.writ_id = w.writ_id
-            -- TODO remove
-            -- and wq.deleted is null
-            -- and w.deleted is null
+            and wq.deleted is null
+            and w.deleted is null
           `,
         [writQuoteId]
       ),

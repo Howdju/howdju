@@ -259,9 +259,7 @@ export class MediaExcerptsService {
   async createUrlLocators(
     userIdent: UserIdent,
     mediaExcerptId: EntityId,
-    createUrlLocators: CreateUrlLocator[],
-    // TODO remove
-    created?: Moment
+    createUrlLocators: CreateUrlLocator[]
   ) {
     const creator = await this.authService.readUserBlurbForUserIdent(userIdent);
     const mediaExcerpt = await this.mediaExcerptsDao.readMediaExcerptForId(
