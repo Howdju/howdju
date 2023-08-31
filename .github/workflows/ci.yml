@@ -32,7 +32,7 @@ jobs:
       - name: Setup Node.JS
         uses: actions/setup-node@v3
         with:
-          node-version: 14.20.1
+          node-version: 16.18.0
           cache: "yarn"
       - name: Install Yarn
         run: |

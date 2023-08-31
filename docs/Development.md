@@ -19,15 +19,15 @@ On macOS using `nodenv`, this could be:
 ```shell
 brew install nodenv
 nodenv init
-nodenv install 14.20.1
+nodenv install 16.18.0
 # Activates this node version just for this shell via an env. var
-nodenv shell 14.20.1
+nodenv shell 16.18.0
 npm install -g yarn
 ```
 
 The correct node version should automatically activate due to the `.node-version`/`.nvmrc` files.
 
-Note: `14.20.1` is the officially supported Node.js version, and we recommend that everyone use a
+Note: `16.18.0` is the officially supported Node.js version, and we recommend that everyone use a
 consistent version to avoid any issues with dependencies.
 
 ### Install dependencies
