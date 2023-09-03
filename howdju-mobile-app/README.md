@@ -82,10 +82,20 @@ Remove this following from the monorepo's package:
 
 Basically, follow [these steps](https://reactnative.dev/docs/publishing-to-app-store).
 
-1. Configure Release scheme
+1. Open in Xcode
+1. From the target dropdown, select HowdjuShareExtenion Release
 1. Remove `NSExceptionDomains` from HowdjuApp `Info.plist`.
-1. Update `Bundle version string (short)` and `Bundle version` to be like 1.x (must be an increase
-   from previous release.)
+1. Update `Bundle Short Version String` (`CFBundleShortVersionString`) and/or `Bundle version`
+   (`CFBundleVersion`) (at least one of them must increase from previous release.)
+
+   - `Bundle Short Version String` is the app's version number
+   - `Bundle version` is the app's build version.
+   - When you increment the `Bundle Short Version String`, you can reset the `Bundle Version`.
+   - Recommend we do `Bundle Short Version String` 1.0, 1.1, 1.2 etc. and `Bundle version` 1, 2, 3,
+     etc. Reset Bundle version when we increment Bundle Short Version String.
+   - Another possible good versioning scheme would be to use simple numbers for
+     `Bundle Short Version String` (1, 2, 3) and a date timestamp for the `Bundle version` (YYYYMMDD).
+
 1. Build, Archive, Distribute
 
 ## Adding a new native dependency
