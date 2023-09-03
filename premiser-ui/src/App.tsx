@@ -74,6 +74,7 @@ import { RootState } from "./setupStore";
 
 import "./App.scss";
 import "./fonts.js";
+import PropositionAppearancesDialog from "./components/propositionAppearancesDialog/PropositionAppearancesDialog";
 
 const tabInfos = [
   {
@@ -558,6 +559,7 @@ class App extends Component<Props> {
             <Snackbar toasts={toasts} onDismiss={this.dismissSnackbar} />
 
             <ReportContentDialog />
+            <PropositionAppearancesDialog />
           </div>
         </ConnectedRouter>
       </ErrorBoundary>

@@ -29,6 +29,7 @@ import { urlLocatorsEditorFields } from "@/editors/urlLocatorsEditorFieldsSlice"
 import { factCheckPage } from "@/pages/factChecks/factCheckPageSlice";
 import { passwordResetRequestPage } from "@/pages/passwordResetRequest/passwordResetRequestPageSlice";
 import { passwordResetConfirmationPage } from "@/pages/passwordResetConfirmation/passwordResetConfirmationPageSlice";
+import { propositionAppearancesDialog } from "@/components/propositionAppearancesDialog/propositionAppearancesDialogSlice";
 import listEntities from "@/components/listEntities/listEntitiesReducer";
 
 const widgets = combineReducers({
@@ -57,6 +58,7 @@ export default (history: History) =>
     persorgPage,
     primaryContextTrail,
     privacyConsent,
+    propositionAppearancesDialog,
     propositionUsagesPage,
     mediaExcerptUsagesPage,
     registrationConfirmationPage,

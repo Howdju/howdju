@@ -40,6 +40,7 @@ import { factCheckPageSaga } from "@/pages/factChecks/factCheckPageSlice";
 import { mediaExcerptUsagesPageSaga } from "@/pages/mediaExcerptUsages/mediaExcerptUsagesPageSlice";
 import { passwordResetRequestPageSaga } from "@/pages/passwordResetRequest/passwordResetRequestPageSlice";
 import { passwordResetConfirmationPageSaga } from "@/pages/passwordResetConfirmation/passwordResetConfirmationPageSlice";
+import { propositionAppearancesDialogSaga } from "@/components/propositionAppearancesDialog/propositionAppearancesDialogSlice";
 
 export default () =>
   all([
@@ -89,4 +90,6 @@ export default () =>
 
     passwordResetRequestPageSaga(),
     passwordResetConfirmationPageSaga(),
+
+    propositionAppearancesDialogSaga(),
   ]);

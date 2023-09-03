@@ -34,6 +34,7 @@ import {
   MediaExcerptCitation,
   MediaExcerptSpeaker,
   PersistedEntity,
+  JustificationPolarity,
 } from "./zodSchemas";
 import {
   EntityRef,
@@ -122,12 +123,18 @@ export interface ErrorOut<T extends object> {
   errors: ModelErrors<T>;
 }
 
+export type JustificationCountMap = {
+  [key in JustificationPolarity]?: number;
+};
+
 export interface PropositionOut
   extends Persisted<Proposition>,
     TaggedEntityOut {
   justifications?: JustificationOut[];
   propositionTagVotes?: PropositionTagVoteOut[];
   creator?: CreatorBlurb;
+  rootJustificationCountByPolarity?: JustificationCountMap;
+  appearanceCount?: number;
 }
 
 export type WritOut = Persisted<Writ>;

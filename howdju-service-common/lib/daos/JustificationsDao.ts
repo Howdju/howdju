@@ -1,13 +1,19 @@
-import concat from "lodash/concat";
-import forEach from "lodash/forEach";
-import flatMap from "lodash/flatMap";
-import has from "lodash/has";
-import head from "lodash/head";
-import map from "lodash/map";
-import mapValues from "lodash/mapValues";
-import snakeCase from "lodash/snakeCase";
+import {
+  concat,
+  forEach,
+  flatMap,
+  has,
+  head,
+  map,
+  mapValues,
+  merge,
+  snakeCase,
+  isArray,
+  sortBy,
+  toString,
+  reduce,
+} from "lodash";
 import { Moment } from "moment";
-import { fromPairs, isArray, sortBy, toString } from "lodash";
 
 import {
   assert,
@@ -49,6 +55,7 @@ import { EntityNotFoundError } from "../serviceErrors";
 import {
   groupRootJustifications,
   renumberSqlArgs,
+  toCountNumber,
   toIdString,
 } from "./daosUtil";
 import { DatabaseSortDirection } from "./daoModels";
@@ -665,34 +672,43 @@ export class JustificationsDao {
     return this.readJustificationForId(toIdString(justification_id));
   }
 
-  private async readRootJustificationCountByPolarityForRoot(
+  private async readRootJustificationCountByPolarityForRoots(
     rootTargetType: JustificationRootTargetType,
-    rootTargetId: EntityId
+    rootTargetIds: EntityId[]
   ) {
     const { rows } = await this.database.query<{
+      target_id: number;
       polarity: JustificationPolarity;
       count: number;
     }>(
-      "readRootJustificationCountByPolarityForRoot",
+      "readRootJustificationCountByPolarityForRoots",
       `
-      select polarity, count(*) as count
+      select
+          target_id
+        , polarity
+        , count(*) as count
       from justifications
         where
-              root_target_type = $1
-          and root_target_id = $2
-          and target_type = $1
-          and target_id = $2
-      group by polarity
+              target_type = $1
+          and target_id = any ($2)
+      group by target_id, polarity
     `,
-      [rootTargetType, rootTargetId]
+      [rootTargetType, rootTargetIds]
     );
-    const rootJustificationCountByPolarity: Partial<
+    const countByIdByPolarity: Record<
+      EntityId,
       Record<JustificationPolarity, number>
     > = {};
-    forEach(rows, (row) => {
-      rootJustificationCountByPolarity[row.polarity] = row.count;
+    forEach(rows, ({ target_id, polarity, count }) => {
+      if (!(target_id in countByIdByPolarity)) {
+        countByIdByPolarity[toIdString(target_id)] = {} as Record<
+          JustificationPolarity,
+          number
+        >;
+      }
+      countByIdByPolarity[target_id][polarity] = count;
     });
-    return rootJustificationCountByPolarity;
+    return countByIdByPolarity;
   }
 
   async createJustification(
@@ -1183,37 +1199,67 @@ export class JustificationsDao {
         rootTargetType,
         rootTargetId
       );
-    return this.addRootJustificationCountByPolarity(propositionCompoundsById);
+    return this.addAtomRelations(propositionCompoundsById);
   }
 
-  private async addRootJustificationCountByPolarity(
+  private async addAtomRelations(
     propositionCompoundsById: Record<EntityId, ReadPropositionCompoundDataOut>
   ): Promise<Record<EntityId, ReadPropositionCompoundDataOut>> {
     const atoms = flatMap(
       propositionCompoundsById,
       (propositionCompound) => propositionCompound.atoms
     );
-    const justificationCounts = await Promise.all(
-      map(atoms, (atom) =>
-        Promise.all([
-          atom.entity.id,
-          "entity" in atom &&
-            this.readRootJustificationCountByPolarityForRoot(
-              JustificationRootTargetTypes.PROPOSITION,
-              atom.entity.id
-            ),
-        ])
-      )
-    );
-    const justificationCountsyAtomId = fromPairs(justificationCounts);
+    const propositionIds = map(atoms, (atom) => atom.entity.id);
+    const [justificationCountsByPropositionId, appearanceCountByPropositionId] =
+      await Promise.all([
+        this.readRootJustificationCountByPolarityForRoots(
+          JustificationRootTargetTypes.PROPOSITION,
+          propositionIds
+        ),
+        this.readAppearanceCountForPropositionIds(propositionIds),
+      ]);
     return mapValues(propositionCompoundsById, (compound) => ({
       ...compound,
-      atoms: map(compound.atoms, (atom) => ({
-        ...atom,
-        rootJustificationCountByPolarity:
-          justificationCountsyAtomId[atom.entity.id],
-      })),
+      atoms: map(compound.atoms, (atom) =>
+        merge(atom, {
+          entity: {
+            rootJustificationCountByPolarity:
+              justificationCountsByPropositionId[atom.entity.id],
+            appearanceCount: appearanceCountByPropositionId[atom.entity.id],
+          },
+        })
+      ),
     }));
+  }
+
+  async readAppearanceCountForPropositionIds(propositionIds: string[]) {
+    const { rows } = await this.database.query<{
+      proposition_id: number;
+      count: string;
+    }>(
+      "readAppearanceCountForPropositionIds",
+      `
+        select
+            proposition_id
+          , count(*) as count
+        from
+          propositions p join appearances a using (proposition_id)
+        where
+              p.proposition_id = any ($1)
+          and p.deleted is null
+          and a.deleted is null
+        group by proposition_id
+      `,
+      [propositionIds]
+    );
+    return reduce(
+      rows,
+      (acc, { proposition_id, count }) => {
+        acc[toIdString(proposition_id)] = toCountNumber(count);
+        return acc;
+      },
+      {} as Record<string, number>
+    );
   }
 }
 

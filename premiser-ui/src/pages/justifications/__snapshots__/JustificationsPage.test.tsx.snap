@@ -59,8 +59,12 @@ exports[`JustificationsPage Can add a compound-based justification 1`] = `
                             href="/p/1/the-proposition-text"
                           >
                             the-proposition-text
-                             
                           </a>
+                        </div>
+                        <div
+                          class="relation-counts"
+                        >
+                           
                         </div>
                         <div>
                           <span
@@ -197,8 +201,12 @@ exports[`JustificationsPage Can add a compound-based justification 1`] = `
                                   href="/p/911/the-proposition-text-1?context-trail=j,1582,p"
                                 >
                                   The proposition text 1
-                                   
                                 </a>
+                              </div>
+                              <div
+                                class="relation-counts"
+                              >
+                                 
                               </div>
                               <div>
                                 <span
@@ -256,8 +264,12 @@ exports[`JustificationsPage Can add a compound-based justification 1`] = `
                                   href="/p/912/the-proposition-text-2?context-trail=j,1582,p"
                                 >
                                   The proposition text 2
-                                   
                                 </a>
+                              </div>
+                              <div
+                                class="relation-counts"
+                              >
+                                 
                               </div>
                               <div>
                                 <span
@@ -467,8 +479,12 @@ exports[`JustificationsPage Shows a justified proposition 1`] = `
                             href="/p/1/the-proposition-text"
                           >
                             the-proposition-text
-                             
                           </a>
+                        </div>
+                        <div
+                          class="relation-counts"
+                        >
+                           
                         </div>
                         <div>
                           <span

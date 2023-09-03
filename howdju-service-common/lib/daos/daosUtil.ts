@@ -1,10 +1,14 @@
-import concat from "lodash/concat";
-import forEach from "lodash/forEach";
-import head from "lodash/head";
-import isNumber from "lodash/isNumber";
-import join from "lodash/join";
-import map from "lodash/map";
-import toNumber from "lodash/toNumber";
+import { QueryResultRow } from "pg";
+import {
+  toString,
+  concat,
+  forEach,
+  head,
+  isNumber,
+  join,
+  map,
+  toNumber,
+} from "lodash";
 
 import {
   assert,
@@ -16,9 +20,8 @@ import {
   EntityId,
   JustificationRootTargetType,
 } from "howdju-common";
-import { QueryResultRow } from "pg";
+
 import { JustificationRow, EntityRowId } from "./dataTypes";
-import { toString } from "lodash";
 
 // Convenience re-export. TODO update deps in this folder to depend on new location directly
 export { normalizeText } from "howdju-common";
@@ -188,11 +191,26 @@ export const createParams = function createParams(
   return map(Array.from(Array(count).keys()), (i) => "$" + toString(i + start));
 };
 
-// We use a convention of translating IDs to strings.
-//
-// Also, there's a built-in toString that does weird things. So rather than
-// accidentally use it by forgetting to import toString from lodash, use this
-// method.
+/**
+ * We use a convention of translating IDs to strings.
+ *
+ * Also, there's a built-in toString that does weird things. So rather than
+ * accidentally use it by forgetting to import toString from lodash, use this
+ * method.
+ */
 export function toIdString(val: number) {
   return toString(val);
+}
+
+/**
+ * node-postgres returns counts of bigint as strings.  This method converts them to numbers.
+ *
+ * See https://github.com/brianc/node-postgres/issues/378
+ */
+export function toCountNumber(val: string) {
+  const n = toNumber(val);
+  if (toString(n) === val) {
+    return n;
+  }
+  throw new Error(`Number is too big for JS: ${val}`);
 }
