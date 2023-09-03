@@ -1,0 +1,12 @@
+---
+sidebar_position: 4
+---
+
+# Appearances
+
+Appearances indicate that an entity appears at a MediaExcerpt. The appearing entity is called the
+apparition. Howdju currently supports Proposition appearitions.
+
+- PropositionAppearance: the speech represented by the MediaExcerpt is validly paraphrased by the
+  appearing Proposition.
+- JustificationAppearance: the argument represented by the MediaExcerpt corresponds to the Justification.

@@ -1,0 +1,26 @@
+---
+sidebar_position: 3
+---
+
+# Features
+
+- One-step submission of evidence:
+
+  - Browser extension
+  - Mobile app
+  - Text fragment links
+
+- Convenient viewing of evidence in-context
+
+  The same three tools enable quickly viewing a MediaExcerpt in situ.
+
+- Consolidate equivalent entities and connect related ones
+
+  - Propositions
+  - Justifications
+
+- Sort content
+
+  - Global voting
+
+- Track speaker reputation/credibility

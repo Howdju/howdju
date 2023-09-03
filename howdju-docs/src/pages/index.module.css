@@ -21,3 +21,8 @@
   align-items: center;
   justify-content: center;
 }
+
+.mainParagraph {
+  text-align: center;
+  padding: 4rem 0;
+}

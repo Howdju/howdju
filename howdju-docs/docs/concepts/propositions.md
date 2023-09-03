@@ -1,0 +1,105 @@
+---
+sidebar_position: 1
+---
+
+# Propositions
+
+Propositions are concise, neutral point of view, unambiguous, declarative
+clauses.
+
+Propositions are the foundation of rational criticism because they ground
+discourse in concrete phrasings. Until one has articulated what one is trying to say, it's very
+difficult to have a meaningful conversation about truth.
+
+Propositions are also the foundation of a
+platform for communal criticism, because they are well-suited for automated
+semantic similarity suggestions. By discovering equivalent and related propositions both
+automatically and manually, we can ensure that justifications for their truth are consolidated.
+This helps users to have confidence that they have seen representative variety of arguments for and
+against the truth of a proposition.
+
+## Attributes
+
+- **Declarative clause:** a single independent clause that describes a factual state
+  of affairs.
+- **Acontextually Unambiguous:** if a person with reasonable knowledge of a
+  proposition’s subject matter would be confused between multiple incompatible
+  interpretations of the proposition without additional context, then other less
+  confusing alternatives are preferred.
+- **Neutral point of view:** if the same meaning is conveyed with alternative
+  phrasing that is less offensive to some group, that phrasing is preferred.
+- **Concise:** if the same meaning is conveyed with fewer or simpler words, that
+  wording is preferred
+
+## Relation to “claims”
+
+Propositions are similar to what some people and other tools might call
+“claims”. We chose the term "proposition" instead of "claim" to avoid ambiguity in how the term
+"claim" can be used.
+
+Sometimes the term "claim" means the underlying logical content. This is the
+same meaning as Howdju's Proposition. Under this meaning, if two different sources make essentially
+the same logical statement of fact, then they are the same claim and this is the same Proposition.
+
+Another use of the term claim is to mean a particular statement of a Proposition: a fact-checker may
+have be asked to find all the claims in two sources. Finding a similar statement in one source is a
+different "claim" from finding it in another source.
+
+A third meaning of the word claim is that a particular person espouses the truth of some
+Proposition, often throughout time. "He claims A is the cause, but they claim B is the case.".
+
+## Examples
+
+These are examples of valid and invalid Propositions:
+
+### Questions
+
+Question: “Is the Burj Khalifa the tallest structure in the world?”
+
+Correct: “The Burj Khalifa is the tallest structure in the world”
+
+Reason: is not a declarative clause.
+
+### Dependent clause
+
+Incorrect: "That allowed the astronauts to reach the moon"
+
+Correct: "NASA's advanced navigational system allowed the astronauts to reach the moon."
+
+Reason: not an independent clause. The word "that" is a subordinating conjunction that makes the
+clause depend on some other (unspoken) information.
+
+### Free referants
+
+Incorrect: "She rose to the position of CEO faster than any other person"
+
+Correct: "Victoria Chen rose to the position of CEO faster than any other person"
+
+Reason: the proposition "she" refers to an unknown person in the incorrect example.
+
+### Multiple independent clauses
+
+Incorrect: "Vajiralongkorn is the king of Thailand, and a protestor at the 2021 protest insulted
+Vajiralongkorn."
+
+Correct: two separate Propositions:
+
+- "Vajiralongkorn is the king of Thailand"
+- "A protestor at the 2021 protest insulted Vajiralongkorn."
+
+### Ambiguous phrasing
+
+Incorrect: "Paris is lovely"
+
+Correct: "Paris, Franci is lovely"
+
+Reason: the word "Paris" is ambiguous. It could mean Paris (France), Paris (Texas), Paris (Hilton) etc.
+
+### NPOV
+
+Incorrect: "The researcher made the stupid decision to combine the results"
+
+Correct: "The researcher combined the results"
+
+Reason: "stupid" is a condescending value judgment. If the decision was a bad one, the user should
+figure out what the negative consequence was and argue that the researcher's decision led to the bad outcome.
