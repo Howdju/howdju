@@ -12963,31 +12963,6 @@
     }
   });
 
-  // ../howdju-common/lib/commonPaths.js
-  var require_commonPaths = __commonJS({
-    "../howdju-common/lib/commonPaths.js"(exports, module) {
-      "use strict";
-      module.exports.CommonPaths = class CommonPaths {
-        confirmRegistration() {
-          return "/complete-registration";
-        }
-        confirmPasswordReset() {
-          return "/reset-password";
-        }
-        login() {
-          return "/login";
-        }
-        requestPasswordReset() {
-          return "/request-password-reset";
-        }
-        searchMediaExcerpts() {
-          return "/search-media-excerpts";
-        }
-      };
-      module.exports.commonPaths = new module.exports.CommonPaths();
-    }
-  });
-
   // ../howdju-common/lib/consts.js
   var require_consts = __commonJS({
     "../howdju-common/lib/consts.js"(exports, module) {
@@ -20975,7 +20950,7 @@
       });
     }
   }
-  var import_lodash6, Entity, CreateModel, PersistedEntity, UserExternalIds, User, UserBlurb, Proposition, UpdatePropositionInput, UpdateProposition, Tag, CreateTag, CreateTagInput, tagVotePolarities, PropositionTagVote, PropositionTagVotePolarities, CreatePropositionTagVote, CreatePropositionTagVoteInput, CreatePropositionInput, CreateProposition, Persorg, CreatePersorg, CreatePersorgInput, UpdatePersorg, UpdatePersorgInput, sentenceTypes, baseStatement, Statement, SentenceTypes, CreateStatementInput, CreateStatement, Writ, CreateWrit, CreateWritInput, UpdateWrit, UpdateWritInput, DomAnchor, CreateDomAnchor, UrlTarget, Url, CreateUrl, CreateUrlInput, UrlLocator, WritQuote, PicRegion, VidSegment, AudSegment, sourceExcerptTypes, SourceExcerpt, SourceExcerptTypes, CreateUrlLocator, CreateUrlLocatorInput, Source, CreateSource, CreateSourceInput, UpdateSource, UpdateSourceInput, MediaExcerptCitation, CreateMediaExcerptCitation, CreateMediaExcerptCitationInput, DeleteMediaExcerptCitation, MediaExcerptSpeaker, CreateMediaExcerptSpeaker, CreateMediaExcerptSpeakerInput, MediaExcerpt, Appearance, CreateAppearance, CreateAppearanceInput, AppearanceConfirmationPolarity, CreateAppearanceConfirmation, PropositionCompoundAtom, PropositionCompound, CreatePropositionCompoundAtomInput, UpdatePropositionCompoundAtomInput, CreatePropositionCompoundInput, CreatePropositionCompoundAtom, UpdatePropositionCompoundAtom, CreatePropositionCompound, UpdatePropositionCompoundInput, UpdatePropositionCompound, JustificationPolarity, JustificationPolarities, RelationPolarity2, JustificationRootPolarity, JustificationRootPolarities, JustificationBasisType, JustificationBasisTypes, justificationBaseShape, JustificationRootTargetType, JustificationRootTargetTypes, JustificationTargetType, Justification, JustificationTargetTypes, PropositionRef, StatementRef, JustificationRef, JustificationVoteRef, PropositionCompoundRef, SourceExcerptRef, WritQuoteRef, WritRef, PersorgRef, TagRef, TagVoteRef, UrlRef, UserRef, PropositionTagVoteRef, RegistrationRequestRef, PasswordResetRequestRef, AccountSettingsRef, ContentReportRef, UrlLocatorRef, MediaExcerptRef, SourceRef, CreateWritQuoteInput, CreateWritQuote, UpdateWritQuoteInput, UpdateWritQuote, CreateVidSegmentInput, CreateVidSegment, CreateAudSegmentInput, CreateAudSegment, UpdateVidSegmentInput, UpdateVidSegment, CreatePicRegionInput, CreatePicRegion, UpdatePicRegionInput, UpdatePicRegion, CreateSourceExcerptInput, CreateSourceExcerpt, CreateMediaExcerptBase, CreateMediaExcerpt, CreateMediaExcerptInput, UpdateMediaExcerpt, UpdateMediaExcerptInput, CreateUrlLocatorsInput, createJustificationBaseShape, createJustificationInputBaseShape, CreateJustificationInput, CreateJustification, CreateCounterJustificationInput, CreateCounterJustification, justificationVotePolarities, JustificationVote, JustificationVotePolarities, CreateJustificationVote, DeleteJustificationVote, TaggableEntityType, TagVote, TagVotePolarities, CreateTagVote, EntityType, EntityTypes, ContentReportType, ContentReportTypes, ContentReport, CreateContentReport, CreateContentReportInput, CreateUser, AccountSettings, CreateAccountSettings, UpdateAccountSettings, CreateJustifiedSentenceInput, CreateJustifiedSentence, RegistrationRequest, CreateRegistrationRequest, CreateRegistrationRequestInput, Password, RegistrationConfirmation, CreateRegistrationConfirmation, CreateRegistrationConfirmationInput, PasswordResetRequest, Credentials;
+  var import_lodash6, Entity, CreateModel, PersistedEntity, UserExternalIds, User, UserBlurb, Proposition, UpdatePropositionInput, UpdateProposition, Tag, CreateTag, CreateTagInput, tagVotePolarities, PropositionTagVote, PropositionTagVotePolarities, CreatePropositionTagVote, CreatePropositionTagVoteInput, CreatePropositionInput, CreateProposition, Persorg, CreatePersorg, CreatePersorgInput, UpdatePersorg, UpdatePersorgInput, sentenceTypes, baseStatement, Statement, SentenceTypes, CreateStatementInput, CreateStatement, Writ, CreateWrit, CreateWritInput, UpdateWrit, UpdateWritInput, DomAnchor, CreateDomAnchor, UrlTarget, Url, CreateUrl, CreateUrlInput, UrlLocator, WritQuote, PicRegion, VidSegment, AudSegment, sourceExcerptTypes, SourceExcerpt, SourceExcerptTypes, CreateUrlLocator, CreateUrlLocatorInput, Source, CreateSource, CreateSourceInput, UpdateSource, UpdateSourceInput, MediaExcerptCitation, CreateMediaExcerptCitation, CreateMediaExcerptCitationInput, DeleteMediaExcerptCitation, MediaExcerptSpeaker, CreateMediaExcerptSpeaker, CreateMediaExcerptSpeakerInput, MediaExcerpt, Appearance, CreateAppearance, CreateAppearanceInput, AppearanceConfirmationPolarity, CreateAppearanceConfirmation, PropositionCompoundAtom, PropositionCompound, CreatePropositionCompoundAtomInput, UpdatePropositionCompoundAtomInput, CreatePropositionCompoundInput, CreatePropositionCompoundAtom, UpdatePropositionCompoundAtom, CreatePropositionCompound, UpdatePropositionCompoundInput, UpdatePropositionCompound, JustificationPolarity, JustificationPolarities, RelationPolarity2, JustificationRootPolarity, JustificationRootPolarities, JustificationBasisType, JustificationBasisTypes, justificationBaseShape, JustificationRootTargetType, JustificationRootTargetTypes, JustificationTargetType, Justification, JustificationTargetTypes, PropositionRef, StatementRef, JustificationRef, JustificationVoteRef, PropositionCompoundRef, SourceExcerptRef, WritQuoteRef, WritRef, PersorgRef, TagRef, TagVoteRef, UrlRef, UserRef, PropositionTagVoteRef, RegistrationRequestRef, PasswordResetRequestRef, AccountSettingsRef, ContentReportRef, UrlLocatorRef, MediaExcerptRef, SourceRef, CreateWritQuoteInput, CreateWritQuote, UpdateWritQuoteInput, UpdateWritQuote, CreateVidSegmentInput, CreateVidSegment, CreateAudSegmentInput, CreateAudSegment, UpdateVidSegmentInput, UpdateVidSegment, CreatePicRegionInput, CreatePicRegion, UpdatePicRegionInput, UpdatePicRegion, CreateSourceExcerptInput, CreateSourceExcerpt, CreateMediaExcerptBase, CreateMediaExcerpt, CreateMediaExcerptInput, UpdateMediaExcerpt, UpdateMediaExcerptInput, CreateUrlLocatorsInput, createJustificationBaseShape, createJustificationInputBaseShape, CreateJustificationInput, CreateJustification, CreateCounterJustificationInput, CreateCounterJustification, justificationVotePolarities, JustificationVote, JustificationVotePolarities, CreateJustificationVote, DeleteJustificationVote, TaggableEntityType, TagVote, TagVotePolarities, CreateTagVote, EntityType, EntityTypes, ContentReportType, ContentReportTypes, ContentReport, CreateContentReport, CreateContentReportInput, CreateUser, AccountSettings, CreateAccountSettings, UpdateAccountSettings, CreateJustifiedSentenceInput, CreateJustifiedSentence, RegistrationRequest, CreateRegistrationRequest, CreateRegistrationRequestInput, Password, RegistrationConfirmation, CreateRegistrationConfirmation, CreateRegistrationConfirmationInput, PasswordResetRequest, CreatePasswordResetRequest, CreatePasswordResetRequestInput, PasswordResetConfirmation, Credentials;
   var init_zodSchemas = __esm({
     "../howdju-common/lib/zodSchemas.ts"() {
       "use strict";
@@ -21932,6 +21907,14 @@
         expires: momentObject,
         isConsumed: mod.boolean(),
         created: momentObject
+      });
+      CreatePasswordResetRequest = PasswordResetRequest.pick({
+        email: true
+      });
+      CreatePasswordResetRequestInput = CreatePasswordResetRequest;
+      PasswordResetConfirmation = mod.object({
+        passwordResetCode: mod.string().min(1).max(256),
+        newPassword: Password
       });
       Credentials = mod.object({
         email: User.shape.email,
@@ -32840,6 +32823,7 @@
     AppearanceConfirmationPolarity: () => AppearanceConfirmationPolarity,
     AppearanceSearchFilterKeys: () => AppearanceSearchFilterKeys,
     AudSegment: () => AudSegment,
+    CommonPaths: () => CommonPaths,
     ContentReport: () => ContentReport,
     ContentReportRef: () => ContentReportRef,
     ContentReportTypes: () => ContentReportTypes,
@@ -32866,6 +32850,8 @@
     CreateMediaExcerptSpeaker: () => CreateMediaExcerptSpeaker,
     CreateMediaExcerptSpeakerInput: () => CreateMediaExcerptSpeakerInput,
     CreateModel: () => CreateModel,
+    CreatePasswordResetRequest: () => CreatePasswordResetRequest,
+    CreatePasswordResetRequestInput: () => CreatePasswordResetRequestInput,
     CreatePersorg: () => CreatePersorg,
     CreatePersorgInput: () => CreatePersorgInput,
     CreatePicRegion: () => CreatePicRegion,
@@ -32939,6 +32925,7 @@
     MediaExcerptSpeaker: () => MediaExcerptSpeaker,
     MomentConstructor: () => MomentConstructor,
     Password: () => Password,
+    PasswordResetConfirmation: () => PasswordResetConfirmation,
     PasswordResetRequest: () => PasswordResetRequest,
     PasswordResetRequestRef: () => PasswordResetRequestRef,
     Persorg: () => Persorg,
@@ -33019,6 +33006,7 @@
     cleanTextFragmentParameter: () => cleanTextFragmentParameter,
     cleanWhitespace: () => cleanWhitespace,
     commonErrorTypes: () => commonErrorTypes,
+    commonPaths: () => commonPaths,
     contextTrailItemPolarity: () => contextTrailItemPolarity,
     contextTrailPolarityByShortcut: () => contextTrailPolarityByShortcut,
     contextTrailShortcutByPolarity: () => contextTrailShortcutByPolarity,
@@ -33487,7 +33475,28 @@
 
   // ../howdju-common/lib/index.ts
   init_commonErrors();
-  __reExport(lib_exports, __toESM(require_commonPaths()));
+
+  // ../howdju-common/lib/commonPaths.ts
+  var CommonPaths = class {
+    confirmRegistration() {
+      return "/complete-registration";
+    }
+    confirmPasswordReset() {
+      return "/reset-password";
+    }
+    login() {
+      return "/login";
+    }
+    requestPasswordReset() {
+      return "/request-password-reset";
+    }
+    searchMediaExcerpts() {
+      return "/search-media-excerpts";
+    }
+  };
+  var commonPaths = new CommonPaths();
+
+  // ../howdju-common/lib/index.ts
   __reExport(lib_exports, __toESM(require_consts()));
 
   // ../howdju-common/lib/contextTrails.ts

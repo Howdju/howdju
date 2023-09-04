@@ -38,6 +38,8 @@ import * as justificationsSearchPageSagas from "../pages/justificationsSearch/ju
 import * as justificationsPageSagas from "../pages/justifications/justificationPageSagas";
 import { factCheckPageSaga } from "@/pages/factChecks/factCheckPageSlice";
 import { mediaExcerptUsagesPageSaga } from "@/pages/mediaExcerptUsages/mediaExcerptUsagesPageSlice";
+import { passwordResetRequestPageSaga } from "@/pages/passwordResetRequest/passwordResetRequestPageSlice";
+import { passwordResetConfirmationPageSaga } from "@/pages/passwordResetConfirmation/passwordResetConfirmationPageSlice";
 
 export default () =>
   all([
@@ -84,4 +86,7 @@ export default () =>
     postExtensionMessages(),
 
     inferMediaExcerptInfo(),
+
+    passwordResetRequestPageSaga(),
+    passwordResetConfirmationPageSaga(),
   ]);

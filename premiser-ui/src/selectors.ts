@@ -28,10 +28,6 @@ export const selectRegistrationEmail = (state: RootState) =>
   state.registrationConfirmationPage.email;
 export const selectRegistrationErrorCode = (state: RootState) =>
   state.registrationConfirmationPage.registrationErrorCode;
-export const selectPasswordResetRequestPage = (state: RootState) =>
-  state.ui.passwordResetRequestPage;
-export const selectPasswordResetConfirmationPage = (state: RootState) =>
-  state.ui.passwordResetConfirmationPage;
 export const selectPrivacyConsent = (state: RootState) => state.privacyConsent;
 
 export type InferResult<S> = S extends schema.Entity<any>

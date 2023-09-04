@@ -1,12 +1,15 @@
 import {
+  ApiErrorCode,
   Entity,
   JustificationView,
   MediaExcerptView,
+  ModelErrors,
   UrlLocator,
   UrlOut,
 } from "howdju-common";
 import { FocusEvent, MouseEvent } from "react";
 import { logger } from "./logger";
+import { UiErrorType } from "./uiErrors";
 
 /**
  * The type that react-md expects for menu items.
@@ -152,3 +155,13 @@ export const CreatePropositionPageMode = {
 } as const;
 export type CreatePropositionPageMode =
   typeof CreatePropositionPageMode[keyof typeof CreatePropositionPageMode];
+
+export interface ErrorPayload {
+  sourceError: {
+    errorType: UiErrorType;
+    body?: {
+      errorCode: ApiErrorCode;
+      errors: { [key: string]: ModelErrors<any> };
+    };
+  };
+}

@@ -204,9 +204,19 @@ export function utcNowIsAfter(dateTimeString: string) {
   return utcNow().isAfter(moment.utc(dateTimeString));
 }
 
+export type DurationConstructorObject = {
+  [k in unitOfTime.DurationConstructor]+?: number;
+};
+/** Object that describes how to display a duration */
+export type DurationDisplayInfo = {
+  value: DurationConstructorObject;
+  formatTemplate: string;
+  formatTrim: string;
+};
+
 type MomentArithmeticArg =
   | [number, unitOfTime.DurationConstructor]
-  | { [k in unitOfTime.DurationConstructor]+?: number }
+  | DurationConstructorObject
   | Duration;
 export const momentAdd = (
   momentInstance: Moment,

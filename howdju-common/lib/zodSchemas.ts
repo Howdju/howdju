@@ -1685,6 +1685,24 @@ export const PasswordResetRequest = Entity.extend({
 });
 export type PasswordResetRequest = z.infer<typeof PasswordResetRequest>;
 
+export const CreatePasswordResetRequest = PasswordResetRequest.pick({
+  email: true,
+});
+export type CreatePasswordResetRequest = z.output<
+  typeof CreatePasswordResetRequest
+>;
+
+export const CreatePasswordResetRequestInput = CreatePasswordResetRequest;
+export type CreatePasswordResetRequestInput = CreatePasswordResetRequest;
+
+export const PasswordResetConfirmation = z.object({
+  passwordResetCode: z.string().min(1).max(256),
+  newPassword: Password,
+});
+export type PasswordResetConfirmation = z.output<
+  typeof PasswordResetConfirmation
+>;
+
 export const Credentials = z.object({
   email: User.shape.email,
   password: Password,

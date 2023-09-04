@@ -1,6 +1,6 @@
 // TODO(#196): ensure that these paths follow a pattern compatible with the web app paths. Maybe
 // move all paths here so that the extension and mobile app can access them.
-module.exports.CommonPaths = class CommonPaths {
+export class CommonPaths {
   confirmRegistration() {
     return "/complete-registration";
   }
@@ -16,6 +16,6 @@ module.exports.CommonPaths = class CommonPaths {
   searchMediaExcerpts() {
     return "/search-media-excerpts";
   }
-};
+}
 
-module.exports.commonPaths = new module.exports.CommonPaths();
+export const commonPaths = new CommonPaths();

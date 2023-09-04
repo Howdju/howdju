@@ -27,6 +27,8 @@ import { registrationConfirmationPage } from "@/pages/registration/registrationC
 import { primaryContextTrail } from "@/components/contextTrail/primaryContextTrailSlice";
 import { urlLocatorsEditorFields } from "@/editors/urlLocatorsEditorFieldsSlice";
 import { factCheckPage } from "@/pages/factChecks/factCheckPageSlice";
+import { passwordResetRequestPage } from "@/pages/passwordResetRequest/passwordResetRequestPageSlice";
+import { passwordResetConfirmationPage } from "@/pages/passwordResetConfirmation/passwordResetConfirmationPageSlice";
 import listEntities from "@/components/listEntities/listEntitiesReducer";
 
 const widgets = combineReducers({
@@ -50,6 +52,8 @@ export default (history: History) =>
     mainSearchPage,
     mediaExcerptPage,
     mediaExcerptsSearchPage,
+    passwordResetConfirmationPage,
+    passwordResetRequestPage,
     persorgPage,
     primaryContextTrail,
     privacyConsent,

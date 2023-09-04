@@ -48,6 +48,8 @@ import {
   JustificationView,
   AppearanceSearchFilter,
   MediaExcerptSearchFilter,
+  CreatePasswordResetRequest,
+  PasswordResetConfirmation,
 } from "howdju-common";
 import {
   InferPathParams,
@@ -983,7 +985,7 @@ export const api = {
   requestPasswordReset: apiActionCreator(
     "REQUEST_PASSWORD_RESET",
     serviceRoutes.requestPasswordReset,
-    (passwordResetRequest) => ({
+    (passwordResetRequest: CreatePasswordResetRequest) => ({
       body: { passwordResetRequest },
       normalizationSchema: {},
     })
@@ -991,17 +993,16 @@ export const api = {
   checkPasswordResetRequest: apiActionCreator(
     "CHECK_PASSWORD_RESET_REQUEST",
     serviceRoutes.readPasswordReset,
-    (passwordResetCode) => ({
+    (passwordResetCode: string) => ({
       queryStringParams: { passwordResetCode },
-      normalizationSchema: {},
+      normalizationSchema: { email: nullSchema },
     })
   ),
   confirmPasswordReset: apiActionCreator(
     "CONFIRM_PASSWORD_RESET",
     serviceRoutes.completePasswordReset,
-    (passwordResetCode: string, passwordResetConfirmation: string) => ({
+    (passwordResetConfirmation: PasswordResetConfirmation) => ({
       body: {
-        passwordResetCode,
         passwordResetConfirmation,
       },
       normalizationSchema: { user: userSchema },

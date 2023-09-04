@@ -21,6 +21,8 @@ import {
   StatementOut,
   JustificationView,
   PersistedEntity,
+  CreatePasswordResetRequestInput,
+  PasswordResetConfirmation,
 } from "howdju-common";
 
 export function isPropositionRootTarget(
@@ -110,6 +112,28 @@ export const makeCreateContentReportInput = (
     },
     fields
   );
+
+export function makeCreatePasswordResetRequestInput(
+  fields?: Partial<CreatePasswordResetRequestInput>
+): CreatePasswordResetRequestInput {
+  return merge(
+    {
+      email: "",
+    },
+    fields
+  );
+}
+
+export function makePasswordResetConfirmation(
+  fields?: Partial<PasswordResetConfirmation> & { passwordResetCode: string }
+): PasswordResetConfirmation {
+  return merge(
+    {
+      newPassword: "",
+    },
+    fields
+  );
+}
 
 /**
  * Remove the fields that are circular.

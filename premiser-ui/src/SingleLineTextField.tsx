@@ -16,7 +16,9 @@ import { toTextFieldOnChangeCallback } from "./util";
 
 export interface SingleLineTextProps
   extends Omit<TextFieldProps, "onBlur" | "maxLength"> {
-  name: string;
+  /** The name of the input. If omitted, the input's onPropertyChange will not provide a name and
+   * the input should probably be read-only. */
+  name?: string;
   type?: TextFieldTypes;
   // ignored if type=password
   rows?: number;

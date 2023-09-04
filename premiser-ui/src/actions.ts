@@ -1,6 +1,7 @@
 import { ActionFunctionAny } from "redux-actions";
 import { Location, LocationState } from "history";
 import { Action } from "redux";
+import { ActionCreatorWithPreparedPayload } from "@reduxjs/toolkit";
 
 import {
   MediaExcerptInfo,
@@ -126,9 +127,22 @@ export const privacyConsent = {
   ),
 };
 
-export type EditorActionCreator = ActionFunctionAny<Action<string>>;
+export type EditorActionCreator = ActionCreatorWithPreparedPayload<
+  any[],
+  {
+    editorType: EditorType;
+    editorId: EditorId;
+  }
+>;
 export type EditorCommitActionCreator = EditorActionCreator & {
-  result: ActionFunctionAny<Action<string>>;
+  result: ActionCreatorWithPreparedPayload<
+    any[],
+    {
+      editorType: EditorType;
+      editorId: EditorId;
+      result: any;
+    }
+  >;
 };
 const commitEdit = createAction(
   "EDITORS/COMMIT_EDIT",
