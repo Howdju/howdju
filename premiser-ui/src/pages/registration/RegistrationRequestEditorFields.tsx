@@ -48,8 +48,12 @@ export default function RegistrationRequestFields({
         name={combineNames(name, "email")}
         autocomplete="email"
         value={registrationRequest?.email}
-        minLength={CreateRegistrationRequestInput.shape.email.minLength}
-        maxLength={CreateRegistrationRequestInput.shape.email.maxLength}
+        minLength={
+          CreateRegistrationRequestInput.shape.email.minLength ?? undefined
+        }
+        maxLength={
+          CreateRegistrationRequestInput.shape.email.maxLength ?? undefined
+        }
         required
         {...errorProps((rr) => rr.email)}
       />

@@ -6,9 +6,9 @@ import { api } from "@/apiActions";
 describe("registrationConfirmationPageSlice", () => {
   test("should obtain email from checkRegistration", () => {
     const initialState = {
-      email: null,
+      email: undefined,
       didCheckRegistration: false,
-      registrationErrorCode: null,
+      registrationErrorCode: undefined,
     };
     const email = "you@domain.com";
     const action = api.checkRegistration.response({ email });
@@ -17,9 +17,9 @@ describe("registrationConfirmationPageSlice", () => {
   });
   test("should obtain email from confirmRegistration", () => {
     const initialState = {
-      email: null,
+      email: undefined,
       didCheckRegistration: false,
-      registrationErrorCode: null,
+      registrationErrorCode: undefined,
     };
     const email = "you@domain.com";
     const action = api.confirmRegistration.response({ email });

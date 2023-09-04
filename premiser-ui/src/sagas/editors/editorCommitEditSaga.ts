@@ -91,6 +91,7 @@ export function* editorCommitEdit() {
             )
           );
         }
+        // TODO isExtant?
         if (resultAction.payload.alreadyExists) {
           yield* put(
             app.addToast(`That ${startCase(editorType)} already exists.`)
@@ -360,6 +361,16 @@ export const UpdateSourceConfig = {
   inputTransformer: identity,
 };
 
+export const PasswordResetRequestConfig = {
+  requestActionCreator: api.requestPasswordReset,
+  inputTransformer: identity,
+};
+
+export const PasswordResetConfirmationConfig = {
+  requestActionCreator: api.confirmPasswordReset,
+  inputTransformer: identity,
+};
+
 export const UpdatePersorgConfig = {
   requestActionCreator: api.updatePersorg,
   inputTransformer: identity,
@@ -424,6 +435,12 @@ export const editorCommitConfigs: Partial<
   },
   APPEARANCE: {
     CREATE: AppearanceConfig,
+  },
+  PASSWORD_RESET_REQUEST: {
+    CREATE: PasswordResetRequestConfig,
+  },
+  PASSWORD_RESET_CONFIRMATION: {
+    CREATE: PasswordResetConfirmationConfig,
   },
 };
 

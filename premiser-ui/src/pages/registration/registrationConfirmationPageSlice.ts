@@ -7,10 +7,10 @@ import { matchActions } from "@/reducerUtils";
 export const registrationConfirmationPageSlice = createSlice({
   name: "registrationConfirmationPage",
   initialState: {
-    email: null as string | null,
+    email: undefined as string | undefined,
     didCheckRegistration: false,
     // TODO(26) not used in RegistrationConfirmationPage.tsx
-    registrationErrorCode: null as ApiErrorCode | null,
+    registrationErrorCode: undefined as ApiErrorCode | undefined,
   },
   reducers: {},
   extraReducers(builder) {
@@ -26,7 +26,7 @@ export const registrationConfirmationPageSlice = createSlice({
           return;
         }
         state.email = action.payload.email;
-        state.registrationErrorCode = null;
+        state.registrationErrorCode = undefined;
       }
     );
   },

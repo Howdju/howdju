@@ -39,7 +39,6 @@ import {
   PropositionTagVotePolarities,
   tagEqual,
   Entity,
-  ApiErrorCode,
   PropositionTagVotePolarity,
   WritQuote,
   RecursiveObject,
@@ -75,6 +74,8 @@ import {
   CreateUrlLocator,
   CreateAppearanceInput,
   CreateAppearance,
+  PasswordResetConfirmation,
+  CreatePasswordResetRequestInput,
 } from "howdju-common";
 
 import {
@@ -85,14 +86,14 @@ import {
   ListPathFactory,
   str,
 } from "@/actions";
-import { UiErrorType, uiErrorTypes } from "@/uiErrors";
+import { uiErrorTypes } from "@/uiErrors";
 import {
   INVALID_LOGIN_CREDENTIALS,
   UNABLE_TO_LOGIN,
   USER_IS_INACTIVE_ERROR,
 } from "@/texts";
 import { logger } from "@/logger";
-import { EditorId, ModelFactory, PropertyChanges } from "@/types";
+import { EditorId, ErrorPayload, ModelFactory, PropertyChanges } from "@/types";
 import { combineObjectKey } from "@/viewModels";
 import { PayloadOf } from "howdju-client-common";
 
@@ -128,6 +129,8 @@ export const EditorTypes = {
   REGISTRATION_REQUEST: "REGISTRATION_REQUEST",
   SOURCE: "SOURCE",
   WRIT_QUOTE: "WRIT_QUOTE",
+  PASSWORD_RESET_REQUEST: "PASSWORD_RESET_REQUEST",
+  PASSWORD_RESET_CONFIRMATION: "PASSWORD_RESET_CONFIRMATION",
 } as const;
 export type EditorType = typeof EditorTypes[keyof typeof EditorTypes];
 
@@ -164,7 +167,9 @@ export type EditorEntity =
   | CreatePersorgInput
   | UpdatePersorgInput
   | CreateUrlLocatorsInput
-  | CreateAppearanceInput;
+  | CreateAppearanceInput
+  | CreatePasswordResetRequestInput
+  | PasswordResetConfirmation;
 /**
  * @typeparam T the editor model type.
  * @typeparam U the request model type.
@@ -208,16 +213,6 @@ export const defaultEditorState = <T extends EditorEntity, U = T>() =>
     dirtyFields: undefined,
     wasSubmitAttempted: false,
   } as EditorState<T, U>);
-
-interface ErrorPayload {
-  sourceError: {
-    errorType: UiErrorType;
-    body: {
-      errorCode: ApiErrorCode;
-      errors: { [key: string]: ModelErrors<any> };
-    };
-  };
-}
 
 export interface AddListItemPayload {
   editorType: EditorType;

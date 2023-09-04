@@ -16,7 +16,6 @@ import {
   CreateWritQuote,
   UpdateWritQuote,
   Credentials,
-  PasswordResetRequest,
   CreatePropositionTagVote,
   CreateUser,
   CreateAccountSettings,
@@ -25,7 +24,6 @@ import {
   UpdatePersorg,
   CreateJustificationVote,
   DeleteJustificationVote,
-  Password,
   ContinuationToken,
   WritOut,
   AuthToken,
@@ -47,6 +45,8 @@ import {
   SentenceType,
   AppearanceSearchFilterKeys,
   CreateAppearanceConfirmation,
+  CreatePasswordResetRequest,
+  PasswordResetConfirmation,
 } from "howdju-common";
 import {
   EntityNotFoundError,
@@ -1278,7 +1278,7 @@ export const serviceRoutes = {
     path: "password-reset-requests",
     method: httpMethods.POST,
     request: handler(
-      Body({ passwordResetRequest: PasswordResetRequest }),
+      Body({ passwordResetRequest: CreatePasswordResetRequest }),
       async (
         appProvider: ServicesProvider,
         { body: { passwordResetRequest } }
@@ -1299,10 +1299,13 @@ export const serviceRoutes = {
         appProvider: ServicesProvider,
         { queryStringParams: { passwordResetCode } }
       ) => {
+        if (!passwordResetCode) {
+          throw new InvalidRequestError("passwordResetCode is required");
+        }
         const email =
-          (await appProvider.passwordResetService.checkRequestForCode(
+          await appProvider.passwordResetService.checkRequestForCode(
             passwordResetCode
-          )) as string;
+          );
         return { body: { email } };
       }
     ),
@@ -1312,16 +1315,14 @@ export const serviceRoutes = {
     method: httpMethods.POST,
     request: handler(
       Body({
-        passwordResetCode: Password,
-        passwordResetConfirmation: Password,
+        passwordResetConfirmation: PasswordResetConfirmation,
       }),
       async (
         appProvider: ServicesProvider,
-        { body: { passwordResetCode, passwordResetConfirmation } }
+        { body: { passwordResetConfirmation } }
       ) => {
         const { user, authToken, expires } =
           (await appProvider.passwordResetService.resetPasswordAndLogin(
-            passwordResetCode,
             passwordResetConfirmation
           )) as { user: UserOut; authToken: AuthToken; expires: Moment };
         return { body: { user, authToken, expires } };

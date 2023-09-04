@@ -20,7 +20,7 @@ interface Props
     "registrationConfirmation",
     CreateRegistrationConfirmationInput
   > {
-  email: string | null;
+  email: string | undefined;
 }
 
 export default function RegistrationConfirmationEditorFields({
@@ -78,8 +78,14 @@ export default function RegistrationConfirmationEditorFields({
         autocomplete="new-password"
         value={registrationConfirmation?.password}
         onPropertyChange={onPropertyChange}
-        minLength={CreateRegistrationConfirmationInput.shape.password.minLength}
-        maxLength={CreateRegistrationConfirmationInput.shape.password.maxLength}
+        minLength={
+          CreateRegistrationConfirmationInput.shape.password.minLength ??
+          undefined
+        }
+        maxLength={
+          CreateRegistrationConfirmationInput.shape.password.maxLength ??
+          undefined
+        }
         required
         {...errorProps((rc) => rc.password)}
       />
