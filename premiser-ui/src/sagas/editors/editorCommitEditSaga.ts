@@ -91,8 +91,8 @@ export function* editorCommitEdit() {
             )
           );
         }
-        // TODO isExtant?
-        if (resultAction.payload.alreadyExists) {
+
+        if (resultAction.payload.isExtant) {
           yield* put(
             app.addToast(`That ${startCase(editorType)} already exists.`)
           );
