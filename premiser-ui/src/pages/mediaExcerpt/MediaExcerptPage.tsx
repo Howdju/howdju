@@ -42,6 +42,7 @@ export default function MediaExcerptPage(props: Props) {
   const { mediaExcerptId } = props.match.params;
   useEffect(() => {
     dispatch(api.fetchMediaExcerpt(mediaExcerptId));
+    dispatch(api.fetchMediaExcerptApparitions(mediaExcerptId));
   }, [dispatch, mediaExcerptId]);
 
   const mediaExcerpt = useAppEntitySelector(mediaExcerptId, mediaExcerptSchema);

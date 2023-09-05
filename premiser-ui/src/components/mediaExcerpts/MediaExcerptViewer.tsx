@@ -15,21 +15,32 @@ import paths from "@/paths";
 import Link from "@/Link";
 import CreationInfo from "../creationInfo/CreationInfo";
 import config from "../../config";
-
-import "./MediaExcerptViewer.scss";
 import { useAppDispatch } from "@/hooks";
 import { makeExtensionHighlightOnClickUrlLocatorCallback } from "@/extensionCallbacks";
 import { OnClickUrlLocator } from "@/types";
 
+import "./MediaExcerptViewer.scss";
+import mediaExcerptApparitionsDialog from "../mediaExcerptApparitionsDialog/mediaExcerptApparitionsDialogSlice";
+
 interface Props {
   id: string;
   mediaExcerpt: MediaExcerptView;
+  showApparitionCount?: boolean;
 }
 
-export default function MediaExcerptViewer({ mediaExcerpt }: Props) {
+export default function MediaExcerptViewer({
+  mediaExcerpt,
+  showApparitionCount = true,
+}: Props) {
   const dispatch = useAppDispatch();
   const onClickUrlLocator =
     makeExtensionHighlightOnClickUrlLocatorCallback(dispatch);
+
+  function showMediaExcerptApparitionsDialog() {
+    dispatch(mediaExcerptApparitionsDialog.showDialog(mediaExcerpt.id));
+  }
+
+  const apparitionCount = mediaExcerpt.apparitionCount ?? 0;
   return (
     <div>
       <CollapsibleTextViewer
@@ -40,6 +51,20 @@ export default function MediaExcerptViewer({ mediaExcerpt }: Props) {
         created={mediaExcerpt.created}
         creator={mediaExcerpt.creator}
       />
+      {showApparitionCount && (
+        <span className="entity-status-text">
+          <a
+            className="clickable"
+            onClick={showMediaExcerptApparitionsDialog}
+            title={`${apparitionCount} ${
+              apparitionCount === 1 ? "apparition" : "apparitions"
+            }`}
+          >
+            <MaterialSymbol icon="pin_drop" size={12} />
+            {apparitionCount}
+          </a>
+        </span>
+      )}
       <ul className="url-locators">
         {mediaExcerpt.locators.urlLocators.map((urlLocator: UrlLocatorView) => (
           <li key={urlLocator.key} className="url">

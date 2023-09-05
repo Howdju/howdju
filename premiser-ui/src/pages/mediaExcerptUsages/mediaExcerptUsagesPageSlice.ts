@@ -36,8 +36,10 @@ export const slice = createSlice({
     ) {
       const { justificationIds, continuationToken } = action.payload;
       state.isFetchingJustifications = false;
-      state.justificationIds = justificationIds.filter(
-        (id1) => !state.justificationIds.some((id2) => id1 === id2)
+      state.justificationIds = state.justificationIds.concat(
+        justificationIds.filter(
+          (id1) => !state.justificationIds.some((id2) => id1 === id2)
+        )
       );
       state.justificationsContinuationToken = continuationToken;
     },
@@ -62,8 +64,10 @@ export const slice = createSlice({
     ) {
       const { appearanceIds, continuationToken } = action.payload;
       state.isFetchingAppearances = false;
-      state.appearanceIds = appearanceIds.filter(
-        (id1) => !state.appearanceIds.some((id2) => id1 === id2)
+      state.appearanceIds = state.appearanceIds.concat(
+        appearanceIds.filter(
+          (id1) => !state.appearanceIds.some((id2) => id1 === id2)
+        )
       );
       state.appearancesContinuationToken = continuationToken;
     },

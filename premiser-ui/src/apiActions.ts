@@ -517,6 +517,16 @@ export const api = {
       };
     }
   ),
+  fetchMediaExcerptApparitions: apiActionCreator(
+    "FETCH_MEDIA_EXCERPT_APPARITIONS",
+    serviceRoutes.readAppearances,
+    (mediaExcerptId: EntityId) => ({
+      queryStringParams: {
+        filters: encodeQueryStringObject({ mediaExcerptId }),
+      },
+      normalizationSchema: { appearances: appearancesSchema },
+    })
+  ),
 
   createAppearance: apiActionCreator(
     "CREATE_APPEARANCE",

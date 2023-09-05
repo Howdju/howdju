@@ -30,6 +30,7 @@ import { factCheckPage } from "@/pages/factChecks/factCheckPageSlice";
 import { passwordResetRequestPage } from "@/pages/passwordResetRequest/passwordResetRequestPageSlice";
 import { passwordResetConfirmationPage } from "@/pages/passwordResetConfirmation/passwordResetConfirmationPageSlice";
 import { propositionAppearancesDialog } from "@/components/propositionAppearancesDialog/propositionAppearancesDialogSlice";
+import { mediaExcerptApparitionsDialog } from "@/components/mediaExcerptApparitionsDialog/mediaExcerptApparitionsDialogSlice";
 import listEntities from "@/components/listEntities/listEntitiesReducer";
 
 const widgets = combineReducers({
@@ -60,6 +61,7 @@ export default (history: History) =>
     privacyConsent,
     propositionAppearancesDialog,
     propositionUsagesPage,
+    mediaExcerptApparitionsDialog,
     mediaExcerptUsagesPage,
     registrationConfirmationPage,
     router: connectRouter(history),

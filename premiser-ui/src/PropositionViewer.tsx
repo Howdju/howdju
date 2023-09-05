@@ -82,7 +82,7 @@ export default function PropositionViewer({
                       appearanceCount === 1 ? "appearance" : "appearances"
                     }`}
                   >
-                    <MaterialSymbol icon="add_location" size={12} />
+                    <MaterialSymbol icon="pin_drop" size={12} />
                     {appearanceCount}
                   </a>
                 </span>

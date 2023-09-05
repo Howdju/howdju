@@ -41,6 +41,7 @@ import { mediaExcerptUsagesPageSaga } from "@/pages/mediaExcerptUsages/mediaExce
 import { passwordResetRequestPageSaga } from "@/pages/passwordResetRequest/passwordResetRequestPageSlice";
 import { passwordResetConfirmationPageSaga } from "@/pages/passwordResetConfirmation/passwordResetConfirmationPageSlice";
 import { propositionAppearancesDialogSaga } from "@/components/propositionAppearancesDialog/propositionAppearancesDialogSlice";
+import { mediaExcerptApparitionsDialogSaga } from "@/components/mediaExcerptApparitionsDialog/mediaExcerptApparitionsDialogSlice";
 
 export default () =>
   all([
@@ -92,4 +93,5 @@ export default () =>
     passwordResetConfirmationPageSaga(),
 
     propositionAppearancesDialogSaga(),
+    mediaExcerptApparitionsDialogSaga(),
   ]);

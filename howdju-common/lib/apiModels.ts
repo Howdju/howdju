@@ -51,6 +51,7 @@ export type MediaExcerptOut = MergeDeep<
       urlLocators: UrlLocatorOut[];
     };
     speakers: MediaExcerptSpeakerOut[];
+    apparitionCount?: number;
   }
 >;
 

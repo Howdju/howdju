@@ -155,7 +155,14 @@ export class PropositionsService {
       propositionIds
     );
     ensurePresent(propositionIds, propositions, "PROPOSITION");
-    return propositions;
+    const appearanceCountByPropositionId =
+      await this.justificationsDao.readAppearanceCountForPropositionIds(
+        propositionIds
+      );
+    return propositions.map((p) => ({
+      ...p,
+      appearanceCount: appearanceCountByPropositionId[p.id],
+    }));
   }
 
   async readInitialPropositions(
