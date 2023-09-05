@@ -106,6 +106,7 @@ export function daosInitializer(provider: DatabaseProvider) {
     database,
     statementsDao,
     propositionCompoundsDao,
+    propositionsDao,
     mediaExcerptsDao,
     writQuotesDao,
     justificationBasisCompoundsDao,

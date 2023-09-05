@@ -109,7 +109,7 @@ export class PropositionsService {
         "PROPOSITION",
         propositionId
       ),
-      this.justificationsDao.readAppearanceCountForPropositionId(propositionId),
+      this.propositionsDao.readAppearanceCountForPropositionId(propositionId),
     ]);
     if (!proposition) {
       throw new EntityNotFoundError(EntityTypes.PROPOSITION, propositionId);
@@ -156,7 +156,7 @@ export class PropositionsService {
     );
     ensurePresent(propositionIds, propositions, "PROPOSITION");
     const appearanceCountByPropositionId =
-      await this.justificationsDao.readAppearanceCountForPropositionIds(
+      await this.propositionsDao.readAppearanceCountForPropositionIds(
         propositionIds
       );
     return propositions.map((p) => ({

@@ -1,87 +1,86 @@
 import {
   concat,
-  forEach,
   flatMap,
+  forEach,
   has,
   head,
+  isArray,
   map,
   mapValues,
   merge,
   snakeCase,
-  isArray,
   sortBy,
   toString,
-  reduce,
 } from "lodash";
 import { Moment } from "moment";
 
 import {
   assert,
+  EntityId,
+  filterDefined,
   isDefined,
   JustificationBasisCompoundAtomTypes,
   JustificationBasisTypes,
+  JustificationFilters,
   JustificationPolarities,
+  JustificationPolarity,
+  JustificationRootPolarity,
+  JustificationRootTargetType,
   JustificationRootTargetTypes,
   JustificationTargetTypes,
+  Logger,
   negateRootPolarity,
   newExhaustedEnumError,
   newImpossibleError,
   pushAll,
+  SortDescription,
   SortDirections,
   SourceExcerptTypes,
-  Logger,
-  EntityId,
-  JustificationRootTargetType,
-  JustificationPolarity,
-  JustificationRootPolarity,
-  filterDefined,
-  JustificationFilters,
-  SortDescription,
   toJson,
 } from "howdju-common";
 
-import {
-  toJustification,
-  toPropositionCompound,
-  toPropositionCompoundAtom,
-  toJustificationBasisCompound,
-  toJustificationBasisCompoundAtom,
-  toWritQuote,
-  toProposition,
-  ToJustificationMapperRow,
-  ToPropositionCompoundAtomMapperRow,
-} from "./orm";
+import { Database } from "../database";
 import { EntityNotFoundError } from "../serviceErrors";
+import { ensurePresent } from "../services/patterns";
+import { DatabaseSortDirection } from "./daoModels";
 import {
   groupRootJustifications,
   renumberSqlArgs,
-  toCountNumber,
   toIdString,
 } from "./daosUtil";
-import { DatabaseSortDirection } from "./daoModels";
-import { StatementsDao } from "./StatementsDao";
-import { MediaExcerptsDao } from "./MediaExcerptsDao";
-import { PropositionCompoundsDao } from "./PropositionCompoundsDao";
-import { WritQuotesDao } from "./WritQuotesDao";
-import { JustificationBasisCompoundsDao } from "./JustificationBasisCompoundsDao";
-import { WritQuoteUrlTargetsDao } from "./WritQuoteUrlTargetsDao";
-import { Database } from "../database";
+import { SqlClause } from "./daoTypes";
 import {
-  JustificationRow,
-  PropositionRow,
-  ReadPropositionDataOut,
-  JustificationBasisCompoundRow,
-  ReadPropositionCompoundDataOut,
-  ReadJustificationDataOut,
+  BasedJustificationDataOut,
   CreateJustificationDataIn,
   DeleteJustificationDataIn,
-  PropositionCompoundRow,
-  WritQuoteData,
+  JustificationBasisCompoundRow,
+  JustificationRow,
   PropositionCompoundAtomRow,
-  BasedJustificationDataOut,
+  PropositionCompoundRow,
+  PropositionRow,
+  ReadJustificationDataOut,
+  ReadPropositionCompoundDataOut,
+  ReadPropositionDataOut,
+  WritQuoteData,
 } from "./dataTypes";
-import { SqlClause } from "./daoTypes";
-import { ensurePresent } from "../services/patterns";
+import { JustificationBasisCompoundsDao } from "./JustificationBasisCompoundsDao";
+import { MediaExcerptsDao } from "./MediaExcerptsDao";
+import {
+  toJustification,
+  toJustificationBasisCompound,
+  toJustificationBasisCompoundAtom,
+  ToJustificationMapperRow,
+  toProposition,
+  toPropositionCompound,
+  toPropositionCompoundAtom,
+  ToPropositionCompoundAtomMapperRow,
+  toWritQuote,
+} from "./orm";
+import { PropositionCompoundsDao } from "./PropositionCompoundsDao";
+import { PropositionsDao } from "./PropositionsDao";
+import { StatementsDao } from "./StatementsDao";
+import { WritQuotesDao } from "./WritQuotesDao";
+import { WritQuoteUrlTargetsDao } from "./WritQuoteUrlTargetsDao";
 
 export const MAX_COUNT = 1024;
 
@@ -91,6 +90,7 @@ export class JustificationsDao {
     private readonly database: Database,
     private readonly statementsDao: StatementsDao,
     private readonly propositionCompoundsDao: PropositionCompoundsDao,
+    private readonly propositionsDao: PropositionsDao,
     private readonly mediaExcerptsDao: MediaExcerptsDao,
     private readonly writQuotesDao: WritQuotesDao,
     private readonly justificationBasisCompoundsDao: JustificationBasisCompoundsDao,
@@ -1216,7 +1216,9 @@ export class JustificationsDao {
           JustificationRootTargetTypes.PROPOSITION,
           propositionIds
         ),
-        this.readAppearanceCountForPropositionIds(propositionIds),
+        this.propositionsDao.readAppearanceCountForPropositionIds(
+          propositionIds
+        ),
       ]);
     return mapValues(propositionCompoundsById, (compound) => ({
       ...compound,
@@ -1241,45 +1243,6 @@ export class JustificationsDao {
       [rootTargetId]
     );
     return countsById[rootTargetId];
-  }
-
-  async readAppearanceCountForPropositionId(
-    propositionId: EntityId
-  ): Promise<number> {
-    const countsById = await this.readAppearanceCountForPropositionIds([
-      propositionId,
-    ]);
-    return countsById[propositionId];
-  }
-
-  async readAppearanceCountForPropositionIds(propositionIds: string[]) {
-    const { rows } = await this.database.query<{
-      proposition_id: number;
-      count: string;
-    }>(
-      "readAppearanceCountForPropositionIds",
-      `
-        select
-            proposition_id
-          , count(*) as count
-        from
-          propositions p join appearances a using (proposition_id)
-        where
-              p.proposition_id = any ($1)
-          and p.deleted is null
-          and a.deleted is null
-        group by proposition_id
-      `,
-      [propositionIds]
-    );
-    return reduce(
-      rows,
-      (acc, { proposition_id, count }) => {
-        acc[toIdString(proposition_id)] = toCountNumber(count);
-        return acc;
-      },
-      {} as Record<string, number>
-    );
   }
 }
 
