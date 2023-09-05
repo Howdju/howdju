@@ -37,7 +37,7 @@ import * as appSagas from "../app/appSagas";
 import * as justificationsSearchPageSagas from "../pages/justificationsSearch/justificationsSearchPageSagas";
 import * as justificationsPageSagas from "../pages/justifications/justificationPageSagas";
 import { factCheckPageSaga } from "@/pages/factChecks/factCheckPageSlice";
-import { mediaExcerptUsagesPageSaga } from "@/pages/mediaExcerptUsages/mediaExcerptUsagesPageSlice";
+import { mediaExcerptUsagesSaga } from "@/pages/mediaExcerpt/mediaExcerptUsagesSlice";
 import { passwordResetRequestPageSaga } from "@/pages/passwordResetRequest/passwordResetRequestPageSlice";
 import { passwordResetConfirmationPageSaga } from "@/pages/passwordResetConfirmation/passwordResetConfirmationPageSlice";
 import { propositionAppearancesDialogSaga } from "@/components/propositionAppearancesDialog/propositionAppearancesDialogSlice";
@@ -77,7 +77,7 @@ export default () =>
     beginEditOfMediaExcerptFromInfo(),
 
     factCheckPageSaga(),
-    mediaExcerptUsagesPageSaga(),
+    mediaExcerptUsagesSaga(),
 
     editorCommitEdit(),
 

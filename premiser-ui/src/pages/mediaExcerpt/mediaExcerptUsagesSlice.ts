@@ -8,7 +8,7 @@ import { api, ApiResponseActionMeta } from "@/apiActions";
 import config from "@/config";
 
 export const slice = createSlice({
-  name: "mediaExcerptUsagesPage",
+  name: "mediaExcerptUsages",
   initialState: {
     isFetchingJustifications: false,
     justificationIds: [] as EntityId[],
@@ -78,7 +78,7 @@ export const slice = createSlice({
 });
 
 export default slice.actions;
-export const mediaExcerptUsagesPage = slice.reducer;
+export const mediaExcerptUsages = slice.reducer;
 
 const fetchCount = 10;
 
@@ -90,14 +90,14 @@ type FetchAppearancesResponseAction = ReturnType<
   typeof api.fetchAppearances.response
 >;
 
-export function* mediaExcerptUsagesPageSaga() {
+export function* mediaExcerptUsagesSaga() {
   yield all([
-    mediaExcerptUsagesPageJustificationsSaga(),
-    mediaExcerptUsagesPageAppearancesSaga(),
+    mediaExcerptUsagesJustificationsSaga(),
+    mediaExcerptUsagesAppearancesSaga(),
   ]);
 }
 
-export function* mediaExcerptUsagesPageJustificationsSaga() {
+export function* mediaExcerptUsagesJustificationsSaga() {
   yield takeEvery(
     slice.actions.fetchJustifications,
     // TODO(525) factor out the duplicate logic in these sagas. Use it in factCheckPageSliceSaga too.
@@ -151,7 +151,7 @@ export function* mediaExcerptUsagesPageJustificationsSaga() {
     }
   );
 }
-export function* mediaExcerptUsagesPageAppearancesSaga() {
+export function* mediaExcerptUsagesAppearancesSaga() {
   yield takeEvery(
     slice.actions.fetchAppearances,
     function* ({ payload: { mediaExcerptId, continuationToken } }) {

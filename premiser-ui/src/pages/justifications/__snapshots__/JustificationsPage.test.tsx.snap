@@ -76,7 +76,7 @@ exports[`JustificationsPage Can add a compound-based justification 1`] = `
                                 class="material-symbols"
                                 style="font-variation-settings: "opsz" 12; font-size: 12px;"
                               >
-                                add_location
+                                pin_drop
                               </span>
                               0
                             </a>
@@ -252,7 +252,7 @@ exports[`JustificationsPage Can add a compound-based justification 1`] = `
                                       class="material-symbols"
                                       style="font-variation-settings: "opsz" 12; font-size: 12px;"
                                     >
-                                      add_location
+                                      pin_drop
                                     </span>
                                     0
                                   </a>
@@ -349,7 +349,7 @@ exports[`JustificationsPage Can add a compound-based justification 1`] = `
                                       class="material-symbols"
                                       style="font-variation-settings: "opsz" 12; font-size: 12px;"
                                     >
-                                      add_location
+                                      pin_drop
                                     </span>
                                     0
                                   </a>
@@ -580,7 +580,7 @@ exports[`JustificationsPage Shows a justified proposition 1`] = `
                                 class="material-symbols"
                                 style="font-variation-settings: "opsz" 12; font-size: 12px;"
                               >
-                                add_location
+                                pin_drop
                               </span>
                               0
                             </a>

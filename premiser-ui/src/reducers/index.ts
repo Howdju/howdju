@@ -22,7 +22,7 @@ import { createAppearancePage } from "@/pages/appearances/createAppearancePageSl
 import { justificationsPage } from "@/pages/justifications/justificationsPageSlice";
 import { accountSettingsPage } from "@/pages/accountSettings/accountSettingsPageSlice";
 import { propositionUsagesPage } from "@/pages/propositionUsages/propositionUsagesPageSlice";
-import { mediaExcerptUsagesPage } from "@/pages/mediaExcerptUsages/mediaExcerptUsagesPageSlice";
+import { mediaExcerptUsages } from "@/pages/mediaExcerpt/mediaExcerptUsagesSlice";
 import { registrationConfirmationPage } from "@/pages/registration/registrationConfirmationPageSlice";
 import { primaryContextTrail } from "@/components/contextTrail/primaryContextTrailSlice";
 import { urlLocatorsEditorFields } from "@/editors/urlLocatorsEditorFieldsSlice";
@@ -62,7 +62,7 @@ export default (history: History) =>
     propositionAppearancesDialog,
     propositionUsagesPage,
     mediaExcerptApparitionsDialog,
-    mediaExcerptUsagesPage,
+    mediaExcerptUsages,
     registrationConfirmationPage,
     router: connectRouter(history),
     sourcePage,
