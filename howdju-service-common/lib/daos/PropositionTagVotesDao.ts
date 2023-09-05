@@ -1,8 +1,17 @@
-import { EntityId, PropositionTagVotePolarity } from "howdju-common";
+import {
+  brandedParse,
+  EntityId,
+  PropositionRef,
+  PropositionTagVoteOut,
+  PropositionTagVotePolarity,
+  PropositionTagVoteRef,
+  TagRef,
+} from "howdju-common";
+import { reduce } from "lodash";
 import { Moment } from "moment";
 
 import { Database, PropositionTagVoteRow } from "..";
-import { mapMany } from "./daosUtil";
+import { mapMany, toIdString } from "./daosUtil";
 import { toPropositionTagVote } from "./orm";
 
 export class PropositionTagVotesDao {
@@ -69,22 +78,46 @@ export class PropositionTagVotesDao {
     return toPropositionTagVote(row);
   }
 
-  async readUserVotesForPropositionId(
+  async readUserVotesForPropositionIds(
     userId: EntityId,
-    propositionId: EntityId
+    propositionIds: EntityId[]
   ) {
     const { rows } = await this.database.query<PropositionTagVoteRow>(
-      "readUserVotesForPropositionId",
-      `select *
+      "readUserVotesForPropositionIds",
+      `select
+            *
       from proposition_tag_votes
         where
               user_id = $1
-          and proposition_id = $2
+          and proposition_id = any ($2)
           and deleted is null
       `,
-      [userId, propositionId]
+      [userId, propositionIds]
     );
-    return rows.map(toPropositionTagVote);
+
+    return reduce(
+      rows,
+      (acc, row) => {
+        const propositionId = toIdString(row.proposition_id);
+        if (!(propositionId in acc)) {
+          acc[propositionId] = [];
+        }
+        const vote = brandedParse(PropositionTagVoteRef, {
+          id: toIdString(row.proposition_tag_vote_id),
+          polarity: row.polarity,
+          proposition: brandedParse(PropositionRef, {
+            id: propositionId,
+          }),
+          tag: brandedParse(TagRef, {
+            id: toIdString(row.tag_id),
+            name: row.tag_name,
+          }),
+        });
+        acc[propositionId].push(vote);
+        return acc;
+      },
+      {} as Record<EntityId, PropositionTagVoteOut[]>
+    );
   }
 
   readVotes() {

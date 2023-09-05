@@ -79,61 +79,79 @@ export class PropositionsService {
     private readonly justificationsDao: JustificationsDao
   ) {}
 
-  async readPropositionForId(
-    propositionId: EntityId,
-    userIdent: UserIdent
-  ): Promise<PropositionOut> {
+  async readPropositionsForIds(
+    userIdent: UserIdent,
+    propositionIds: EntityId[]
+  ): Promise<PropositionOut[]> {
     const userId = await this.authService.readOptionalUserIdForUserIdent(
       userIdent
     );
     const [
-      proposition,
-      tags,
-      recommendedTags,
-      propositionTagVotes,
-      rootJustificationCountByPolarity,
-      appearanceCount,
+      propositions,
+      tagsByPropositionId,
+      recommendedTagsByPropositionId,
+      propositionTagVotesByPropositionId,
+      rootJustificationCountByPolarityByPropositionId,
+      appearanceCountByPropositionId,
     ] = await Promise.all([
-      this.propositionsDao.readPropositionForId(propositionId),
-      this.propositionTagsService.readTagsForPropositionId(propositionId),
-      this.propositionTagsService.readRecommendedTagsForPropositionId(
-        propositionId
+      this.propositionsDao.readPropositionsForIds(propositionIds),
+      this.propositionTagsService.readTagsForPropositionIds(propositionIds),
+      this.propositionTagsService.readRecommendedTagsForPropositionIds(
+        propositionIds
       ),
       userId
-        ? this.propositionTagVotesService.readUserVotesForPropositionId(
+        ? this.propositionTagVotesService.readUserVotesForPropositionIds(
             userId,
-            propositionId
+            propositionIds
           )
         : undefined,
-      this.justificationsDao.readRootJustificationCountByPolarityForRoot(
+      this.justificationsDao.readRootJustificationCountByPolarityForRoots(
         "PROPOSITION",
-        propositionId
+        propositionIds
       ),
-      this.propositionsDao.readAppearanceCountForPropositionId(propositionId),
+      this.propositionsDao.readAppearanceCountForPropositionIds(propositionIds),
     ]);
-    if (!proposition) {
-      throw new EntityNotFoundError(EntityTypes.PROPOSITION, propositionId);
-    }
+    ensurePresent(propositionIds, propositions, "PROPOSITION");
 
-    return {
-      ...proposition,
-      // Ensure recommended tags also appear in full tags
-      tags: unionBy(tags, recommendedTags, (tag) => tag.id),
-      recommendedTags,
-      propositionTagVotes: propositionTagVotes?.filter((vote) =>
-        // Include only votes for present tags
-        some(tags, (tag) => tagEqual(tag, vote.tag))
-      ),
-      rootJustificationCountByPolarity,
-      appearanceCount,
-    };
+    return propositions.map((proposition) => {
+      const tags = tagsByPropositionId[proposition.id] || [];
+      const recommendedTags =
+        recommendedTagsByPropositionId[proposition.id] || [];
+      const propositionTagVotes =
+        propositionTagVotesByPropositionId?.[proposition.id];
+      const rootJustificationCountByPolarity =
+        rootJustificationCountByPolarityByPropositionId[proposition.id];
+      const appearanceCount = appearanceCountByPropositionId[proposition.id];
+      return {
+        ...proposition,
+        // Ensure recommended tags also appear in full tags
+        tags: unionBy(tags, recommendedTags, (tag) => tag.id),
+        recommendedTags,
+        propositionTagVotes: propositionTagVotes?.filter((vote) =>
+          // Include only votes for present tags
+          some(tags, (tag) => tagEqual(tag, vote.tag))
+        ),
+        rootJustificationCountByPolarity,
+        appearanceCount,
+      };
+    });
   }
 
-  readPropositions({
-    sorts = [] as SortDescription[],
-    continuationToken = undefined as ContinuationToken | undefined,
-    count = 25,
-  }): Promise<{
+  async readPropositionForId(propositionId: EntityId, userIdent: UserIdent) {
+    const [proposition] = await this.readPropositionsForIds(userIdent, [
+      propositionId,
+    ]);
+    return proposition;
+  }
+
+  readPropositions(
+    userIdent: UserIdent,
+    {
+      sorts = [] as SortDescription[],
+      continuationToken = undefined as ContinuationToken | undefined,
+      count = 25,
+    }
+  ): Promise<{
     propositions: PropositionOut[];
     continuationToken: ContinuationToken;
   }> {
@@ -145,27 +163,13 @@ export class PropositionsService {
     }
 
     if (!continuationToken) {
-      return this.readInitialPropositions(sorts, countNumber);
+      return this.readInitialPropositions(userIdent, sorts, countNumber);
     }
-    return this.readMorePropositions(continuationToken, countNumber);
-  }
-
-  async readPropositionsForIds(propositionIds: EntityId[]) {
-    const propositions = await this.propositionsDao.readPropositionsForIds(
-      propositionIds
-    );
-    ensurePresent(propositionIds, propositions, "PROPOSITION");
-    const appearanceCountByPropositionId =
-      await this.propositionsDao.readAppearanceCountForPropositionIds(
-        propositionIds
-      );
-    return propositions.map((p) => ({
-      ...p,
-      appearanceCount: appearanceCountByPropositionId[p.id],
-    }));
+    return this.readMorePropositions(userIdent, continuationToken, countNumber);
   }
 
   async readInitialPropositions(
+    userIdent: UserIdent,
     requestedSorts: SortDescription[],
     count: number
   ): Promise<{
@@ -176,9 +180,13 @@ export class PropositionsService {
       { property: "id", direction: SortDirections.ASCENDING },
     ];
     const unambiguousSorts = concat(requestedSorts, disambiguationSorts);
-    const propositions = await this.propositionsDao.readPropositions(
+    const propositionIds = await this.propositionsDao.readPropositionIds(
       unambiguousSorts,
       count
+    );
+    const propositions = await this.readPropositionsForIds(
+      userIdent,
+      propositionIds
     );
     const continuationToken = createContinuationToken(
       unambiguousSorts,
@@ -191,6 +199,7 @@ export class PropositionsService {
   }
 
   async readMorePropositions(
+    userIdent: UserIdent,
     continuationToken: ContinuationToken,
     count: number
   ): Promise<{
@@ -198,9 +207,13 @@ export class PropositionsService {
     continuationToken: ContinuationToken;
   }> {
     const { sorts, filters } = decodeContinuationToken(continuationToken);
-    const propositions = await this.propositionsDao.readMorePropositions(
+    const propositionIds = await this.propositionsDao.readMorePropositionIds(
       sorts,
       count
+    );
+    const propositions = await this.readPropositionsForIds(
+      userIdent,
+      propositionIds
     );
     const nextContinuationToken =
       createNextContinuationToken(sorts, propositions, filters) ||

@@ -123,7 +123,7 @@ export class PropositionsDao {
     return this.readPropositionForId(toString(row.proposition_id));
   }
 
-  async readPropositions(sorts: SortDescription[], count: number) {
+  async readPropositionIds(sorts: SortDescription[], count: number) {
     requireArgs({ sorts, count });
 
     const args = [];
@@ -156,12 +156,10 @@ export class PropositionsDao {
       ${countSql}
       `;
     const { rows } = await this.database.query("readPropositions", sql, args);
-    return this.readPropositionsForIds(
-      rows.map((row) => toIdString(row.proposition_id))
-    );
+    return rows.map((row) => toIdString(row.proposition_id));
   }
 
-  async readMorePropositions(
+  async readMorePropositionIds(
     sortContinuations: SortDescription[],
     count: number
   ) {
@@ -220,9 +218,7 @@ export class PropositionsDao {
       sql,
       args
     );
-    return this.readPropositionsForIds(
-      rows.map((row) => toIdString(row.proposition_id))
-    );
+    return rows.map((row) => toIdString(row.proposition_id));
   }
 
   async updateProposition(proposition: UpdateProposition) {
