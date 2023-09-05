@@ -2,11 +2,9 @@ import React, { UIEvent, useEffect } from "react";
 import { Button, CircularProgress } from "react-md";
 import isEmpty from "lodash/isEmpty";
 import map from "lodash/map";
-import { denormalize } from "normalizr";
-import { RouteComponentProps } from "react-router";
 import FlipMove from "react-flip-move";
 
-import { AppearanceView, EntityId, JustificationView } from "howdju-common";
+import { EntityId } from "howdju-common";
 
 import {
   appearancesSchema,
@@ -14,39 +12,23 @@ import {
 } from "../../normalizationSchemas";
 import JustificationCard from "../../JustificationCard";
 import config from "../../config";
-import { useAppDispatch, useAppSelector } from "@/hooks";
-import ErrorPage from "@/ErrorPage";
+import { useAppDispatch, useAppSelector, useAppEntitySelector } from "@/hooks";
 import FlipMoveWrapper from "@/FlipMoveWrapper";
 import AppearanceCard from "../appearances/AppearanceCard";
-import page from "./mediaExcerptUsagesPageSlice";
+import page from "./mediaExcerptUsagesSlice";
 
-interface MatchParams {
-  mediaExcerptId: EntityId;
-}
-type Props = RouteComponentProps<MatchParams>;
-
-export default function MediaExcerptUsagesPage(props: Props) {
-  const { mediaExcerptId } = props.match.params;
-  if (!mediaExcerptId) {
-    return (
-      <ErrorPage message={"Invalid path (MediaExcerpt ID is required.)"} />
-    );
-  }
-  return ValidMediaExcerptUsagesPage({ mediaExcerptId });
-}
-
-interface ValidProps {
+interface Props {
   mediaExcerptId: EntityId;
 }
 
-function ValidMediaExcerptUsagesPage({ mediaExcerptId }: ValidProps) {
+export default function MediaExcerptUsages({ mediaExcerptId }: Props) {
   const dispatch = useAppDispatch();
   useEffect(() => {
     dispatch(page.fetchJustifications({ mediaExcerptId }));
     dispatch(page.fetchAppearances({ mediaExcerptId }));
   }, [dispatch, mediaExcerptId]);
 
-  const pageState = useAppSelector((state) => state.mediaExcerptUsagesPage);
+  const pageState = useAppSelector((state) => state.mediaExcerptUsages);
   const {
     isFetchingJustifications,
     justificationIds,
@@ -55,18 +37,12 @@ function ValidMediaExcerptUsagesPage({ mediaExcerptId }: ValidProps) {
     appearanceIds,
     appearancesContinuationToken,
   } = pageState;
-  const entities = useAppSelector((state) => state.entities);
 
-  const justifications: JustificationView[] = denormalize(
+  const justifications = useAppEntitySelector(
     justificationIds,
-    justificationsSchema,
-    entities
+    justificationsSchema
   );
-  const appearances: AppearanceView[] = denormalize(
-    appearanceIds,
-    appearancesSchema,
-    entities
-  );
+  const appearances = useAppEntitySelector(appearanceIds, appearancesSchema);
 
   const fetchMoreJustifications = (event: UIEvent) => {
     event.preventDefault();

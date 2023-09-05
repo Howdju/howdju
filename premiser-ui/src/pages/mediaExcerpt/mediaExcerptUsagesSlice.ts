@@ -8,7 +8,7 @@ import { api, ApiResponseActionMeta } from "@/apiActions";
 import config from "@/config";
 
 export const slice = createSlice({
-  name: "mediaExcerptUsagesPage",
+  name: "mediaExcerptUsages",
   initialState: {
     isFetchingJustifications: false,
     justificationIds: [] as EntityId[],
@@ -36,8 +36,10 @@ export const slice = createSlice({
     ) {
       const { justificationIds, continuationToken } = action.payload;
       state.isFetchingJustifications = false;
-      state.justificationIds = justificationIds.filter(
-        (id1) => !state.justificationIds.some((id2) => id1 === id2)
+      state.justificationIds = state.justificationIds.concat(
+        justificationIds.filter(
+          (id1) => !state.justificationIds.some((id2) => id1 === id2)
+        )
       );
       state.justificationsContinuationToken = continuationToken;
     },
@@ -62,8 +64,10 @@ export const slice = createSlice({
     ) {
       const { appearanceIds, continuationToken } = action.payload;
       state.isFetchingAppearances = false;
-      state.appearanceIds = appearanceIds.filter(
-        (id1) => !state.appearanceIds.some((id2) => id1 === id2)
+      state.appearanceIds = state.appearanceIds.concat(
+        appearanceIds.filter(
+          (id1) => !state.appearanceIds.some((id2) => id1 === id2)
+        )
       );
       state.appearancesContinuationToken = continuationToken;
     },
@@ -74,7 +78,7 @@ export const slice = createSlice({
 });
 
 export default slice.actions;
-export const mediaExcerptUsagesPage = slice.reducer;
+export const mediaExcerptUsages = slice.reducer;
 
 const fetchCount = 10;
 
@@ -86,14 +90,14 @@ type FetchAppearancesResponseAction = ReturnType<
   typeof api.fetchAppearances.response
 >;
 
-export function* mediaExcerptUsagesPageSaga() {
+export function* mediaExcerptUsagesSaga() {
   yield all([
-    mediaExcerptUsagesPageJustificationsSaga(),
-    mediaExcerptUsagesPageAppearancesSaga(),
+    mediaExcerptUsagesJustificationsSaga(),
+    mediaExcerptUsagesAppearancesSaga(),
   ]);
 }
 
-export function* mediaExcerptUsagesPageJustificationsSaga() {
+export function* mediaExcerptUsagesJustificationsSaga() {
   yield takeEvery(
     slice.actions.fetchJustifications,
     // TODO(525) factor out the duplicate logic in these sagas. Use it in factCheckPageSliceSaga too.
@@ -147,7 +151,7 @@ export function* mediaExcerptUsagesPageJustificationsSaga() {
     }
   );
 }
-export function* mediaExcerptUsagesPageAppearancesSaga() {
+export function* mediaExcerptUsagesAppearancesSaga() {
   yield takeEvery(
     slice.actions.fetchAppearances,
     function* ({ payload: { mediaExcerptId, continuationToken } }) {

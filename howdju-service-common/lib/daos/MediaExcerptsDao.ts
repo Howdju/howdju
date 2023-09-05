@@ -39,7 +39,7 @@ import { UrlsDao } from "./UrlsDao";
 import { toDbDirection } from "./daoModels";
 import { EntityNotFoundError, InvalidRequestError, UsersDao } from "..";
 import { SqlClause } from "./daoTypes";
-import { renumberSqlArgs, toIdString } from "./daosUtil";
+import { renumberSqlArgs, toCountNumber, toIdString } from "./daosUtil";
 import { UrlLocatorAutoConfirmationDao } from "./UrlLocatorAutoConfirmationDao";
 
 export type CreateMediaExcerptDataIn = Pick<
@@ -70,10 +70,17 @@ export class MediaExcerptsDao {
       return acc;
     }, new Set<EntityId>());
 
-    const [urlLocators, citations, speakers, creators] = await Promise.all([
+    const [
+      urlLocators,
+      citations,
+      speakers,
+      apparitionCountsByMediaExcerptId,
+      creators,
+    ] = await Promise.all([
       this.readUrlLocators({ mediaExcerptIds }),
       this.readCitationsForMediaExcerptIds(mediaExcerptIds),
       this.readSpeakersForMediaExcerptIds(mediaExcerptIds),
+      this.readApparitionCountsByMediaExcerptId(mediaExcerptIds),
       this.usersDao.readUserBlurbsForIds(Array.from(creatorUserIds)),
     ]);
     const urlLocatorsByMediaExcerptId = groupBy(urlLocators, "mediaExcerptId");
@@ -90,8 +97,33 @@ export class MediaExcerptsDao {
         citations: citationsByMediaExcerptId[me.id] || [],
         speakers: speakersByMediaExcerptId[me.id] || [],
         creator: creatorsById[me.creatorUserId],
+        apparitionCount: apparitionCountsByMediaExcerptId[me.id],
       })
     );
+  }
+
+  private async readApparitionCountsByMediaExcerptId(
+    mediaExcerptIds: EntityId[]
+  ) {
+    const { rows } = await this.database.query(
+      "readApparitionCountsByMediaExcerptId",
+      `
+      select
+          media_excerpt_id
+        , count(*) as apparition_count
+      from media_excerpts me
+        join appearances a using (media_excerpt_id)
+      where media_excerpt_id = any($1)
+        and me.deleted is null
+        and a.deleted is null
+      group by media_excerpt_id
+      `,
+      [mediaExcerptIds]
+    );
+    return rows.reduce((acc, { media_excerpt_id, apparition_count }) => {
+      acc[toIdString(media_excerpt_id)] = toCountNumber(apparition_count);
+      return acc;
+    }, {} as Record<EntityId, number>);
   }
 
   async readMediaExcerptForId(

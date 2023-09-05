@@ -4,13 +4,13 @@ import { PropositionTagsDao } from "../daos";
 export class PropositionTagsService {
   constructor(private readonly propositionTagsDao: PropositionTagsDao) {}
 
-  readTagsForPropositionId(propositionId: EntityId) {
-    return this.propositionTagsDao.readTagsForPropositionId(propositionId);
+  readTagsForPropositionIds(propositionIds: EntityId[]) {
+    return this.propositionTagsDao.readTagsForPropositionIds(propositionIds);
   }
 
-  readRecommendedTagsForPropositionId(propositionId: EntityId) {
-    return this.propositionTagsDao.readRecommendedTagsForPropositionId(
-      propositionId
+  readRecommendedTagsForPropositionIds(propositionIds: EntityId[]) {
+    return this.propositionTagsDao.readRecommendedTagsForPropositionIds(
+      propositionIds
     );
   }
 

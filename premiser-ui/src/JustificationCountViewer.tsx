@@ -1,10 +1,12 @@
 import React from "react";
-import get from "lodash/get";
-import isEmpty from "lodash/isEmpty";
+import { get, isEmpty } from "lodash";
+import { MaterialSymbol } from "react-material-symbols";
 
-import { JustificationPolarities } from "howdju-common";
+import { JustificationCountMap, JustificationPolarities } from "howdju-common";
 
-export default function JustificationCountViewer(props) {
+export default function JustificationCountViewer(props: {
+  justificationCountByPolarity: JustificationCountMap;
+}) {
   const { justificationCountByPolarity } = props;
 
   const positiveJustificationCount = get(
@@ -23,7 +25,9 @@ export default function JustificationCountViewer(props) {
     <span
       title={`${positiveJustificationCount} supporting justifications; ${negativeJustificationCount} opposing justifications`}
     >
-      ({positiveJustificationCount}+/{negativeJustificationCount}-)
+      <MaterialSymbol icon="merge" size={12} />
+      {positiveJustificationCount}+/
+      {negativeJustificationCount}-
     </span>
   );
 }

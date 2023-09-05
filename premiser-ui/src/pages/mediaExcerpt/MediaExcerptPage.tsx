@@ -28,6 +28,7 @@ import mediaExcerptPage from "./mediaExcerptPageSlice";
 import CreateUrlLocatorsEditor from "@/editors/CreateUrlLocatorsEditor";
 import { CommitThenPutAction } from "@/editors/withEditor";
 import DeleteUrlLocatorsControl from "./DeleteUrlLocatorsControl";
+import MediaExcerptUsages from "./MediaExcerptUsages";
 
 interface MatchParams {
   mediaExcerptId: EntityId;
@@ -42,6 +43,7 @@ export default function MediaExcerptPage(props: Props) {
   const { mediaExcerptId } = props.match.params;
   useEffect(() => {
     dispatch(api.fetchMediaExcerpt(mediaExcerptId));
+    dispatch(api.fetchMediaExcerptApparitions(mediaExcerptId));
   }, [dispatch, mediaExcerptId]);
 
   const mediaExcerpt = useAppEntitySelector(mediaExcerptId, mediaExcerptSchema);
@@ -107,14 +109,6 @@ export default function MediaExcerptPage(props: Props) {
           component={Link}
           to={paths.createAppearance(mediaExcerptId)}
         />,
-        <Divider key="divider-use" />,
-        <ListItem
-          primaryText="See usages…"
-          key="see-usages"
-          leftIcon={<MaterialSymbol icon="search" />}
-          component={Link}
-          to={paths.mediaExcerptUsages(mediaExcerptId)}
-        />,
         <Divider key="divider-edit" />,
         <ListItem
           primaryText="Add URLs…"
@@ -159,6 +153,7 @@ export default function MediaExcerptPage(props: Props) {
         menu={menu}
         className="md-cell md-cell--12"
       />
+      <MediaExcerptUsages mediaExcerptId={mediaExcerptId} />
       <DialogContainer
         id={combineIds(id, "add-url-locators-dialog")}
         visible={isAddUrlLocatorsDialogVisible}

@@ -29,7 +29,7 @@ export default function PropositionCompoundViewer({
   highlightedProposition,
   contextTrailItems,
   showStatusText,
-  showJustificationCount = false,
+  showJustificationCount = true,
 }: Props) {
   const atomListItems = map(propositionCompound.atoms, (atom) => {
     const listItemId = combineIds(

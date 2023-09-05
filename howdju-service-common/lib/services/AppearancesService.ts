@@ -156,6 +156,7 @@ export class AppearancesService {
           Array.from(relatedIds.mediaExcerptIds)
         ),
         this.propositionsService.readPropositionsForIds(
+          userIdent,
           Array.from(relatedIds.propositionIds)
         ),
         this.usersService.readUserBlurbsForIds(

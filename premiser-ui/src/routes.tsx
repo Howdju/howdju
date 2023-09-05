@@ -47,7 +47,6 @@ import { CreatePropositionPageMode } from "./types";
 import { Location, LocationState } from "history";
 import { PrimaryContextTrailProvider } from "./components/contextTrail/PrimaryContextTrailProvider";
 import MediaExcerptPage from "./pages/mediaExcerpt/MediaExcerptPage";
-import MediaExcerptUsagesPage from "./pages/mediaExcerptUsages/MediaExcerptUsagesPage";
 import CreateAppearancePage from "./pages/appearances/CreateAppearancePage";
 import AppearancePage from "./pages/appearances/AppearancePage";
 import FactCheckPage from "./pages/factChecks/FactCheckPage";
@@ -149,13 +148,6 @@ const routesById = {
       exact
       path="/propositions/:propositionId/usages"
       component={PropositionUsagesPage}
-    />
-  ),
-  mediaExcerptUsages: (
-    <Route
-      exact
-      path="/media-excerpts/:mediaExcerptId/usages"
-      component={MediaExcerptUsagesPage}
     />
   ),
 

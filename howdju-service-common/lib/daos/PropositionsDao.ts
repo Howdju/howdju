@@ -25,10 +25,10 @@ import {
 } from "howdju-common";
 
 import { toProposition } from "./orm";
-import { normalizeText, toIdString } from "./daosUtil";
+import { normalizeText, toCountNumber, toIdString } from "./daosUtil";
 import { DatabaseSortDirection } from "./daoModels";
 import { Database, EntityNotFoundError, PropositionRow, UsersDao } from "..";
-import { keyBy, toString, uniq } from "lodash";
+import { keyBy, reduce, toString, uniq } from "lodash";
 
 export class PropositionsDao {
   constructor(
@@ -123,7 +123,7 @@ export class PropositionsDao {
     return this.readPropositionForId(toString(row.proposition_id));
   }
 
-  async readPropositions(sorts: SortDescription[], count: number) {
+  async readPropositionIds(sorts: SortDescription[], count: number) {
     requireArgs({ sorts, count });
 
     const args = [];
@@ -156,12 +156,10 @@ export class PropositionsDao {
       ${countSql}
       `;
     const { rows } = await this.database.query("readPropositions", sql, args);
-    return this.readPropositionsForIds(
-      rows.map((row) => toIdString(row.proposition_id))
-    );
+    return rows.map((row) => toIdString(row.proposition_id));
   }
 
-  async readMorePropositions(
+  async readMorePropositionIds(
     sortContinuations: SortDescription[],
     count: number
   ) {
@@ -220,9 +218,7 @@ export class PropositionsDao {
       sql,
       args
     );
-    return this.readPropositionsForIds(
-      rows.map((row) => toIdString(row.proposition_id))
-    );
+    return rows.map((row) => toIdString(row.proposition_id));
   }
 
   async updateProposition(proposition: UpdateProposition) {
@@ -352,5 +348,44 @@ export class PropositionsDao {
       userId,
     ]);
     return result;
+  }
+
+  async readAppearanceCountForPropositionId(
+    propositionId: EntityId
+  ): Promise<number> {
+    const countsById = await this.readAppearanceCountForPropositionIds([
+      propositionId,
+    ]);
+    return countsById[propositionId];
+  }
+
+  async readAppearanceCountForPropositionIds(propositionIds: string[]) {
+    const { rows } = await this.database.query<{
+      proposition_id: number;
+      count: string;
+    }>(
+      "readAppearanceCountForPropositionIds",
+      `
+        select
+            proposition_id
+          , count(*) as count
+        from
+          propositions p join appearances a using (proposition_id)
+        where
+              p.proposition_id = any ($1)
+          and p.deleted is null
+          and a.deleted is null
+        group by proposition_id
+      `,
+      [propositionIds]
+    );
+    return reduce(
+      rows,
+      (acc, { proposition_id, count }) => {
+        acc[toIdString(proposition_id)] = toCountNumber(count);
+        return acc;
+      },
+      {} as Record<string, number>
+    );
   }
 }

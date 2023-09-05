@@ -137,8 +137,6 @@ class Paths {
     });
   propositionUsages = (propositionId: EntityId) =>
     `/propositions/${propositionId}/usages`;
-  mediaExcerptUsages = (mediaExcerptId: EntityId) =>
-    `/media-excerpts/${mediaExcerptId}/usages`;
   statementUsages = (statementId: EntityId) =>
     `/statement-usages?statementId=${statementId}`;
 

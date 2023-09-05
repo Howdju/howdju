@@ -1,41 +1,44 @@
-import React, { Component, ComponentClass, MouseEvent } from "react";
-import { hot } from "react-hot-loader/root";
-import { Switch } from "react-router";
-import { Link } from "react-router-dom";
-import { ConnectedRouter } from "connected-react-router";
-import {
-  Button,
-  Drawer,
-  ListItem,
-  FontIcon,
-  Snackbar,
-  Toolbar,
-  Tabs,
-  Tab,
-  TabsProps,
-} from "react-md";
-import { connect, ConnectedProps } from "react-redux";
 import cn from "classnames";
+import { ConnectedRouter } from "connected-react-router";
+import { Action, Location, UnregisterCallback } from "history";
 import forEach from "lodash/forEach";
 import isFinite from "lodash/isFinite";
 import map from "lodash/map";
 import throttle from "lodash/throttle";
+import React, { Component, ComponentClass, MouseEvent } from "react";
+import { hot } from "react-hot-loader/root";
+import {
+  Button,
+  Drawer,
+  FontIcon,
+  ListItem,
+  Snackbar,
+  Tab,
+  Tabs,
+  TabsProps,
+  Toolbar,
+} from "react-md";
 import { IdPropType } from "react-md/lib";
-import { Location, UnregisterCallback, Action } from "history";
+import { connect, ConnectedProps } from "react-redux";
+import { Switch } from "react-router";
+import { Link } from "react-router-dom";
 
-import { isTruthy } from "howdju-common";
 import { actions, inIframe } from "howdju-client-common";
+import { isTruthy } from "howdju-common";
 
-import Helmet from "./Helmet";
+import app from "@/app/appSlice";
 import {
   api,
   flows,
   goto,
+  mapActionCreatorGroupToDispatchToProps,
   privacyConsent,
   ui,
-  mapActionCreatorGroupToDispatchToProps,
 } from "./actions";
+import MediaExcerptApparitionsDialog from "./components/mediaExcerptApparitionsDialog/MediaExcerptApparitionsDialog";
+import PropositionAppearancesDialog from "./components/propositionAppearancesDialog/PropositionAppearancesDialog";
 import config from "./config";
+import ReportContentDialog from "./content-report/ReportContentDialog";
 import {
   ANALYTICS,
   BASIC_FUNCTIONALITY,
@@ -48,29 +51,28 @@ import {
   REQUIRED_FUNCTIONALITY,
   showPrivacyConsentDialog,
 } from "./cookieConsent";
-import app from "@/app/appSlice";
-import { startPersisting, stopPersisting } from "./store";
 import ErrorBoundary from "./ErrorBoundary";
 import Header from "./Header";
+import Helmet from "./Helmet";
 import { history } from "./history";
 import { logger } from "./logger";
 import paths from "./paths";
 import routes from "./routes";
 import {
-  selectAuthToken,
   selectAuthEmail,
+  selectAuthToken,
   selectPrivacyConsent,
 } from "./selectors";
 import sentryInit from "./sentryInit";
+import { RootState } from "./setupStore";
+import { startPersisting, stopPersisting } from "./store";
 import t, {
+  MAIN_TABS_ABOUT_TAB_NAME,
   MAIN_TABS_RECENT_ACTIVITY_TAB_NAME,
   MAIN_TABS_WHATS_NEXT_TAB_NAME,
-  MAIN_TABS_ABOUT_TAB_NAME,
 } from "./texts";
-import { isScrollPastBottom, isScrollPastTop, isDevice } from "./util";
+import { isDevice, isScrollPastBottom, isScrollPastTop } from "./util";
 import WindowMessageHandler from "./WindowMessageHandler";
-import ReportContentDialog from "./content-report/ReportContentDialog";
-import { RootState } from "./setupStore";
 
 import "./App.scss";
 import "./fonts.js";
@@ -558,6 +560,8 @@ class App extends Component<Props> {
             <Snackbar toasts={toasts} onDismiss={this.dismissSnackbar} />
 
             <ReportContentDialog />
+            <PropositionAppearancesDialog />
+            <MediaExcerptApparitionsDialog />
           </div>
         </ConnectedRouter>
       </ErrorBoundary>

@@ -60,8 +60,9 @@ export function removeQueryParamsAndFragment(url: string) {
 export function normalizeUrl(url: string, options?: NormalizeUrlOptions) {
   const urlObj = new URL(url);
   // According to https://en.wikipedia.org/wiki/URI_normalization#Normalization_process (linked from
-  // https://github.com/sindresorhus/normalize-url) a normalized URL's path should alwasy have a
+  // https://github.com/sindresorhus/normalize-url) a normalized URL's path should always have a
   // trailing slash. But normalize-url offers no option to force a trailing slash.
+  // TODO(494) this normalizes index.html to index.html/ which is not what we want.
   if (!urlObj.pathname.endsWith("/")) {
     urlObj.pathname = urlObj.pathname + "/";
   }

@@ -224,6 +224,7 @@ export const serviceRoutes = {
       async (
         appProvider: ServicesProvider,
         {
+          authToken,
           queryStringParams: {
             sorts: encodedSorts,
             continuationToken,
@@ -241,16 +242,20 @@ export const serviceRoutes = {
           const propositionIds = split(propositionIdsParam, ",");
           const propositions =
             await appProvider.propositionsService.readPropositionsForIds(
+              { authToken },
               propositionIds
             );
           return { body: { propositions } };
         } else {
           const { propositions, continuationToken: newContinuationToken } =
-            await appProvider.propositionsService.readPropositions({
-              sorts,
-              continuationToken,
-              count,
-            });
+            await appProvider.propositionsService.readPropositions(
+              { authToken },
+              {
+                sorts,
+                continuationToken,
+                count,
+              }
+            );
           return {
             body: { propositions, continuationToken: newContinuationToken },
           };

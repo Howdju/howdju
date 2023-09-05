@@ -1,20 +1,19 @@
-import { uniq } from "lodash";
+import { reduce, uniq } from "lodash";
 
 import {
+  brandedParse,
   EntityId,
   PropositionOut,
   PropositionTagVotePolarities,
   PropositionTagVotePolarity,
+  TagOut,
+  TagRef,
 } from "howdju-common";
 
 import { Database } from "../database";
-import { PropositionsDao } from "./PropositionsDao";
+import { toIdString } from "./daosUtil";
 import { PropositionData } from "./dataTypes";
-
-interface TagRow {
-  tag_id: EntityId;
-  name: string;
-}
+import { PropositionsDao } from "./PropositionsDao";
 
 export class PropositionTagsDao {
   constructor(
@@ -22,55 +21,83 @@ export class PropositionTagsDao {
     private readonly propositionsDao: PropositionsDao
   ) {}
 
-  async readTagsForPropositionId(propositionId: EntityId) {
-    const { rows } = await this.database.query<TagRow>(
-      "readTagsForPropositionId",
+  async readTagsForPropositionIds(propositionIds: EntityId[]) {
+    const { rows } = await this.database.query(
+      "readTagsForPropositionIds",
       `
-        with
-          proposition_tag_ids as (
-            select distinct tag_id
-            from proposition_tag_votes
-              where
-                    proposition_id = $1
-                and polarity = $2
-                and deleted is null
-          )
-        select * from tags where tag_id in (select * from proposition_tag_ids) and deleted is null
+        select
+            v.proposition_id
+          , t.tag_id
+          , t.name
+        from
+          tags t
+            join proposition_tag_votes v using (tag_id)
+          where
+                v.proposition_id = any ($1)
+            and v.polarity = $2
+            and v.deleted is null
+            and t.deleted is null
+        group by 1, 2, 3
       `,
-      [propositionId, PropositionTagVotePolarities.POSITIVE]
+      [propositionIds, PropositionTagVotePolarities.POSITIVE]
     );
-    return rows.map((row) => ({
-      id: row.tag_id,
-      name: row.name,
-    }));
+    return reduce(
+      rows,
+      (acc, { proposition_id, tag_id, name }) => {
+        const propositionId = toIdString(proposition_id);
+        if (!(propositionId in acc)) {
+          acc[propositionId] = [];
+        }
+        acc[propositionId].push(
+          brandedParse(TagRef, {
+            id: toIdString(tag_id),
+            name,
+          })
+        );
+        return acc;
+      },
+      {} as Record<EntityId, TagOut[]>
+    );
   }
 
-  async readRecommendedTagsForPropositionId(propositionId: EntityId) {
-    const { rows } = await this.database.query<TagRow>(
-      "readRecommendedTagsForPropositionId",
+  async readRecommendedTagsForPropositionIds(propositionIds: EntityId[]) {
+    const { rows } = await this.database.query(
+      "readRecommendedTagsForPropositionIds",
       `
-        with
-          tag_scores as (
-            select tag_id, score
-            from proposition_tag_scores
-              where
-                    proposition_id = $1
-                and score > 0
-                and deleted is null
-          )
-        select t.*
-        from tags t
-            join tag_scores s using (tag_id)
-          where t.deleted is null
-        order by s.score desc
+        select
+            s.proposition_id
+          , t.tag_id
+          , t.name
+          , s.score
+        from
+          tags t
+            join proposition_tag_scores s using (tag_id)
+          where
+                s.proposition_id = any ($1)
+            and s.score > 0
+            and s.deleted is null
+            and t.deleted is null
+        order by proposition_id, score desc
       `,
-      [propositionId]
+      [propositionIds]
     );
-
-    return rows.map((row) => ({
-      id: row.tag_id,
-      name: row.name,
-    }));
+    return reduce(
+      rows,
+      (acc, { proposition_id, tag_id, name }) => {
+        const propositionId = toIdString(proposition_id);
+        if (!(propositionId in acc)) {
+          acc[propositionId] = [];
+        }
+        acc[propositionId].push(
+          brandedParse(TagRef, {
+            id: toIdString(tag_id),
+            name,
+          })
+        );
+        return acc;
+      },
+      {} as Record<EntityId, TagOut[]>
+    );
   }
 
   async readPropositionsRecommendedForTagId(tagId: EntityId) {

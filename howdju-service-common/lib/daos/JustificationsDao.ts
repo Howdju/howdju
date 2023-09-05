@@ -1,80 +1,86 @@
-import concat from "lodash/concat";
-import forEach from "lodash/forEach";
-import flatMap from "lodash/flatMap";
-import has from "lodash/has";
-import head from "lodash/head";
-import map from "lodash/map";
-import mapValues from "lodash/mapValues";
-import snakeCase from "lodash/snakeCase";
+import {
+  concat,
+  flatMap,
+  forEach,
+  has,
+  head,
+  isArray,
+  map,
+  mapValues,
+  merge,
+  snakeCase,
+  sortBy,
+  toString,
+} from "lodash";
 import { Moment } from "moment";
-import { fromPairs, isArray, sortBy, toString } from "lodash";
 
 import {
   assert,
+  EntityId,
+  filterDefined,
   isDefined,
   JustificationBasisCompoundAtomTypes,
   JustificationBasisTypes,
+  JustificationFilters,
   JustificationPolarities,
+  JustificationPolarity,
+  JustificationRootPolarity,
+  JustificationRootTargetType,
   JustificationRootTargetTypes,
   JustificationTargetTypes,
+  Logger,
   negateRootPolarity,
   newExhaustedEnumError,
   newImpossibleError,
   pushAll,
+  SortDescription,
   SortDirections,
   SourceExcerptTypes,
-  Logger,
-  EntityId,
-  JustificationRootTargetType,
-  JustificationPolarity,
-  JustificationRootPolarity,
-  filterDefined,
-  JustificationFilters,
-  SortDescription,
   toJson,
 } from "howdju-common";
 
-import {
-  toJustification,
-  toPropositionCompound,
-  toPropositionCompoundAtom,
-  toJustificationBasisCompound,
-  toJustificationBasisCompoundAtom,
-  toWritQuote,
-  toProposition,
-  ToJustificationMapperRow,
-  ToPropositionCompoundAtomMapperRow,
-} from "./orm";
+import { Database } from "../database";
 import { EntityNotFoundError } from "../serviceErrors";
+import { ensurePresent } from "../services/patterns";
+import { DatabaseSortDirection } from "./daoModels";
 import {
   groupRootJustifications,
   renumberSqlArgs,
   toIdString,
 } from "./daosUtil";
-import { DatabaseSortDirection } from "./daoModels";
-import { StatementsDao } from "./StatementsDao";
-import { MediaExcerptsDao } from "./MediaExcerptsDao";
-import { PropositionCompoundsDao } from "./PropositionCompoundsDao";
-import { WritQuotesDao } from "./WritQuotesDao";
-import { JustificationBasisCompoundsDao } from "./JustificationBasisCompoundsDao";
-import { WritQuoteUrlTargetsDao } from "./WritQuoteUrlTargetsDao";
-import { Database } from "../database";
+import { SqlClause } from "./daoTypes";
 import {
-  JustificationRow,
-  PropositionRow,
-  ReadPropositionDataOut,
-  JustificationBasisCompoundRow,
-  ReadPropositionCompoundDataOut,
-  ReadJustificationDataOut,
+  BasedJustificationDataOut,
   CreateJustificationDataIn,
   DeleteJustificationDataIn,
-  PropositionCompoundRow,
-  WritQuoteData,
+  JustificationBasisCompoundRow,
+  JustificationRow,
   PropositionCompoundAtomRow,
-  BasedJustificationDataOut,
+  PropositionCompoundRow,
+  PropositionRow,
+  ReadJustificationDataOut,
+  ReadPropositionCompoundDataOut,
+  ReadPropositionDataOut,
+  WritQuoteData,
 } from "./dataTypes";
-import { SqlClause } from "./daoTypes";
-import { ensurePresent } from "../services/patterns";
+import { JustificationBasisCompoundsDao } from "./JustificationBasisCompoundsDao";
+import { MediaExcerptsDao } from "./MediaExcerptsDao";
+import {
+  toJustification,
+  toJustificationBasisCompound,
+  toJustificationBasisCompoundAtom,
+  ToJustificationMapperRow,
+  toProposition,
+  toPropositionCompound,
+  toPropositionCompoundAtom,
+  ToPropositionCompoundAtomMapperRow,
+  toWritQuote,
+} from "./orm";
+import { PropositionCompoundsDao } from "./PropositionCompoundsDao";
+import { PropositionsDao } from "./PropositionsDao";
+import { StatementsDao } from "./StatementsDao";
+import { WritQuotesDao } from "./WritQuotesDao";
+import { WritQuoteUrlTargetsDao } from "./WritQuoteUrlTargetsDao";
 
 export const MAX_COUNT = 1024;
 
@@ -84,6 +90,7 @@ export class JustificationsDao {
     private readonly database: Database,
     private readonly statementsDao: StatementsDao,
     private readonly propositionCompoundsDao: PropositionCompoundsDao,
+    private readonly propositionsDao: PropositionsDao,
     private readonly mediaExcerptsDao: MediaExcerptsDao,
     private readonly writQuotesDao: WritQuotesDao,
     private readonly justificationBasisCompoundsDao: JustificationBasisCompoundsDao,
@@ -509,7 +516,7 @@ export class JustificationsDao {
   async readJustificationsForRootTarget(
     rootTargetType: JustificationRootTargetType,
     rootTargetId: EntityId,
-    userId: EntityId
+    userId: EntityId | undefined
   ): Promise<BasedJustificationDataOut[]> {
     const sql = `
       with
@@ -665,34 +672,43 @@ export class JustificationsDao {
     return this.readJustificationForId(toIdString(justification_id));
   }
 
-  private async readRootJustificationCountByPolarityForRoot(
+  async readRootJustificationCountByPolarityForRoots(
     rootTargetType: JustificationRootTargetType,
-    rootTargetId: EntityId
+    rootTargetIds: EntityId[]
   ) {
     const { rows } = await this.database.query<{
+      target_id: number;
       polarity: JustificationPolarity;
       count: number;
     }>(
-      "readRootJustificationCountByPolarityForRoot",
+      "readRootJustificationCountByPolarityForRoots",
       `
-      select polarity, count(*) as count
+      select
+          target_id
+        , polarity
+        , count(*) as count
       from justifications
         where
-              root_target_type = $1
-          and root_target_id = $2
-          and target_type = $1
-          and target_id = $2
-      group by polarity
+              target_type = $1
+          and target_id = any ($2)
+      group by target_id, polarity
     `,
-      [rootTargetType, rootTargetId]
+      [rootTargetType, rootTargetIds]
     );
-    const rootJustificationCountByPolarity: Partial<
+    const countByIdByPolarity: Record<
+      EntityId,
       Record<JustificationPolarity, number>
     > = {};
-    forEach(rows, (row) => {
-      rootJustificationCountByPolarity[row.polarity] = row.count;
+    forEach(rows, ({ target_id, polarity, count }) => {
+      if (!(target_id in countByIdByPolarity)) {
+        countByIdByPolarity[toIdString(target_id)] = {} as Record<
+          JustificationPolarity,
+          number
+        >;
+      }
+      countByIdByPolarity[target_id][polarity] = count;
     });
-    return rootJustificationCountByPolarity;
+    return countByIdByPolarity;
   }
 
   async createJustification(
@@ -1183,37 +1199,50 @@ export class JustificationsDao {
         rootTargetType,
         rootTargetId
       );
-    return this.addRootJustificationCountByPolarity(propositionCompoundsById);
+    return this.addAtomRelations(propositionCompoundsById);
   }
 
-  private async addRootJustificationCountByPolarity(
+  private async addAtomRelations(
     propositionCompoundsById: Record<EntityId, ReadPropositionCompoundDataOut>
   ): Promise<Record<EntityId, ReadPropositionCompoundDataOut>> {
     const atoms = flatMap(
       propositionCompoundsById,
       (propositionCompound) => propositionCompound.atoms
     );
-    const justificationCounts = await Promise.all(
-      map(atoms, (atom) =>
-        Promise.all([
-          atom.entity.id,
-          "entity" in atom &&
-            this.readRootJustificationCountByPolarityForRoot(
-              JustificationRootTargetTypes.PROPOSITION,
-              atom.entity.id
-            ),
-        ])
-      )
-    );
-    const justificationCountsyAtomId = fromPairs(justificationCounts);
+    const propositionIds = map(atoms, (atom) => atom.entity.id);
+    const [justificationCountsByPropositionId, appearanceCountByPropositionId] =
+      await Promise.all([
+        this.readRootJustificationCountByPolarityForRoots(
+          JustificationRootTargetTypes.PROPOSITION,
+          propositionIds
+        ),
+        this.propositionsDao.readAppearanceCountForPropositionIds(
+          propositionIds
+        ),
+      ]);
     return mapValues(propositionCompoundsById, (compound) => ({
       ...compound,
-      atoms: map(compound.atoms, (atom) => ({
-        ...atom,
-        rootJustificationCountByPolarity:
-          justificationCountsyAtomId[atom.entity.id],
-      })),
+      atoms: map(compound.atoms, (atom) =>
+        merge(atom, {
+          entity: {
+            rootJustificationCountByPolarity:
+              justificationCountsByPropositionId[atom.entity.id],
+            appearanceCount: appearanceCountByPropositionId[atom.entity.id],
+          },
+        })
+      ),
     }));
+  }
+
+  async readRootJustificationCountByPolarityForRoot(
+    rootTargetType: JustificationRootTargetType,
+    rootTargetId: EntityId
+  ) {
+    const countsById = await this.readRootJustificationCountByPolarityForRoots(
+      rootTargetType,
+      [rootTargetId]
+    );
+    return countsById[rootTargetId];
   }
 }
 

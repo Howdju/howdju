@@ -54,8 +54,46 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows initial recent propos
                     href="/p/proposition0/the-proposition-text-0"
                   >
                     The proposition text 0
-                     
                   </a>
+                </div>
+                <div
+                  class="relation-counts"
+                >
+                  <a
+                    href="/p/proposition0/the-proposition-text-0"
+                  >
+                    <span
+                      title="0 supporting justifications; 0 opposing justifications"
+                    >
+                      <span
+                        class="material-symbols"
+                        style="font-variation-settings: "opsz" 12; font-size: 12px;"
+                      >
+                        merge
+                      </span>
+                      0
+                      +/
+                      0
+                      -
+                    </span>
+                  </a>
+                   
+                  <span
+                    class="entity-status-text"
+                  >
+                    <a
+                      class="clickable"
+                      title="0 appearances"
+                    >
+                      <span
+                        class="material-symbols"
+                        style="font-variation-settings: "opsz" 12; font-size: 12px;"
+                      >
+                        pin_drop
+                      </span>
+                      0
+                    </a>
+                  </span>
                 </div>
                 <div>
                   <span
@@ -139,8 +177,46 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows initial recent propos
                     href="/p/proposition1/the-proposition-text-1"
                   >
                     The proposition text 1
-                     
                   </a>
+                </div>
+                <div
+                  class="relation-counts"
+                >
+                  <a
+                    href="/p/proposition1/the-proposition-text-1"
+                  >
+                    <span
+                      title="0 supporting justifications; 0 opposing justifications"
+                    >
+                      <span
+                        class="material-symbols"
+                        style="font-variation-settings: "opsz" 12; font-size: 12px;"
+                      >
+                        merge
+                      </span>
+                      0
+                      +/
+                      0
+                      -
+                    </span>
+                  </a>
+                   
+                  <span
+                    class="entity-status-text"
+                  >
+                    <a
+                      class="clickable"
+                      title="0 appearances"
+                    >
+                      <span
+                        class="material-symbols"
+                        style="font-variation-settings: "opsz" 12; font-size: 12px;"
+                      >
+                        pin_drop
+                      </span>
+                      0
+                    </a>
+                  </span>
                 </div>
                 <div>
                   <span
@@ -204,8 +280,46 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows initial recent propos
                     href="/p/proposition2/the-proposition-text-2"
                   >
                     The proposition text 2
-                     
                   </a>
+                </div>
+                <div
+                  class="relation-counts"
+                >
+                  <a
+                    href="/p/proposition2/the-proposition-text-2"
+                  >
+                    <span
+                      title="0 supporting justifications; 0 opposing justifications"
+                    >
+                      <span
+                        class="material-symbols"
+                        style="font-variation-settings: "opsz" 12; font-size: 12px;"
+                      >
+                        merge
+                      </span>
+                      0
+                      +/
+                      0
+                      -
+                    </span>
+                  </a>
+                   
+                  <span
+                    class="entity-status-text"
+                  >
+                    <a
+                      class="clickable"
+                      title="0 appearances"
+                    >
+                      <span
+                        class="material-symbols"
+                        style="font-variation-settings: "opsz" 12; font-size: 12px;"
+                      >
+                        pin_drop
+                      </span>
+                      0
+                    </a>
+                  </span>
                 </div>
                 <div>
                   <span
@@ -269,8 +383,46 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows initial recent propos
                     href="/p/proposition3/the-proposition-text-3"
                   >
                     The proposition text 3
-                     
                   </a>
+                </div>
+                <div
+                  class="relation-counts"
+                >
+                  <a
+                    href="/p/proposition3/the-proposition-text-3"
+                  >
+                    <span
+                      title="0 supporting justifications; 0 opposing justifications"
+                    >
+                      <span
+                        class="material-symbols"
+                        style="font-variation-settings: "opsz" 12; font-size: 12px;"
+                      >
+                        merge
+                      </span>
+                      0
+                      +/
+                      0
+                      -
+                    </span>
+                  </a>
+                   
+                  <span
+                    class="entity-status-text"
+                  >
+                    <a
+                      class="clickable"
+                      title="0 appearances"
+                    >
+                      <span
+                        class="material-symbols"
+                        style="font-variation-settings: "opsz" 12; font-size: 12px;"
+                      >
+                        pin_drop
+                      </span>
+                      0
+                    </a>
+                  </span>
                 </div>
                 <div>
                   <span
@@ -334,8 +486,46 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows initial recent propos
                     href="/p/proposition4/the-proposition-text-4"
                   >
                     The proposition text 4
-                     
                   </a>
+                </div>
+                <div
+                  class="relation-counts"
+                >
+                  <a
+                    href="/p/proposition4/the-proposition-text-4"
+                  >
+                    <span
+                      title="0 supporting justifications; 0 opposing justifications"
+                    >
+                      <span
+                        class="material-symbols"
+                        style="font-variation-settings: "opsz" 12; font-size: 12px;"
+                      >
+                        merge
+                      </span>
+                      0
+                      +/
+                      0
+                      -
+                    </span>
+                  </a>
+                   
+                  <span
+                    class="entity-status-text"
+                  >
+                    <a
+                      class="clickable"
+                      title="0 appearances"
+                    >
+                      <span
+                        class="material-symbols"
+                        style="font-variation-settings: "opsz" 12; font-size: 12px;"
+                      >
+                        pin_drop
+                      </span>
+                      0
+                    </a>
+                  </span>
                 </div>
                 <div>
                   <span
@@ -399,8 +589,46 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows initial recent propos
                     href="/p/proposition5/the-proposition-text-5"
                   >
                     The proposition text 5
-                     
                   </a>
+                </div>
+                <div
+                  class="relation-counts"
+                >
+                  <a
+                    href="/p/proposition5/the-proposition-text-5"
+                  >
+                    <span
+                      title="0 supporting justifications; 0 opposing justifications"
+                    >
+                      <span
+                        class="material-symbols"
+                        style="font-variation-settings: "opsz" 12; font-size: 12px;"
+                      >
+                        merge
+                      </span>
+                      0
+                      +/
+                      0
+                      -
+                    </span>
+                  </a>
+                   
+                  <span
+                    class="entity-status-text"
+                  >
+                    <a
+                      class="clickable"
+                      title="0 appearances"
+                    >
+                      <span
+                        class="material-symbols"
+                        style="font-variation-settings: "opsz" 12; font-size: 12px;"
+                      >
+                        pin_drop
+                      </span>
+                      0
+                    </a>
+                  </span>
                 </div>
                 <div>
                   <span
@@ -464,8 +692,46 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows initial recent propos
                     href="/p/proposition6/the-proposition-text-6"
                   >
                     The proposition text 6
-                     
                   </a>
+                </div>
+                <div
+                  class="relation-counts"
+                >
+                  <a
+                    href="/p/proposition6/the-proposition-text-6"
+                  >
+                    <span
+                      title="0 supporting justifications; 0 opposing justifications"
+                    >
+                      <span
+                        class="material-symbols"
+                        style="font-variation-settings: "opsz" 12; font-size: 12px;"
+                      >
+                        merge
+                      </span>
+                      0
+                      +/
+                      0
+                      -
+                    </span>
+                  </a>
+                   
+                  <span
+                    class="entity-status-text"
+                  >
+                    <a
+                      class="clickable"
+                      title="0 appearances"
+                    >
+                      <span
+                        class="material-symbols"
+                        style="font-variation-settings: "opsz" 12; font-size: 12px;"
+                      >
+                        pin_drop
+                      </span>
+                      0
+                    </a>
+                  </span>
                 </div>
                 <div>
                   <span
@@ -555,8 +821,46 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows more propositions whe
                     href="/p/proposition0/the-proposition-text-0"
                   >
                     The proposition text 0
-                     
                   </a>
+                </div>
+                <div
+                  class="relation-counts"
+                >
+                  <a
+                    href="/p/proposition0/the-proposition-text-0"
+                  >
+                    <span
+                      title="0 supporting justifications; 0 opposing justifications"
+                    >
+                      <span
+                        class="material-symbols"
+                        style="font-variation-settings: "opsz" 12; font-size: 12px;"
+                      >
+                        merge
+                      </span>
+                      0
+                      +/
+                      0
+                      -
+                    </span>
+                  </a>
+                   
+                  <span
+                    class="entity-status-text"
+                  >
+                    <a
+                      class="clickable"
+                      title="0 appearances"
+                    >
+                      <span
+                        class="material-symbols"
+                        style="font-variation-settings: "opsz" 12; font-size: 12px;"
+                      >
+                        pin_drop
+                      </span>
+                      0
+                    </a>
+                  </span>
                 </div>
                 <div>
                   <span
@@ -620,8 +924,46 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows more propositions whe
                     href="/p/proposition1/the-proposition-text-1"
                   >
                     The proposition text 1
-                     
                   </a>
+                </div>
+                <div
+                  class="relation-counts"
+                >
+                  <a
+                    href="/p/proposition1/the-proposition-text-1"
+                  >
+                    <span
+                      title="0 supporting justifications; 0 opposing justifications"
+                    >
+                      <span
+                        class="material-symbols"
+                        style="font-variation-settings: "opsz" 12; font-size: 12px;"
+                      >
+                        merge
+                      </span>
+                      0
+                      +/
+                      0
+                      -
+                    </span>
+                  </a>
+                   
+                  <span
+                    class="entity-status-text"
+                  >
+                    <a
+                      class="clickable"
+                      title="0 appearances"
+                    >
+                      <span
+                        class="material-symbols"
+                        style="font-variation-settings: "opsz" 12; font-size: 12px;"
+                      >
+                        pin_drop
+                      </span>
+                      0
+                    </a>
+                  </span>
                 </div>
                 <div>
                   <span
@@ -685,8 +1027,46 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows more propositions whe
                     href="/p/proposition2/the-proposition-text-2"
                   >
                     The proposition text 2
-                     
                   </a>
+                </div>
+                <div
+                  class="relation-counts"
+                >
+                  <a
+                    href="/p/proposition2/the-proposition-text-2"
+                  >
+                    <span
+                      title="0 supporting justifications; 0 opposing justifications"
+                    >
+                      <span
+                        class="material-symbols"
+                        style="font-variation-settings: "opsz" 12; font-size: 12px;"
+                      >
+                        merge
+                      </span>
+                      0
+                      +/
+                      0
+                      -
+                    </span>
+                  </a>
+                   
+                  <span
+                    class="entity-status-text"
+                  >
+                    <a
+                      class="clickable"
+                      title="0 appearances"
+                    >
+                      <span
+                        class="material-symbols"
+                        style="font-variation-settings: "opsz" 12; font-size: 12px;"
+                      >
+                        pin_drop
+                      </span>
+                      0
+                    </a>
+                  </span>
                 </div>
                 <div>
                   <span
@@ -750,8 +1130,46 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows more propositions whe
                     href="/p/proposition3/the-proposition-text-3"
                   >
                     The proposition text 3
-                     
                   </a>
+                </div>
+                <div
+                  class="relation-counts"
+                >
+                  <a
+                    href="/p/proposition3/the-proposition-text-3"
+                  >
+                    <span
+                      title="0 supporting justifications; 0 opposing justifications"
+                    >
+                      <span
+                        class="material-symbols"
+                        style="font-variation-settings: "opsz" 12; font-size: 12px;"
+                      >
+                        merge
+                      </span>
+                      0
+                      +/
+                      0
+                      -
+                    </span>
+                  </a>
+                   
+                  <span
+                    class="entity-status-text"
+                  >
+                    <a
+                      class="clickable"
+                      title="0 appearances"
+                    >
+                      <span
+                        class="material-symbols"
+                        style="font-variation-settings: "opsz" 12; font-size: 12px;"
+                      >
+                        pin_drop
+                      </span>
+                      0
+                    </a>
+                  </span>
                 </div>
                 <div>
                   <span
@@ -835,8 +1253,46 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows more propositions whe
                     href="/p/proposition4/the-proposition-text-4"
                   >
                     The proposition text 4
-                     
                   </a>
+                </div>
+                <div
+                  class="relation-counts"
+                >
+                  <a
+                    href="/p/proposition4/the-proposition-text-4"
+                  >
+                    <span
+                      title="0 supporting justifications; 0 opposing justifications"
+                    >
+                      <span
+                        class="material-symbols"
+                        style="font-variation-settings: "opsz" 12; font-size: 12px;"
+                      >
+                        merge
+                      </span>
+                      0
+                      +/
+                      0
+                      -
+                    </span>
+                  </a>
+                   
+                  <span
+                    class="entity-status-text"
+                  >
+                    <a
+                      class="clickable"
+                      title="0 appearances"
+                    >
+                      <span
+                        class="material-symbols"
+                        style="font-variation-settings: "opsz" 12; font-size: 12px;"
+                      >
+                        pin_drop
+                      </span>
+                      0
+                    </a>
+                  </span>
                 </div>
                 <div>
                   <span
@@ -900,8 +1356,46 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows more propositions whe
                     href="/p/proposition5/the-proposition-text-5"
                   >
                     The proposition text 5
-                     
                   </a>
+                </div>
+                <div
+                  class="relation-counts"
+                >
+                  <a
+                    href="/p/proposition5/the-proposition-text-5"
+                  >
+                    <span
+                      title="0 supporting justifications; 0 opposing justifications"
+                    >
+                      <span
+                        class="material-symbols"
+                        style="font-variation-settings: "opsz" 12; font-size: 12px;"
+                      >
+                        merge
+                      </span>
+                      0
+                      +/
+                      0
+                      -
+                    </span>
+                  </a>
+                   
+                  <span
+                    class="entity-status-text"
+                  >
+                    <a
+                      class="clickable"
+                      title="0 appearances"
+                    >
+                      <span
+                        class="material-symbols"
+                        style="font-variation-settings: "opsz" 12; font-size: 12px;"
+                      >
+                        pin_drop
+                      </span>
+                      0
+                    </a>
+                  </span>
                 </div>
                 <div>
                   <span
@@ -965,8 +1459,46 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows more propositions whe
                     href="/p/proposition6/the-proposition-text-6"
                   >
                     The proposition text 6
-                     
                   </a>
+                </div>
+                <div
+                  class="relation-counts"
+                >
+                  <a
+                    href="/p/proposition6/the-proposition-text-6"
+                  >
+                    <span
+                      title="0 supporting justifications; 0 opposing justifications"
+                    >
+                      <span
+                        class="material-symbols"
+                        style="font-variation-settings: "opsz" 12; font-size: 12px;"
+                      >
+                        merge
+                      </span>
+                      0
+                      +/
+                      0
+                      -
+                    </span>
+                  </a>
+                   
+                  <span
+                    class="entity-status-text"
+                  >
+                    <a
+                      class="clickable"
+                      title="0 appearances"
+                    >
+                      <span
+                        class="material-symbols"
+                        style="font-variation-settings: "opsz" 12; font-size: 12px;"
+                      >
+                        pin_drop
+                      </span>
+                      0
+                    </a>
+                  </span>
                 </div>
                 <div>
                   <span
@@ -1030,8 +1562,46 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows more propositions whe
                     href="/p/proposition7/the-proposition-text-7"
                   >
                     The proposition text 7
-                     
                   </a>
+                </div>
+                <div
+                  class="relation-counts"
+                >
+                  <a
+                    href="/p/proposition7/the-proposition-text-7"
+                  >
+                    <span
+                      title="0 supporting justifications; 0 opposing justifications"
+                    >
+                      <span
+                        class="material-symbols"
+                        style="font-variation-settings: "opsz" 12; font-size: 12px;"
+                      >
+                        merge
+                      </span>
+                      0
+                      +/
+                      0
+                      -
+                    </span>
+                  </a>
+                   
+                  <span
+                    class="entity-status-text"
+                  >
+                    <a
+                      class="clickable"
+                      title="0 appearances"
+                    >
+                      <span
+                        class="material-symbols"
+                        style="font-variation-settings: "opsz" 12; font-size: 12px;"
+                      >
+                        pin_drop
+                      </span>
+                      0
+                    </a>
+                  </span>
                 </div>
                 <div>
                   <span
@@ -1095,8 +1665,46 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows more propositions whe
                     href="/p/proposition8/the-proposition-text-8"
                   >
                     The proposition text 8
-                     
                   </a>
+                </div>
+                <div
+                  class="relation-counts"
+                >
+                  <a
+                    href="/p/proposition8/the-proposition-text-8"
+                  >
+                    <span
+                      title="0 supporting justifications; 0 opposing justifications"
+                    >
+                      <span
+                        class="material-symbols"
+                        style="font-variation-settings: "opsz" 12; font-size: 12px;"
+                      >
+                        merge
+                      </span>
+                      0
+                      +/
+                      0
+                      -
+                    </span>
+                  </a>
+                   
+                  <span
+                    class="entity-status-text"
+                  >
+                    <a
+                      class="clickable"
+                      title="0 appearances"
+                    >
+                      <span
+                        class="material-symbols"
+                        style="font-variation-settings: "opsz" 12; font-size: 12px;"
+                      >
+                        pin_drop
+                      </span>
+                      0
+                    </a>
+                  </span>
                 </div>
                 <div>
                   <span
@@ -1160,8 +1768,46 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows more propositions whe
                     href="/p/proposition9/the-proposition-text-9"
                   >
                     The proposition text 9
-                     
                   </a>
+                </div>
+                <div
+                  class="relation-counts"
+                >
+                  <a
+                    href="/p/proposition9/the-proposition-text-9"
+                  >
+                    <span
+                      title="0 supporting justifications; 0 opposing justifications"
+                    >
+                      <span
+                        class="material-symbols"
+                        style="font-variation-settings: "opsz" 12; font-size: 12px;"
+                      >
+                        merge
+                      </span>
+                      0
+                      +/
+                      0
+                      -
+                    </span>
+                  </a>
+                   
+                  <span
+                    class="entity-status-text"
+                  >
+                    <a
+                      class="clickable"
+                      title="0 appearances"
+                    >
+                      <span
+                        class="material-symbols"
+                        style="font-variation-settings: "opsz" 12; font-size: 12px;"
+                      >
+                        pin_drop
+                      </span>
+                      0
+                    </a>
+                  </span>
                 </div>
                 <div>
                   <span
@@ -1225,8 +1871,46 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows more propositions whe
                     href="/p/proposition10/the-proposition-text-10"
                   >
                     The proposition text 10
-                     
                   </a>
+                </div>
+                <div
+                  class="relation-counts"
+                >
+                  <a
+                    href="/p/proposition10/the-proposition-text-10"
+                  >
+                    <span
+                      title="0 supporting justifications; 0 opposing justifications"
+                    >
+                      <span
+                        class="material-symbols"
+                        style="font-variation-settings: "opsz" 12; font-size: 12px;"
+                      >
+                        merge
+                      </span>
+                      0
+                      +/
+                      0
+                      -
+                    </span>
+                  </a>
+                   
+                  <span
+                    class="entity-status-text"
+                  >
+                    <a
+                      class="clickable"
+                      title="0 appearances"
+                    >
+                      <span
+                        class="material-symbols"
+                        style="font-variation-settings: "opsz" 12; font-size: 12px;"
+                      >
+                        pin_drop
+                      </span>
+                      0
+                    </a>
+                  </span>
                 </div>
                 <div>
                   <span
@@ -1290,8 +1974,46 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows more propositions whe
                     href="/p/proposition11/the-proposition-text-11"
                   >
                     The proposition text 11
-                     
                   </a>
+                </div>
+                <div
+                  class="relation-counts"
+                >
+                  <a
+                    href="/p/proposition11/the-proposition-text-11"
+                  >
+                    <span
+                      title="0 supporting justifications; 0 opposing justifications"
+                    >
+                      <span
+                        class="material-symbols"
+                        style="font-variation-settings: "opsz" 12; font-size: 12px;"
+                      >
+                        merge
+                      </span>
+                      0
+                      +/
+                      0
+                      -
+                    </span>
+                  </a>
+                   
+                  <span
+                    class="entity-status-text"
+                  >
+                    <a
+                      class="clickable"
+                      title="0 appearances"
+                    >
+                      <span
+                        class="material-symbols"
+                        style="font-variation-settings: "opsz" 12; font-size: 12px;"
+                      >
+                        pin_drop
+                      </span>
+                      0
+                    </a>
+                  </span>
                 </div>
                 <div>
                   <span
@@ -1355,8 +2077,46 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows more propositions whe
                     href="/p/proposition12/the-proposition-text-12"
                   >
                     The proposition text 12
-                     
                   </a>
+                </div>
+                <div
+                  class="relation-counts"
+                >
+                  <a
+                    href="/p/proposition12/the-proposition-text-12"
+                  >
+                    <span
+                      title="0 supporting justifications; 0 opposing justifications"
+                    >
+                      <span
+                        class="material-symbols"
+                        style="font-variation-settings: "opsz" 12; font-size: 12px;"
+                      >
+                        merge
+                      </span>
+                      0
+                      +/
+                      0
+                      -
+                    </span>
+                  </a>
+                   
+                  <span
+                    class="entity-status-text"
+                  >
+                    <a
+                      class="clickable"
+                      title="0 appearances"
+                    >
+                      <span
+                        class="material-symbols"
+                        style="font-variation-settings: "opsz" 12; font-size: 12px;"
+                      >
+                        pin_drop
+                      </span>
+                      0
+                    </a>
+                  </span>
                 </div>
                 <div>
                   <span
@@ -1420,8 +2180,46 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows more propositions whe
                     href="/p/proposition13/the-proposition-text-13"
                   >
                     The proposition text 13
-                     
                   </a>
+                </div>
+                <div
+                  class="relation-counts"
+                >
+                  <a
+                    href="/p/proposition13/the-proposition-text-13"
+                  >
+                    <span
+                      title="0 supporting justifications; 0 opposing justifications"
+                    >
+                      <span
+                        class="material-symbols"
+                        style="font-variation-settings: "opsz" 12; font-size: 12px;"
+                      >
+                        merge
+                      </span>
+                      0
+                      +/
+                      0
+                      -
+                    </span>
+                  </a>
+                   
+                  <span
+                    class="entity-status-text"
+                  >
+                    <a
+                      class="clickable"
+                      title="0 appearances"
+                    >
+                      <span
+                        class="material-symbols"
+                        style="font-variation-settings: "opsz" 12; font-size: 12px;"
+                      >
+                        pin_drop
+                      </span>
+                      0
+                    </a>
+                  </span>
                 </div>
                 <div>
                   <span
@@ -1485,8 +2283,46 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows more propositions whe
                     href="/p/proposition14/the-proposition-text-14"
                   >
                     The proposition text 14
-                     
                   </a>
+                </div>
+                <div
+                  class="relation-counts"
+                >
+                  <a
+                    href="/p/proposition14/the-proposition-text-14"
+                  >
+                    <span
+                      title="0 supporting justifications; 0 opposing justifications"
+                    >
+                      <span
+                        class="material-symbols"
+                        style="font-variation-settings: "opsz" 12; font-size: 12px;"
+                      >
+                        merge
+                      </span>
+                      0
+                      +/
+                      0
+                      -
+                    </span>
+                  </a>
+                   
+                  <span
+                    class="entity-status-text"
+                  >
+                    <a
+                      class="clickable"
+                      title="0 appearances"
+                    >
+                      <span
+                        class="material-symbols"
+                        style="font-variation-settings: "opsz" 12; font-size: 12px;"
+                      >
+                        pin_drop
+                      </span>
+                      0
+                    </a>
+                  </span>
                 </div>
                 <div>
                   <span

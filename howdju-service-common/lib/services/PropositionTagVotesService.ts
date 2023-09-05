@@ -22,10 +22,10 @@ export class PropositionTagVotesService {
     private readonly propositionTagVotesDao: PropositionTagVotesDao
   ) {}
 
-  readUserVotesForPropositionId(userId: EntityId, propositionId: EntityId) {
-    return this.propositionTagVotesDao.readUserVotesForPropositionId(
+  readUserVotesForPropositionIds(userId: EntityId, propositionIds: EntityId[]) {
+    return this.propositionTagVotesDao.readUserVotesForPropositionIds(
       userId,
-      propositionId
+      propositionIds
     );
   }
 
