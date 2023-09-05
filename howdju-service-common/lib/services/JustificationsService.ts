@@ -247,7 +247,7 @@ export class JustificationsService extends EntityService<
   async readJustificationsForRootTarget(
     rootTargetType: JustificationRootTargetType,
     rootTargetId: EntityId,
-    userId: EntityId
+    userId: EntityId | undefined
   ) {
     return await this.justificationsDao.readJustificationsForRootTarget(
       rootTargetType,

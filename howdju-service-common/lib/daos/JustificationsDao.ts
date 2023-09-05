@@ -516,7 +516,7 @@ export class JustificationsDao {
   async readJustificationsForRootTarget(
     rootTargetType: JustificationRootTargetType,
     rootTargetId: EntityId,
-    userId: EntityId
+    userId: EntityId | undefined
   ): Promise<BasedJustificationDataOut[]> {
     const sql = `
       with
@@ -672,7 +672,7 @@ export class JustificationsDao {
     return this.readJustificationForId(toIdString(justification_id));
   }
 
-  private async readRootJustificationCountByPolarityForRoots(
+  async readRootJustificationCountByPolarityForRoots(
     rootTargetType: JustificationRootTargetType,
     rootTargetIds: EntityId[]
   ) {
@@ -1230,6 +1230,26 @@ export class JustificationsDao {
         })
       ),
     }));
+  }
+
+  async readRootJustificationCountByPolarityForRoot(
+    rootTargetType: JustificationRootTargetType,
+    rootTargetId: EntityId
+  ) {
+    const countsById = await this.readRootJustificationCountByPolarityForRoots(
+      rootTargetType,
+      [rootTargetId]
+    );
+    return countsById[rootTargetId];
+  }
+
+  async readAppearanceCountForPropositionId(
+    propositionId: EntityId
+  ): Promise<number> {
+    const countsById = await this.readAppearanceCountForPropositionIds([
+      propositionId,
+    ]);
+    return countsById[propositionId];
   }
 
   async readAppearanceCountForPropositionIds(propositionIds: string[]) {

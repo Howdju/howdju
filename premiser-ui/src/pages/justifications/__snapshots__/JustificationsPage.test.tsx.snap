@@ -65,6 +65,22 @@ exports[`JustificationsPage Can add a compound-based justification 1`] = `
                           class="relation-counts"
                         >
                            
+                          <span
+                            class="entity-status-text"
+                          >
+                            <a
+                              class="clickable"
+                              title="0 appearances"
+                            >
+                              <span
+                                class="material-symbols"
+                                style="font-variation-settings: "opsz" 12; font-size: 12px;"
+                              >
+                                add_location
+                              </span>
+                              0
+                            </a>
+                          </span>
                         </div>
                         <div>
                           <span
@@ -206,7 +222,41 @@ exports[`JustificationsPage Can add a compound-based justification 1`] = `
                               <div
                                 class="relation-counts"
                               >
+                                <a
+                                  href="/p/911/the-proposition-text-1?context-trail=j,1582,p"
+                                >
+                                  <span
+                                    title="0 supporting justifications; 0 opposing justifications"
+                                  >
+                                    <span
+                                      class="material-symbols"
+                                      style="font-variation-settings: "opsz" 12; font-size: 12px;"
+                                    >
+                                      merge
+                                    </span>
+                                    0
+                                    +/
+                                    0
+                                    -
+                                  </span>
+                                </a>
                                  
+                                <span
+                                  class="entity-status-text"
+                                >
+                                  <a
+                                    class="clickable"
+                                    title="0 appearances"
+                                  >
+                                    <span
+                                      class="material-symbols"
+                                      style="font-variation-settings: "opsz" 12; font-size: 12px;"
+                                    >
+                                      add_location
+                                    </span>
+                                    0
+                                  </a>
+                                </span>
                               </div>
                               <div>
                                 <span
@@ -269,7 +319,41 @@ exports[`JustificationsPage Can add a compound-based justification 1`] = `
                               <div
                                 class="relation-counts"
                               >
+                                <a
+                                  href="/p/912/the-proposition-text-2?context-trail=j,1582,p"
+                                >
+                                  <span
+                                    title="0 supporting justifications; 0 opposing justifications"
+                                  >
+                                    <span
+                                      class="material-symbols"
+                                      style="font-variation-settings: "opsz" 12; font-size: 12px;"
+                                    >
+                                      merge
+                                    </span>
+                                    0
+                                    +/
+                                    0
+                                    -
+                                  </span>
+                                </a>
                                  
+                                <span
+                                  class="entity-status-text"
+                                >
+                                  <a
+                                    class="clickable"
+                                    title="0 appearances"
+                                  >
+                                    <span
+                                      class="material-symbols"
+                                      style="font-variation-settings: "opsz" 12; font-size: 12px;"
+                                    >
+                                      add_location
+                                    </span>
+                                    0
+                                  </a>
+                                </span>
                               </div>
                               <div>
                                 <span
@@ -485,6 +569,22 @@ exports[`JustificationsPage Shows a justified proposition 1`] = `
                           class="relation-counts"
                         >
                            
+                          <span
+                            class="entity-status-text"
+                          >
+                            <a
+                              class="clickable"
+                              title="0 appearances"
+                            >
+                              <span
+                                class="material-symbols"
+                                style="font-variation-settings: "opsz" 12; font-size: 12px;"
+                              >
+                                add_location
+                              </span>
+                              0
+                            </a>
+                          </span>
                         </div>
                         <div>
                           <span

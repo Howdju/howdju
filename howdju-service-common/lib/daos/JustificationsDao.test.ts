@@ -168,10 +168,10 @@ describe("JustificationsDao", () => {
       // Arrange
       const { user, authToken } = await testHelper.makeUser();
 
-      const statementData = await makeStatement({ user, authToken });
+      const { id: statementId } = await makeStatement({ user, authToken });
 
       const rootTargetType = "STATEMENT";
-      const rootTarget = StatementRef.parse({ id: statementData.id });
+      const rootTarget = StatementRef.parse({ id: statementId });
 
       const propositionCompound1 = await makePropositionCompound({
         userId: user.id,
@@ -188,7 +188,7 @@ describe("JustificationsDao", () => {
         polarity: "NEGATIVE",
         target: {
           type: "STATEMENT",
-          entity: StatementRef.parse({ id: statementData.id }),
+          entity: StatementRef.parse({ id: statementId }),
         },
         basis: {
           type: "PROPOSITION_COMPOUND",
@@ -241,7 +241,7 @@ describe("JustificationsDao", () => {
         counterJustifications: [],
         creator: { id: user.id },
         created: expect.toBeSameMoment(now),
-        rootTarget: statementData,
+        rootTarget,
       };
       const expectedJustificationData = assign({}, createJustificationData, {
         ...commonExpectations,
@@ -266,8 +266,7 @@ describe("JustificationsDao", () => {
       // Arrange
       const { user, authToken } = await testHelper.makeUser();
 
-      const statementData = await makeStatement({ user, authToken });
-      const statementId = statementData.id;
+      const { id: statementId } = await makeStatement({ user, authToken });
 
       const rootTargetType = "STATEMENT";
       const rootTarget = StatementRef.parse({ id: statementId });
@@ -359,7 +358,7 @@ describe("JustificationsDao", () => {
         counterJustifications: [],
         creator: { id: user.id },
         created: expect.toBeSameMoment(now),
-        rootTarget: statementData,
+        rootTarget,
       };
       const expectedProjustificationData = assign(
         {},

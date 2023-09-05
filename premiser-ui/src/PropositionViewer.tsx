@@ -2,7 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import cn from "classnames";
 import moment from "moment";
-import { get, isNumber } from "lodash";
+import { get } from "lodash";
 
 import { ContextTrailItem, EntityId, PropositionOut } from "howdju-common";
 
@@ -20,6 +20,7 @@ interface Props {
   showStatusText?: boolean;
   contextTrailItems?: ContextTrailItem[];
   showJustificationCount?: boolean;
+  showAppearanceCount?: boolean;
 }
 
 export default function PropositionViewer({
@@ -29,6 +30,7 @@ export default function PropositionViewer({
   showStatusText = true,
   contextTrailItems,
   showJustificationCount = true,
+  showAppearanceCount = true,
   ...rest
 }: Props) {
   const dispatch = useAppDispatch();
@@ -41,9 +43,16 @@ export default function PropositionViewer({
   const creatorNameDescription = (creatorName && ` by ${creatorName}`) || "";
 
   function showPropositionAppearanceDialog() {
-    dispatch(propositionAppearancesDialog.showDialog(proposition));
+    dispatch(propositionAppearancesDialog.showDialog(proposition.id));
   }
 
+  const appearanceCount = proposition.appearanceCount ?? 0;
+  const rootJustificationCountByPolarity =
+    proposition.rootJustificationCountByPolarity ?? {
+      POSITIVE: 0,
+      NEGATIVE: 0,
+    };
+  const showRelationCounts = showJustificationCount || showAppearanceCount;
   return (
     <div {...rest} id={id} className={cn(className, "proposition-viewer")}>
       {proposition && (
@@ -53,34 +62,33 @@ export default function PropositionViewer({
               {proposition.text}
             </Link>
           </div>
-          <div className="relation-counts">
-            {showJustificationCount &&
-              proposition.rootJustificationCountByPolarity && (
+          {showRelationCounts && (
+            <div className="relation-counts">
+              {showJustificationCount && (
                 <Link to={paths.proposition(proposition, contextTrailItems)}>
                   <JustificationCountViewer
                     justificationCountByPolarity={
-                      proposition.rootJustificationCountByPolarity
+                      rootJustificationCountByPolarity
                     }
                   />
                 </Link>
               )}{" "}
-            {isNumber(proposition.appearanceCount) && (
-              <span className="entity-status-text">
-                <a
-                  className="clickable"
-                  onClick={showPropositionAppearanceDialog}
-                  title={`${proposition.appearanceCount} ${
-                    proposition.appearanceCount === 1
-                      ? "appearance"
-                      : "appearances"
-                  }}`}
-                >
-                  <MaterialSymbol icon="add_location" size={12} />
-                  {proposition.appearanceCount}
-                </a>
-              </span>
-            )}
-          </div>
+              {showAppearanceCount && (
+                <span className="entity-status-text">
+                  <a
+                    className="clickable"
+                    onClick={showPropositionAppearanceDialog}
+                    title={`${appearanceCount} ${
+                      appearanceCount === 1 ? "appearance" : "appearances"
+                    }`}
+                  >
+                    <MaterialSymbol icon="add_location" size={12} />
+                    {appearanceCount}
+                  </a>
+                </span>
+              )}
+            </div>
+          )}
           {showStatusText && (
             <div>
               <span className="entity-status-text">

@@ -3,7 +3,7 @@ import { call, delay, put, race, take, takeEvery } from "typed-redux-saga";
 import { normalize } from "normalizr";
 import { LOCATION_CHANGE } from "connected-react-router";
 
-import { EntityId, PropositionOut } from "howdju-common";
+import { EntityId } from "howdju-common";
 
 import config from "@/config";
 import { RootState } from "@/setupStore";
@@ -19,7 +19,7 @@ const slice = createSlice({
   name: "PropositionAppearancesDialog",
   initialState,
   reducers: {
-    showDialog: (state, _action: PayloadAction<PropositionOut>) => {
+    showDialog: (state, _action: PayloadAction<EntityId>) => {
       state.isDialogVisible = true;
       state.fetchError = undefined;
     },
@@ -56,7 +56,7 @@ export function* propositionAppearancesDialogSaga() {
   yield takeEvery(
     slice.actions.showDialog,
     // TODO(525) factor out the duplicate logic in these sagas.
-    function* ({ payload: { id: propositionId } }) {
+    function* ({ payload: propositionId }) {
       const {
         payload: {
           fetchInit: { requestId },

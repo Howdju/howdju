@@ -86,20 +86,31 @@ export class PropositionsService {
     const userId = await this.authService.readOptionalUserIdForUserIdent(
       userIdent
     );
-    const [proposition, tags, recommendedTags, propositionTagVotes] =
-      await Promise.all([
-        this.propositionsDao.readPropositionForId(propositionId),
-        this.propositionTagsService.readTagsForPropositionId(propositionId),
-        this.propositionTagsService.readRecommendedTagsForPropositionId(
-          propositionId
-        ),
-        userId
-          ? this.propositionTagVotesService.readUserVotesForPropositionId(
-              userId,
-              propositionId
-            )
-          : undefined,
-      ]);
+    const [
+      proposition,
+      tags,
+      recommendedTags,
+      propositionTagVotes,
+      rootJustificationCountByPolarity,
+      appearanceCount,
+    ] = await Promise.all([
+      this.propositionsDao.readPropositionForId(propositionId),
+      this.propositionTagsService.readTagsForPropositionId(propositionId),
+      this.propositionTagsService.readRecommendedTagsForPropositionId(
+        propositionId
+      ),
+      userId
+        ? this.propositionTagVotesService.readUserVotesForPropositionId(
+            userId,
+            propositionId
+          )
+        : undefined,
+      this.justificationsDao.readRootJustificationCountByPolarityForRoot(
+        "PROPOSITION",
+        propositionId
+      ),
+      this.justificationsDao.readAppearanceCountForPropositionId(propositionId),
+    ]);
     if (!proposition) {
       throw new EntityNotFoundError(EntityTypes.PROPOSITION, propositionId);
     }
@@ -113,6 +124,8 @@ export class PropositionsService {
         // Include only votes for present tags
         some(tags, (tag) => tagEqual(tag, vote.tag))
       ),
+      rootJustificationCountByPolarity,
+      appearanceCount,
     };
   }
 
