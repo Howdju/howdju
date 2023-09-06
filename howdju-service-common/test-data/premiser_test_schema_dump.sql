@@ -1181,6 +1181,30 @@ CREATE TABLE public.url_normalization_progress (
 
 
 --
+-- Name: url_renormalization_progress; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.url_renormalization_progress (
+    normalized_url_id integer NOT NULL,
+    old_url text,
+    new_url text,
+    replacement_url_id integer
+);
+
+
+--
+-- Name: url_renormalization_progress_2; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.url_renormalization_progress_2 (
+    normalized_url_id integer NOT NULL,
+    old_url text,
+    new_url text,
+    replacement_url_id integer
+);
+
+
+--
 -- Name: urls; Type: TABLE; Schema: public; Owner: -
 --
 
