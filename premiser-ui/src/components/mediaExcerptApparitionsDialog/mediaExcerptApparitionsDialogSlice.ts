@@ -10,4 +10,4 @@ export default slice.actions;
 export const mediaExcerptApparitionsDialog = slice.reducer;
 
 export const mediaExcerptApparitionsDialogSaga =
-  createAppearancesDialogListSaga(slice, api.fetchPropositionAppearances);
+  createAppearancesDialogListSaga(slice, api.fetchMediaExcerptApparitions);
