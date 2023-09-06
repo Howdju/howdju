@@ -10,9 +10,11 @@ import { ApiResponseActionMeta, ApiActionCreator } from "@/apiActions";
 
 const initialState = {
   isDialogVisible: false,
+  isFetching: false,
   appearanceIds: [] as EntityId[],
   fetchError: undefined as string | undefined,
 };
+export type DialogState = typeof initialState;
 
 export function createAppearancesDialogListSlice(
   /** The name for the slice. */
@@ -25,6 +27,7 @@ export function createAppearancesDialogListSlice(
       showDialog: (state, _action: PayloadAction<EntityId>) => {
         state.isDialogVisible = true;
         state.fetchError = undefined;
+        state.isFetching = true;
       },
       hideDialog: (state) => {
         state.isDialogVisible = false;
@@ -35,9 +38,11 @@ export function createAppearancesDialogListSlice(
       ) => {
         state.appearanceIds = appearanceIds;
         state.fetchError = undefined;
+        state.isFetching = false;
       },
       fetchAppearancesFailure: (state) => {
         state.fetchError = "Error fetching appearances";
+        state.isFetching = false;
       },
     },
     extraReducers(builder) {
@@ -62,7 +67,7 @@ export function createAppearancesDialogListSaga<
     any
   >
 ) {
-  return function* propositionAppearancesDialogSaga() {
+  return function* appearancesDialogSaga() {
     yield takeEvery(
       slice.actions.showDialog,
       // TODO(525) factor out the duplicate logic in these sagas.
