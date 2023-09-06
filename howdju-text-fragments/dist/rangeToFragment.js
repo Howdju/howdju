@@ -20850,9 +20850,6 @@
   }
   function normalizeUrl2(url, options) {
     const urlObj = new URL(url);
-    if (!urlObj.pathname.endsWith("/")) {
-      urlObj.pathname = urlObj.pathname + "/";
-    }
     return normalizeUrl(
       urlObj.toString(),
       mergeCopy(
