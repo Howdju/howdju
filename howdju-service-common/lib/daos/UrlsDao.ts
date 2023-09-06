@@ -206,4 +206,13 @@ export class UrlsDao {
       [urlId, deletedAt]
     );
   }
+
+  async readAllUrls(skipUrlIds: EntityId[]) {
+    const { rows } = await this.database.query(
+      "readAllUrls",
+      `select url_id from urls where url_id <> all($1) and deleted is null`,
+      [skipUrlIds]
+    );
+    return this.readUrlsForIds(rows.map((row) => row.url_id));
+  }
 }

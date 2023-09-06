@@ -20,7 +20,10 @@
     "migrate-justification-basis-compounds-prod": "env-cmd -f ../config/prod-tunnel.env ../bin/build-and-run-script.sh bin/migrate-justification-basis-compounds.ts",
     "normalize-urls-local": "env-cmd -f ../config/local.env ../bin/build-and-run-script.sh bin/normalize-urls.ts",
     "normalize-urls-preprod": "env-cmd -f ../config/preprod-tunnel.env ../bin/build-and-run-script.sh bin/normalize-urls.ts",
-    "normalize-urls-prod": "env-cmd -f ../config/prod-tunnel.env ../bin/build-and-run-script.sh bin/normalize-urls.ts"
+    "normalize-urls-prod": "env-cmd -f ../config/prod-tunnel.env ../bin/build-and-run-script.sh bin/normalize-urls.ts",
+    "renormalize-urls-local": "env-cmd -f ../config/local.env ../bin/build-and-run-script.sh bin/renormalize-urls.ts",
+    "renormalize-urls-preprod": "env-cmd -f ../config/preprod-tunnel.env ../bin/build-and-run-script.sh bin/renormalize-urls.ts",
+    "renormalize-urls-prod": "env-cmd -f ../config/prod-tunnel.env ../bin/build-and-run-script.sh bin/renormalize-urls.ts"
   },
   "dependencies": {
     "argparse": "^2.0.1",
