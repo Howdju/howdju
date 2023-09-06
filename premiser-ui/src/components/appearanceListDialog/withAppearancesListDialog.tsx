@@ -1,16 +1,16 @@
 import React from "react";
+import FlipMove from "react-flip-move";
+import { Button, CircularProgress, DialogContainer } from "react-md";
 import { Action } from "redux";
-import { Button, DialogContainer } from "react-md";
 
-import { EntityId } from "howdju-common";
-
+import config from "@/config";
+import FlipMoveWrapper from "@/FlipMoveWrapper";
 import { useAppDispatch, useAppEntitySelector, useAppSelector } from "@/hooks";
 import { appearancesSchema } from "@/normalizationSchemas";
 import AppearanceCard from "@/pages/appearances/AppearanceCard";
 import { RootState } from "@/setupStore";
 import { combineIds } from "@/viewModels";
-
-type DialogState = { isDialogVisible: boolean; appearanceIds: EntityId[] };
+import { DialogState } from "./appearancesListDialogSlices";
 
 export default function withAppearancesListDialog(
   /** The HTML id of the dialog. */
@@ -23,7 +23,8 @@ export default function withAppearancesListDialog(
   hideDialogAction: Action
 ) {
   return function AppearancesListDialog() {
-    const { isDialogVisible, appearanceIds } = useAppSelector(stateSelector);
+    const { isDialogVisible, appearanceIds, isFetching } =
+      useAppSelector(stateSelector);
     const dispatch = useAppDispatch();
 
     const appearances = useAppEntitySelector(appearanceIds, appearancesSchema);
@@ -35,17 +36,24 @@ export default function withAppearancesListDialog(
         onHide={() => dispatch(hideDialogAction)}
         className="md-overlay--wide-dialog"
       >
-        {appearances.map((appearance) => (
-          <div key={appearance.id}>
-            <AppearanceCard
-              id={combineIds(id, "appearance", appearance.id)}
-              appearance={appearance}
-            />
-          </div>
-        ))}
-        <Button raised primary onClick={() => dispatch(hideDialogAction)}>
-          Close
-        </Button>
+        <FlipMove
+          {...config.ui.flipMove}
+          className="md-cell md-cell--12 center-text"
+        >
+          {isFetching && <CircularProgress id={combineIds(id, "progress")} />}
+          {!isFetching &&
+            appearances.map((appearance) => (
+              <FlipMoveWrapper key={appearance.id}>
+                <AppearanceCard
+                  id={combineIds(id, "appearance", appearance.id)}
+                  appearance={appearance}
+                />
+              </FlipMoveWrapper>
+            ))}
+          <Button raised primary onClick={() => dispatch(hideDialogAction)}>
+            Close
+          </Button>
+        </FlipMove>
       </DialogContainer>
     );
   };

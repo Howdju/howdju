@@ -4,7 +4,7 @@ import {
   createAppearancesDialogListSlice,
 } from "../appearanceListDialog/appearancesListDialogSlices";
 
-const slice = createAppearancesDialogListSlice("PropositionAppearancesDialog");
+const slice = createAppearancesDialogListSlice("propositionAppearancesDialog");
 
 export default slice.actions;
 export const propositionAppearancesDialog = slice.reducer;
