@@ -1,0 +1,15 @@
+{
+  "name": "howdju-docs",
+  "packageManager": "yarn@3.3.1",
+  "scripts": {
+    "dev": "next dev -p 8080",
+    "start": "next start -p 8080"
+  },
+  "dependencies": {
+    "next": "^13.4.19",
+    "nextra": "^2.12.3",
+    "nextra-theme-docs": "^2.12.3",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  }
+}
