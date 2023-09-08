@@ -1,0 +1,67 @@
+# Justifications
+
+A justification is when one thing makes another thing more likely to be valid or true. A
+justification represents a user’s intention to express or a belief in a relationship between a basis
+and an target. The basis is the starting point and the target is the conclusion arrived at by
+inference.
+
+Justifications represent a grounded implication of the truth of some target. One type of target is a
+proposition: the justification represents reasons for believing that the proposition is true or
+false. The basis may be external evidence or other propositions on the platform.
+
+Justifications are the foundation of knowledge construction.
+
+## Components
+
+A Justification is technically a relation between a `basis` and a `target`. The
+`basis` provides the evidentiary support for the Justification and the target is the thing
+which about which truth is being proven. The Justification's `polarity` determines the direction
+of the Justification is arguing for.
+
+Justifications can have one of two bases: MediaExcerpts or PropositionCompounds.
+
+## MediaExcerpt-based Justifications
+
+A MediaExcerpt-based Justification argues for or against the truth of its target based upon a
+reference to an external Source. MediaExcerpt-based Justifications are similar to when online
+authors make a claim and then hyperlink to another online source implying that the linked source
+provides evidence for the truth of their claim.
+
+Howdju's MediaExcerpt-based Justifications improve on 'implication by hyperlink' by explicitly
+recording the excerpt of the source that the Justification creator intended to provide the evidence.
+This explicitness speeds up readers review of the Justification.
+
+### MediaExcerpt-based Justifications vs. Appearances
+
+It would have been possible to omit MediaExcerpt-based Justifications and to have only
+PropositionCompound-based justifications and Appearances. This approach would have required users to
+create very precisely worded Appearances so that they could then use them in their Justification.
+
+Howdju wanted to support people who were in a constructive mindset ("I trust this source and/or
+speaker, and therefore I believe it to imply the truth of the proposition") rather than forcing them
+into a critical mindset. This design decision is to allow these users the convenience of quickly
+adding the inferences into Howdju that they are observing as they read.
+
+Howdju is designed to facilitate criticism of these MediaExcerpt-based Justifications when users
+create Appearances at the MediaExcerpt and disprove the truth of those appearing Propositions.
+
+Inferential leap.
+
+## PropositionCompound-based Justifications
+
+PropositionCompound-based justifications are like arguments in propositional logic. The Propositions
+in the compound (the "atoms") should, combined with the knowledge and judgment of the reader,
+require the target to be true if all of the atom Propositions are true.
+
+PropositionCompound-based justifications should be 'necessary and sufficient' to prove their
+Justification:
+
+- Sufficient: taken together, the truth of the atoms proves the Justification
+- Necessary: removing any atom would defeat the inferential power of the Justification
+
+## CounterJustifications
+
+A Justification can target another Justification and is called counter-Justification. The
+counter-Justification does not target the basis of the Justification directly. Instead, a
+counter-Justification defeats its target Justification in the particular context where the target
+Justificatcion appears.
