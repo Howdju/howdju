@@ -38,5 +38,16 @@ export default {
       </span>
     </>
   ),
+  footer: {
+    text: (
+      <span>
+        ©{' '}
+        <a href="https://nextra.site" target="_blank">
+          Carl Gieringer
+        </a>{' '}
+        {new Date().getFullYear()}.
+      </span>
+    )
+  }
   // ... other theme options
 }
