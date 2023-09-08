@@ -11,6 +11,8 @@ module.exports = withNextra({
     });
     return config;
   },
+  // TODO(#570) consider optimizing images using a service
+  images: { unoptimized: true },
 });
 
 // If you have other Next.js configurations, you can pass them as the parameter:

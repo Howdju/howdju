@@ -11,7 +11,12 @@ yarn run dev
 ## Deployment
 
 ```sh
-yarn run build
+yarn run build-and-export
 ```
 
-Upload everything to s3://docs.howdju.com.
+Upload contents of `out` folder to s3://docs.howdju.com.
+
+```sh
+aws-vault exec user@howdju -- aws s3 sync out s3://docs.howdju.com
+aws-vault exec user@howdju -- aws cloudfront create-invalidation --distribution-id ECBMF327IDKRF
+```
