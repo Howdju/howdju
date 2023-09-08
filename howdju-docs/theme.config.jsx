@@ -2,7 +2,6 @@ import { useRouter } from 'next/router'
 import { useConfig } from 'nextra-theme-docs'
 
 export default {
-  logo: <span>Howdju Docs</span>,
   project: {
     link: 'https://github.com/Howdju/howdju'
   },
@@ -16,13 +15,13 @@ export default {
     return (
       <>
         <meta property="og:url" content={url} />
-        <meta property="og:title" content={frontMatter.title || 'Nextra'} />
+        <meta property="og:title" content={frontMatter.title || 'Howdju Docs'} />
         <meta
           property="og:description"
-          content={frontMatter.description || 'The next site builder'}
+          content={frontMatter.description || 'Documentation for the Howdju crowd-sourced fact-checking platform'}
         />
-        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
-        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+        <link rel="icon" type="image/png" sizes="32x32" href="https://s3.amazonaws.com/www.howdju.com/favicon-32x32.png" />
+        <link rel="icon" type="image/png" sizes="16x16" href="https://s3.amazonaws.com/www.howdju.com/favicon-16x16.png" />
       </>
     )
   },
