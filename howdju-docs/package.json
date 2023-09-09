@@ -4,10 +4,13 @@
   "scripts": {
     "dev": "next dev -p 8080",
     "build-and-export": "next build && next export",
-    "start": "next start -p 8080"
+    "start": "next start -p 8080",
+    "lint": "next lint"
   },
   "dependencies": {
     "@svgr/webpack": "^8.1.0",
+    "eslint": "^8.49.0",
+    "eslint-config-next": "^13.4.19",
     "next": "^13.4.19",
     "nextra": "^2.12.3",
     "nextra-theme-docs": "^2.12.3",

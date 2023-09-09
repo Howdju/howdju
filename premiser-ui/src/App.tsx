@@ -384,7 +384,7 @@ class App extends Component<Props> {
         primaryText="Policies"
         leftIcon={<FontIcon>gavel</FontIcon>}
         component={Link}
-        to="https://docs.howdju.com/policies"
+        to={paths.policies()}
       />,
     ];
 
@@ -553,14 +553,8 @@ class App extends Component<Props> {
 
             <div id="footer">
               Use of this site constitutes acceptance of our{" "}
-              <Link to="https://docs.howdju.com/policies/user-agreement">
-                User Agreement
-              </Link>{" "}
-              and{" "}
-              <Link to="https://docs.howdju.com/policies/privacy-policy">
-                Privacy Policy
-              </Link>
-              .
+              <Link to={paths.userAgreement()}>User Agreement</Link> and{" "}
+              <Link to={paths.privacyPolicy()}>Privacy Policy</Link>.
             </div>
 
             <Snackbar toasts={toasts} onDismiss={this.dismissSnackbar} />

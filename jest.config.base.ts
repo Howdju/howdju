@@ -19,7 +19,7 @@ const config: Config = {
   transformIgnorePatterns: [
     // Include some extra stuff under node_modules in our babel transform
     // What we add here should probably go into Babel's ignore pattern too (to be unignored).
-    "node_modules/(?!(@grrr/cookie-consent|@grrr/utils|nanoid|jsdom|strip-indent|normalize-url|text-fragments-polyfill|approx-string-match))",
+    "node_modules/(?!(@grrr/cookie-consent|@grrr/utils|nanoid|jsdom|strip-indent|normalize-url|text-fragments-polyfill|approx-string-match|is-absolute-url))",
   ],
   transform: {
     // This custom transform does:

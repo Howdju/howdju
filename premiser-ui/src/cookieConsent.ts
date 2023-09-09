@@ -7,6 +7,7 @@ import some from "lodash/some";
 import { fromJson, toJson } from "howdju-common";
 
 import { logger } from "./logger";
+import paths from "./paths";
 
 import "@grrr/cookie-consent/styles/cookie-consent.scss";
 
@@ -26,7 +27,7 @@ const settings = {
   labels: {
     title: "Privacy consent",
     description: `<p>This site makes use of web technologies in order to provide . Read more in our
-                  <a href="https://docs.howdju.com/policies/privacy-policy">privacy policy</a>.</p>
+                  <a href="${paths.privacyPolicy()}">privacy policy</a>.</p>
                   <p>Please note that removing consent previously given requires reloading the page in order to take
                    effect.</p>`,
   },
