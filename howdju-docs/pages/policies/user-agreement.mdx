@@ -1,13 +1,6 @@
 # Howdju User Agreement
 
-export function EmailAddress({ username, domain = "howdju.com" }) {
-  // TODO(#571) dedupe this between pages
-  return (
-    <a href={`mailto:${username}@${domain}`}>
-      {username}@{domain}
-    </a>
-  );
-}
+import { EmailAddress } from "../../components/EmailAddress.mdx";
 
 Last Updated 6 July 2021
 

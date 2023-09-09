@@ -2,10 +2,10 @@
   "name": "howdju-docs",
   "packageManager": "yarn@3.3.1",
   "scripts": {
+    "lint": "next lint",
     "dev": "next dev -p 8080",
-    "build-and-export": "next build && next export",
-    "start": "next start -p 8080",
-    "lint": "next lint"
+    "build-and-start": "next build && next start -p 8080",
+    "build-and-export": "next build && next export"
   },
   "dependencies": {
     "@svgr/webpack": "^8.1.0",
