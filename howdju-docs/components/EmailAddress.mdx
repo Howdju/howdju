@@ -1,6 +1,5 @@
 import dynamic from "next/dynamic";
 export function EmailAddressComponent({ username, domain = "howdju.com" }) {
-  // TODO(#571) dedupe this between pages
   return (
     <a href={`mailto:${username}@${domain}`}>
       {username}@{domain}
