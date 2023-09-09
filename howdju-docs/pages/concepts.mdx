@@ -1,0 +1,44 @@
+# Concepts
+
+Howdju contains a few primitive concepts that it composes.
+
+This diagram shows Howdju's major entities and their basic relations:
+
+```mermaid
+graph TD;
+Proposition;
+PropositionCompound;
+Justification;
+Appearance;
+MediaExcerpt;
+
+Justification -- targets --> Proposition;
+Justification -- counters --> Justification;
+
+PropositionCompound -- atoms --> Proposition;
+PropositionCompound -- basisOf --> Justification;
+MediaExcerpt -- basisOf --> Justification;
+
+Appearance -- apparition --> Proposition;
+Appearance -- location --> MediaExcerpt;
+```
+
+- [Propositions] are the things that may or may not be true.
+- [Justifications] provide evidence for a proposition being true or false.
+- Justification have [Bases] that provide their support.
+- The two types of bases are PropositionCompounds and MediaExcerpts.
+- PropositionCompounds are an ordered list of Propositions and are similar to arguments from
+  propositional logic.
+- MediaExcerpts are references to a part of an external source.
+
+Howdju also supports critique:
+
+- [Appearances] indicate that a Proposition appears in a Soruce.
+- An Appearance appears at a MediaExcerpt and the thing that appears is a Proposition.
+
+This structure allows a two-step critique of a source:
+
+1. Determine what the speaker is saying (the Proposition appearing in the source)
+2. Determine whether the Proposition is true or false.
+
+This analysis determines the truthfulness of the speaker's statement and can be used to judge their credibility.

@@ -1,0 +1,15 @@
+import dynamic from "next/dynamic";
+export function EmailAddressComponent({ username, domain = "howdju.com" }) {
+  return (
+    <a href={`mailto:${username}@${domain}`}>
+      {username}@{domain}
+    </a>
+  );
+}
+export const EmailAddress = dynamic(
+  () => Promise.resolve(EmailAddressComponent),
+  {
+    ssr: false,
+    loading: () => <span>[enable JavaScript to load the email address]</span>,
+  }
+);

@@ -22,8 +22,6 @@ import PasswordResetConfirmationPage from "@/pages/passwordResetConfirmation/Pas
 import paths, { createJustificationPath } from "./paths";
 import PersorgPage from "./pages/persorg/PersorgPage";
 import PrivacySettingsPage from "./PrivacySettingsPage";
-import PoliciesOverviewPage from "./policies/PoliciesOverviewPage";
-import PolicyPage from "./policies/PolicyPage";
 import PropositionUsagesPage from "./pages/propositionUsages/PropositionUsagesPage";
 import RecentActivityPage from "./RecentActivityPage";
 import RegistrationConfirmationPage from "./pages/registration/RegistrationConfirmationPage";
@@ -32,15 +30,8 @@ import SourcePage from "./pages/source/SourcePage";
 import SubmitMediaExcerptPage from "./pages/SubmitMediaExcerptPage";
 import TagPage from "./pages/tag/TagPage";
 import TestErrorPage from "./TestErrorPage";
-import ToolsPage from "./ToolsPage";
 import WhatsNextPage from "./pages/whatsNext/WhatsNextPage";
 
-import principlesInnerHtml from "./policies/principles.md";
-import userAgreementInnerHtml from "./policies/user-agreement.md";
-import codeOfConductInnerHtml from "./policies/code-of-conduct.md";
-import privacyPolicyInnerHtml from "./policies/privacy-policy.md";
-import cookieNoticeInnerHtml from "./policies/cookie-notice.md";
-import faqInnerHtml from "./policies/faq.md";
 import WritQuotePage from "./pages/WritQuotePage";
 import { map } from "lodash";
 import { CreatePropositionPageMode } from "./types";
@@ -228,84 +219,6 @@ const routesById = {
   settings: <Route exact path="/settings" component={AccountSettingsPage} />,
   privacySettings: (
     <Route exact path="/settings/privacy" component={PrivacySettingsPage} />
-  ),
-  tools: <Route exact path="/tools" component={ToolsPage} />,
-
-  policiesOverview: (
-    <Route
-      exact
-      path={paths.policiesOverview()}
-      component={PoliciesOverviewPage}
-    />
-  ),
-  values: (
-    <Route
-      exact
-      path={paths.principles()}
-      render={() => (
-        <PolicyPage pageTitle="Principles" innerHtml={principlesInnerHtml} />
-      )}
-    />
-  ),
-  userAgreement: (
-    <Route
-      exact
-      path={paths.userAgreement()}
-      render={() => (
-        <PolicyPage
-          pageTitle="User Agreement"
-          innerHtml={userAgreementInnerHtml}
-        />
-      )}
-    />
-  ),
-  codeOfConduct: (
-    <Route
-      exact
-      path={paths.codeOfConduct()}
-      render={() => (
-        <PolicyPage
-          pageTitle="Code of Conduct"
-          innerHtml={codeOfConductInnerHtml}
-        />
-      )}
-    />
-  ),
-  privacyPolicy: (
-    <Route
-      exact
-      path={paths.privacyPolicy()}
-      render={() => (
-        <PolicyPage
-          pageTitle="Privacy Policy"
-          innerHtml={privacyPolicyInnerHtml}
-        />
-      )}
-    />
-  ),
-  cookieNotice: (
-    <Route
-      exact
-      path={paths.cookieNotice()}
-      render={() => (
-        <PolicyPage
-          pageTitle="Cookie Notice"
-          innerHtml={cookieNoticeInnerHtml}
-        />
-      )}
-    />
-  ),
-  faq: (
-    <Route
-      exact
-      path={paths.faq()}
-      render={() => (
-        <PolicyPage
-          pageTitle="Frequently Asked Questions"
-          innerHtml={faqInnerHtml}
-        />
-      )}
-    />
   ),
 
   icons: <Route exact path="/icons" component={IconPage} />,

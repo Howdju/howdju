@@ -1,0 +1,53 @@
+{
+  "index": "Home",
+  "features": "",
+  "concepts": "",
+  "community": {
+    "title": "Community",
+    "type": "menu",
+    "items": {
+      "slack": {
+        "title": "Slack",
+        "href": "https://join.slack.com/t/howdju/shared_invite/zt-1qbfzlfsj-YRswgQ5RCLDHelef6ya6xg"
+      },
+      "twitter": {
+        "title": "Twitter",
+        "href": "https://twitter.com/howdju"
+      }
+    }
+  },
+  "clients": {
+    "title": "Clients",
+    "type": "menu",
+    "items": {
+      "web_app": {
+        "title": "Web App",
+        "href": "https://howdju.com",
+        "newWindow": true
+      },
+      "chrome_extension": {
+        "title": "Chrome Extension",
+        "href": "https://chrome.google.com/webstore/detail/howdju-extension/gijlmlebhfiglpgdlgphbmaamhkchoei/",
+        "newWindow": true
+      }
+    }
+  },
+  "principles": "",
+  "principles_page": {
+    "title": "Principles",
+    "type": "page",
+    "href": "/principles"
+  },
+  "policies": {},
+  "policies_page": {
+    "title": "Policies",
+    "type": "page",
+    "href": "/policies"
+  },
+  "faq": "FAQ",
+  "faq_page": {
+    "title": "FAQ",
+    "type": "page",
+    "href": "/faq"
+  }
+}

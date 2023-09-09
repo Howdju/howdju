@@ -9,20 +9,21 @@ import {
   toString,
   isNumber,
   merge,
+  cloneDeepWith,
+  forEach,
+  isArray,
+  isFunction,
+  isObject,
+  isUndefined,
+  keys,
+  map,
+  reduce,
+  reject,
+  replace,
+  trim,
 } from "lodash";
-import cloneDeepWith from "lodash/cloneDeepWith";
-import forEach from "lodash/forEach";
-import isArray from "lodash/isArray";
-import isFunction from "lodash/isFunction";
-import isObject from "lodash/isObject";
-import isUndefined from "lodash/isUndefined";
-import keys from "lodash/keys";
-import map from "lodash/map";
-import reduce from "lodash/reduce";
-import reject from "lodash/reject";
-import replace from "lodash/replace";
-import trim from "lodash/trim";
 import moment, { Moment, unitOfTime, Duration, TemplateFunction } from "moment";
+import isAbsoluteUrlLib from "is-absolute-url";
 
 import { newProgrammingError } from "./commonErrors";
 import { CamelCasedPropertiesDeep, MergeDeep } from "type-fest";
@@ -596,4 +597,8 @@ export function mergeCopy<Source1, Source2>(
   }
   const init = isArray(source1) ? [] : {};
   return merge(init, source1, source2);
+}
+
+export function isAbsoluteUrl(val: any): val is string {
+  return isAbsoluteUrlLib(val);
 }

@@ -154,12 +154,12 @@ class Paths {
   settings = () => "/settings";
   privacySettings = () => "/settings/privacy";
 
-  policiesOverview = () => "/policies";
-  principles = () => "/principles";
-  userAgreement = () => "/policies/user-agreement";
-  codeOfConduct = () => "/policies/code-of-conduct";
-  privacyPolicy = () => "/policies/privacy-policy";
-  cookieNotice = () => "/policies/cookie-notice";
+  policies = () => "https://docs.howdju.com/policies";
+  principles = () => "https://docs.howdju.com/principles";
+  userAgreement = () => "https://docs.howdju.com/policies/user-agreement";
+  codeOfConduct = () => "https://docs.howdju.com/policies/code-of-conduct";
+  privacyPolicy = () => "https://docs.howdju.com/policies/privacy-policy";
+  cookieNotice = () => "https://docs.howdju.com/policies/cookie-notice";
   faq = () => "/faq";
 
   tag = (tag: TagOut) => `/tags/${tag.id}/${toSlug(tag.name)}`;

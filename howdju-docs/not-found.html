@@ -1,0 +1,12 @@
+<html><script>
+  var url = new URL(window.location.href);
+  if (url.pathname.endsWith('.html')) {
+    // If the path already ends with html, there isn't another path we can try.
+    // Just redirect them home.
+    url.pathname = "/";
+  } else {
+    // Try to redirect them to the html page that backs this route.
+    url.pathname = url.pathname + '.html';
+  }
+  window.location.replace(url.toString());
+</script></html>

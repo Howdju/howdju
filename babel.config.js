@@ -6,7 +6,7 @@ module.exports = {
   ignore: [
     new RegExp(
       // What we add here should probably go into Jest's transformIgnorePatterns too.
-      "/node_modules/(?!(@grrr/cookie-consent|@grrr/utils|nanoid|jsdom|strip-indent|normalize-url|text-fragments-polyfill|approx-string-match))"
+      "/node_modules/(?!(@grrr/cookie-consent|@grrr/utils|nanoid|jsdom|strip-indent|normalize-url|text-fragments-polyfill|approx-string-match|is-absolute-url))"
     ),
   ],
   plugins: [
