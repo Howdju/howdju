@@ -5,6 +5,14 @@ export default {
   project: {
     link: 'https://github.com/Howdju/howdju'
   },
+  useNextSeoProps() {
+    const { asPath } = useRouter()
+    if (asPath !== '/') {
+      return {
+        titleTemplate: '%s – Howdju Docs'
+      }
+    }
+  },
   head: () => {
     const { asPath, defaultLocale, locale } = useRouter()
     const { frontMatter } = useConfig()
@@ -38,15 +46,29 @@ export default {
       </span>
     </>
   ),
+
   footer: {
     text: (
-      <span>
-        ©{' '}
-        <a href="https://nextra.site" target="_blank">
-          Carl Gieringer
-        </a>{' '}
-        {new Date().getFullYear()}.
-      </span>
+      <div className="flex w-full flex-col items-center sm:items-start">
+        <div>
+          <a
+            className="flex items-center gap-1 text-current"
+            target="_blank"
+            rel="noopener noreferrer"
+            title="nextra.site homepage"
+            href="https://nextra.site"
+          >
+            <span>Built with Nextra</span>
+          </a>
+        </div>
+        <p className="mt-6 text-xs">
+          ©{' '}
+          <a href="https://nextra.site" target="_blank">
+            Carl Gieringer
+          </a>{' '}
+          {new Date().getFullYear()}.
+        </p>
+      </div>
     )
   }
   // ... other theme options
