@@ -26,7 +26,7 @@ const settings = {
   labels: {
     title: "Privacy consent",
     description: `<p>This site makes use of web technologies in order to provide . Read more in our
-                  <a href="/policies/privacy-policy">privacy policy</a>.</p>
+                  <a href="https://docs.howdju.com/policies/privacy-policy">privacy policy</a>.</p>
                   <p>Please note that removing consent previously given requires reloading the page in order to take
                    effect.</p>`,
   },

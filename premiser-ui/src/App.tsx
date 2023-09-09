@@ -21,11 +21,11 @@ import {
 import { IdPropType } from "react-md/lib";
 import { connect, ConnectedProps } from "react-redux";
 import { Switch } from "react-router";
-import { Link } from "react-router-dom";
 
 import { actions, inIframe } from "howdju-client-common";
 import { isTruthy } from "howdju-common";
 
+import Link from "./Link";
 import app from "@/app/appSlice";
 import {
   api,
@@ -374,17 +374,17 @@ class App extends Component<Props> {
       />,
       <ListItem
         key="tools"
-        primaryText="Tools"
+        primaryText="Chrome Extension"
         leftIcon={<FontIcon>build</FontIcon>}
         component={Link}
-        to={paths.tools()}
+        to="https://chrome.google.com/webstore/detail/howdju-extension/gijlmlebhfiglpgdlgphbmaamhkchoei/"
       />,
       <ListItem
         key="policies"
         primaryText="Policies"
         leftIcon={<FontIcon>gavel</FontIcon>}
         component={Link}
-        to={paths.policiesOverview()}
+        to="https://docs.howdju.com/policies"
       />,
     ];
 
@@ -553,8 +553,14 @@ class App extends Component<Props> {
 
             <div id="footer">
               Use of this site constitutes acceptance of our{" "}
-              <Link to={paths.userAgreement()}>User Agreement</Link> and{" "}
-              <Link to={paths.privacyPolicy()}>Privacy Policy</Link>.
+              <Link to="https://docs.howdju.com/policies/user-agreement">
+                User Agreement
+              </Link>{" "}
+              and{" "}
+              <Link to="https://docs.howdju.com/policies/privacy-policy">
+                Privacy Policy
+              </Link>
+              .
             </div>
 
             <Snackbar toasts={toasts} onDismiss={this.dismissSnackbar} />

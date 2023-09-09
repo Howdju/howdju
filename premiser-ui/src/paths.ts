@@ -154,14 +154,6 @@ class Paths {
   settings = () => "/settings";
   privacySettings = () => "/settings/privacy";
 
-  policiesOverview = () => "/policies";
-  principles = () => "/principles";
-  userAgreement = () => "/policies/user-agreement";
-  codeOfConduct = () => "/policies/code-of-conduct";
-  privacyPolicy = () => "/policies/privacy-policy";
-  cookieNotice = () => "/policies/cookie-notice";
-  faq = () => "/faq";
-
   tag = (tag: TagOut) => `/tags/${tag.id}/${toSlug(tag.name)}`;
 }
 

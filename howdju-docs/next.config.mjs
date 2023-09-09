@@ -1,9 +1,16 @@
-const withNextra = require("nextra")({
+import nextra from "nextra";
+import remarkSmartypants from "remark-smartypants";
+
+const withNextra = nextra({
   theme: "nextra-theme-docs",
   themeConfig: "./theme.config.jsx",
+
+  mdxOptions: {
+    remarkPlugins: [remarkSmartypants],
+  },
 });
 
-module.exports = withNextra({
+export default withNextra({
   webpack(config, options) {
     config.module.rules.push({
       test: /\.svg$/,
@@ -14,6 +21,3 @@ module.exports = withNextra({
   // TODO(#570) consider optimizing images using a service
   images: { unoptimized: true },
 });
-
-// If you have other Next.js configurations, you can pass them as the parameter:
-// module.exports = withNextra({ /* other next.js config */ })

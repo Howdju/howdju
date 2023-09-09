@@ -4,6 +4,8 @@ import {
   LinkProps as ReactRouterLinkProps,
 } from "react-router-dom";
 
+import { isAbsoluteUrl } from "howdju-common";
+
 import "./Link.scss";
 
 interface LinkProps extends ReactRouterLinkProps {
@@ -16,6 +18,14 @@ export default function Link(props: LinkProps) {
   const linkProps = {} as Partial<ReactRouterLinkProps>;
   if (newWindow) {
     linkProps.target = "_blank";
+  }
+  if (isAbsoluteUrl(props.to)) {
+    linkProps.target = "_blank";
+    return (
+      <a {...rest} {...linkProps} href={props.to}>
+        {children}
+      </a>
+    );
   }
   return (
     <ReactRouterLink {...rest} {...linkProps}>
