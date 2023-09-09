@@ -6,22 +6,27 @@
     "title": "Community",
     "type": "menu",
     "items": {
-      "Slack": {
+      "slack": {
+        "title": "Slack",
         "href": "https://join.slack.com/t/howdju/shared_invite/zt-1qbfzlfsj-YRswgQ5RCLDHelef6ya6xg"
       },
-      "Twitter": {
+      "twitter": {
+        "title": "Twitter",
         "href": "https://twitter.com/howdju"
       }
     }
   },
-  "Clients": {
+  "clients": {
+    "title": "Clients",
     "type": "menu",
     "items": {
-      "Web App": {
+      "web_app": {
+        "title": "Web App",
         "href": "https://howdju.com",
         "newWindow": true
       },
-      "Chrome Extension": {
+      "chrome_extension": {
+        "title": "Chrome Extension",
         "href": "https://chrome.google.com/webstore/detail/howdju-extension/gijlmlebhfiglpgdlgphbmaamhkchoei/",
         "newWindow": true
       }

@@ -1,6 +1,13 @@
-import EmailAddress from "../../components/EmailAddress";
-
 # Howdju Privacy Policy
+
+export function EmailAddress({ username, domain = "howdju.com" }) {
+  // TODO(#571) dedupe this between pages
+  return (
+    <a href={`mailto:${username}@${domain}`}>
+      {username}@{domain}
+    </a>
+  );
+}
 
 Last Updated 6 July 2021
 

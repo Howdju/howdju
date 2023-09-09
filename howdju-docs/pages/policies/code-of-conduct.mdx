@@ -1,13 +1,21 @@
 # Howdju Code of Conduct
 
-import EmailAddress from '../../components/EmailAddress'
+export function EmailAddress({ username, domain = "howdju.com" }) {
+  // TODO(#571) dedupe this between pages
+  return (
+    <a href={`mailto:${username}@${domain}`}>
+      {username}@{domain}
+    </a>
+  );
+}
 
 Last Updated 6 July 2021
 
 Howdju wants to make the process of presenting alternative viewpoints and verifying claims relating to them efficient and enjoyable. This goal is only possible through the hard work and cooperation of the many people who can represent those viewpoints. If you see anything on Howdju that
 violates this Code of Conduct, please report it using the provided functionality, or email
 
-<EmailAddress username='report' /> with a link to the content and an explanation of the problem.
+<EmailAddress username="report" /> with a link to the content and an explanation
+of the problem.
 
 This Code of Conduct helps you understand what behaviors are desirable and which are unacceptable when using Howdju. Please note that engaging in unacceptable behavior constitutes grounds for temporary suspension or permanent account termination.
 
@@ -64,8 +72,8 @@ You must not infringe copyrights, trademarks, patents, or other proprietary righ
 
 Using copyrighted material does not constitute infringement in all cases. In general, however, you should be careful when using copyrighted content without the permission of those who created it. It is our policy to respond to notices of alleged infringement sent to
 
-<EmailAddress username='legal' /> that
-comply with the Digital Millennium Copyright Act ("DMCA").
+<EmailAddress username="legal" /> that comply with the Digital Millennium Copyright
+Act ("DMCA").
 
 ### Automation and Mass Registration
 
