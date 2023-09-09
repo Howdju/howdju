@@ -1,6 +1,8 @@
 import { useRouter } from 'next/router'
 import { useConfig } from 'nextra-theme-docs'
 
+// https://github.com/shuding/nextra/blob/main/docs/theme.config.tsx
+// https://github.com/shuding/nextra/blob/main/examples/swr-site/theme.config.tsx
 export default {
   project: {
     link: 'https://github.com/Howdju/howdju'
@@ -12,6 +14,13 @@ export default {
         titleTemplate: '%s – Howdju Docs'
       }
     }
+  },
+  feedback: {
+    content: 'Question? Give us feedback →',
+    labels: 'docs feedback',
+  },
+  toc: {
+    backToTop: true,
   },
   head: () => {
     const { asPath, defaultLocale, locale } = useRouter()
@@ -71,5 +80,4 @@ export default {
       </div>
     )
   }
-  // ... other theme options
 }
