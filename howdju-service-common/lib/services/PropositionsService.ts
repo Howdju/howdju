@@ -92,6 +92,7 @@ export class PropositionsService {
       recommendedTagsByPropositionId,
       propositionTagVotesByPropositionId,
       rootJustificationCountByPolarityByPropositionId,
+      justificationBasisUsageCountByPropositionId,
       appearanceCountByPropositionId,
     ] = await Promise.all([
       this.propositionsDao.readPropositionsForIds(propositionIds),
@@ -109,6 +110,9 @@ export class PropositionsService {
         "PROPOSITION",
         propositionIds
       ),
+      this.propositionsDao.readJustificationBasisUsageCountForPropositionIds(
+        propositionIds
+      ),
       this.propositionsDao.readAppearanceCountForPropositionIds(propositionIds),
     ]);
     ensurePresent(propositionIds, propositions, "PROPOSITION");
@@ -121,6 +125,8 @@ export class PropositionsService {
         propositionTagVotesByPropositionId?.[proposition.id];
       const rootJustificationCountByPolarity =
         rootJustificationCountByPolarityByPropositionId[proposition.id];
+      const justificationBasisUsageCount =
+        justificationBasisUsageCountByPropositionId[proposition.id];
       const appearanceCount = appearanceCountByPropositionId[proposition.id];
       return {
         ...proposition,
@@ -132,6 +138,7 @@ export class PropositionsService {
           some(tags, (tag) => tagEqual(tag, vote.tag))
         ),
         rootJustificationCountByPolarity,
+        justificationBasisUsageCount,
         appearanceCount,
       };
     });

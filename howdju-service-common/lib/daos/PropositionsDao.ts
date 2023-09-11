@@ -359,7 +359,7 @@ export class PropositionsDao {
     return countsById[propositionId];
   }
 
-  async readAppearanceCountForPropositionIds(propositionIds: string[]) {
+  async readAppearanceCountForPropositionIds(propositionIds: EntityId[]) {
     const { rows } = await this.database.query<{
       proposition_id: number;
       count: string;
@@ -378,6 +378,44 @@ export class PropositionsDao {
         group by proposition_id
       `,
       [propositionIds]
+    );
+    return reduce(
+      rows,
+      (acc, { proposition_id, count }) => {
+        acc[toIdString(proposition_id)] = toCountNumber(count);
+        return acc;
+      },
+      {} as Record<string, number>
+    );
+  }
+
+  async readJustificationBasisUsageCountForPropositionIds(
+    propositionIds: EntityId[]
+  ) {
+    const { rows } = await this.database.query<{
+      proposition_id: number;
+      count: string;
+    }>(
+      "readJustificationBasisUsageCountForPropositionIds",
+      `
+        select
+            proposition_id
+          , count(*) as count
+        from
+          propositions p
+            join proposition_compound_atoms a using (proposition_id)
+            join proposition_compounds c using (proposition_compound_id)
+            join justifications j on
+                  j.basis_type = $2
+              and j.basis_id = c.proposition_compound_id
+        where
+              p.proposition_id = any ($1)
+          and p.deleted is null
+          and c.deleted is null
+          and j.deleted is null
+        group by proposition_id
+      `,
+      [propositionIds, "PROPOSITION_COMPOUND"]
     );
     return reduce(
       rows,
