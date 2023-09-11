@@ -32,20 +32,18 @@
       }
     }
   },
-  "principles": "",
-  "principles_page": {
+  "principles": {
     "title": "Principles",
     "type": "page",
     "href": "/principles"
   },
-  "policies": {},
+  "policies": "",
   "policies_page": {
     "title": "Policies",
     "type": "page",
     "href": "/policies"
   },
-  "faq": "FAQ",
-  "faq_page": {
+  "faq": {
     "title": "FAQ",
     "type": "page",
     "href": "/faq"
