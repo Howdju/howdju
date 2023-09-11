@@ -691,6 +691,7 @@ export class JustificationsDao {
         where
               target_type = $1
           and target_id = any ($2)
+          and deleted is null
       group by target_id, polarity
     `,
       [rootTargetType, rootTargetIds]
