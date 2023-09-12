@@ -21,11 +21,11 @@ import {
 import { IdPropType } from "react-md/lib";
 import { connect, ConnectedProps } from "react-redux";
 import { Switch } from "react-router";
+import { Link } from "react-router-dom";
 
 import { actions, inIframe } from "howdju-client-common";
 import { isTruthy } from "howdju-common";
 
-import Link from "./Link";
 import app from "@/app/appSlice";
 import {
   api,
@@ -376,15 +376,17 @@ class App extends Component<Props> {
         key="tools"
         primaryText="Chrome Extension"
         leftIcon={<FontIcon>build</FontIcon>}
-        component={Link}
-        to="https://chrome.google.com/webstore/detail/howdju-extension/gijlmlebhfiglpgdlgphbmaamhkchoei/"
+        component="a"
+        href="https://chrome.google.com/webstore/detail/howdju-extension/gijlmlebhfiglpgdlgphbmaamhkchoei/"
+        target="_blank"
       />,
       <ListItem
         key="policies"
         primaryText="Policies"
         leftIcon={<FontIcon>gavel</FontIcon>}
-        component={Link}
-        to={paths.policies()}
+        component="a"
+        href={paths.policies()}
+        target="_blank"
       />,
     ];
 

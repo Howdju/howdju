@@ -27,9 +27,9 @@ const createSessionStorageId = () => {
       return ssid;
     } catch (err) {
       // sessionStorage is unavailable in Safari private mode
-      return null;
     }
   }
+  return undefined;
 };
 
 export const clearSessionStorageId = () => {

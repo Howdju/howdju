@@ -4,7 +4,6 @@ import cn from "classnames";
 
 import { CreateRegistrationConfirmationInput } from "howdju-common";
 
-import Link from "../../Link";
 import EmailTextField from "../../EmailTextField";
 import PasswordTextField from "../../PasswordTextField";
 import paths from "../../paths";
@@ -133,21 +132,23 @@ export default function RegistrationConfirmationEditorFields({
             })}
           >
             I have read and agree to the{" "}
-            <Link
-              newWindow={true}
+            <a
+              href={paths.userAgreement()}
+              target="_blank"
+              rel="noreferrer"
               className="text-link"
-              to={paths.userAgreement()}
             >
               User Agreement
-            </Link>{" "}
+            </a>{" "}
             and the{" "}
-            <Link
-              newWindow={true}
+            <a
+              href={paths.privacyPolicy()}
+              target="_blank"
+              rel="noreferrer"
               className="text-link"
-              to={paths.privacyPolicy()}
             >
               Privacy Policy
-            </Link>
+            </a>
             .
           </div>
         }
