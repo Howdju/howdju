@@ -1211,16 +1211,20 @@ export class JustificationsDao {
       (propositionCompound) => propositionCompound.atoms
     );
     const propositionIds = map(atoms, (atom) => atom.entity.id);
-    const [justificationCountsByPropositionId, appearanceCountByPropositionId] =
-      await Promise.all([
-        this.readRootJustificationCountByPolarityForRoots(
-          JustificationRootTargetTypes.PROPOSITION,
-          propositionIds
-        ),
-        this.propositionsDao.readAppearanceCountForPropositionIds(
-          propositionIds
-        ),
-      ]);
+    const [
+      justificationCountsByPropositionId,
+      justificationBasisUsageCountsByPropositionId,
+      appearanceCountByPropositionId,
+    ] = await Promise.all([
+      this.readRootJustificationCountByPolarityForRoots(
+        JustificationRootTargetTypes.PROPOSITION,
+        propositionIds
+      ),
+      this.propositionsDao.readJustificationBasisUsageCountForPropositionIds(
+        propositionIds
+      ),
+      this.propositionsDao.readAppearanceCountForPropositionIds(propositionIds),
+    ]);
     return mapValues(propositionCompoundsById, (compound) => ({
       ...compound,
       atoms: map(compound.atoms, (atom) =>
@@ -1228,6 +1232,8 @@ export class JustificationsDao {
           entity: {
             rootJustificationCountByPolarity:
               justificationCountsByPropositionId[atom.entity.id],
+            justificationBasisUsageCount:
+              justificationBasisUsageCountsByPropositionId[atom.entity.id],
             appearanceCount: appearanceCountByPropositionId[atom.entity.id],
           },
         })

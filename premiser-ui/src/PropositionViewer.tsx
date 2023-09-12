@@ -47,6 +47,8 @@ export default function PropositionViewer({
   }
 
   const appearanceCount = proposition.appearanceCount ?? 0;
+  const justificationBasisUsageCount =
+    proposition.justificationBasisUsageCount ?? 0;
   const rootJustificationCountByPolarity =
     proposition.rootJustificationCountByPolarity ?? {
       POSITIVE: 0,
@@ -73,6 +75,17 @@ export default function PropositionViewer({
                   />
                 </Link>
               )}{" "}
+              <Link
+                to={paths.propositionUsages(proposition.id)}
+                title={`used in ${justificationBasisUsageCount} ${
+                  justificationBasisUsageCount === 1
+                    ? "justification"
+                    : "justifications"
+                }`}
+              >
+                <MaterialSymbol icon="merge_type" size={12} />
+                {justificationBasisUsageCount}
+              </Link>{" "}
               {showAppearanceCount && (
                 <span className="entity-status-text">
                   <a

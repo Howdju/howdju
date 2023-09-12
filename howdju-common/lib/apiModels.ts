@@ -135,6 +135,7 @@ export interface PropositionOut
   propositionTagVotes?: PropositionTagVoteOut[];
   creator?: CreatorBlurb;
   rootJustificationCountByPolarity?: JustificationCountMap;
+  justificationBasisUsageCount?: number;
   appearanceCount?: number;
 }
 
