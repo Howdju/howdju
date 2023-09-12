@@ -1,22 +1,33 @@
-import React from "react";
+import React, { Component, ErrorInfo, ReactNode } from "react";
 import { v4 as uuidv4 } from "uuid";
 
 import { logger } from "./logger";
 
-export default class ErrorBoundary extends React.Component {
-  constructor(props) {
+type Props = { children: ReactNode };
+type State = {
+  error: Error | undefined;
+  errorInfo: ErrorInfo | undefined;
+  errorCorrelationId: string | undefined;
+};
+
+export default class ErrorBoundary extends Component<Props, State> {
+  constructor(props: Props) {
     super(props);
-    this.state = { error: null, errorInfo: null };
+    this.state = {
+      error: undefined,
+      errorInfo: undefined,
+      errorCorrelationId: undefined,
+    };
   }
 
-  static getDerivedStateFromError(_error) {
+  static getDerivedStateFromError() {
     return {
       hasError: true,
       errorCorrelationId: uuidv4(),
     };
   }
 
-  componentDidCatch(error, info) {
+  componentDidCatch(error: Error, info: ErrorInfo) {
     const errorMessage = error.toString();
     const { componentStack } = info;
     logger.error(errorMessage, componentStack, {
@@ -27,7 +38,7 @@ export default class ErrorBoundary extends React.Component {
   }
 
   render() {
-    if (this.state.hasError) {
+    if (this.state.error) {
       return (
         <div id="error-boundary">
           <h2>Something went wrong.</h2>

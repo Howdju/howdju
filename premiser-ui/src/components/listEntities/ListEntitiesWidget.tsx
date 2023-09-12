@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { MouseEvent, useEffect } from "react";
 import { ActionCreator } from "@reduxjs/toolkit";
 import { CircularProgress } from "react-md";
 import concat from "lodash/concat";
@@ -58,7 +58,7 @@ export default function ListEntitiesWidget({
     );
   });
 
-  const fetchMore = (event: Event) => {
+  const fetchMore = (event: MouseEvent) => {
     event.preventDefault();
     const fetchMoreCount = entities?.length ? fetchCount : initialFetchCount;
     dispatch(fetchEntities(widgetId, fetchMoreCount, continuationToken));

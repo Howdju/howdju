@@ -371,9 +371,9 @@ export default class LandingPage extends Component {
         <p>How to get started:</p>
         <ul id="get-started" className="blocks">
           <li>
-            <Link to={paths.tools()}>
+            <Link to="https://chrome.google.com/webstore/detail/howdju-extension/gijlmlebhfiglpgdlgphbmaamhkchoei/">
               <div className="block-item-spacer">
-                Install the bookmarklet to become an info hero
+                Install the extension to become an info hero
               </div>
             </Link>
           </li>

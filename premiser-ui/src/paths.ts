@@ -59,23 +59,28 @@ class Paths {
     const anchor = focusJustificationId
       ? `#justification-${focusJustificationId}`
       : "";
-    return `/p/${id}${slugPath}${anchor}${query}`;
+    return `/p/${id}${slugPath}${query}${anchor}`;
   };
   statement = (
     statementId: EntityId,
-    focusJustificationId: EntityId | null = null
+    contextTrailItems?: ContextTrailItem[],
+    focusJustificationId?: EntityId
   ) => {
+    const query =
+      contextTrailItems && !isEmpty(contextTrailItems)
+        ? "?context-trail=" + serializeContextTrail(contextTrailItems)
+        : "";
     const anchor = focusJustificationId
       ? `#justification-${focusJustificationId}`
       : "";
-    return `/s/${statementId}${anchor}`;
+    return `/s/${statementId}${query}${anchor}`;
   };
   justification = (j: JustificationView) => {
     switch (j.rootTargetType) {
       case JustificationRootTargetTypes.PROPOSITION:
         return this.proposition(j.rootTarget, [], false, j.id);
       case JustificationRootTargetTypes.STATEMENT:
-        return this.statement(j.rootTarget.id, j.id);
+        return this.statement(j.rootTarget.id, undefined, j.id);
       default:
         throw newExhaustedEnumError(j);
     }

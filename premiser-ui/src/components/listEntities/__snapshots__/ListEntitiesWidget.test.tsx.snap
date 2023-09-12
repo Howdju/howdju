@@ -755,7 +755,6 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows initial recent propos
     </div>
     <button
       class="md-btn md-btn--flat md-btn--text md-pointer--hover md-text md-inline-block md-cell md-cell--3 md-cell--8-tablet md-cell--4-phone"
-      style="transition: transform 735ms ease 450ms, opacity 735ms ease 450ms;"
       type="button"
     >
       <div
@@ -2346,7 +2345,6 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows more propositions whe
     </div>
     <button
       class="md-btn md-btn--flat md-btn--text md-pointer--hover md-text md-inline-block md-cell md-cell--3 md-cell--8-tablet md-cell--4-phone"
-      style=""
       type="button"
     >
       <div

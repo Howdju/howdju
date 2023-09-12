@@ -159,6 +159,7 @@ export type StatementOut = PersistedEntity &
     justifications?: JustificationOut[];
     created: Moment;
     creator: CreatorBlurb;
+    rootJustificationCountByPolarity?: JustificationCountMap;
   } & (
     | {
         sentenceType: "PROPOSITION";

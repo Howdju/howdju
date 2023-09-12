@@ -24,12 +24,12 @@ export interface SingleLineTextProps
   rows?: number;
   // ignored if type=password
   maxRows?: number;
-  disabled: boolean;
+  disabled?: boolean;
   onKeyDown?: OnKeyDownCallback;
   onSubmit?: OnSubmitCallback;
   onBlur?: OnBlurCallback;
   onPropertyChange?: OnPropertyChangeCallback;
-  value: string | undefined;
+  value?: string;
   rightControls?: ReactNode;
   // TODO(17) autocomplete should be supported by react-md's TextFieldProps
   // https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/autocomplete#values
@@ -46,7 +46,7 @@ export default function SingleLineTextField({
   value,
   rows = 1,
   maxRows = 4,
-  disabled,
+  disabled = false,
   onBlur,
   // ignore
   onKeyDown,

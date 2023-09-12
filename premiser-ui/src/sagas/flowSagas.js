@@ -148,7 +148,7 @@ export function* goTo() {
 
   yield takeEvery(str(goto.statement), function* goToStatementWorker(action) {
     const { statement } = action.payload;
-    yield put(push(paths.statement(statement)));
+    yield put(push(paths.statement(statement.id)));
   });
 
   yield takeEvery(str(goto.tag), function* goToTagWorker(action) {

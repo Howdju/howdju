@@ -75,17 +75,6 @@ export const webpackConfig: HtmlWebpackPlugin.Options = {
           },
         },
       },
-      {
-        directory: "dist/bookmarklet",
-        staticOptions: {
-          setHeaders: (res: Response, path: string, _stat: unknown) => {
-            console.log(`bookmarklet path: ${path}`);
-            if (path.endsWith(".js")) {
-              res.set("Content-Type", "application/javascript");
-            }
-          },
-        },
-      },
     ],
   },
   plugins: [

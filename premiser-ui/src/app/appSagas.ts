@@ -2,7 +2,7 @@ import { put, takeEvery } from "redux-saga/effects";
 import includes from "lodash/includes";
 import get from "lodash/get";
 
-import { apiErrorCodes } from "howdju-common";
+import { apiErrorCodes, toJson } from "howdju-common";
 
 import t, {
   THAT_JUSTIFICATION_ALREADY_EXISTS,
@@ -144,7 +144,7 @@ export function* showAlertForUnexpectedApiError() {
             }
             default: {
               logger.error(`Unexpected error type: ${action.payload}`);
-              logger.error(action.payload);
+              logger.error(`${toJson(action.payload)}`);
               yield put(app.addToast(t(AN_UNEXPECTED_ERROR_OCCURRED)));
               break;
             }
@@ -152,7 +152,7 @@ export function* showAlertForUnexpectedApiError() {
         } else {
           logger.error(`${callApiResponse} missing errorType`);
           logger.error(`Unexpected error type: ${action.payload}`);
-          logger.error(action.payload);
+          logger.error(`${toJson(action.payload)}`);
           yield put(app.addToast(t(AN_UNEXPECTED_ERROR_OCCURRED)));
         }
       }

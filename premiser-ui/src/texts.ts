@@ -1,8 +1,5 @@
 import isFunction from "lodash/isFunction";
 
-import { arrayToObject } from "howdju-common";
-
-import { logger } from "./logger";
 import { isWindowNarrow } from "./util";
 
 export const CREATE_PROPOSITION_SUBMIT_BUTTON_LABEL =
@@ -115,10 +112,6 @@ export const MAIN_TABS_ABOUT_TAB_NAME = "MAIN_TABS_ABOUT_TAB_NAME";
 
 export const YOU_ARE_LOGGED_IN_AS = "YOU_ARE_LOGGED_IN_AS";
 
-export const texts = arrayToObject([
-  "JUSTIFICATION_BASIS_TYPE_JUSTIFICATION_BASIS_COMPOUND",
-]);
-
 const translations = {
   [CREATE_PROPOSITION_SUBMIT_BUTTON_LABEL]: "Create proposition",
   [CREATE_PROPOSITION_SUBMIT_BUTTON_TITLE]: "Tell the world!",
@@ -136,7 +129,8 @@ const translations = {
   [DELETE_PROPOSITION_SUCCESS_TOAST_MESSAGE]: "Deleted the proposition",
   [FETCH_PROPOSITION_JUSTIFICATIONS_FAILURE_MESSAGE]:
     "Unable to load proposition's justifications",
-  [LOGIN_SUCCESS_TOAST_MESSAGE]: (email) => `You have logged in as ${email}`,
+  [LOGIN_SUCCESS_TOAST_MESSAGE]: (email: string) =>
+    `You have logged in as ${email}`,
   [MISSING_PROPOSITION_REDIRECT_TOAST_MESSAGE]:
     "Could not find that proposition",
   [MISSING_STATEMENT_REDIRECT_TOAST_MESSAGE]: "Could not find that statement",
@@ -201,35 +195,20 @@ const translations = {
     isWindowNarrow() ? "Next" : "What's next",
   [MAIN_TABS_ABOUT_TAB_NAME]: "About",
 
-  [YOU_ARE_LOGGED_IN_AS]: (email) => `You are logged in as ${email}`,
+  [YOU_ARE_LOGGED_IN_AS]: (email: string) => `You are logged in as ${email}`,
+} as const;
 
-  [texts.JUSTIFICATION_BASIS_TYPE_JUSTIFICATION_BASIS_COMPOUND]:
-    "Propositions/Paraphrases",
-};
+type TranslationKey = keyof typeof translations;
 
-const keyRegEx = /^[A-Z_]+$/;
-const loggedMissingTranslations = {};
-
-const text = (key, ...args) => {
-  const t = translations[key];
-  if (!t) {
-    const looksLikeKey = keyRegEx.test(key);
-    if (!looksLikeKey) {
-      // For convenience, allow inputting text that needs to be translated.
-      // We try to distinguish by assuming that input that isn't all capitals and underscores is untranslated text and not a key
-      const haveLogged = loggedMissingTranslations[key];
-      // Only complain about each one once
-      if (!haveLogged) {
-        loggedMissingTranslations[key] = true;
-        logger.info(`No translation for text: "${key}"`);
-      }
-      return key;
-    } else {
-      logger.error(`No text key: ${key}`);
-      return "";
-    }
+const text = (key: TranslationKey | string, ...args: any[]) => {
+  if (!(key in translations)) {
+    return key;
   }
-  return isFunction(t) ? t(...args) : t;
+  const t = translations[key as TranslationKey];
+  if (isFunction(t)) {
+    return t(...(args as [any]));
+  }
+  return t;
 };
 
 export default text;
