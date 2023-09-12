@@ -48,34 +48,31 @@ export default function StatementViewer({
 
   return (
     <div {...rest} id={id} className={cn(className, "statement-viewer")}>
-      {statement && (
-        <div className="statement-viewer">
-          <div className="statement-text">
-            <Link to={paths.statement(statement.id, contextTrailItems)}>
-              {describeRootTarget(
-                JustificationRootTargetTypes.STATEMENT,
-                statement
-              )}{" "}
-              {showJustificationCount &&
-                statement.rootJustificationCountByPolarity && (
-                  <JustificationCountViewer
-                    justificationCountByPolarity={
-                      statement.rootJustificationCountByPolarity
-                    }
-                  />
-                )}
-            </Link>
-          </div>
-          {showStatusText && (
-            <div>
-              <span className="entity-status-text">
-                created{creatorNameDescription}{" "}
-                <span title={created}>{age}</span>
-              </span>
-            </div>
-          )}
+      <div className="statement-viewer">
+        <div className="statement-text">
+          <Link to={paths.statement(statement.id, contextTrailItems)}>
+            {describeRootTarget(
+              JustificationRootTargetTypes.STATEMENT,
+              statement
+            )}{" "}
+            {showJustificationCount &&
+              statement.rootJustificationCountByPolarity && (
+                <JustificationCountViewer
+                  justificationCountByPolarity={
+                    statement.rootJustificationCountByPolarity
+                  }
+                />
+              )}
+          </Link>
         </div>
-      )}
+        {showStatusText && (
+          <div>
+            <span className="entity-status-text">
+              created{creatorNameDescription} <span title={created}>{age}</span>
+            </span>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

@@ -5,8 +5,6 @@ import { logger } from "./logger";
 
 type Props = { children: ReactNode };
 type State = {
-  error: Error | undefined;
-  errorInfo: ErrorInfo | undefined;
   errorCorrelationId: string | undefined;
 };
 
@@ -14,15 +12,12 @@ export default class ErrorBoundary extends Component<Props, State> {
   constructor(props: Props) {
     super(props);
     this.state = {
-      error: undefined,
-      errorInfo: undefined,
       errorCorrelationId: undefined,
     };
   }
 
   static getDerivedStateFromError() {
     return {
-      hasError: true,
       errorCorrelationId: uuidv4(),
     };
   }
@@ -38,7 +33,7 @@ export default class ErrorBoundary extends Component<Props, State> {
   }
 
   render() {
-    if (this.state.error) {
+    if (this.state.errorCorrelationId) {
       return (
         <div id="error-boundary">
           <h2>Something went wrong.</h2>
