@@ -78,6 +78,19 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows initial recent propos
                     </span>
                   </a>
                    
+                  <a
+                    href="/propositions/proposition0/usages"
+                    title="used in 0 justifications"
+                  >
+                    <span
+                      class="material-symbols"
+                      style="font-variation-settings: "opsz" 12; font-size: 12px;"
+                    >
+                      merge_type
+                    </span>
+                    0
+                  </a>
+                   
                   <span
                     class="entity-status-text"
                   >
@@ -201,6 +214,19 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows initial recent propos
                     </span>
                   </a>
                    
+                  <a
+                    href="/propositions/proposition1/usages"
+                    title="used in 0 justifications"
+                  >
+                    <span
+                      class="material-symbols"
+                      style="font-variation-settings: "opsz" 12; font-size: 12px;"
+                    >
+                      merge_type
+                    </span>
+                    0
+                  </a>
+                   
                   <span
                     class="entity-status-text"
                   >
@@ -302,6 +328,19 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows initial recent propos
                       0
                       -
                     </span>
+                  </a>
+                   
+                  <a
+                    href="/propositions/proposition2/usages"
+                    title="used in 0 justifications"
+                  >
+                    <span
+                      class="material-symbols"
+                      style="font-variation-settings: "opsz" 12; font-size: 12px;"
+                    >
+                      merge_type
+                    </span>
+                    0
                   </a>
                    
                   <span
@@ -407,6 +446,19 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows initial recent propos
                     </span>
                   </a>
                    
+                  <a
+                    href="/propositions/proposition3/usages"
+                    title="used in 0 justifications"
+                  >
+                    <span
+                      class="material-symbols"
+                      style="font-variation-settings: "opsz" 12; font-size: 12px;"
+                    >
+                      merge_type
+                    </span>
+                    0
+                  </a>
+                   
                   <span
                     class="entity-status-text"
                   >
@@ -508,6 +560,19 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows initial recent propos
                       0
                       -
                     </span>
+                  </a>
+                   
+                  <a
+                    href="/propositions/proposition4/usages"
+                    title="used in 0 justifications"
+                  >
+                    <span
+                      class="material-symbols"
+                      style="font-variation-settings: "opsz" 12; font-size: 12px;"
+                    >
+                      merge_type
+                    </span>
+                    0
                   </a>
                    
                   <span
@@ -613,6 +678,19 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows initial recent propos
                     </span>
                   </a>
                    
+                  <a
+                    href="/propositions/proposition5/usages"
+                    title="used in 0 justifications"
+                  >
+                    <span
+                      class="material-symbols"
+                      style="font-variation-settings: "opsz" 12; font-size: 12px;"
+                    >
+                      merge_type
+                    </span>
+                    0
+                  </a>
+                   
                   <span
                     class="entity-status-text"
                   >
@@ -714,6 +792,19 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows initial recent propos
                       0
                       -
                     </span>
+                  </a>
+                   
+                  <a
+                    href="/propositions/proposition6/usages"
+                    title="used in 0 justifications"
+                  >
+                    <span
+                      class="material-symbols"
+                      style="font-variation-settings: "opsz" 12; font-size: 12px;"
+                    >
+                      merge_type
+                    </span>
+                    0
                   </a>
                    
                   <span
@@ -845,6 +936,19 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows more propositions whe
                     </span>
                   </a>
                    
+                  <a
+                    href="/propositions/proposition0/usages"
+                    title="used in 0 justifications"
+                  >
+                    <span
+                      class="material-symbols"
+                      style="font-variation-settings: "opsz" 12; font-size: 12px;"
+                    >
+                      merge_type
+                    </span>
+                    0
+                  </a>
+                   
                   <span
                     class="entity-status-text"
                   >
@@ -946,6 +1050,19 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows more propositions whe
                       0
                       -
                     </span>
+                  </a>
+                   
+                  <a
+                    href="/propositions/proposition1/usages"
+                    title="used in 0 justifications"
+                  >
+                    <span
+                      class="material-symbols"
+                      style="font-variation-settings: "opsz" 12; font-size: 12px;"
+                    >
+                      merge_type
+                    </span>
+                    0
                   </a>
                    
                   <span
@@ -1051,6 +1168,19 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows more propositions whe
                     </span>
                   </a>
                    
+                  <a
+                    href="/propositions/proposition2/usages"
+                    title="used in 0 justifications"
+                  >
+                    <span
+                      class="material-symbols"
+                      style="font-variation-settings: "opsz" 12; font-size: 12px;"
+                    >
+                      merge_type
+                    </span>
+                    0
+                  </a>
+                   
                   <span
                     class="entity-status-text"
                   >
@@ -1152,6 +1282,19 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows more propositions whe
                       0
                       -
                     </span>
+                  </a>
+                   
+                  <a
+                    href="/propositions/proposition3/usages"
+                    title="used in 0 justifications"
+                  >
+                    <span
+                      class="material-symbols"
+                      style="font-variation-settings: "opsz" 12; font-size: 12px;"
+                    >
+                      merge_type
+                    </span>
+                    0
                   </a>
                    
                   <span
@@ -1277,6 +1420,19 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows more propositions whe
                     </span>
                   </a>
                    
+                  <a
+                    href="/propositions/proposition4/usages"
+                    title="used in 0 justifications"
+                  >
+                    <span
+                      class="material-symbols"
+                      style="font-variation-settings: "opsz" 12; font-size: 12px;"
+                    >
+                      merge_type
+                    </span>
+                    0
+                  </a>
+                   
                   <span
                     class="entity-status-text"
                   >
@@ -1378,6 +1534,19 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows more propositions whe
                       0
                       -
                     </span>
+                  </a>
+                   
+                  <a
+                    href="/propositions/proposition5/usages"
+                    title="used in 0 justifications"
+                  >
+                    <span
+                      class="material-symbols"
+                      style="font-variation-settings: "opsz" 12; font-size: 12px;"
+                    >
+                      merge_type
+                    </span>
+                    0
                   </a>
                    
                   <span
@@ -1483,6 +1652,19 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows more propositions whe
                     </span>
                   </a>
                    
+                  <a
+                    href="/propositions/proposition6/usages"
+                    title="used in 0 justifications"
+                  >
+                    <span
+                      class="material-symbols"
+                      style="font-variation-settings: "opsz" 12; font-size: 12px;"
+                    >
+                      merge_type
+                    </span>
+                    0
+                  </a>
+                   
                   <span
                     class="entity-status-text"
                   >
@@ -1584,6 +1766,19 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows more propositions whe
                       0
                       -
                     </span>
+                  </a>
+                   
+                  <a
+                    href="/propositions/proposition7/usages"
+                    title="used in 0 justifications"
+                  >
+                    <span
+                      class="material-symbols"
+                      style="font-variation-settings: "opsz" 12; font-size: 12px;"
+                    >
+                      merge_type
+                    </span>
+                    0
                   </a>
                    
                   <span
@@ -1689,6 +1884,19 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows more propositions whe
                     </span>
                   </a>
                    
+                  <a
+                    href="/propositions/proposition8/usages"
+                    title="used in 0 justifications"
+                  >
+                    <span
+                      class="material-symbols"
+                      style="font-variation-settings: "opsz" 12; font-size: 12px;"
+                    >
+                      merge_type
+                    </span>
+                    0
+                  </a>
+                   
                   <span
                     class="entity-status-text"
                   >
@@ -1790,6 +1998,19 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows more propositions whe
                       0
                       -
                     </span>
+                  </a>
+                   
+                  <a
+                    href="/propositions/proposition9/usages"
+                    title="used in 0 justifications"
+                  >
+                    <span
+                      class="material-symbols"
+                      style="font-variation-settings: "opsz" 12; font-size: 12px;"
+                    >
+                      merge_type
+                    </span>
+                    0
                   </a>
                    
                   <span
@@ -1895,6 +2116,19 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows more propositions whe
                     </span>
                   </a>
                    
+                  <a
+                    href="/propositions/proposition10/usages"
+                    title="used in 0 justifications"
+                  >
+                    <span
+                      class="material-symbols"
+                      style="font-variation-settings: "opsz" 12; font-size: 12px;"
+                    >
+                      merge_type
+                    </span>
+                    0
+                  </a>
+                   
                   <span
                     class="entity-status-text"
                   >
@@ -1996,6 +2230,19 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows more propositions whe
                       0
                       -
                     </span>
+                  </a>
+                   
+                  <a
+                    href="/propositions/proposition11/usages"
+                    title="used in 0 justifications"
+                  >
+                    <span
+                      class="material-symbols"
+                      style="font-variation-settings: "opsz" 12; font-size: 12px;"
+                    >
+                      merge_type
+                    </span>
+                    0
                   </a>
                    
                   <span
@@ -2101,6 +2348,19 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows more propositions whe
                     </span>
                   </a>
                    
+                  <a
+                    href="/propositions/proposition12/usages"
+                    title="used in 0 justifications"
+                  >
+                    <span
+                      class="material-symbols"
+                      style="font-variation-settings: "opsz" 12; font-size: 12px;"
+                    >
+                      merge_type
+                    </span>
+                    0
+                  </a>
+                   
                   <span
                     class="entity-status-text"
                   >
@@ -2204,6 +2464,19 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows more propositions whe
                     </span>
                   </a>
                    
+                  <a
+                    href="/propositions/proposition13/usages"
+                    title="used in 0 justifications"
+                  >
+                    <span
+                      class="material-symbols"
+                      style="font-variation-settings: "opsz" 12; font-size: 12px;"
+                    >
+                      merge_type
+                    </span>
+                    0
+                  </a>
+                   
                   <span
                     class="entity-status-text"
                   >
@@ -2305,6 +2578,19 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows more propositions whe
                       0
                       -
                     </span>
+                  </a>
+                   
+                  <a
+                    href="/propositions/proposition14/usages"
+                    title="used in 0 justifications"
+                  >
+                    <span
+                      class="material-symbols"
+                      style="font-variation-settings: "opsz" 12; font-size: 12px;"
+                    >
+                      merge_type
+                    </span>
+                    0
                   </a>
                    
                   <span

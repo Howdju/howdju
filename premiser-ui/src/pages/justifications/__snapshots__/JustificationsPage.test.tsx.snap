@@ -65,6 +65,19 @@ exports[`JustificationsPage Can add a compound-based justification 1`] = `
                           class="relation-counts"
                         >
                            
+                          <a
+                            href="/propositions/1/usages"
+                            title="used in 0 justifications"
+                          >
+                            <span
+                              class="material-symbols"
+                              style="font-variation-settings: "opsz" 12; font-size: 12px;"
+                            >
+                              merge_type
+                            </span>
+                            0
+                          </a>
+                           
                           <span
                             class="entity-status-text"
                           >
@@ -241,6 +254,19 @@ exports[`JustificationsPage Can add a compound-based justification 1`] = `
                                   </span>
                                 </a>
                                  
+                                <a
+                                  href="/propositions/911/usages"
+                                  title="used in 0 justifications"
+                                >
+                                  <span
+                                    class="material-symbols"
+                                    style="font-variation-settings: "opsz" 12; font-size: 12px;"
+                                  >
+                                    merge_type
+                                  </span>
+                                  0
+                                </a>
+                                 
                                 <span
                                   class="entity-status-text"
                                 >
@@ -336,6 +362,19 @@ exports[`JustificationsPage Can add a compound-based justification 1`] = `
                                     0
                                     -
                                   </span>
+                                </a>
+                                 
+                                <a
+                                  href="/propositions/912/usages"
+                                  title="used in 0 justifications"
+                                >
+                                  <span
+                                    class="material-symbols"
+                                    style="font-variation-settings: "opsz" 12; font-size: 12px;"
+                                  >
+                                    merge_type
+                                  </span>
+                                  0
                                 </a>
                                  
                                 <span
@@ -568,6 +607,19 @@ exports[`JustificationsPage Shows a justified proposition 1`] = `
                         <div
                           class="relation-counts"
                         >
+                           
+                          <a
+                            href="/propositions/1/usages"
+                            title="used in 0 justifications"
+                          >
+                            <span
+                              class="material-symbols"
+                              style="font-variation-settings: "opsz" 12; font-size: 12px;"
+                            >
+                              merge_type
+                            </span>
+                            0
+                          </a>
                            
                           <span
                             class="entity-status-text"
