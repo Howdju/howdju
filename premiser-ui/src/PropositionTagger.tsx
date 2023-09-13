@@ -1,7 +1,14 @@
 import React from "react";
 import find from "lodash/find";
 
-import { EntityId, PropositionTagVoteOut, Tag, tagEqual } from "howdju-common";
+import {
+  CreateTagInput,
+  EntityId,
+  PropositionTagVoteOut,
+  Tag,
+  tagEqual,
+  TagOut,
+} from "howdju-common";
 
 import { combineIds, combineSuggestionsKeys } from "./viewModels";
 import { api, goto } from "./actions";
@@ -12,9 +19,9 @@ import { toCompatibleTagVotes } from "./util";
 
 interface Props {
   id: ComponentId;
-  tags?: Tag[];
+  tags?: TagOut[];
   votes: PropositionTagVoteOut[];
-  recommendedTags?: Tag[];
+  recommendedTags?: TagOut[];
   suggestionsKey: SuggestionsKey;
   propositionId: EntityId;
 }
@@ -32,8 +39,11 @@ const PropositionTagger: React.FC<Props> = (props: Props) => {
 
   const dispatch = useAppDispatch();
 
-  const onClickTag = (tag: Tag) => {
-    dispatch(goto.tag(tag));
+  const onClickTag = (tag: CreateTagInput | TagOut) => {
+    if (!tag.id) {
+      return;
+    }
+    dispatch(goto.tag(tag as TagOut));
   };
 
   const onTag = (tag: Tag) => {

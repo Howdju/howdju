@@ -1,28 +1,36 @@
-import { take, put, takeEvery, race, call, delay } from "redux-saga/effects";
+import { take, put, takeEvery, race, call, delay } from "typed-redux-saga";
 
 import {
+  AppearanceOut,
   assert,
   isTruthy,
-  JustificationRootTargetTypes,
+  JustificationOut,
   JustificationTargetTypes,
-  newImpossibleError,
+  MediaExcerptOut,
+  PropositionOut,
+  StatementOut,
   toJson,
 } from "howdju-common";
 
-import { EditorTypes } from "../../reducers/editors";
-import { editors, goto, flows, str } from "../../actions";
+import { EditorType } from "../../reducers/editors";
+import { editors, goto, flows } from "../../actions";
 import config from "@/config";
 import { logger } from "@/logger";
 import { push } from "connected-react-router";
 import paths from "@/paths";
+import { EditorId } from "@/types";
 
-const editorCommitResultGotoActionCreators = {
-  [EditorTypes.PROPOSITION]: ({ proposition }) => goto.proposition(proposition),
-  [EditorTypes.WRIT_QUOTE]: ({ writQuote }) => goto.writQuote(writQuote),
-  [EditorTypes.JUSTIFIED_SENTENCE]: ({
+export const editorCommitResultGotoActionCreators = {
+  PROPOSITION: ({ proposition }: { proposition: PropositionOut }) =>
+    goto.proposition(proposition),
+  JUSTIFIED_SENTENCE: ({
     proposition,
     statement,
     justification,
+  }: {
+    proposition: PropositionOut;
+    statement: StatementOut;
+    justification: JustificationOut;
   }) => {
     if (proposition) {
       return goto.proposition(proposition);
@@ -40,29 +48,26 @@ const editorCommitResultGotoActionCreators = {
       case JustificationTargetTypes.STATEMENT: {
         return goto.statement(justification.target.entity);
       }
-    }
-
-    assert(
-      () => justification.target.type === JustificationTargetTypes.JUSTIFICATION
-    );
-    switch (justification.rootTargetType) {
-      case JustificationRootTargetTypes.PROPOSITION: {
-        return goto.proposition(justification.rootTarget);
-      }
-      case JustificationRootTargetTypes.STATEMENT: {
-        return goto.statement(justification.rootTarget);
+      case "JUSTIFICATION": {
+        return goto.justification(justification.target.entity);
       }
     }
-
-    throw newImpossibleError(
-      `A justification must either target or be rooted in a JustificationRootTargetTypes`
-    );
   },
-  MEDIA_EXCERPT: ({ mediaExcerpt }) => goto.mediaExcerpt(mediaExcerpt),
-  APPEARANCE: ({ appearance }) => push(paths.appearance(appearance)),
+  MEDIA_EXCERPT: ({ mediaExcerpt }: { mediaExcerpt: MediaExcerptOut }) =>
+    goto.mediaExcerpt(mediaExcerpt),
+  APPEARANCE: ({ appearance }: { appearance: AppearanceOut }) =>
+    push(paths.appearance(appearance)),
 };
 
-const gotoEditorCommitResultAction = (editorType, resultAction) => {
+export type ViewableEditorType = Extract<
+  EditorType,
+  keyof typeof editorCommitResultGotoActionCreators
+>;
+
+function gotoEditorCommitResultAction(
+  editorType: ViewableEditorType,
+  resultAction: ReturnType<typeof editors.commitEdit.result>
+) {
   const gotoActionCreator = editorCommitResultGotoActionCreators[editorType];
   if (!gotoActionCreator) {
     throw new Error(
@@ -71,21 +76,21 @@ const gotoEditorCommitResultAction = (editorType, resultAction) => {
   }
   const gotoAction = gotoActionCreator(resultAction.payload.result);
   return gotoAction;
-};
+}
 
 export function* commitEditorThenView() {
-  yield takeEvery(
-    str(flows.commitEditThenView),
+  yield* takeEvery(
+    flows.commitEditThenView,
     function* commitEditThenViewWorker(action) {
       const { editorType, editorId } = action.payload;
-      yield put(editors.commitEdit(editorType, editorId));
-      const { resultAction, timeout } = yield race({
+      yield* put(editors.commitEdit(editorType, editorId));
+      const { resultAction, timeout } = yield* race({
         resultAction: call(getResultAction, editorType, editorId),
         timeout: delay(config.commitEditThenViewResponseTimeoutMs),
       });
       if (resultAction) {
         if (!resultAction.error) {
-          yield put(gotoEditorCommitResultAction(editorType, resultAction));
+          yield* put(gotoEditorCommitResultAction(editorType, resultAction));
         } else {
           logger.info(`Error commiting editor: ${toJson(resultAction.error)}`);
         }
@@ -100,9 +105,9 @@ export function* commitEditorThenView() {
   );
 }
 
-function* getResultAction(editorType, editorId) {
+function* getResultAction(editorType: EditorType, editorId: EditorId) {
   while (true) {
-    const resultAction = yield take(str(editors.commitEdit.result));
+    const resultAction = yield* take(editors.commitEdit.result);
     if (
       resultAction.payload.editorType === editorType &&
       resultAction.payload.editorId === editorId

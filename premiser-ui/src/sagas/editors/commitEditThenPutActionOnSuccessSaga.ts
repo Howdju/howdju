@@ -1,17 +1,17 @@
-import { take, put, takeEvery } from "redux-saga/effects";
+import { take, put, takeEvery } from "typed-redux-saga";
 
-import { editors, flows, str } from "../../actions";
+import { editors, flows } from "../../actions";
 
 export function* commitEditThenPutActionOnSuccess() {
   yield takeEvery(
-    str(flows.commitEditThenPutActionOnSuccess),
+    flows.commitEditThenPutActionOnSuccess,
     function* commitEditThenPutActionOnSuccessWorker(action) {
       const { editorType, editorId } = action.payload;
       yield put(editors.commitEdit(editorType, editorId));
       let resultAction = null;
       // TODO(469) add a race to timeout
       while (!resultAction) {
-        const currResultAction = yield take(str(editors.commitEdit.result));
+        const currResultAction = yield* take(editors.commitEdit.result);
         if (
           currResultAction.payload.editorType === editorType &&
           currResultAction.payload.editorId === editorId

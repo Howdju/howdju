@@ -1,32 +1,21 @@
 import React from "react";
 
-import { schemaSettings, Tag } from "howdju-common";
+import { schemaSettings, TagOut } from "howdju-common";
 
 import { api } from "./actions";
 import { tagSchema } from "./normalizationSchemas";
 import { cancelTagNameSuggestions } from "./apiActions";
-import {
-  ComponentId,
-  ComponentName,
-  OnKeyDownCallback,
-  OnPropertyChangeCallback,
-  SuggestionsKey,
-} from "./types";
+import { OnKeyDownCallback } from "./types";
 import ApiAutoComplete, {
   Props as ApiAutocompleteProps,
 } from "./ApiAutoComplete";
 
 interface Props
   extends Omit<
-    ApiAutocompleteProps<Tag>,
+    ApiAutocompleteProps<TagOut>,
     "labelKey" | "fetchSuggestions" | "cancelSuggestions" | "suggestionSchema"
   > {
-  id: ComponentId;
-  name: ComponentName;
-  suggestionsKey: SuggestionsKey;
-  onPropertyChange: OnPropertyChangeCallback;
   onKeyDown: OnKeyDownCallback;
-  onAutoComplete?: (tag: Tag) => void;
 }
 
 export default function TagNameAutocomplete({

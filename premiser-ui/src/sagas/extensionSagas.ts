@@ -1,15 +1,16 @@
-import { call, delay, race, take, takeEvery } from "redux-saga/effects";
+import { call, delay, race, take, takeEvery } from "typed-redux-saga";
+import { Action } from "@reduxjs/toolkit";
 
-import { actions, inIframe } from "howdju-client-common";
-import { logger } from "../logger";
-
-import config from "../config";
 import { domSerializationSafe, toJson } from "howdju-common";
+import { actions, inIframe } from "howdju-client-common";
+
+import { logger } from "../logger";
+import config from "../config";
 
 // const EXTENSION_ID = 'amnnpakeakkebmgkgjjenjkbkhkgkadh'
 
 export function* postExtensionMessages() {
-  yield takeEvery(
+  yield* takeEvery(
     [
       actions.extension.highlightTarget,
       actions.extension.highlightUrlLocator,
@@ -36,7 +37,7 @@ export function* postExtensionMessages() {
       }
 
       // For some reason the content script doesn't always see the first message
-      const { ack, timeout } = yield race({
+      const { ack, timeout } = yield* race({
         ack: take(actions.extensionFrame.ackMessage),
         timeout: delay(config.contentScriptAckTimeoutMs),
         repostAction: call(repostMessage, action),
@@ -52,9 +53,9 @@ export function* postExtensionMessages() {
   );
 }
 
-function* repostMessage(action) {
+function* repostMessage(action: Action) {
   while (true) {
-    yield delay(config.contentScriptAckDelayMs);
+    yield* delay(config.contentScriptAckDelayMs);
     logger.trace(`repostMessage ${JSON.stringify({ action })}`);
     window.parent.postMessage(action, "*");
   }

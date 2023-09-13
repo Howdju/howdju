@@ -86,7 +86,7 @@ if (process.env.CHECK_DUPLICATES) {
 }
 
 const baseWebpackConfig = {
-  entry: [projectConfig.paths.src("main.js")],
+  entry: [projectConfig.paths.src("main.tsx")],
   output: {
     filename: projectConfig.names.js,
     path: projectConfig.paths.dist(),

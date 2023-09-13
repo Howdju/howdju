@@ -28,12 +28,12 @@ import {
   StatementOut,
   ContextTrailItem,
   nextContextTrailItem,
-  PropositionRef,
   isNegative,
   Justification,
   JustificationOut,
   JustificationView,
   ConnectingEntityInfo,
+  Entity,
 } from "howdju-common";
 
 import * as characters from "./characters";
@@ -241,7 +241,7 @@ export function extendContextTrailItems(
 }
 
 /** Information sufficient to reference a proposition in the UI. */
-export interface PropositionRefView extends PropositionRef {
+export interface PropositionRefView extends Entity {
   /** A slugified version of the proposition text. */
   slug?: string;
 }

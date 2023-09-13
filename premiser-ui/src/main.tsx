@@ -10,7 +10,7 @@ import { render } from "react-dom";
 import { Provider } from "react-redux";
 import { Configuration } from "@react-md/layout";
 import { FormThemeProvider } from "@react-md/form";
-import moment from "moment";
+import * as moment from "moment";
 import momentDurationFormatSetup from "moment-duration-format";
 
 import App from "./App";

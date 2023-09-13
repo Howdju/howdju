@@ -5,12 +5,13 @@ import includes from "lodash/includes";
 import { Button } from "react-md";
 
 import {
-  makeTag,
+  makeCreateTagInput,
   cleanWhitespace,
   tagEqual,
-  Tag,
   TagVote,
   logger,
+  TagOut,
+  CreateTagInput,
 } from "howdju-common";
 
 import { combineIds } from "./viewModels";
@@ -26,16 +27,16 @@ import {
 
 import "./TagsControl.scss";
 
-export type OnClickTagCallback = (tag: Tag) => void;
-export type OnTagCallback = (tag: Tag) => void;
-export type OnUntagCallback = (tag: Tag) => void;
-export type OnAntitagCallback = (tag: Tag) => void;
+export type OnClickTagCallback = (tag: CreateTagInput | TagOut) => void;
+export type OnTagCallback = (tag: CreateTagInput | TagOut) => void;
+export type OnUntagCallback = (tag: CreateTagInput | TagOut) => void;
+export type OnAntitagCallback = (tag: CreateTagInput | TagOut) => void;
 
 export interface Props {
   id: ComponentId;
-  tags: Tag[];
+  tags: (CreateTagInput | TagOut)[];
   votes: TagVote[];
-  recommendedTags?: Tag[];
+  recommendedTags?: TagOut[];
   commitChipKeys?: string[];
   suggestionsKey: SuggestionsKey;
   votePolarity?: {
@@ -107,7 +108,7 @@ export default function TagsControl(props: Props) {
     setTagName(properties.tagName);
   };
 
-  const onTagNameAutocomplete = (tag: Tag) => {
+  const onTagNameAutocomplete = (tag: TagOut) => {
     onTag(tag);
     setTagName("");
   };
@@ -162,7 +163,7 @@ export default function TagsControl(props: Props) {
     if (!cleanTagName) {
       return;
     }
-    const tag = makeTag({ name: cleanTagName });
+    const tag = makeCreateTagInput({ name: cleanTagName });
     onTag(tag);
   };
 

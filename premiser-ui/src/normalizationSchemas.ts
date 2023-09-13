@@ -17,7 +17,7 @@ import {
   SourceExcerptParaphrase,
   SourceOut,
   StatementOut,
-  Tag,
+  TagOut,
   TagVote,
   toSlug,
   UrlLocator,
@@ -33,7 +33,7 @@ import { applyCustomizations, momentConversion } from "./normalizationUtil";
 export const userSchema = new schema.Entity<User>("users");
 export const usersSchema = new schema.Array(userSchema);
 
-export const tagSchema = new schema.Entity<Tag>("tags");
+export const tagSchema = new schema.Entity<TagOut>("tags");
 export const tagsSchema = new schema.Array(tagSchema);
 
 export const propositionTagVoteSchema = new schema.Entity<PropositionTagVote>(

@@ -6,18 +6,18 @@ import { ActionCreatorWithPreparedPayload } from "@reduxjs/toolkit";
 import {
   MediaExcerptInfo,
   EntityId,
-  WritQuote,
   JustificationRootTargetType,
-  Proposition,
   Url,
   PropositionCompoundAtom,
   Tag,
-  Statement,
-  Justification,
   JustificationBasisSourceType,
   PersistedJustificationWithRootRef,
   MediaExcerptOut,
   CreatePersorgInput,
+  PropositionOut,
+  StatementOut,
+  WritQuoteOut,
+  TagOut,
 } from "howdju-common";
 
 import { EditorEntity, EditorType } from "./reducers/editors";
@@ -30,6 +30,7 @@ import {
 import { createAction, actionTypeDelim } from "./actionHelpers";
 import { AnyAction } from "@reduxjs/toolkit";
 import { AnyApiAction } from "./apiActions";
+import { ViewableEditorType } from "./sagas/editors/commitEditorThenViewSaga";
 
 export { str } from "./actionHelpers";
 
@@ -66,39 +67,6 @@ export const ui = {
   loginCredentialChange: createAction("LOGIN_CREDENTIAL_CHANGE"),
   clearJustificationsSearch: createAction("UI/CLEAR_JUSTIFICATIONS_SEARCH"),
 
-  // TODO(92): remove transient actions, reducers, and sagas
-  beginInteractionWithTransient: createAction(
-    "UI/BEGIN_INTERACTION_WITH_TRANSIENT",
-    (transientId: unknown) => ({ transientId })
-  ),
-  endInteractionWithTransient: createAction(
-    "UI/END_INTERACTION_WITH_TRANSIENT",
-    (transientId: unknown) => ({ transientId })
-  ),
-  showTransient: createAction("UI/SHOW_TRANSIENT", (transientId: unknown) => ({
-    transientId,
-  })),
-  scheduleDelayedHideTransient: createAction(
-    "UI/SCHEDULE_DELAYED_HIDE_TRANSIENT",
-    (transientId: unknown, hideDelay: unknown) => ({ transientId, hideDelay })
-  ),
-  tryCancelDelayedHideTransient: createAction(
-    "UI/TRY_CANCEL_DELAYED_HIDE_TRANSIENT",
-    (transientId, cause) => ({ transientId, cause })
-  ),
-  cancelDelayedHideTransient: createAction(
-    "UI/CANCEL_DELAYED_HIDE_TRANSIENT",
-    (transientId: unknown) => ({ transientId })
-  ),
-  hideAllTransients: createAction("UI/HIDE_ALL_TRANSIENTS"),
-  hideOtherTransients: createAction(
-    "UI/HIDE_OTHER_TRANSIENTS",
-    (visibleTransientId: unknown) => ({ visibleTransientId })
-  ),
-  hideTransient: createAction("UI/HIDE_TRANSIENT", (transientId, cause) => ({
-    transientId,
-    cause,
-  })),
   windowResize: createAction("UI/WINDOW_RESIZE"),
 
   clearTaggedPropositions: createAction("UI/CLEAR_TAGGED_PROPOSITIONS"),
@@ -141,7 +109,9 @@ export type EditorCommitActionCreator = EditorActionCreator & {
       editorType: EditorType;
       editorId: EditorId;
       result: any;
-    }
+    },
+    string,
+    boolean
   >;
 };
 const commitEdit = createAction(
@@ -374,24 +344,26 @@ export const goto = {
       loginRedirectLocation,
     })
   ),
-  proposition: createAction("GOTO/PROPOSITION", (proposition: Proposition) => ({
-    proposition,
-  })),
-  statement: createAction("GOTO/STATEMENT", (statement: Statement) => ({
+  proposition: createAction(
+    "GOTO/PROPOSITION",
+    (proposition: PropositionOut) => ({
+      proposition,
+    })
+  ),
+  statement: createAction("GOTO/STATEMENT", (statement: StatementOut) => ({
     statement,
   })),
   justification: createAction(
     "GOTO/JUSTIFICATION",
-    (justification: Justification | PersistedJustificationWithRootRef) => ({
+    (justification: PersistedJustificationWithRootRef) => ({
       justification,
     })
   ),
   mainSearch: createAction("GOTO/MAIN_SEARCH", (mainSearchText: string) => ({
     mainSearchText,
   })),
-  tag: createAction("GOTO/TAG", (tag: Tag) => ({ tag })),
-  createJustification: createAction("GOTO/CREATE_JUSTIFICATION"),
-  writQuote: createAction("GOTO/WRIT_QUOTE", (writQuote: WritQuote) => ({
+  tag: createAction("GOTO/TAG", (tag: TagOut) => ({ tag })),
+  writQuote: createAction("GOTO/WRIT_QUOTE", (writQuote: WritQuoteOut) => ({
     writQuote,
   })),
   newMediaExcerpt: createAction("GOTO/NEW_MEDIA_EXCERPT"),
@@ -418,7 +390,10 @@ export const flows = {
   ),
   commitEditThenView: createAction(
     "FLOWS/COMMIT_PROPOSITION_THEN_VIEW",
-    (editorType: EditorType, editorId: EditorId) => ({ editorType, editorId })
+    (editorType: ViewableEditorType, editorId: EditorId) => ({
+      editorType,
+      editorId,
+    })
   ),
   commitEditThenPutActionOnSuccess: createAction(
     "FLOWS/COMMIT_EDIT_THEN_PUT_ACTION_ON_SUCCESS",

@@ -1,6 +1,7 @@
 import * as googleAnalytics from "./googleAnalytics";
 import * as mixpanel from "./mixpanel";
 import * as heapAnalytics from "./heapAnalytics";
+import { UserExternalIds } from "howdju-common";
 
 export const sendPageView = (path: string) => {
   googleAnalytics.sendPageView(path);
@@ -23,13 +24,7 @@ export const trackOutboundLinkClick = (url: string) => {
   googleAnalytics.trackOutboundLinkClick(url);
 };
 
-interface ExternalIds {
-  googleAnalyticsId: string;
-  mixpanelId: string;
-  heapAnalyticsId: string;
-}
-
-export const identify = (externalIds: ExternalIds) => {
+export const identify = (externalIds: Partial<UserExternalIds>) => {
   const { googleAnalyticsId, mixpanelId, heapAnalyticsId } = externalIds;
   if (googleAnalyticsId) {
     googleAnalytics.setUserId(googleAnalyticsId);

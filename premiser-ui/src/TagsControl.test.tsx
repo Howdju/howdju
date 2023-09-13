@@ -8,9 +8,11 @@ import {
   withMockServer,
 } from "./testUtils";
 import {
+  brandedParse,
   CreatePropositionInput,
   httpStatusCodes,
-  Tag,
+  TagOut,
+  TagRef,
   TagVote,
 } from "howdju-common";
 import { InferResponseBody, serviceRoutes } from "howdju-service-routes";
@@ -84,7 +86,10 @@ describe("TagsControl", () => {
     const onUnTag = jest.fn();
 
     const target: CreatePropositionInput = { text: "A modest proposal" };
-    const tag: Tag = { name: "A wee bonny tag" };
+    const tag: TagOut = brandedParse(TagRef, {
+      id: "1",
+      name: "A wee bonny tag",
+    });
     const vote: TagVote = {
       target,
       targetType: "PROPOSITION",

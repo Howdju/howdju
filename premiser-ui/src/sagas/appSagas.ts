@@ -1,5 +1,5 @@
 import moment from "moment";
-import { delay, put, race, select, take, takeEvery } from "redux-saga/effects";
+import { delay, put, race, select, take, takeEvery } from "typed-redux-saga";
 import { REHYDRATE } from "redux-persist/lib/constants";
 
 import { app } from "../actions";
@@ -11,21 +11,21 @@ import { logger } from "../logger";
 let isRehydrated = false;
 
 export function* flagRehydrate() {
-  yield takeEvery(REHYDRATE, function* flagRehydrateWorker() {
+  yield* takeEvery(REHYDRATE, function* flagRehydrateWorker() {
     isRehydrated = true;
   });
 }
 
 export function* checkAuthExpirationOnRehydrate() {
-  yield takeEvery(REHYDRATE, function* checkAuthExpirationOnRehydrateWorker() {
-    yield put(app.checkAuthExpiration());
+  yield* takeEvery(REHYDRATE, function* checkAuthExpirationOnRehydrateWorker() {
+    yield* put(app.checkAuthExpiration());
   });
 }
 
 export function* tryWaitOnRehydrate() {
   if (!isRehydrated) {
     logger.debug("Waiting on rehydrate");
-    const { rehydrate, timeout } = yield race({
+    const { rehydrate, timeout } = yield* race({
       rehydrate: take(REHYDRATE),
       timeout: delay(config.rehydrateTimeoutMs),
     });
@@ -41,21 +41,21 @@ export function* tryWaitOnRehydrate() {
 
 export function* checkAuthExpirationPeriodically() {
   while (true) {
-    yield put(app.checkAuthExpiration());
-    yield delay(config.authExpirationCheckFrequencyMs);
+    yield* put(app.checkAuthExpiration());
+    yield* delay(config.authExpirationCheckFrequencyMs);
   }
 }
 
 export function* checkAuthExpiration() {
-  yield takeEvery(
+  yield* takeEvery(
     app.checkAuthExpiration,
     function* checkAuthExpirationWorker() {
-      const authTokenExpiration = yield select(selectAuthTokenExpiration);
+      const authTokenExpiration = yield* select(selectAuthTokenExpiration);
       if (
         authTokenExpiration &&
         moment.utc().isAfter(moment.utc(authTokenExpiration))
       ) {
-        yield put(app.clearAuthToken());
+        yield* put(app.clearAuthToken());
       }
     }
   );

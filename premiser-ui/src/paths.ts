@@ -9,9 +9,9 @@ import {
   JustificationBasisSourceType,
   JustificationRootTargetTypes,
   JustificationSearchFilters,
-  JustificationView,
-  MediaExcerptRef,
   newExhaustedEnumError,
+  PersistedEntity,
+  PersistedJustificationWithRootRef,
   PersorgOut,
   serializeContextTrail,
   SourceOut,
@@ -75,7 +75,7 @@ class Paths {
       : "";
     return `/s/${statementId}${query}${anchor}`;
   };
-  justification = (j: JustificationView) => {
+  justification = (j: PersistedJustificationWithRootRef) => {
     switch (j.rootTargetType) {
       case JustificationRootTargetTypes.PROPOSITION:
         return this.proposition(j.rootTarget, [], false, j.id);
@@ -145,7 +145,7 @@ class Paths {
   statementUsages = (statementId: EntityId) =>
     `/statement-usages?statementId=${statementId}`;
 
-  mediaExcerpt = (mediaExcerpt: MediaExcerptRef) =>
+  mediaExcerpt = (mediaExcerpt: PersistedEntity) =>
     `/media-excerpts/${mediaExcerpt.id}`;
   source = (source: SourceOut) =>
     `/sources/${source.id}/${toSlug(source.description)}`;
