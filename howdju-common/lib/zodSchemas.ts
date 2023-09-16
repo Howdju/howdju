@@ -39,7 +39,7 @@ export type CreateModel = z.output<typeof CreateModel>;
 
 export type PersistCreateModel<T extends CreateModel> = T & PersistedEntity;
 
-const PersistedEntity = Entity.required();
+export const PersistedEntity = Entity.required();
 export type PersistedEntity = z.infer<typeof PersistedEntity>;
 
 export const UserExternalIds = z.object({

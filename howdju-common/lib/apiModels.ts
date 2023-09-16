@@ -260,10 +260,10 @@ export type PropositionTagVoteOut = Persisted<PropositionTagVote>;
 
 /** A mixin type for Entities that can be tagged. */
 export type TaggedEntityOut = PersistedEntity & {
-  tags?: Tag[];
+  tags?: TagOut[];
   // TODO(112) put votes on tags and type it as a viewmodel
   tagVotes?: TagVoteViewModel[];
-  recommendedTags?: Tag[];
+  recommendedTags?: TagOut[];
 };
 
 export type JustificationFilters = Partial<
@@ -327,4 +327,4 @@ export type PersorgOut = Persisted<Persorg> & {
   creator?: CreatorBlurb;
 };
 
-export type TagOut = Persisted<Tag>;
+export type TagOut = Tag & PersistedEntity;

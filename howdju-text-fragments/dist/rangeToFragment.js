@@ -32195,6 +32195,7 @@
     PasswordResetConfirmation: () => PasswordResetConfirmation,
     PasswordResetRequest: () => PasswordResetRequest,
     PasswordResetRequestRef: () => PasswordResetRequestRef,
+    PersistedEntity: () => PersistedEntity,
     Persorg: () => Persorg,
     PersorgRef: () => PersorgRef,
     PicRegion: () => PicRegion,
@@ -32358,6 +32359,7 @@
     makeCreateRegistrationRequestInput: () => makeCreateRegistrationRequestInput,
     makeCreateSourceExcerptInput: () => makeCreateSourceExcerptInput,
     makeCreateStatementInput: () => makeCreateStatementInput,
+    makeCreateTagInput: () => makeCreateTagInput,
     makeCreateUrl: () => makeCreateUrl,
     makeCreateUrlLocatorInput: () => makeCreateUrlLocatorInput,
     makeCreateVidSegmentInput: () => makeCreateVidSegmentInput,
@@ -32370,7 +32372,6 @@
     makePropositionTagVote: () => makePropositionTagVote,
     makeStandaloneCode: () => makeStandaloneCode,
     makeStandaloneValidate: () => makeStandaloneValidate,
-    makeTag: () => makeTag,
     makeUrl: () => makeUrl,
     makeUrlInput: () => makeUrlInput,
     makeValidate: () => makeValidate,
@@ -33847,7 +33848,7 @@
     wikipediaUrl: void 0
   });
   var idEqual = (id1, id2) => isDefined(id1) && isDefined(id2) && (0, import_lodash7.toString)(id1) === (0, import_lodash7.toString)(id2);
-  var makeTag = (props) => (0, import_lodash7.merge)(
+  var makeCreateTagInput = (props) => (0, import_lodash7.merge)(
     {
       name: ""
     },

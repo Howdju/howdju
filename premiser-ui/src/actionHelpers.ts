@@ -140,10 +140,10 @@ function reduxActionsCompatiblePrepare<P>(
 export function createAction<T extends string>(
   type: T
 ): ActionCreatorWithoutPayload<T>;
-export function createAction<T extends string, P, Args extends any[]>(
+export function createAction<T extends string, P, Args extends any[], M>(
   type: T,
-  payloadCreatorOrPrepare: (...args: Args) => { payload: P; meta?: any } | P
-): ActionCreatorWithPreparedPayload<Args, P, T>;
+  payloadCreatorOrPrepare: (...args: Args) => { payload: P; meta?: M } | P
+): ActionCreatorWithPreparedPayload<Args, P, T, boolean, M>;
 export function createAction<T extends string, P>(
   type: T,
   payloadCreatorOrPrepare?: (...args: any[]) => { payload: P; meta?: any } | P

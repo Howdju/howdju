@@ -1,4 +1,4 @@
-import { EntityId } from "howdju-common";
+import { EntityId, UserExternalIds } from "howdju-common";
 import { denormalize, schema, Schema } from "normalizr";
 import { EditorType } from "./reducers/editors";
 import { RootState } from "./setupStore";
@@ -11,8 +11,10 @@ export const selectJustificationSearchFilters = (state: RootState) =>
   state.justificationsSearchPage.filters;
 export const selectLoginRedirectLocation = (state: RootState) =>
   state.app.loginRedirectLocation;
-export const selectUserExternalIds = (state: RootState, defaultValue: object) =>
-  state.auth.user?.externalIds || defaultValue;
+export const selectUserExternalIds = (
+  state: RootState,
+  defaultValue: Partial<UserExternalIds>
+) => state.auth.user?.externalIds || defaultValue;
 export const selectLoggedErrors = (state: RootState) =>
   state.errors.loggedErrors;
 export const selectIsWindowNarrow = (state: RootState) =>

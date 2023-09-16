@@ -19,6 +19,7 @@ import {
   cancelPropositionTextSuggestions,
   cancelTagNameSuggestions,
   cancelWritTitleSuggestions,
+  callApiResponse,
 } from "../apiActions";
 import { logger } from "../logger";
 import { callApi } from "./apiSagas";
@@ -57,7 +58,14 @@ export function* callApiForResource<A extends AnyApiAction>(action: A) {
       }
     }
 
-    const task = yield* fork(callApi, endpoint, fetchInit, canSkipRehydrate);
+    const task = yield* fork(
+      callApi as unknown as (
+        ...args: any[]
+      ) => ReturnType<typeof callApiResponse>,
+      endpoint,
+      fetchInit,
+      canSkipRehydrate
+    );
 
     if (cancelKey) {
       cancelableResourceCallTasks[cancelKey] = task;

@@ -44,6 +44,7 @@ import {
   CreateSourceExcerpt,
   CreateSourceExcerptInput,
   CreateStatementInput,
+  CreateTagInput,
   CreateUrl,
   CreateUrlInput,
   CreateUrlLocatorInput,
@@ -226,7 +227,7 @@ export const makeCreatePersorg = (): CreatePersorg => ({
 export const idEqual = (id1?: EntityId, id2?: EntityId) =>
   isDefined(id1) && isDefined(id2) && asString(id1) === asString(id2);
 
-export const makeTag = (props: Partial<Tag>): Tag =>
+export const makeCreateTagInput = (props: Partial<Tag>): CreateTagInput =>
   merge(
     {
       name: "",

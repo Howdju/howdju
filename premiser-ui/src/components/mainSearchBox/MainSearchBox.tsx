@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 
-import { Proposition } from "howdju-common";
+import { PropositionOut } from "howdju-common";
 
 import { propositionSchema } from "../../normalizationSchemas";
 import { ellipsis } from "../../characters";
@@ -37,7 +37,7 @@ export default function MainSearchBox() {
     dispatch(goto.mainSearch(searchText));
   };
 
-  const onAutoComplete = (proposition: Proposition) => {
+  const onAutoComplete = (proposition: PropositionOut) => {
     dispatch(mainSearch.textChange(""));
     dispatch(cancelMainSearchSuggestions(mainSearchSuggestionsKey));
     dispatch(goto.proposition(proposition));

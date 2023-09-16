@@ -2,10 +2,12 @@ import React from "react";
 import find from "lodash/find";
 
 import {
+  CreateTagInput,
   Tag,
   tagEqual,
   TaggableEntityType,
   TaggedEntityOut,
+  TagOut,
   TagVoteRef,
 } from "howdju-common";
 
@@ -33,8 +35,11 @@ const Tagger: React.FC<Props> = (props: Props) => {
 
   const dispatch = useAppDispatch();
 
-  const onClickTag = (tag: Tag) => {
-    dispatch(goto.tag(tag));
+  const onClickTag = (tag: CreateTagInput | TagOut) => {
+    if (!tag.id) {
+      return;
+    }
+    dispatch(goto.tag(tag as TagOut));
   };
 
   const findTagVote = (tag: Tag) => {

@@ -9,7 +9,6 @@ import editors from "./editors";
 import entities from "./entities";
 import errors from "./errors";
 import privacyConsent from "./privacyConsent";
-import ui from "./ui";
 import { mainSearch } from "../components/mainSearchBox/mainSearchBoxSlice";
 import { mainSearchPage } from "../pages/mainSearch/mainSearchPageSlice";
 import { justificationsSearchPage } from "@/pages/justificationsSearch/justificationsSearchPageSlice";
@@ -67,7 +66,6 @@ export default (history: History) =>
     router: connectRouter(history),
     sourcePage,
     tagPage,
-    ui,
     urlLocatorsEditorFields,
     widgets,
   });

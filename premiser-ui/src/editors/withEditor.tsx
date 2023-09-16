@@ -52,6 +52,10 @@ import {
 import SubmitButton from "./SubmitButton";
 import { useAppDispatch } from "@/hooks";
 import { ServiceRoute } from "howdju-service-routes";
+import {
+  editorCommitResultGotoActionCreators,
+  ViewableEditorType,
+} from "@/sagas/editors/commitEditorThenViewSaga";
 
 export class CommitThenPutAction {
   constructor(public action: AnyAction) {}
@@ -254,7 +258,14 @@ export default function withEditor<
       if (editorCommitBehavior === "JustCommit") {
         dispatch(editors.commitEdit(editorType, editorId));
       } else if (editorCommitBehavior === "CommitThenView") {
-        dispatch(flows.commitEditThenView(editorType, editorId));
+        if (!(editorType in editorCommitResultGotoActionCreators)) {
+          logger.error(`No goto action creator for editor type ${editorType}.`);
+          dispatch(editors.commitEdit(editorType, editorId));
+        } else {
+          dispatch(
+            flows.commitEditThenView(editorType as ViewableEditorType, editorId)
+          );
+        }
       } else if (editorCommitBehavior.action) {
         dispatch(
           flows.commitEditThenPutActionOnSuccess(

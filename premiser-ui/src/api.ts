@@ -20,12 +20,14 @@ const axios = Axios.create({
   withCredentials: true,
 });
 
+export type FetchHeaders = Record<string, string>;
+
 export interface RequestOptions {
   endpoint: string;
   method: HttpMethod;
   body: string;
   requestId?: string;
-  headers: Record<string, string>;
+  headers: FetchHeaders;
 }
 
 export function sendRequest({

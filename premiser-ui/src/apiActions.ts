@@ -100,6 +100,7 @@ import { actionTypeDelim, createAction } from "./actionHelpers";
 import { str } from "./actionHelpers";
 import { UiErrorType } from "./uiErrors";
 import { SuggestionsKey, WidgetId } from "./types";
+import { HttpStatusCode } from "axios";
 
 // TODO(113) type response.error as an Error when we remove redux-actions conventions
 export type ApiActionCreator<
@@ -372,9 +373,15 @@ export const callApiResponse = createAction(
   (result) => result
 ) as ActionCreatorWithPreparedPayload<
   unknown[], // Args
-  { errorType: UiErrorType },
+  // Payload
+  {
+    // this is only present when the payload is an error and it comes from CustomError
+    errorType?: UiErrorType;
+    // this is only present when the payload is an error created by newApiResponseError.
+    httpStatusCode?: HttpStatusCode;
+  },
   string, // Type
-  Error,
+  boolean, // Error
   unknown // Meta
 >;
 

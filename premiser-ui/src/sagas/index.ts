@@ -1,7 +1,6 @@
 import { all } from "redux-saga/effects";
 import { mapValues } from "lodash";
 
-import handleTransientInteractions from "./transientSagas";
 import { cancelResourceApiCalls, resourceApiCalls } from "./resourceApiSagas";
 import {
   configureAfterLogin,
@@ -80,8 +79,6 @@ export default () =>
     mediaExcerptUsagesSaga(),
 
     editorCommitEdit(),
-
-    handleTransientInteractions(),
 
     sendPageView(),
 

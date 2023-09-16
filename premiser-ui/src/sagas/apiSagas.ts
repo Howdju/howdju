@@ -1,15 +1,21 @@
-import { put, call, select } from "redux-saga/effects";
+import { put, call, select } from "typed-redux-saga";
 import cloneDeep from "lodash/cloneDeep";
 import isEmpty from "lodash/isEmpty";
 
-import { sendRequest } from "../api";
+import { FetchHeaders, RequestOptions, sendRequest } from "../api";
 import { selectAuthToken } from "../selectors";
 import { callApiResponse } from "../apiActions";
 import { tryWaitOnRehydrate } from "./appSagas";
 import { pageLoadId, getSessionStorageId } from "../identifiers";
 import * as customHeaderKeys from "../customHeaderKeys";
 
-export function* callApi(endpoint, fetchInit = {}, canSkipRehydrate = false) {
+export type FetchInit = Omit<RequestOptions, "endpoint">;
+
+export function* callApi(
+  endpoint: string,
+  fetchInit = {} as FetchInit,
+  canSkipRehydrate = false
+) {
   try {
     if (!canSkipRehydrate) {
       yield* tryWaitOnRehydrate();
@@ -18,17 +24,19 @@ export function* callApi(endpoint, fetchInit = {}, canSkipRehydrate = false) {
     fetchInit = cloneDeep(fetchInit);
     fetchInit.headers = yield* constructHeaders(fetchInit);
 
-    const responseData = yield call(sendRequest, { endpoint, ...fetchInit });
-    return yield put(callApiResponse(responseData));
+    const responseData = yield* call(sendRequest, { endpoint, ...fetchInit });
+    const responseAction = callApiResponse(responseData);
+    return yield* put(responseAction);
   } catch (error) {
-    return yield put(callApiResponse(error));
+    const responseAction = callApiResponse(error);
+    return yield* put(responseAction);
   }
 }
 
-function* constructHeaders(fetchInit) {
-  const headersUpdate = {};
+function* constructHeaders(fetchInit: FetchInit) {
+  const headersUpdate = {} as FetchHeaders;
   // Add auth token to all API requests
-  const authToken = yield select(selectAuthToken);
+  const authToken = yield* select(selectAuthToken);
   if (authToken) {
     headersUpdate.Authorization = `Bearer ${authToken}`;
   }
