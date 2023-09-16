@@ -1,4 +1,4 @@
-import { isArray, map, union, isPlainObject } from "lodash";
+import { isArray, map, union, isPlainObject, isString, unionBy } from "lodash";
 import { normalize, Schema } from "normalizr";
 import deepMergeLib, { Options as DeepMergeOptions } from "deepmerge";
 import { AnyAction, createSlice } from "@reduxjs/toolkit";
@@ -413,55 +413,46 @@ export const deepMergeOptions: DeepMergeOptions = {
   isMergeableObject: (val) => isPlainObject(val) || isArray(val),
   // The API sends null where undefined is meant (JSON doesn't have an undefined type, and our
   // code base doesn't use null.)
-  customMerge: (_key) => nullToUndefined,
+  customMerge: (key) => {
+    if (entityWrapperArrayKeys.has(key)) {
+      // In addition to the checks in the method, only merge when the key is one we expect to
+      // contain EntityWrapper arrays. (Otherwise we could use this as our arrayMerge.)
+      return mergeEntityWrapperArrays;
+    }
+    return nullToUndefined;
+  },
 };
 
-type EntityOrWrapper = { id?: EntityId; entity?: EntityId } | object;
-export function unionArraysDistinctIdsCustomizer(
-  destVal: EntityOrWrapper[],
-  srcVal: EntityOrWrapper[]
-) {
-  if (!isArray(destVal) || !isArray(srcVal)) {
-    // tells lodash to use its default method
-    return undefined;
+/**
+ * Merge two arrays of EntityWrapper arrays.
+ *
+ * Some entities have arrays of entity wrappers. These entity wrappers are of the form:
+ * `{ type: string, entity: Entity }` (which normalizes to `{ type: string, entity: EntityId}`).
+ * For these arrays, we need a special array merge operation that unions based on their `entity`
+ * rather than the whole object.
+ *
+ * TODO is PropositionCompound the only entity that will ever have this? Why not just remove the wrapper
+ * and have PropositionCompound.atoms be an array of Propositions?
+ */
+function mergeEntityWrapperArrays(x: any, y: any) {
+  if (!isArray(x) || !isArray(y)) {
+    // Entity arrays must be arrays.
+    return deepMerge(x, y);
   }
-  // For values that have IDs, overwrite dest values
-  const seenDestIdIndices = new Map<EntityId, number>();
-  const filteredDestVals = [] as EntityOrWrapper[];
-  destVal.forEach((val) => {
-    const id = "id" in val ? val.id : "entity" in val ? val.entity : undefined;
-    if (val && id) {
-      if (!seenDestIdIndices.has(id)) {
-        filteredDestVals.push(val);
-        seenDestIdIndices.set(id, filteredDestVals.length - 1);
-      } else {
-        filteredDestVals[seenDestIdIndices.get(id) as number] = val;
-      }
-    } else {
-      // If the value lacks an ID, just merge it
-      filteredDestVals.push(val);
-    }
-  });
-
-  const seenSrcIdIndices = new Map<EntityId, number>();
-  const filteredSrcVals = [] as EntityOrWrapper[];
-  srcVal.forEach((val) => {
-    const id = "id" in val ? val.id : "entity" in val ? val.entity : undefined;
-    if (val && id && isNumber(seenDestIdIndices.get(id))) {
-      // Overwrite dest items having the same ID
-      filteredDestVals[seenDestIdIndices.get(id) as number] = val;
-    } else if (val && id && isNumber(seenSrcIdIndices.get(id))) {
-      filteredSrcVals[seenSrcIdIndices.get(id) as number] = val;
-    } else if (val && id) {
-      filteredSrcVals.push(val);
-      seenSrcIdIndices.set(id, filteredSrcVals.length - 1);
-    } else {
-      // If the value lacks an ID, just merge it
-      filteredSrcVals.push(val);
-    }
-  });
-  return union(filteredDestVals, filteredSrcVals);
+  if (
+    !x.every((v) => "entity" in v && isString(v.entity)) ||
+    !y.every((v) => "entity" in v && isString(v.entity))
+  ) {
+    // All items in an entity array contain an 'entity' property that is an EntityId (string).
+    return deepMerge(x, y);
+  }
+  return unionBy(x, y, "entity");
 }
+
+const entityWrapperArrayKeys = new Set([
+  // PropositionCompound atoms.
+  "atoms",
+]);
 
 function nullToUndefined(targetValue: any, srcValue: any) {
   if (srcValue === null) {

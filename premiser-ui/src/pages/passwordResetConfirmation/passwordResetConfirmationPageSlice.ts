@@ -89,6 +89,7 @@ export function* checkPasswordResetRequestCodeSaga() {
             )
           );
         } else {
+          // TODO(#113): remove typecast
           const payload =
             responseAction.payload as unknown as EditorCommitErrorPayload;
           let errorCode = payload.sourceError.body?.errorCode as ErrorCode;

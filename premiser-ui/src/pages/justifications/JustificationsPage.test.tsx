@@ -280,7 +280,6 @@ describe("JustificationsPage", () => {
 
     // Assert
     jest.runAllTimers();
-    screen.debug(container, Number.MAX_SAFE_INTEGER);
     expect(await screen.findByText(basisText1)).toBeInTheDocument();
     expect(await screen.findByText(basisText2)).toBeInTheDocument();
 
