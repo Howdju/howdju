@@ -328,3 +328,5 @@ export type PersorgOut = Persisted<Persorg> & {
 };
 
 export type TagOut = Tag & PersistedEntity;
+
+export type JustificationVoteOut = JustificationVote & PersistedEntity;

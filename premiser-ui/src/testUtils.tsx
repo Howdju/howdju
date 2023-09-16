@@ -13,6 +13,8 @@ import { Saga } from "redux-saga";
 import { head } from "lodash";
 
 import { AppStore, RootState, sagaMiddleware, setupStore } from "./setupStore";
+import { PersistedEntity } from "howdju-common";
+import { normalize, Schema } from "normalizr";
 
 interface ProviderRenderOptions
   extends DefaultStoreOptions,
@@ -217,4 +219,15 @@ export function getElementByQuerySelector(selector: string) {
     throw new Error(`No element found for selector: ${selector}`);
   }
   return element;
+}
+
+export function normalizeEntity<E extends PersistedEntity, S extends Schema<E>>(
+  entity: E,
+  schema: S
+) {
+  const normalEntity = normalize(entity, schema).entities[entity.id];
+  if (!normalEntity) {
+    throw new Error("normalizing entity resulted in undefined");
+  }
+  return normalEntity;
 }

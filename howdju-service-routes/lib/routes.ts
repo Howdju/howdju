@@ -47,6 +47,7 @@ import {
   CreateAppearanceConfirmation,
   CreatePasswordResetRequest,
   PasswordResetConfirmation,
+  JustificationVoteOut,
 } from "howdju-common";
 import {
   EntityNotFoundError,
@@ -1401,10 +1402,10 @@ export const serviceRoutes = {
         { body: { justificationVote: createJustificationVote }, authToken }
       ) => {
         const justificationVote =
-          await appProvider.justificationVotesService.createVote(
+          (await appProvider.justificationVotesService.createVote(
             authToken,
             createJustificationVote
-          );
+          )) as JustificationVoteOut;
 
         return { body: { justificationVote } };
       }

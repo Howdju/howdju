@@ -3,7 +3,7 @@ import { put, takeEvery } from "typed-redux-saga";
 
 import { ApiErrorCode, DurationDisplayInfo } from "howdju-common";
 
-import { ErrorPayload } from "@/types";
+import { EditorCommitErrorPayload } from "@/types";
 import { editors } from "@/actions";
 
 export type ErrorCode =
@@ -53,7 +53,7 @@ export function* passwordResetRequestPageSaga() {
     }
     if (payload instanceof Error) {
       // TODO(113): remove typecast
-      const errorPayload = payload as unknown as ErrorPayload;
+      const errorPayload = payload as unknown as EditorCommitErrorPayload;
       let errorCode = errorPayload.sourceError.body?.errorCode as ErrorCode;
       if (!["ENTITY_NOT_FOUND"].includes(errorCode)) {
         errorCode = "UNKNOWN";

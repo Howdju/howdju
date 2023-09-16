@@ -8,7 +8,7 @@ import {
   JustificationView,
   JustificationVote,
   MediaExcerptOut,
-  Persorg,
+  PersorgOut,
   PicRegion,
   PropositionCompoundOut,
   PropositionCompoundView,
@@ -20,9 +20,9 @@ import {
   TagOut,
   TagVote,
   toSlug,
-  UrlLocator,
+  UrlLocatorOut,
   UrlOut,
-  User,
+  UserOut,
   VidSegment,
   Writ,
   WritQuote,
@@ -30,7 +30,7 @@ import {
 
 import { applyCustomizations, momentConversion } from "./normalizationUtil";
 
-export const userSchema = new schema.Entity<User>("users");
+export const userSchema = new schema.Entity<UserOut>("users");
 export const usersSchema = new schema.Array(userSchema);
 
 export const tagSchema = new schema.Entity<TagOut>("tags");
@@ -68,7 +68,7 @@ export const propositionSchema = new schema.Entity<PropositionOut>(
 );
 export const propositionsSchema = new schema.Array(propositionSchema);
 
-export const persorgSchema = new schema.Entity<Persorg>(
+export const persorgSchema = new schema.Entity<PersorgOut>(
   "persorgs",
   {
     creator: userSchema,
@@ -162,7 +162,7 @@ export const sourceExcerptParaphraseSchema =
 export const urlSchema = new schema.Entity<UrlOut>("urls");
 export const urlsSchema = new schema.Array(urlSchema);
 
-export const urlLocatorSchema = new schema.Entity<UrlLocator>(
+export const urlLocatorSchema = new schema.Entity<UrlLocatorOut>(
   "urlLocators",
   {
     url: urlSchema,
@@ -291,11 +291,13 @@ const connectingEntitySchema = new schema.Union(
   },
   (_value, parent) => parent.connectingEntityType
 );
-export const contextTrailItemsSchema = new schema.Array(
-  new schema.Entity<ContextTrailItem>("contextTrailItems", {
+export const contextTrailItemSchema = new schema.Entity<ContextTrailItem>(
+  "contextTrailItems",
+  {
     connectingEntity: connectingEntitySchema,
-  })
+  }
 );
+export const contextTrailItemsSchema = new schema.Array(contextTrailItemSchema);
 
 export const mainSearchResultSchema = {
   mediaExcerpts: mediaExcerptsSchema,

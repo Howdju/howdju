@@ -57,6 +57,16 @@ module.exports = {
             message:
               "Tests should complete within the default timeout. (Did you forget to remove a call to jest.setTimeout?)",
           },
+          {
+            selector:
+              "CallExpression[callee.object.name='screen'][callee.property.name='debug']",
+            message: "Do not commit calls to screen.debug.",
+          },
+          {
+            selector:
+              "CallExpression[callee.object.name='screen'][callee.property.name='logTestingPlaygroundURL']",
+            message: "Do not commit calls to screen.logTestingPlaygroundURL.",
+          },
         ],
         "jest/no-commented-out-tests": "error",
         "jest/no-disabled-tests": "error",

@@ -1,6 +1,7 @@
 import {
   ApiErrorCode,
   Entity,
+  HttpStatusCode,
   JustificationView,
   MediaExcerptView,
   ModelErrors,
@@ -156,12 +157,17 @@ export const CreatePropositionPageMode = {
 export type CreatePropositionPageMode =
   typeof CreatePropositionPageMode[keyof typeof CreatePropositionPageMode];
 
-export interface ErrorPayload {
-  sourceError: {
-    errorType: UiErrorType;
-    body?: {
-      errorCode: ApiErrorCode;
-      errors: { [key: string]: ModelErrors<any> };
-    };
+// TODO(#113): remove this type by properly typing the action error values
+export interface ApiErrorPayload {
+  errorType: UiErrorType;
+  httpStatusCode: HttpStatusCode;
+  body?: {
+    errorCode: ApiErrorCode;
+    errors: { [key: string]: ModelErrors<any> };
   };
+}
+
+// TODO(#113): remove this type by properly typing the action error values
+export interface EditorCommitErrorPayload {
+  sourceError: ApiErrorPayload;
 }

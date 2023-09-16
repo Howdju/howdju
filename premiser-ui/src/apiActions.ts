@@ -101,6 +101,7 @@ import { str } from "./actionHelpers";
 import { UiErrorType } from "./uiErrors";
 import { SuggestionsKey, WidgetId } from "./types";
 import { HttpStatusCode } from "axios";
+import { TagPropositionVote } from "./viewModels";
 
 // TODO(113) type response.error as an Error when we remove redux-actions conventions
 export type ApiActionCreator<
@@ -1056,7 +1057,7 @@ export const api = {
   verifyJustification: apiActionCreator(
     "VERIFY_JUSTIFICATION",
     serviceRoutes.createJustificationVote,
-    (justification) => {
+    (justification: JustificationView) => {
       const justificationVote = {
         justificationId: justification.id,
         polarity: JustificationVotePolarities.POSITIVE,
@@ -1079,7 +1080,7 @@ export const api = {
   unVerifyJustification: apiActionCreator(
     "UN_VERIFY_JUSTIFICATION",
     serviceRoutes.deleteJustificationVote,
-    (justification) => {
+    (justification: JustificationView) => {
       const justificationVote = {
         justificationId: justification.id,
         polarity: JustificationVotePolarities.POSITIVE,
@@ -1101,7 +1102,7 @@ export const api = {
   disverifyJustification: apiActionCreator(
     "DISVERIFY_JUSTIFICATION",
     serviceRoutes.createJustificationVote,
-    (justification) => ({
+    (justification: JustificationView) => ({
       config: {
         body: {
           justificationVote: {
@@ -1120,7 +1121,7 @@ export const api = {
   unDisverifyJustification: apiActionCreator(
     "UN_DISVERIFY_JUSTIFICATION",
     serviceRoutes.deleteJustificationVote,
-    (justification) => ({
+    (justification: JustificationView) => ({
       config: {
         body: {
           justificationVote: {
@@ -1207,7 +1208,7 @@ export const api = {
       tag: Tag,
       prevPropositionTagVote?: PropositionTagVoteOut
     ) => {
-      const propositionTagVote = {
+      const propositionTagVote: TagPropositionVote = {
         polarity: PropositionTagVotePolarities.POSITIVE,
         proposition: PropositionRef.parse({ id: propositionId }),
         tag,
@@ -1232,7 +1233,7 @@ export const api = {
       tag: Tag,
       prevPropositionTagVote?: PropositionTagVoteOut
     ) => {
-      const propositionTagVote = {
+      const propositionTagVote: TagPropositionVote = {
         polarity: PropositionTagVotePolarities.NEGATIVE,
         proposition: PropositionRef.parse({ id: propositionId }),
         tag,

@@ -93,7 +93,12 @@ import {
   USER_IS_INACTIVE_ERROR,
 } from "@/texts";
 import { logger } from "@/logger";
-import { EditorId, ErrorPayload, ModelFactory, PropertyChanges } from "@/types";
+import {
+  EditorId,
+  EditorCommitErrorPayload,
+  ModelFactory,
+  PropertyChanges,
+} from "@/types";
 import { combineObjectKey } from "@/viewModels";
 import { PayloadOf } from "howdju-client-common";
 
@@ -378,50 +383,52 @@ const defaultEditorActions = {
       ...defaultEditorState(),
       isSaved: true,
     }),
-    throw: produce((state: EditorState<any>, action: Action<ErrorPayload>) => {
-      state.isSaving = false;
+    throw: produce(
+      (state: EditorState<any>, action: Action<EditorCommitErrorPayload>) => {
+        state.isSaving = false;
 
-      const sourceError = action.payload.sourceError;
-      if (sourceError.errorType !== uiErrorTypes.API_RESPONSE_ERROR) {
-        return;
-      }
+        const sourceError = action.payload.sourceError;
+        if (sourceError.errorType !== uiErrorTypes.API_RESPONSE_ERROR) {
+          return;
+        }
 
-      const responseBody = sourceError.body;
-      if (
-        !responseBody ||
-        !includes(
-          [
-            apiErrorCodes.VALIDATION_ERROR,
-            apiErrorCodes.ENTITY_CONFLICT,
-            apiErrorCodes.USER_ACTIONS_CONFLICT,
-            apiErrorCodes.AUTHORIZATION_ERROR,
-          ],
-          get(responseBody, "errorCode")
-        )
-      ) {
-        return;
-      }
+        const responseBody = sourceError.body;
+        if (
+          !responseBody ||
+          !includes(
+            [
+              apiErrorCodes.VALIDATION_ERROR,
+              apiErrorCodes.ENTITY_CONFLICT,
+              apiErrorCodes.USER_ACTIONS_CONFLICT,
+              apiErrorCodes.AUTHORIZATION_ERROR,
+            ],
+            get(responseBody, "errorCode")
+          )
+        ) {
+          return;
+        }
 
-      // For now, just remove any top-level errors.
-      // TODO(26): figure out a rational way to handle translating entities to requests and
-      // responses to entity errors.
-      const errorKeys = filter(
-        keys(responseBody.errors),
-        (k) => k !== "_errors"
-      );
-      if (errorKeys.length !== 1) {
-        // TODO(26): figure out an approach that automatically translates the response to the model
-        // rather than assuming that the response errors has one field corresponding to the
-        // editEntity.
-        //
-        // See EditorCommitCrudActionConfig.responseErrorTransformer.
-        throw newProgrammingError(
-          "The default reducer can only handle a single top-level error key"
+        // For now, just remove any top-level errors.
+        // TODO(26): figure out a rational way to handle translating entities to requests and
+        // responses to entity errors.
+        const errorKeys = filter(
+          keys(responseBody.errors),
+          (k) => k !== "_errors"
         );
+        if (errorKeys.length !== 1) {
+          // TODO(26): figure out an approach that automatically translates the response to the model
+          // rather than assuming that the response errors has one field corresponding to the
+          // editEntity.
+          //
+          // See EditorCommitCrudActionConfig.responseErrorTransformer.
+          throw newProgrammingError(
+            "The default reducer can only handle a single top-level error key"
+          );
+        }
+        const errorKey = errorKeys[0];
+        state.errors = responseBody.errors[errorKey];
       }
-      const errorKey = errorKeys[0];
-      state.errors = responseBody.errors[errorKey];
-    }),
+    ),
   },
   [str(editors.cancelEdit)]: (state: EditorState<any>) => ({
     ...state,

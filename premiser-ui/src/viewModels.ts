@@ -34,6 +34,8 @@ import {
   JustificationView,
   ConnectingEntityInfo,
   Entity,
+  CreatePropositionTagVote,
+  PropositionRef,
 } from "howdju-common";
 
 import * as characters from "./characters";
@@ -257,3 +259,8 @@ export function isCounter<
 } {
   return j.target.type === "JUSTIFICATION" && isNegative(j);
 }
+
+/** A CreatePropositionTagVote with a persisted proposition */
+export type TagPropositionVote = CreatePropositionTagVote & {
+  proposition: PropositionRef;
+};

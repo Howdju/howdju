@@ -176,9 +176,8 @@ describe("JustificationsPage", () => {
     expect(await screen.findByText(updatedText)).toBeInTheDocument();
   });
 
-  test("Can add a compound-based justification", async () => {
+  test("can add a compound-based justification", async () => {
     // Arrange
-
     const user = setupUserEvent();
     const justifications: JustificationOut[] = [];
     const rootTargetId = "1";
@@ -281,6 +280,7 @@ describe("JustificationsPage", () => {
 
     // Assert
     jest.runAllTimers();
+    screen.debug(container, Number.MAX_SAFE_INTEGER);
     expect(await screen.findByText(basisText1)).toBeInTheDocument();
     expect(await screen.findByText(basisText2)).toBeInTheDocument();
 

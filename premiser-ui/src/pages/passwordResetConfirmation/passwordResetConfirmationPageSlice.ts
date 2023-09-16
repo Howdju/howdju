@@ -5,7 +5,7 @@ import { ApiErrorCode, PasswordResetConfirmation } from "howdju-common";
 
 import { api, ApiResponseActionMeta } from "@/apiActions";
 import config from "@/config";
-import { ErrorPayload } from "@/types";
+import { EditorCommitErrorPayload } from "@/types";
 import { editors } from "@/actions";
 
 export type ErrorCode =
@@ -89,8 +89,8 @@ export function* checkPasswordResetRequestCodeSaga() {
             )
           );
         } else {
-          // TODO(113): remove typecast
-          const payload = responseAction.payload as unknown as ErrorPayload;
+          const payload =
+            responseAction.payload as unknown as EditorCommitErrorPayload;
           let errorCode = payload.sourceError.body?.errorCode as ErrorCode;
           if (
             !["ENTITY_NOT_FOUND", "EXPIRED", "CONSUMED"].includes(errorCode)
