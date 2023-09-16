@@ -26,12 +26,10 @@ export function* callApi(
 
     const responseData = yield* call(sendRequest, { endpoint, ...fetchInit });
     const responseAction = callApiResponse(responseData);
-    yield* put(responseAction);
-    return responseAction;
+    return yield* put(responseAction);
   } catch (error) {
     const responseAction = callApiResponse(error);
     return yield* put(responseAction);
-    return responseAction;
   }
 }
 
