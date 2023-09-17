@@ -15,6 +15,7 @@ import {
   DownstreamServiceError,
   EntityConflictError,
   EntityNotFoundError,
+  EntityTooOldToModifyError,
   EntityValidationError,
   InvalidLoginError,
   InvalidRequestError,
@@ -142,6 +143,13 @@ export async function routeRequest(
         body: {
           errorCode: apiErrorCodes.ENTITY_CONFLICT,
           errors: err.errors,
+        },
+      });
+    } else if (err instanceof EntityTooOldToModifyError) {
+      return conflict({
+        callback,
+        body: {
+          message: err.message,
         },
       });
     } else if (err instanceof ConflictError) {

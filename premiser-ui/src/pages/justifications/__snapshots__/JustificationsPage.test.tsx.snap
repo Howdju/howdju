@@ -1,6 +1,201 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`JustificationsPage Can add a compound-based justification 1`] = `
+exports[`JustificationsPage Shows a justified proposition 1`] = `
+<div>
+  <div
+    id="justifications-page"
+  >
+    <div
+      class="md-grid md-grid--top"
+    >
+      <div />
+      <div
+        class="md-cell md-cell--12"
+      >
+        <div
+          class=""
+        >
+          <div
+            class="root-target-background"
+          >
+            <div
+              class="md-paper md-paper--1 md-card md-background--card root-target-card"
+            >
+              <section
+                class="md-card-text root-target-card-contents"
+              >
+                <div
+                  class="entity-viewer"
+                >
+                  <div
+                    class="entity-viewer--header"
+                  >
+                    <a
+                      href="/p/1/the-proposition-text"
+                    >
+                      <i
+                        class="md-icon material-icons"
+                        role="presentation"
+                        title="Proposition"
+                      >
+                        short_text
+                      </i>
+                    </a>
+                  </div>
+                  <div
+                    class="entity-viewer--entity"
+                  >
+                    <div
+                      class="proposition-viewer"
+                      id="justifications-page--root-target--proposition-entity-viewer"
+                    >
+                      <div
+                        class="proposition-viewer"
+                      >
+                        <div
+                          class="proposition-text"
+                        >
+                          <a
+                            href="/p/1/the-proposition-text"
+                          >
+                            the-proposition-text
+                          </a>
+                        </div>
+                        <div
+                          class="relation-counts"
+                        >
+                           
+                          <a
+                            href="/propositions/1/usages"
+                            title="used in 0 justifications"
+                          >
+                            <span
+                              class="material-symbols"
+                              style="font-variation-settings: "opsz" 12; font-size: 12px;"
+                            >
+                              merge_type
+                            </span>
+                            0
+                          </a>
+                           
+                          <span
+                            class="entity-status-text"
+                          >
+                            <a
+                              class="clickable"
+                              title="0 appearances"
+                            >
+                              <span
+                                class="material-symbols"
+                                style="font-variation-settings: "opsz" 12; font-size: 12px;"
+                              >
+                                pin_drop
+                              </span>
+                              0
+                            </a>
+                          </span>
+                        </div>
+                        <div>
+                          <span
+                            class="entity-status-text"
+                          >
+                            created
+                            
+                             
+                            <span
+                              title="12 Jan 2023 4:23:12 PM +00:00"
+                            >
+                              8 hours ago
+                            </span>
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    aria-expanded="false"
+                    aria-haspopup="true"
+                    class="md-layover md-layover--simplified md-inline-block md-menu-container context-menu context-menu--proposition"
+                    id="justifications-page--root-target--menu"
+                  >
+                    <button
+                      class="md-btn md-btn--icon md-pointer--hover md-inline-block hidden"
+                      id="justifications-page--root-target--menu-toggle"
+                      title="Actions"
+                      type="button"
+                    >
+                      <div
+                        class="md-ink-container"
+                      />
+                      <i
+                        class="md-icon material-icons md-text--inherit"
+                      >
+                        more_vert
+                      </i>
+                    </button>
+                  </div>
+                </div>
+                <div
+                  class="chips-list"
+                >
+                  <button
+                    class="md-btn md-btn--icon md-pointer--hover md-inline-block"
+                    title="Add tag"
+                    type="button"
+                  >
+                    <div
+                      class="md-ink-container"
+                    />
+                    <i
+                      class="md-icon material-icons md-text--inherit"
+                    >
+                      add
+                    </i>
+                  </button>
+                </div>
+              </section>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="md-cell md-cell--12 cell--centered-contents"
+      >
+        <div>
+          No justifications.
+        </div>
+      </div>
+      <div
+        class="md-cell md-cell--12 cell--centered-contents"
+      >
+        <button
+          class="md-btn md-btn--flat md-btn--text md-pointer--hover md-text md-inline-block"
+          type="button"
+        >
+          <div
+            class="md-ink-container"
+          />
+          Add one now
+        </button>
+      </div>
+    </div>
+    <div
+      class="md-grid--bottom md-grid"
+    >
+      <div
+        class="md-cell md-cell--6 md-cell--8-tablet md-cell--4-phone proposition-justifications-justification-trees--positive"
+        style="position: relative;"
+      />
+      <div
+        class="md-cell md-cell--6 md-cell--8-tablet md-cell--4-phone proposition-justifications-justification-trees--negative"
+        style="position: relative;"
+      />
+    </div>
+  </div>
+</div>
+`;
+
+exports[`JustificationsPage can add a compound-based justification 1`] = `
 <div>
   <div
     id="justifications-page"
@@ -538,201 +733,6 @@ exports[`JustificationsPage Can add a compound-based justification 1`] = `
           </button>
         </div>
       </div>
-    </div>
-  </div>
-</div>
-`;
-
-exports[`JustificationsPage Shows a justified proposition 1`] = `
-<div>
-  <div
-    id="justifications-page"
-  >
-    <div
-      class="md-grid md-grid--top"
-    >
-      <div />
-      <div
-        class="md-cell md-cell--12"
-      >
-        <div
-          class=""
-        >
-          <div
-            class="root-target-background"
-          >
-            <div
-              class="md-paper md-paper--1 md-card md-background--card root-target-card"
-            >
-              <section
-                class="md-card-text root-target-card-contents"
-              >
-                <div
-                  class="entity-viewer"
-                >
-                  <div
-                    class="entity-viewer--header"
-                  >
-                    <a
-                      href="/p/1/the-proposition-text"
-                    >
-                      <i
-                        class="md-icon material-icons"
-                        role="presentation"
-                        title="Proposition"
-                      >
-                        short_text
-                      </i>
-                    </a>
-                  </div>
-                  <div
-                    class="entity-viewer--entity"
-                  >
-                    <div
-                      class="proposition-viewer"
-                      id="justifications-page--root-target--proposition-entity-viewer"
-                    >
-                      <div
-                        class="proposition-viewer"
-                      >
-                        <div
-                          class="proposition-text"
-                        >
-                          <a
-                            href="/p/1/the-proposition-text"
-                          >
-                            the-proposition-text
-                          </a>
-                        </div>
-                        <div
-                          class="relation-counts"
-                        >
-                           
-                          <a
-                            href="/propositions/1/usages"
-                            title="used in 0 justifications"
-                          >
-                            <span
-                              class="material-symbols"
-                              style="font-variation-settings: "opsz" 12; font-size: 12px;"
-                            >
-                              merge_type
-                            </span>
-                            0
-                          </a>
-                           
-                          <span
-                            class="entity-status-text"
-                          >
-                            <a
-                              class="clickable"
-                              title="0 appearances"
-                            >
-                              <span
-                                class="material-symbols"
-                                style="font-variation-settings: "opsz" 12; font-size: 12px;"
-                              >
-                                pin_drop
-                              </span>
-                              0
-                            </a>
-                          </span>
-                        </div>
-                        <div>
-                          <span
-                            class="entity-status-text"
-                          >
-                            created
-                            
-                             
-                            <span
-                              title="12 Jan 2023 4:23:12 PM +00:00"
-                            >
-                              8 hours ago
-                            </span>
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div
-                    aria-expanded="false"
-                    aria-haspopup="true"
-                    class="md-layover md-layover--simplified md-inline-block md-menu-container context-menu context-menu--proposition"
-                    id="justifications-page--root-target--menu"
-                  >
-                    <button
-                      class="md-btn md-btn--icon md-pointer--hover md-inline-block hidden"
-                      id="justifications-page--root-target--menu-toggle"
-                      title="Actions"
-                      type="button"
-                    >
-                      <div
-                        class="md-ink-container"
-                      />
-                      <i
-                        class="md-icon material-icons md-text--inherit"
-                      >
-                        more_vert
-                      </i>
-                    </button>
-                  </div>
-                </div>
-                <div
-                  class="chips-list"
-                >
-                  <button
-                    class="md-btn md-btn--icon md-pointer--hover md-inline-block"
-                    title="Add tag"
-                    type="button"
-                  >
-                    <div
-                      class="md-ink-container"
-                    />
-                    <i
-                      class="md-icon material-icons md-text--inherit"
-                    >
-                      add
-                    </i>
-                  </button>
-                </div>
-              </section>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div
-        class="md-cell md-cell--12 cell--centered-contents"
-      >
-        <div>
-          No justifications.
-        </div>
-      </div>
-      <div
-        class="md-cell md-cell--12 cell--centered-contents"
-      >
-        <button
-          class="md-btn md-btn--flat md-btn--text md-pointer--hover md-text md-inline-block"
-          type="button"
-        >
-          <div
-            class="md-ink-container"
-          />
-          Add one now
-        </button>
-      </div>
-    </div>
-    <div
-      class="md-grid--bottom md-grid"
-    >
-      <div
-        class="md-cell md-cell--6 md-cell--8-tablet md-cell--4-phone proposition-justifications-justification-trees--positive"
-        style="position: relative;"
-      />
-      <div
-        class="md-cell md-cell--6 md-cell--8-tablet md-cell--4-phone proposition-justifications-justification-trees--negative"
-        style="position: relative;"
-      />
     </div>
   </div>
 </div>

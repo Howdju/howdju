@@ -176,9 +176,8 @@ describe("JustificationsPage", () => {
     expect(await screen.findByText(updatedText)).toBeInTheDocument();
   });
 
-  test("Can add a compound-based justification", async () => {
+  test("can add a compound-based justification", async () => {
     // Arrange
-
     const user = setupUserEvent();
     const justifications: JustificationOut[] = [];
     const rootTargetId = "1";
