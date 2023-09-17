@@ -14,7 +14,7 @@ import { head } from "lodash";
 
 import { AppStore, RootState, sagaMiddleware, setupStore } from "./setupStore";
 import { PersistedEntity } from "howdju-common";
-import { normalize, Schema } from "normalizr";
+import { normalize, schema } from "normalizr";
 
 interface ProviderRenderOptions
   extends DefaultStoreOptions,
@@ -221,13 +221,29 @@ export function getElementByQuerySelector(selector: string) {
   return element;
 }
 
-export function normalizeEntity<E extends PersistedEntity, S extends Schema<E>>(
-  entity: E,
-  schema: S
-) {
-  const normalEntity = normalize(entity, schema).entities[entity.id];
+/**
+ * Normalizes an entity using the given schema.
+ *
+ * It would be great if we could make S extend schema.Entity<E>, but
+ * I am not sure that normalizr supports the distinction between the values we
+ * input to it (E) and the values it outputs after it applies its processStrategy (EOut).
+ */
+export function normalizeEntity<
+  E extends PersistedEntity,
+  EOut extends PersistedEntity,
+  S extends schema.Entity<EOut>
+>(entity: E, entitySchema: S): EOut {
+  const normalEntities = normalize(entity, entitySchema).entities[
+    entitySchema.key
+  ];
+  if (!normalEntities) {
+    throw new Error(`No entities found for schema ${entitySchema.key}`);
+  }
+  const normalEntity = normalEntities[entity.id];
   if (!normalEntity) {
-    throw new Error("normalizing entity resulted in undefined");
+    throw new Error(
+      `No entity found for entity ID ${entity.id}) in schema ${entitySchema.key}`
+    );
   }
   return normalEntity;
 }

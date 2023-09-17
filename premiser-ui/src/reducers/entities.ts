@@ -53,8 +53,6 @@ type NormalizedUnion = { schema: string; id: EntityId };
  * @typeparam O overrides. The type of a normalizr schema definition is not accessible,
  * and so we must manually provide information about unions which don't follow the usual
  * pattern of NormalizeRelated.
- * TODO we might be able to infer this by exposing the schema definition values from
- * normalizationSchemas and replacing schema.Union there with NormalizedUnion.
  */
 type EntityState<T extends PersistedEntity, O = Record<string, never>> = Record<
   EntityId,
@@ -430,9 +428,6 @@ export const deepMergeOptions: DeepMergeOptions = {
  * `{ type: string, entity: Entity }` (which normalizes to `{ type: string, entity: EntityId}`).
  * For these arrays, we need a special array merge operation that unions based on their `entity`
  * rather than the whole object.
- *
- * TODO is PropositionCompound the only entity that will ever have this? Why not just remove the wrapper
- * and have PropositionCompound.atoms be an array of Propositions?
  */
 function mergeEntityWrapperArrays(x: any, y: any) {
   if (!isArray(x) || !isArray(y)) {
