@@ -52,6 +52,7 @@ export type MediaExcerptOut = MergeDeep<
     };
     speakers: MediaExcerptSpeakerOut[];
     apparitionCount?: number;
+    justificationBasisUsageCount?: number;
   }
 >;
 

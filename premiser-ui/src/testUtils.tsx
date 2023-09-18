@@ -11,10 +11,9 @@ import { match } from "react-router";
 import { setupServer } from "msw/node";
 import { Saga } from "redux-saga";
 import { head } from "lodash";
+import { normalize, schema } from "normalizr";
 
 import { AppStore, RootState, sagaMiddleware, setupStore } from "./setupStore";
-import { PersistedEntity } from "howdju-common";
-import { normalize, schema } from "normalizr";
 
 interface ProviderRenderOptions
   extends DefaultStoreOptions,
@@ -224,25 +223,23 @@ export function getElementByQuerySelector(selector: string) {
 /**
  * Normalizes an entity using the given schema.
  *
- * It would be great if we could make S extend schema.Entity<E>, but
+ * It would be great if we could make S extend schema.Entity<E> (where E is typeof entity), but
  * I am not sure that normalizr supports the distinction between the values we
  * input to it (E) and the values it outputs after it applies its processStrategy (EOut).
  */
-export function normalizeEntity<
-  E extends PersistedEntity,
-  EOut extends PersistedEntity,
-  S extends schema.Entity<EOut>
->(entity: E, entitySchema: S): EOut {
-  const normalEntities = normalize(entity, entitySchema).entities[
-    entitySchema.key
-  ];
+export function normalizeEntity<S extends schema.Entity<any>>(
+  entity: any,
+  entitySchema: S
+): S extends schema.Entity<infer EOut> ? EOut : never {
+  const { entities, result } = normalize(entity, entitySchema);
+  const normalEntities = entities[entitySchema.key];
   if (!normalEntities) {
     throw new Error(`No entities found for schema ${entitySchema.key}`);
   }
-  const normalEntity = normalEntities[entity.id];
+  const normalEntity = normalEntities[result];
   if (!normalEntity) {
     throw new Error(
-      `No entity found for entity ID ${entity.id}) in schema ${entitySchema.key}`
+      `No entity found for ID/key ${result}) in schema ${entitySchema.key}`
     );
   }
   return normalEntity;
