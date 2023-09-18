@@ -575,6 +575,13 @@ describe("JustificationsService", () => {
             id: proposition.id,
           },
         },
+        basis: {
+          ...justification.basis,
+          entity: {
+            ...justification.basis.entity,
+            justificationBasisUsageCount: 1,
+          },
+        },
       };
       expect(justifications).toEqual(
         expectToBeSameMomentDeep([expectedJustification])
