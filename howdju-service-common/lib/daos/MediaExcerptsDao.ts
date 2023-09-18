@@ -74,13 +74,15 @@ export class MediaExcerptsDao {
       urlLocators,
       citations,
       speakers,
-      apparitionCountsByMediaExcerptId,
+      apparitionCountByMediaExcerptId,
+      justificationBasisCountByMediaExcerptId,
       creators,
     ] = await Promise.all([
       this.readUrlLocators({ mediaExcerptIds }),
       this.readCitationsForMediaExcerptIds(mediaExcerptIds),
       this.readSpeakersForMediaExcerptIds(mediaExcerptIds),
-      this.readApparitionCountsByMediaExcerptId(mediaExcerptIds),
+      this.readApparitionCountsForMediaExcerptIds(mediaExcerptIds),
+      this.readJustificationBasisCountsByMediaExcerptId(mediaExcerptIds),
       this.usersDao.readUserBlurbsForIds(Array.from(creatorUserIds)),
     ]);
     const urlLocatorsByMediaExcerptId = groupBy(urlLocators, "mediaExcerptId");
@@ -97,12 +99,14 @@ export class MediaExcerptsDao {
         citations: citationsByMediaExcerptId[me.id] || [],
         speakers: speakersByMediaExcerptId[me.id] || [],
         creator: creatorsById[me.creatorUserId],
-        apparitionCount: apparitionCountsByMediaExcerptId[me.id],
+        apparitionCount: apparitionCountByMediaExcerptId[me.id],
+        justificationBasisUsageCount:
+          justificationBasisCountByMediaExcerptId[me.id],
       })
     );
   }
 
-  private async readApparitionCountsByMediaExcerptId(
+  private async readApparitionCountsForMediaExcerptIds(
     mediaExcerptIds: EntityId[]
   ) {
     const { rows } = await this.database.query(
@@ -122,6 +126,32 @@ export class MediaExcerptsDao {
     );
     return rows.reduce((acc, { media_excerpt_id, apparition_count }) => {
       acc[toIdString(media_excerpt_id)] = toCountNumber(apparition_count);
+      return acc;
+    }, {} as Record<EntityId, number>);
+  }
+
+  private async readJustificationBasisCountsByMediaExcerptId(
+    mediaExcerptIds: EntityId[]
+  ) {
+    const { rows } = await this.database.query(
+      "readJustificationBasisCountsByMediaExcerptId",
+      `
+      select
+          media_excerpt_id
+        , count(*) as basis_usage_count
+      from media_excerpts me
+        join justifications j on
+              me.media_excerpt_id = j.basis_id
+          and j.basis_type = 'MEDIA_EXCERPT'
+      where media_excerpt_id = any($1)
+        and me.deleted is null
+        and j.deleted is null
+      group by media_excerpt_id
+      `,
+      [mediaExcerptIds]
+    );
+    return rows.reduce((acc, { media_excerpt_id, basis_usage_count }) => {
+      acc[toIdString(media_excerpt_id)] = toCountNumber(basis_usage_count);
       return acc;
     }, {} as Record<EntityId, number>);
   }

@@ -41,6 +41,8 @@ export default function MediaExcerptViewer({
   }
 
   const apparitionCount = mediaExcerpt.apparitionCount ?? 0;
+  const justificationBasisUsageCount =
+    mediaExcerpt.justificationBasisUsageCount ?? 0;
   return (
     <div>
       <CollapsibleTextViewer
@@ -65,6 +67,17 @@ export default function MediaExcerptViewer({
           </a>
         </span>
       )}
+      <Link
+        to={paths.mediaExcerpt(mediaExcerpt)}
+        title={`used in ${justificationBasisUsageCount} ${
+          justificationBasisUsageCount === 1
+            ? "justification"
+            : "justifications"
+        }`}
+      >
+        <MaterialSymbol icon="merge_type" size={12} />
+        {justificationBasisUsageCount}
+      </Link>
       <ul className="url-locators">
         {mediaExcerpt.locators.urlLocators.map((urlLocator: UrlLocatorView) => (
           <li key={urlLocator.key} className="url">
