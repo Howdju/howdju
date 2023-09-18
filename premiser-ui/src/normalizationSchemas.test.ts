@@ -79,7 +79,7 @@ describe("normalizationSchemas", () => {
         });
       proposition1.justifications = [justification1, justification2];
       const expected = {
-        result: "1",
+        result: proposition1.id,
         entities: {
           propositions: {
             1: {
@@ -125,16 +125,24 @@ describe("normalizationSchemas", () => {
           },
           propositionCompounds: {
             4: {
-              atoms: [
-                { entity: "2", key: "atom 2", propositionCompoundId: "4" },
-              ],
+              atoms: ["4-2"],
               id: "4",
             },
             5: {
-              atoms: [
-                { entity: "3", key: "atom 3", propositionCompoundId: "5" },
-              ],
+              atoms: ["5-3"],
               id: "5",
+            },
+          },
+          propositionCompoundAtoms: {
+            "4-2": {
+              entity: "2",
+              key: "4-2",
+              propositionCompoundId: "4",
+            },
+            "5-3": {
+              entity: "3",
+              key: "5-3",
+              propositionCompoundId: "5",
             },
           },
         },

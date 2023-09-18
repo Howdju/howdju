@@ -93,8 +93,8 @@ export default function MediaExcerptViewer({
         ))}
       </ul>
       <ul className="speakers">
-        {mediaExcerpt.speakers.map(({ persorg }) => (
-          <li key={persorg.key} className="speaker">
+        {mediaExcerpt.speakers.map(({ key, persorg }) => (
+          <li key={key} className="speaker">
             <Link to={paths.persorg(persorg)}>{persorg.name}</Link>
           </li>
         ))}

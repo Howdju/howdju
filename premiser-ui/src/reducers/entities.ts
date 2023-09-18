@@ -1,4 +1,4 @@
-import { isArray, map, union, isPlainObject, isString, unionBy } from "lodash";
+import { isArray, map, union, isPlainObject } from "lodash";
 import { normalize, Schema } from "normalizr";
 import deepMergeLib, { Options as DeepMergeOptions } from "deepmerge";
 import { AnyAction, createSlice } from "@reduxjs/toolkit";
@@ -23,6 +23,9 @@ import {
   persorgSchema,
   propositionCompoundSchema,
   propositionSchema,
+  mediaExcerptCitationSchema,
+  mediaExcerptSpeakerSchema,
+  propositionCompoundAtomSchema,
   sourceSchema,
   statementSchema,
   tagSchema,
@@ -33,29 +36,31 @@ import {
 } from "@/normalizationSchemas";
 import { MergeDeep } from "type-fest";
 
-export type NormalizedEntity<T extends PersistedEntity> = NormalizeRelated<T>;
+type KeyedEntity = { key: string };
+type SchemaEntity = PersistedEntity | KeyedEntity;
+type NormalizedEntity<T extends SchemaEntity> = NormalizeRelated<T>;
 type NormalizeRelated<T> = {
-  [key in keyof T]: T[key] extends PersistedEntity[]
-    ? EntityId[]
-    : T[key] extends PersistedEntity[] | undefined
-    ? EntityId[] | undefined
-    : T[key] extends PersistedEntity
-    ? EntityId
+  [key in keyof T]: T[key] extends SchemaEntity[]
+    ? string[]
+    : T[key] extends SchemaEntity[] | undefined
+    ? string[] | undefined
+    : T[key] extends SchemaEntity
+    ? string
     : T[key] extends Moment
     ? T[key]
     : T[key] extends object
     ? NormalizeRelated<T[key]>
     : T[key];
 };
-type NormalizedUnion = { schema: string; id: EntityId };
+type NormalizedUnion = { schema: string; id: string };
 
 /**
  * @typeparam O overrides. The type of a normalizr schema definition is not accessible,
  * and so we must manually provide information about unions which don't follow the usual
- * pattern of NormalizeRelated.
+ * pattern of NormalizeRelated, if we want to rely on the types of these unions in our reducers.
  */
-type EntityState<T extends PersistedEntity, O = Record<string, never>> = Record<
-  EntityId,
+type EntityState<T extends SchemaEntity, O = Record<string, never>> = Record<
+  string,
   O extends Record<string, never>
     ? NormalizedEntity<T>
     : MergeDeep<NormalizedEntity<T>, O>
@@ -64,7 +69,7 @@ type SchemaEntityState<
   S extends Schema,
   O = Record<string, never>
 > = S extends Schema<infer E>
-  ? E extends PersistedEntity
+  ? E extends SchemaEntity
     ? EntityState<E, O>
     : never
   : never;
@@ -86,10 +91,19 @@ export const initialState = {
   >,
   justificationVotes: {} as SchemaEntityState<typeof justificationVoteSchema>,
   mediaExcerpts: {} as SchemaEntityState<typeof mediaExcerptSchema>,
+  mediaExcerptCitations: {} as SchemaEntityState<
+    typeof mediaExcerptCitationSchema
+  >,
+  mediaExcerptSpeakers: {} as SchemaEntityState<
+    typeof mediaExcerptSpeakerSchema
+  >,
   persorgs: {} as SchemaEntityState<typeof persorgSchema>,
   propositions: {} as SchemaEntityState<typeof propositionSchema>,
   propositionCompounds: {} as SchemaEntityState<
     typeof propositionCompoundSchema
+  >,
+  propositionCompoundAtoms: {} as SchemaEntityState<
+    typeof propositionCompoundAtomSchema
   >,
   sources: {} as SchemaEntityState<typeof sourceSchema>,
   statements: {} as SchemaEntityState<typeof statementSchema>,
@@ -411,43 +425,8 @@ export const deepMergeOptions: DeepMergeOptions = {
   isMergeableObject: (val) => isPlainObject(val) || isArray(val),
   // The API sends null where undefined is meant (JSON doesn't have an undefined type, and our
   // code base doesn't use null.)
-  customMerge: (key) => {
-    if (entityWrapperArrayKeys.has(key)) {
-      // In addition to the checks in the method, only merge when the key is one we expect to
-      // contain EntityWrapper arrays. (Otherwise we could use this as our arrayMerge.)
-      return mergeEntityWrapperArrays;
-    }
-    return nullToUndefined;
-  },
+  customMerge: (_key) => nullToUndefined,
 };
-
-/**
- * Merge two arrays of EntityWrapper arrays.
- *
- * Some entities have arrays of entity wrappers. These entity wrappers are of the form:
- * `{ type: string, entity: Entity }` (which normalizes to `{ type: string, entity: EntityId}`).
- * For these arrays, we need a special array merge operation that unions based on their `entity`
- * rather than the whole object.
- */
-function mergeEntityWrapperArrays(x: any, y: any) {
-  if (!isArray(x) || !isArray(y)) {
-    // Entity arrays must be arrays.
-    return deepMerge(x, y);
-  }
-  if (
-    !x.every((v) => "entity" in v && isString(v.entity)) ||
-    !y.every((v) => "entity" in v && isString(v.entity))
-  ) {
-    // All items in an entity array contain an 'entity' property that is an EntityId (string).
-    return deepMerge(x, y);
-  }
-  return unionBy(x, y, "entity");
-}
-
-const entityWrapperArrayKeys = new Set([
-  // PropositionCompound atoms.
-  "atoms",
-]);
 
 function nullToUndefined(targetValue: any, srcValue: any) {
   if (srcValue === null) {

@@ -1,5 +1,5 @@
-import { schema } from "normalizr";
 import { merge } from "lodash";
+import { schema } from "normalizr";
 
 import {
   AccountSettings,
@@ -7,10 +7,15 @@ import {
   ContextTrailItem,
   JustificationView,
   JustificationVote,
+  MediaExcerptCitationOut,
+  MediaExcerptCitationView,
   MediaExcerptOut,
+  MediaExcerptSpeakerView,
+  mergeCopy,
   PersorgOut,
   PicRegion,
-  PropositionCompoundOut,
+  PropositionCompoundAtomOut,
+  PropositionCompoundAtomView,
   PropositionCompoundView,
   PropositionOut,
   PropositionTagVote,
@@ -97,28 +102,32 @@ sentenceSchema.define({
   STATEMENT: statementSchema,
 });
 
-export const propositionCompoundSchema =
-  new schema.Entity<PropositionCompoundView>(
-    "propositionCompounds",
+function propositionCompoundAtomKey(atom: PropositionCompoundAtomOut) {
+  return `${atom.propositionCompoundId}-${atom.entity.id}`;
+}
+export const propositionCompoundAtomSchema =
+  new schema.Entity<PropositionCompoundAtomView>(
+    "propositionCompoundAtoms",
     {
-      atoms: [
-        {
-          entity: propositionSchema,
-        },
-      ],
+      entity: propositionSchema,
     },
     {
-      processStrategy: (value: PropositionCompoundOut) => {
-        return merge({}, value, {
-          // Create a key on citations. Since they aren't a normalizr entity, we can update them here.
-          atoms: value?.atoms.map((atom) => ({
-            ...atom,
-            key: `atom ${atom.entity.id}`,
-          })),
+      idAttribute: propositionCompoundAtomKey,
+      processStrategy(atom) {
+        return mergeCopy(atom, {
+          key: propositionCompoundAtomKey(atom),
         });
       },
     }
   );
+export const propositionCompoundAtomsSchema = new schema.Array(
+  propositionCompoundAtomSchema
+);
+
+export const propositionCompoundSchema =
+  new schema.Entity<PropositionCompoundView>("propositionCompounds", {
+    atoms: propositionCompoundAtomsSchema,
+  });
 export const propositionCompoundsSchema = new schema.Array(
   propositionCompoundSchema
 );
@@ -186,30 +195,57 @@ export const urlLocatorsSchema = new schema.Array(urlLocatorSchema);
 export const sourceSchema = new schema.Entity<SourceOut>("sources");
 export const sourcesSchema = new schema.Array(sourceSchema);
 
+function mediaExcerptCitationKey(citation: MediaExcerptCitationOut) {
+  return `${citation.mediaExcerptId}-${citation.source.id}${
+    citation.normalPincite ? "-" + citation.normalPincite : ""
+  }`;
+}
+export const mediaExcerptCitationSchema =
+  new schema.Entity<MediaExcerptCitationView>(
+    "mediaExcerptCitations",
+    {
+      source: sourceSchema,
+    },
+    {
+      idAttribute: mediaExcerptCitationKey,
+      processStrategy(citation) {
+        return applyCustomizations(
+          mergeCopy(citation, {
+            key: mediaExcerptCitationKey(citation),
+          }),
+          momentConversion("created")
+        );
+      },
+    }
+  );
+export const mediaExcerptCitationsSchema = new schema.Array(
+  mediaExcerptCitationSchema
+);
+
+export const mediaExcerptSpeakerSchema =
+  new schema.Entity<MediaExcerptSpeakerView>(
+    "mediaExcerptSpeakers",
+    {
+      persorg: persorgSchema,
+    },
+    {
+      idAttribute(speaker) {
+        return `${speaker.mediaExcerptId}-${speaker.persorg.id}`;
+      },
+    }
+  );
+export const mediaExcerptSpeakersSchema = new schema.Array(
+  mediaExcerptSpeakerSchema
+);
+
 export const mediaExcerptSchema = new schema.Entity<MediaExcerptOut>(
   "mediaExcerpts",
   {
     locators: {
       urlLocators: urlLocatorsSchema,
     },
-    citations: new schema.Array({
-      source: sourceSchema,
-    }),
-    speakers: new schema.Array({ persorg: persorgSchema }),
-  },
-  {
-    processStrategy: (value: MediaExcerptOut) => {
-      return applyCustomizations(
-        merge({}, value, {
-          // Create a key on citations. Since they aren't a normalizr entity, we can update them here.
-          citations: value?.citations.map((citation) => ({
-            ...citation,
-            key: `${citation.source.id}-${citation.normalPincite ?? ""}`,
-          })),
-        }),
-        momentConversion("created")
-      );
-    },
+    citations: mediaExcerptCitationsSchema,
+    speakers: mediaExcerptSpeakersSchema,
   }
 );
 export const mediaExcerptsSchema = new schema.Array(mediaExcerptSchema);

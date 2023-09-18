@@ -25,6 +25,7 @@ import entities, {
 } from "./entities";
 import {
   justificationSchema,
+  propositionCompoundAtomSchema,
   propositionCompoundSchema,
   propositionSchema,
 } from "../normalizationSchemas";
@@ -138,7 +139,7 @@ describe("entities", () => {
       );
 
       // Act
-      const newState = entities(initialState as State, action);
+      const newState = entities(initialState as unknown as State, action);
 
       // Assert
       const normalNewJustification = normalizeEntity(
@@ -161,6 +162,14 @@ describe("entities", () => {
         propositionCompound2,
         propositionCompoundSchema
       );
+      const normalPropositionCompoundAtom1 = normalizeEntity(
+        propositionCompound1.atoms[0],
+        propositionCompoundAtomSchema
+      );
+      const normalPropositionCompoundAtom2 = normalizeEntity(
+        propositionCompound2.atoms[0],
+        propositionCompoundAtomSchema
+      );
       const expectedState = {
         ...defaultInitialState,
         propositions: {
@@ -181,6 +190,10 @@ describe("entities", () => {
         propositionCompounds: {
           [propositionCompound1.id]: normalPropositionCompound1,
           [propositionCompound2.id]: normalPropositionCompound2,
+        },
+        propositionCompoundAtoms: {
+          [normalPropositionCompoundAtom1.key]: normalPropositionCompoundAtom1,
+          [normalPropositionCompoundAtom2.key]: normalPropositionCompoundAtom2,
         },
       };
       expect(newState).toEqual(expectToBeSameMomentDeep(expectedState));
@@ -265,7 +278,7 @@ describe("entities", () => {
       );
 
       // Act
-      const newState = entities(initialState as State, action);
+      const newState = entities(initialState as unknown as State, action);
 
       // Assert
       const normalCounterJustification = normalizeEntity(
@@ -401,7 +414,7 @@ describe("entities", () => {
       );
 
       // Act
-      const newState = entities(initialState as State, action);
+      const newState = entities(initialState as unknown as State, action);
 
       // Assert
       const expectedState = merge({}, initialState, {

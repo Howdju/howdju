@@ -1,7 +1,10 @@
 import {
   AppearanceOut,
   JustificationWithRootOut,
+  MediaExcerptCitationOut,
   MediaExcerptOut,
+  MediaExcerptSpeakerOut,
+  PropositionCompoundAtomOut,
   PropositionCompoundOut,
   PropositionOut,
   StatementOut,
@@ -60,24 +63,28 @@ export type UrlLocatorView = UrlLocatorOut & {
   key: string;
 };
 export interface MediaExcerptView extends MediaExcerptOut {
-  citations: (MediaExcerptOut["citations"][number] & {
-    /** A key uniquely identifying a citation relative to others. */
-    key: string;
-  })[];
+  citations: MediaExcerptCitationView[];
   locators: MediaExcerptOut["locators"] & {
     urlLocators: UrlLocatorView[];
   };
-  speakers: (MediaExcerptOut["speakers"][number] & {
-    /** A key uniquely identifying a persorg relative to others. */
-    persorg: MediaExcerptOut["speakers"][number]["persorg"] & { key: string };
-  })[];
+  speakers: MediaExcerptSpeakerView[];
 }
+export type MediaExcerptCitationView = MediaExcerptCitationOut & {
+  /** A key uniquely identifying a citation relative to others. */
+  key: string;
+};
+export type MediaExcerptSpeakerView = MediaExcerptSpeakerOut & {
+  /** A key uniquely identifying a persorg relative to others. */
+  key: string;
+};
+
+export type PropositionCompoundAtomView = PropositionCompoundAtomOut & {
+  /** A key uniquely identifying an atom relative to others. */
+  key: string;
+};
 
 export interface PropositionCompoundView extends PropositionCompoundOut {
-  atoms: (PropositionCompoundOut["atoms"][number] & {
-    /** A key uniquely identifying an atom relative to others. */
-    key: string;
-  })[];
+  atoms: PropositionCompoundAtomView[];
 }
 
 export interface AppearanceView extends AppearanceOut {
