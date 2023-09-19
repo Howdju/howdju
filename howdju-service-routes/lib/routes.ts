@@ -1232,7 +1232,7 @@ export const serviceRoutes = {
           body: {
             appearance: {
               id: appearanceId,
-              confirmationStatus: null,
+              confirmationStatus: undefined,
             },
           },
         };
@@ -1267,7 +1267,9 @@ export const serviceRoutes = {
             urlIds?.split(",") ?? [],
             sourceIds?.split(",") ?? []
           );
-        return { body: { appearances, users, urls, sources } };
+        return {
+          body: { appearances, users: users, urls, sources },
+        };
       }
     ),
   },

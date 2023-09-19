@@ -438,6 +438,9 @@ export const editorCommitConfigs: Partial<
   CREATE_URL_LOCATORS: {
     CREATE: CreateUrlLocatorsCommitConfig,
   },
+  CREATE_MEDIA_EXCERPT_CITATIONS: {
+    CREATE: CreateMediaExcerptCitationsCommitConfig,
+  },
   APPEARANCE: {
     CREATE: AppearanceConfig,
   },

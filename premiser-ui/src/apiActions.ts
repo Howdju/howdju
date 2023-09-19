@@ -173,15 +173,29 @@ type ToEntityFieldKey<
   : EntityName<Body[Key]> extends never
   ? never
   : Key;
+type ToNonEntityFieldKey<
+  Body extends Record<string, any>,
+  Key extends keyof Body
+> = Body[Key] extends (infer I)[]
+  ? EntityName<I> extends never
+    ? Key
+    : never
+  : EntityName<Body[Key]> extends never
+  ? Key
+  : never;
 
-/** Remove all properties from Body except those that are entities. */
+/** Require all Body properties that are entities. */
 type EntityFieldsOnly<Body extends Record<string, any>> = {
   [K in keyof Body as ToEntityFieldKey<Body, K>]: Body[K];
+};
+type NonEntityFieldsOnlyOptional<Body extends Record<string, any>> = {
+  [K in keyof Body as ToNonEntityFieldKey<Body, K>]+?: Body[K];
 };
 
 type InferResponseBodyEntities<Route extends ServiceRoute> =
   InferResponseReturnType<Route> extends Record<string, any>
-    ? EntityFieldsOnly<InferResponseReturnType<Route>["body"]>
+    ? EntityFieldsOnly<InferResponseReturnType<Route>["body"]> &
+        NonEntityFieldsOnlyOptional<InferResponseReturnType<Route>["body"]>
     : never;
 
 type BaseApiActionConfig<Route extends ServiceRoute> = {
@@ -191,7 +205,14 @@ type BaseApiActionConfig<Route extends ServiceRoute> = {
   queryStringParams: InferQueryStringParams<Route>;
   /** The HTTP body to send with the request. */
   body: InferRequestBody<Route>;
-  /** The schema for normalizing the response entities. */
+  /**
+   * The schema for normalizing the response entities.
+   *
+   * This object must have schemas for the entities in the response. It may optionally
+   * have values for non-entities. We return some non-entities that should be normalized
+   * (e.g. MediaExcerptCitations). Ideally we would require these too, but at least
+   * by making the property optional we prevent property name mismatches.
+   */
   normalizationSchema: Schema<
     InferResponseBodyEntities<Route>,
     // TODO(482) determine more precise bounds for the normalization schema
@@ -660,7 +681,7 @@ export const api = {
       body: { citations },
       pathParams: { mediaExcerptId },
       normalizationSchema: {
-        mediaExcerptCitations: mediaExcerptCitationsSchema,
+        citations: mediaExcerptCitationsSchema,
       },
     })
   ),

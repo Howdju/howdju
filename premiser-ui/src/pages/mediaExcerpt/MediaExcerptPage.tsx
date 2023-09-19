@@ -97,7 +97,7 @@ export default function MediaExcerptPage(props: Props) {
     dispatch(
       editors.beginEdit(
         "CREATE_MEDIA_EXCERPT_CITATIONS",
-        createUrlLocatorsEditorId,
+        createCitationsEditorId,
         {
           mediaExcerptId,
           citations: [makeCreateMediaExcerptCitationInput()],

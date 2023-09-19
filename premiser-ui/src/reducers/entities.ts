@@ -33,11 +33,21 @@ import {
   userSchema,
   writQuoteSchema,
   writSchema,
+  mediaExcerptCitationKey,
 } from "@/normalizationSchemas";
 import { MergeDeep } from "type-fest";
 
-type KeyedEntity = { key: string };
-type SchemaEntity = PersistedEntity | KeyedEntity;
+type ModelKey = string;
+/**
+ * A non-entity model stored in the normalized state.
+ *
+ * We store both Howdju entities and non-entity models inside normalizr. Normalizr
+ * calls these entities, but we distinguish between Howdju entities, which are
+ * persisted in a table with an `id`, and models, which are usually relationships
+ * and require a generated `key` to identify them in the normalizr state.
+ */
+type KeyedModel = { key: ModelKey };
+type SchemaEntity = PersistedEntity | KeyedModel;
 type NormalizedEntity<T extends SchemaEntity> = NormalizeRelated<T>;
 type NormalizeRelated<T> = {
   [key in keyof T]: T[key] extends SchemaEntity[]
@@ -90,7 +100,12 @@ export const initialState = {
     }
   >,
   justificationVotes: {} as SchemaEntityState<typeof justificationVoteSchema>,
-  mediaExcerpts: {} as SchemaEntityState<typeof mediaExcerptSchema>,
+  mediaExcerpts: {} as SchemaEntityState<
+    typeof mediaExcerptSchema,
+    {
+      citations: ModelKey[];
+    }
+  >,
   mediaExcerptCitations: {} as SchemaEntityState<
     typeof mediaExcerptCitationSchema
   >,
@@ -245,6 +260,18 @@ const slice = createSlice({
         ].locators.urlLocators.push(urlLocator.id);
       });
     });
+    builder.addCase(
+      api.createMediaExcerptCitations.response,
+      (state, action) => {
+        if (action.error) {
+          return;
+        }
+        action.payload.citations.forEach((citation) => {
+          const key = mediaExcerptCitationKey(citation);
+          state.mediaExcerpts[citation.mediaExcerptId].citations.push(key);
+        });
+      }
+    );
     builder.addCase(api.deleteUrlLocator.response, (state, action) => {
       if (action.error) {
         return;
