@@ -18,9 +18,9 @@ import config from "../../config";
 import { useAppDispatch } from "@/hooks";
 import { makeExtensionHighlightOnClickUrlLocatorCallback } from "@/extensionCallbacks";
 import { OnClickUrlLocator } from "@/types";
+import mediaExcerptApparitionsDialog from "../mediaExcerptApparitionsDialog/mediaExcerptApparitionsDialogSlice";
 
 import "./MediaExcerptViewer.scss";
-import mediaExcerptApparitionsDialog from "../mediaExcerptApparitionsDialog/mediaExcerptApparitionsDialogSlice";
 
 interface Props {
   id: string;

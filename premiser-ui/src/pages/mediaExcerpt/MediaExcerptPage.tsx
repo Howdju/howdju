@@ -13,7 +13,11 @@ import { MaterialSymbol } from "react-material-symbols";
 import { Link } from "react-router-dom";
 import { push } from "connected-react-router";
 
-import { EntityId, makeCreateUrlLocatorInput } from "howdju-common";
+import {
+  EntityId,
+  makeCreateMediaExcerptCitationInput,
+  makeCreateUrlLocatorInput,
+} from "howdju-common";
 
 import { useAppDispatch, useAppEntitySelector, useAppSelector } from "@/hooks";
 import { api } from "@/apiActions";
@@ -29,6 +33,7 @@ import CreateUrlLocatorsEditor from "@/editors/CreateUrlLocatorsEditor";
 import { CommitThenPutAction } from "@/editors/withEditor";
 import DeleteUrlLocatorsControl from "./DeleteUrlLocatorsControl";
 import MediaExcerptUsages from "./MediaExcerptUsages";
+import CreateMediaExcerptCitationsEditor from "./CreateMediaExcerptCitationsEditor";
 
 interface MatchParams {
   mediaExcerptId: EntityId;
@@ -36,7 +41,8 @@ interface MatchParams {
 type Props = RouteComponentProps<MatchParams>;
 
 const id = "media-excerpt-page";
-const createUrlLocatorsEditorId = "mediaExcerptPage-addUrls";
+const createUrlLocatorsEditorId = combineIds(id, "create-url-locators-editor");
+const createCitationsEditorId = combineIds(id, "create-citations-editor");
 
 export default function MediaExcerptPage(props: Props) {
   const dispatch = useAppDispatch();
@@ -70,6 +76,13 @@ export default function MediaExcerptPage(props: Props) {
     dispatch(mediaExcerptPage.hideAddUrlLocatorsDialog());
   }
 
+  function showAddCitationsDialog() {
+    dispatch(mediaExcerptPage.showAddCitationsDialog());
+  }
+  function hideAddCitationsDialog() {
+    dispatch(mediaExcerptPage.hideAddCitationsDialog());
+  }
+
   function onAddUrlLocatorsClick() {
     dispatch(
       editors.beginEdit("CREATE_URL_LOCATORS", createUrlLocatorsEditorId, {
@@ -80,9 +93,25 @@ export default function MediaExcerptPage(props: Props) {
     showAddUrlLocatorsDialog();
   }
 
-  const { isFetching, isAddUrlLocatorsDialogVisible } = useAppSelector(
-    (state) => state.mediaExcerptPage
-  );
+  function onAddCitationsClick() {
+    dispatch(
+      editors.beginEdit(
+        "CREATE_MEDIA_EXCERPT_CITATIONS",
+        createUrlLocatorsEditorId,
+        {
+          mediaExcerptId,
+          citations: [makeCreateMediaExcerptCitationInput()],
+        }
+      )
+    );
+    showAddCitationsDialog();
+  }
+
+  const {
+    isFetching,
+    isAddUrlLocatorsDialogVisible,
+    isAddCitationsDialogVisible,
+  } = useAppSelector((state) => state.mediaExcerptPage);
 
   // TODO(17): pass props directly after upgrading react-md to a version with correct types
   const menuClassNameProps = { menuClassName: "context-menu" } as any;
@@ -115,6 +144,12 @@ export default function MediaExcerptPage(props: Props) {
           key="add-urls"
           leftIcon={<MaterialSymbol icon="add_link" />}
           onClick={onAddUrlLocatorsClick}
+        />,
+        <ListItem
+          primaryText="Add Citations…"
+          key="add-citations"
+          leftIcon={<MaterialSymbol icon="auto_stories" />}
+          onClick={onAddCitationsClick}
         />,
         <ListItem
           primaryText="Delete URLs…"
@@ -188,6 +223,23 @@ export default function MediaExcerptPage(props: Props) {
             Close
           </Button>
         </footer>
+      </DialogContainer>
+      <DialogContainer
+        id={combineIds(id, "add-citations-dialog")}
+        visible={isAddCitationsDialogVisible}
+        title="Add citations"
+        onHide={hideAddCitationsDialog}
+        className="md-overlay--wide-dialog"
+      >
+        <CreateMediaExcerptCitationsEditor
+          id="media-excerpt-page--create-citations-editor"
+          editorId={createCitationsEditorId}
+          showButtons={true}
+          submitButtonText="Add"
+          editorCommitBehavior={
+            new CommitThenPutAction(mediaExcerptPage.hideAddCitationsDialog())
+          }
+        />
       </DialogContainer>
     </div>
   );

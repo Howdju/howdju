@@ -50,6 +50,7 @@ import {
   MediaExcerptSearchFilter,
   CreatePasswordResetRequest,
   PasswordResetConfirmation,
+  CreateMediaExcerptCitationsInput,
 } from "howdju-common";
 import {
   InferPathParams,
@@ -70,6 +71,7 @@ import {
   justificationsSchema,
   justificationVoteSchema,
   mainSearchResultSchema,
+  mediaExcerptCitationsSchema,
   mediaExcerptSchema,
   mediaExcerptsSchema,
   nullSchema,
@@ -648,6 +650,18 @@ export const api = {
         pathParams: { mediaExcerptId, urlLocatorId: id },
       },
       meta: { mediaExcerptId, urlLocatorId: id },
+    })
+  ),
+
+  createMediaExcerptCitations: apiActionCreator(
+    "CREATE_MEDIA_EXCERPT_CITATIONS",
+    serviceRoutes.createMediaExcerptCitations,
+    ({ mediaExcerptId, citations }: CreateMediaExcerptCitationsInput) => ({
+      body: { citations },
+      pathParams: { mediaExcerptId },
+      normalizationSchema: {
+        mediaExcerptCitations: mediaExcerptCitationsSchema,
+      },
     })
   ),
 

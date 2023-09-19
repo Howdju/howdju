@@ -5,7 +5,6 @@ import { MaterialSymbol } from "react-material-symbols";
 import {
   CreateMediaExcerptInput,
   extractQuotationFromTextFragment,
-  MediaExcerptCitation,
   MediaExcerpt,
   makeCreateMediaExcerptSpeakerInput,
   PersorgOut,
@@ -19,16 +18,15 @@ import {
 } from "@/editors/withEditor";
 import { makeErrorPropCreator } from "@/modelErrorMessages";
 import TextField from "@/TextField";
-import SingleLineTextField from "@/SingleLineTextField";
 import { EditorType } from "@/reducers/editors";
 import EntityViewer from "@/EntityViewer";
 import PersorgEditorFields from "@/PersorgEditorFields";
 import { editors } from "@/actions";
 import { EditorId } from "@/types";
 import UrlLocatorsEditorFields from "./UrlLocatorsEditorFields";
-import SourceEditorFields from "@/components/sources/SourceEditorFields";
 
 import "./MediaExcerptEditorFields.scss";
+import { MediaExcerptCitationsEditorFields } from "./MediaExcerptCitationsEditorFields";
 
 interface Props
   extends EntityEditorFieldsProps<"mediaExcerpt", CreateMediaExcerptInput> {
@@ -155,45 +153,25 @@ export default function MediaExcerptEditorFields(props: Props) {
           />
         </fieldset>
       )}
-      <fieldset>
-        <legend>Citations</legend>
-        {mediaExcerpt?.citations?.map(({ source, pincite }, index) => (
-          <React.Fragment key={combineIds(id, `citations[${index}]`)}>
-            <SourceEditorFields
-              id={id}
-              source={source}
-              key={combineIds(id, `citations[${index}].source`)}
-              errors={errors?.citations?.[index]?.source}
-              blurredFields={blurredFields?.citations?.[index]?.source}
-              dirtyFields={dirtyFields?.citations?.[index]?.source}
-              suggestionsKey={combineSuggestionsKeys(
-                suggestionsKey,
-                `citations[${index}].source`
-              )}
-              name={combineNames(name, `citations[${index}].source`)}
-              editorDispatch={editorDispatch}
-              disabled={disabled}
-              onBlur={onBlur}
-              onPropertyChange={onPropertyChange}
-              wasSubmitAttempted={wasSubmitAttempted}
-            />
-            <SingleLineTextField
-              {...errorProps((me) => me.citations?.[index].pincite)}
-              id={combineIds(id, `citations[${index}].pincite`)}
-              name={combineNames(name, `citations[${index}].pincite`)}
-              key={combineIds(id, `citations[${index}].pincite`)}
-              label="Pincite"
-              rows={1}
-              maxRows={2}
-              maxLength={MediaExcerptCitation.shape.pincite.unwrap().maxLength}
-              value={pincite}
-              onBlur={onBlur}
-              onPropertyChange={onPropertyChange}
-              disabled={disabled}
-            />
-          </React.Fragment>
-        ))}
-      </fieldset>
+      {mediaExcerpt.citations && (
+        <fieldset>
+          <legend>Citations</legend>
+          <MediaExcerptCitationsEditorFields
+            id={combineIds(id, `citations`)}
+            key={combineIds(id, `citations`)}
+            name={combineNames(name, `citations`)}
+            citations={mediaExcerpt.citations}
+            errors={errors?.locators?.urlLocators}
+            dirtyFields={dirtyFields?.locators?.urlLocators}
+            blurredFields={blurredFields?.locators?.urlLocators}
+            editorDispatch={editorDispatch}
+            disabled={disabled}
+            suggestionsKey={suggestionsKey}
+            onPropertyChange={onPropertyChange}
+            wasSubmitAttempted={wasSubmitAttempted}
+          />
+        </fieldset>
+      )}
       <fieldset className="speakers">
         <legend>Speakers</legend>
         {mediaExcerpt?.speakers?.map(({ persorg }, index) => {

@@ -4,6 +4,7 @@ import { api } from "@/apiActions";
 
 const initialState = {
   isAddUrlLocatorsDialogVisible: false,
+  isAddCitationsDialogVisible: false,
   isFetching: false,
 };
 
@@ -16,6 +17,12 @@ export const mediaExcerptPageSlice = createSlice({
     },
     hideAddUrlLocatorsDialog(state) {
       state.isAddUrlLocatorsDialogVisible = false;
+    },
+    showAddCitationsDialog(state) {
+      state.isAddCitationsDialogVisible = true;
+    },
+    hideAddCitationsDialog(state) {
+      state.isAddCitationsDialogVisible = false;
     },
   },
   extraReducers(builder) {
