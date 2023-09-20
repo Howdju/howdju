@@ -2,10 +2,7 @@ import React from "react";
 
 import { CreateMediaExcerptCitationsInput } from "howdju-common";
 
-import {
-  EditorFieldsDispatch,
-  EntityEditorFieldsProps,
-} from "@/editors/withEditor";
+import { EntityEditorFieldsProps } from "@/editors/withEditor";
 import { combineIds, combineNames } from "@/viewModels";
 import { MediaExcerptCitationsEditorFields } from "@/editors/MediaExcerptCitationsEditorFields";
 
@@ -13,13 +10,9 @@ interface Props
   extends EntityEditorFieldsProps<
     "editModel",
     CreateMediaExcerptCitationsInput
-  > {
-  editorDispatch: EditorFieldsDispatch;
-  /** The max number of UrlLocators to allow. */
-  maxUrlLocatorCount?: number;
-}
+  > {}
 
-/** Wraps UrlLocatorsEditorFields and adds a mediaExcerptId */
+/** Translates an edit entity into a wrapped UrlLocatorsEditorFields' citations. */
 export default function CreateMediaExcerptCitationsEditorFields({
   id,
   name,

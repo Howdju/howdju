@@ -1,7 +1,6 @@
 import { Moment } from "moment";
 import { z } from "zod";
 import {
-  AppearanceConfirmationStatus,
   AppearanceOut,
   MediaExcerptOut,
   PropositionCompoundOut,
@@ -72,7 +71,6 @@ import {
   CreateUrl,
   MediaExcerptRef,
   Appearance,
-  UserBlurb,
 } from "./zodSchemas";
 
 /**
@@ -154,10 +152,6 @@ export type BasedJustificationWithRootRef = Omit<
         type: "SOURCE_EXCERPT" | "JUSTIFICATION_BASIS_COMPOUND";
         entity: PersistedEntity;
       };
-};
-
-type AppearanceConfirmationOut = PersistedEntity & {
-  confirmationStatus: AppearanceConfirmationStatus;
 };
 
 /**
@@ -245,8 +239,6 @@ export type EntityName<T> = T extends Proposition
   ? "User"
   : T extends UserOut
   ? "User"
-  : T extends UserBlurb
-  ? "User"
   : T extends MediaExcerpt
   ? "MediaExcerpt"
   : T extends CreateMediaExcerpt
@@ -268,8 +260,6 @@ export type EntityName<T> = T extends Proposition
   : T extends Appearance
   ? "Appearance"
   : T extends AppearanceOut
-  ? "Appearance"
-  : T extends AppearanceConfirmationOut
   ? "Appearance"
   : never;
 
