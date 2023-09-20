@@ -1251,6 +1251,14 @@ export const CreateUrlLocatorsInput = z.object({
 });
 export type CreateUrlLocatorsInput = z.output<typeof CreateUrlLocatorsInput>;
 
+export const CreateMediaExcerptCitationsInput = z.object({
+  mediaExcerptId: z.string(),
+  citations: z.array(CreateMediaExcerptCitation),
+});
+export type CreateMediaExcerptCitationsInput = z.output<
+  typeof CreateMediaExcerptCitationsInput
+>;
+
 export type CreateJustificationInput = Entity & {
   // A justification can target anything that can be a root target.
   // Additionally, it can target other justifications to counter them.

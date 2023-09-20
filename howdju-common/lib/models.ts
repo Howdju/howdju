@@ -31,6 +31,7 @@ import {
   CreateJustificationInputTarget,
   CreateJustificationTarget,
   CreateJustifiedSentenceInput,
+  CreateMediaExcerptCitationInput,
   CreateMediaExcerptInput,
   CreateMediaExcerptSpeakerInput,
   CreatePersorg,
@@ -196,6 +197,12 @@ export const makeCreateUrl = (props?: Partial<CreateUrl>): CreateUrl =>
 export const makeCreateUrlLocatorInput = (
   props?: Partial<CreateUrlLocatorInput>
 ): CreateUrlLocatorInput => merge({ url: makeCreateUrl() }, props);
+
+export function makeCreateMediaExcerptCitationInput(
+  props?: Partial<CreateMediaExcerptCitationInput>
+): CreateMediaExcerptCitationInput {
+  return merge({ source: { description: "" } }, props);
+}
 
 export const makeCreateMediaExcerptSpeakerInput = (
   props?: Partial<CreateMediaExcerptSpeakerInput>

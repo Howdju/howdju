@@ -195,7 +195,7 @@ export const urlLocatorsSchema = new schema.Array(urlLocatorSchema);
 export const sourceSchema = new schema.Entity<SourceOut>("sources");
 export const sourcesSchema = new schema.Array(sourceSchema);
 
-function mediaExcerptCitationKey(citation: MediaExcerptCitationOut) {
+export function mediaExcerptCitationKey(citation: MediaExcerptCitationOut) {
   return `${citation.mediaExcerptId}-${citation.source.id}${
     citation.normalPincite ? "-" + citation.normalPincite : ""
   }`;

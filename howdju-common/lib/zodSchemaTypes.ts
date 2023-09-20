@@ -1,6 +1,7 @@
 import { Moment } from "moment";
 import { z } from "zod";
 import {
+  AppearanceOut,
   MediaExcerptOut,
   PropositionCompoundOut,
   PropositionOut,
@@ -178,6 +179,8 @@ export type EntityName<T> = T extends Proposition
   ? "JustificationVote"
   : T extends Statement
   ? "Statement"
+  : T extends StatementOut
+  ? "Statement"
   : T extends CreateStatement
   ? "Statement"
   : T extends CreateStatementInput
@@ -255,6 +258,8 @@ export type EntityName<T> = T extends Proposition
   : T extends Url
   ? "Url"
   : T extends Appearance
+  ? "Appearance"
+  : T extends AppearanceOut
   ? "Appearance"
   : never;
 

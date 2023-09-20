@@ -20,6 +20,7 @@ import { toStatement } from "./orm";
 import { Database, PropositionsDao } from "..";
 import { Moment } from "moment";
 import { toIdString } from "./daosUtil";
+import { ensurePresent } from "../services/patterns";
 
 export class StatementsDao extends BaseDao {
   constructor(
@@ -230,14 +231,19 @@ export class StatementsDao extends BaseDao {
   }
 
   async readStatementsForSpeakerPersorgId(speakerPersorgId: EntityId) {
-    const { rows } = await this.database.query(
+    const { rows } = await this.db.query<{ statement_id: number }>(
       "readStatementsForSpeakerPersorgId.statementIds",
-      "select * from statements s where s.speaker_persorg_id = $1 and s.deleted is null",
+      "select statement_id from statements s where s.speaker_persorg_id = $1 and s.deleted is null",
       [speakerPersorgId]
     );
-    return await Promise.all(
-      map(rows, (row) => this.readStatementForId(row.statement_id))
+    const statementIds = rows.map((row) => toIdString(row.statement_id));
+    const statements = await Promise.all(
+      rows.map((row) => this.readStatementForId(toIdString(row.statement_id)))
     );
+    if (!ensurePresent(statementIds, statements, "MEDIA_EXCERPT")) {
+      throw newImpossibleError(`ensurePresent should have thrown an error`);
+    }
+    return statements;
   }
 
   async readStatementsForSentenceTypeAndId(

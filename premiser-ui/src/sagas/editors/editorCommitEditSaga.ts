@@ -381,6 +381,11 @@ export const CreateUrlLocatorsCommitConfig = {
   inputTransformer: identity,
 };
 
+export const CreateMediaExcerptCitationsCommitConfig = {
+  requestActionCreator: api.createMediaExcerptCitations,
+  inputTransformer: identity,
+};
+
 export const editorCommitConfigs: Partial<
   Record<EditorType, EditorCommitConfig>
 > = {
@@ -432,6 +437,9 @@ export const editorCommitConfigs: Partial<
   },
   CREATE_URL_LOCATORS: {
     CREATE: CreateUrlLocatorsCommitConfig,
+  },
+  CREATE_MEDIA_EXCERPT_CITATIONS: {
+    CREATE: CreateMediaExcerptCitationsCommitConfig,
   },
   APPEARANCE: {
     CREATE: AppearanceConfig,

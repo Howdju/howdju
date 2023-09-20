@@ -76,6 +76,7 @@ import {
   CreateAppearance,
   PasswordResetConfirmation,
   CreatePasswordResetRequestInput,
+  CreateMediaExcerptCitationsInput,
 } from "howdju-common";
 
 import {
@@ -121,6 +122,7 @@ export const EditorTypes = {
   CONTENT_REPORT: "CONTENT_REPORT",
   COUNTER_JUSTIFICATION: "COUNTER_JUSTIFICATION",
   CREATE_URL_LOCATORS: "CREATE_URL_LOCATORS",
+  CREATE_MEDIA_EXCERPT_CITATIONS: "CREATE_MEDIA_EXCERPT_CITATIONS",
   JUSTIFICATION_BASIS_COMPOUND: "JUSTIFICATION_BASIS_COMPOUND",
   /* e.g. Proposition justification page */
   JUSTIFIED_SENTENCE: "JUSTIFIED_SENTENCE",
@@ -172,6 +174,7 @@ export type EditorEntity =
   | CreatePersorgInput
   | UpdatePersorgInput
   | CreateUrlLocatorsInput
+  | CreateMediaExcerptCitationsInput
   | CreateAppearanceInput
   | CreatePasswordResetRequestInput
   | PasswordResetConfirmation;

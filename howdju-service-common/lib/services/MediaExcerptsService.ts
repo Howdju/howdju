@@ -323,6 +323,52 @@ export class MediaExcerptsService {
     return { isExtant, urlLocator };
   }
 
+  async createCitations(
+    userIdent: UserIdent,
+    mediaExcerptId: EntityId,
+    createCitations: CreateMediaExcerptCitation[]
+  ) {
+    const creator = await this.authService.readUserBlurbForUserIdent(userIdent);
+    const mediaExcerpt = await this.mediaExcerptsDao.readMediaExcerptForId(
+      mediaExcerptId
+    );
+    if (!mediaExcerpt) {
+      throw new EntityNotFoundError("MEDIA_EXCERPT", mediaExcerptId);
+    }
+
+    const createdAt = utcNow();
+    const { isExtant: isExtantSources, sources } =
+      await this.sourcesService.readOrCreateSources(
+        creator.id,
+        createCitations.map((c) => c.source),
+        createdAt
+      );
+    const createCitationsWithSource = zip(createCitations, sources).map(
+      ([createCitation, source]) => {
+        if (!createCitation || !source) {
+          throw newImpossibleError(
+            `createCitations and sources must match in length because sources is based off of createCitations.`
+          );
+        }
+        return {
+          ...createCitation,
+          source,
+        };
+      }
+    );
+    const { citations, isExtant: isExtantCitations } =
+      await this.readOrCreateMediaExcerptCitations(
+        creator,
+        mediaExcerptId,
+        createCitationsWithSource,
+        createdAt
+      );
+    return {
+      citations,
+      isExtant: isExtantSources && isExtantCitations,
+    };
+  }
+
   private async readOrCreateMediaExcerptCitations(
     creator: UserBlurb,
     mediaExcerptId: EntityId,

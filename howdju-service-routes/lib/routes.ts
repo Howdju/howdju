@@ -48,6 +48,7 @@ import {
   CreatePasswordResetRequest,
   PasswordResetConfirmation,
   JustificationVoteOut,
+  CreateMediaExcerptCitation,
 } from "howdju-common";
 import {
   EntityNotFoundError,
@@ -1073,6 +1074,34 @@ export const serviceRoutes = {
     ),
   },
 
+  createMediaExcerptCitations: {
+    path: "media-excerpts/:mediaExcerptId/citations",
+    method: httpMethods.POST,
+    request: handler(
+      Authed.merge(
+        PathParams("mediaExcerptId").merge(
+          Body({ citations: z.array(CreateMediaExcerptCitation) })
+        )
+      ),
+      async (
+        appProvider: ServicesProvider,
+        {
+          authToken,
+          pathParams: { mediaExcerptId },
+          body: { citations: createCitations },
+        }
+      ) => {
+        const { citations, isExtant } =
+          await appProvider.mediaExcerptsService.createCitations(
+            { authToken },
+            mediaExcerptId,
+            createCitations
+          );
+        return { body: { citations, isExtant } };
+      }
+    ),
+  },
+
   /*
    * Appearances
    */
@@ -1203,7 +1232,7 @@ export const serviceRoutes = {
           body: {
             appearance: {
               id: appearanceId,
-              confirmationStatus: null,
+              confirmationStatus: undefined,
             },
           },
         };
@@ -1238,7 +1267,9 @@ export const serviceRoutes = {
             urlIds?.split(",") ?? [],
             sourceIds?.split(",") ?? []
           );
-        return { body: { appearances, users, urls, sources } };
+        return {
+          body: { appearances, users: users, urls, sources },
+        };
       }
     ),
   },

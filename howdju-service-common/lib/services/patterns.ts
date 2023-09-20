@@ -144,11 +144,11 @@ export async function readWriteReread<T>(
  */
 export function ensurePresent<E extends Entity>(
   entityIds: EntityId[],
-  entities: E[],
+  entities: (E | undefined)[],
   entityType: EntityType
 ): entities is E[] {
   const missingIds = entityIds.filter(
-    (id) => !entities.find((e) => e.id === id)
+    (id) => !entities.find((e) => !!e && e.id === id)
   );
   if (missingIds.length) {
     throw new EntityNotFoundError(entityType, missingIds);
