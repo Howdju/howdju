@@ -58,7 +58,11 @@ import {
 } from "@/sagas/editors/commitEditorThenViewSaga";
 
 export class CommitThenPutAction {
-  constructor(public action: AnyAction) {}
+  constructor(public readonly action: AnyAction) {}
+}
+
+export class CancelThenPutAction {
+  constructor(public readonly action: AnyAction) {}
 }
 
 /** Editor fields can return one or more actions to dispatch. */
@@ -95,7 +99,8 @@ export type WithEditorProps = {
   onKeyDown?: OnKeyDownCallback;
   showButtons?: boolean;
   onValidityChange?: OnValidityChangeCallback;
-  editorCommitBehavior?: "JustCommit" | "CommitThenView" | CommitThenPutAction;
+  commitBehavior?: "JustCommit" | "CommitThenView" | CommitThenPutAction;
+  cancelBehavior?: "JustCancel" | CancelThenPutAction;
 };
 /**
  * The fields that must be present on the fields component.
@@ -203,7 +208,8 @@ export default function withEditor<
       onKeyDown,
       onValidityChange,
       showButtons = true,
-      editorCommitBehavior = "JustCommit",
+      commitBehavior = "JustCommit",
+      cancelBehavior = "JustCancel",
       ...rest
     } = props;
 
@@ -255,9 +261,9 @@ export default function withEditor<
         return;
       }
 
-      if (editorCommitBehavior === "JustCommit") {
+      if (commitBehavior === "JustCommit") {
         dispatch(editors.commitEdit(editorType, editorId));
-      } else if (editorCommitBehavior === "CommitThenView") {
+      } else if (commitBehavior === "CommitThenView") {
         if (!(editorType in editorCommitResultGotoActionCreators)) {
           logger.error(`No goto action creator for editor type ${editorType}.`);
           dispatch(editors.commitEdit(editorType, editorId));
@@ -266,18 +272,16 @@ export default function withEditor<
             flows.commitEditThenView(editorType as ViewableEditorType, editorId)
           );
         }
-      } else if (editorCommitBehavior.action) {
+      } else if (commitBehavior instanceof CommitThenPutAction) {
         dispatch(
           flows.commitEditThenPutActionOnSuccess(
             editorType,
             editorId,
-            editorCommitBehavior.action
+            commitBehavior.action
           )
         );
       } else {
-        logger.error(
-          `Unrecognized editorCommitBehavior: ${toJson(editorCommitBehavior)}`
-        );
+        logger.error(`Unrecognized commitBehavior: ${toJson(commitBehavior)}`);
       }
     };
     const onSubmitClick = (_event: React.MouseEvent<HTMLElement>) => {
@@ -285,6 +289,13 @@ export default function withEditor<
     };
     const onCancelEdit = () => {
       dispatch(editors.cancelEdit(editorType, editorId));
+      if (cancelBehavior === "JustCancel") {
+        return;
+      } else if (cancelBehavior instanceof CancelThenPutAction) {
+        dispatch(cancelBehavior.action);
+      } else {
+        logger.error(`Unrecognized cancelBehavior: ${toJson(commitBehavior)}`);
+      }
     };
 
     function editorDispatch(actionCreator: EditorFieldsActionCreator) {

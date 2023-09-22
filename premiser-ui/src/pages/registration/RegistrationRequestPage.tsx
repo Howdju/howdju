@@ -56,7 +56,7 @@ export default function RegistrationRequestPage() {
     <RegistrationRequestEditor
       id="registration-request-editor"
       editorId={editorId}
-      editorCommitBehavior="JustCommit"
+      commitBehavior="JustCommit"
       submitButtonText="Request Registration"
     />
   );

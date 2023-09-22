@@ -122,7 +122,7 @@ export default function CreateJustificationDialog(props: Props) {
         onKeyDown={onKeyDown}
         showButtons={false}
         onValidityChange={setIsValid}
-        editorCommitBehavior={
+        commitBehavior={
           commitAction
             ? new CommitThenPutAction(commitAction)
             : "CommitThenView"

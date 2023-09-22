@@ -60,7 +60,7 @@ export default function CreateAppearancePage(props: Props) {
         id={combineIds(id, "editor")}
         editorId={editorId}
         className="md-cell md-cell--12"
-        editorCommitBehavior="CommitThenView"
+        commitBehavior="CommitThenView"
       />
     </div>
   );

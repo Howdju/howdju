@@ -50,7 +50,7 @@ export default function SubmitMediaExcerptPage() {
         id={id}
         editorId={editorId}
         className="md-cell--12"
-        editorCommitBehavior={"CommitThenView"}
+        commitBehavior={"CommitThenView"}
         submitButtonText="Create"
       />
     </div>

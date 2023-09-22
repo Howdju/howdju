@@ -30,7 +30,7 @@ import { editors, flows } from "@/actions";
 import app from "@/app/appSlice";
 import mediaExcerptPage from "./mediaExcerptPageSlice";
 import CreateUrlLocatorsEditor from "@/editors/CreateUrlLocatorsEditor";
-import { CommitThenPutAction } from "@/editors/withEditor";
+import { CancelThenPutAction, CommitThenPutAction } from "@/editors/withEditor";
 import DeleteUrlLocatorsControl from "./DeleteUrlLocatorsControl";
 import MediaExcerptUsages from "./MediaExcerptUsages";
 import CreateMediaExcerptCitationsEditor from "./CreateMediaExcerptCitationsEditor";
@@ -201,8 +201,11 @@ export default function MediaExcerptPage(props: Props) {
           editorId={createUrlLocatorsEditorId}
           showButtons={true}
           submitButtonText="Add"
-          editorCommitBehavior={
+          commitBehavior={
             new CommitThenPutAction(mediaExcerptPage.hideAddUrlLocatorsDialog())
+          }
+          cancelBehavior={
+            new CancelThenPutAction(mediaExcerptPage.hideAddUrlLocatorsDialog())
           }
         />
       </DialogContainer>
@@ -236,8 +239,11 @@ export default function MediaExcerptPage(props: Props) {
           editorId={createCitationsEditorId}
           showButtons={true}
           submitButtonText="Add"
-          editorCommitBehavior={
+          commitBehavior={
             new CommitThenPutAction(mediaExcerptPage.hideAddCitationsDialog())
+          }
+          cancelBehavior={
+            new CancelThenPutAction(mediaExcerptPage.hideAddCitationsDialog())
           }
         />
       </DialogContainer>
