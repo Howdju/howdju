@@ -34,6 +34,7 @@ import { CommitThenPutAction } from "@/editors/withEditor";
 import DeleteUrlLocatorsControl from "./DeleteUrlLocatorsControl";
 import MediaExcerptUsages from "./MediaExcerptUsages";
 import CreateMediaExcerptCitationsEditor from "./CreateMediaExcerptCitationsEditor";
+import DeleteMediaExcerptCitationsControl from "./DeleteMediaExcerptCitationsControl";
 
 interface MatchParams {
   mediaExcerptId: EntityId;
@@ -57,6 +58,10 @@ export default function MediaExcerptPage(props: Props) {
   const [
     isDeleteUrlLocatorsDialogVisible,
     setIsDeleteUrlLocatorsDialogVisible,
+  ] = useState(false);
+  const [
+    isDeleteMediaExcerptCitationsDialogVisible,
+    setIsDeleteMediaExcerptCitationsDialogVisible,
   ] = useState(false);
 
   function deleteMediaExcerpt() {
@@ -157,6 +162,12 @@ export default function MediaExcerptPage(props: Props) {
           leftIcon={<MaterialSymbol icon="link_off" />}
           onClick={() => setIsDeleteUrlLocatorsDialogVisible(true)}
         />,
+        <ListItem
+          primaryText="Delete Citations…"
+          key="delete-urls"
+          leftIcon={<MaterialSymbol icon="auto_stories" />}
+          onClick={() => setIsDeleteMediaExcerptCitationsDialogVisible(true)}
+        />,
         <Divider key="divider-delete" />,
         <ListItem
           primaryText="Delete"
@@ -240,6 +251,24 @@ export default function MediaExcerptPage(props: Props) {
             new CommitThenPutAction(mediaExcerptPage.hideAddCitationsDialog())
           }
         />
+      </DialogContainer>
+      <DialogContainer
+        id={combineIds(id, "delete-media-excerpt-citations-dialog")}
+        visible={isDeleteMediaExcerptCitationsDialogVisible}
+        title="Delete Citations"
+        onHide={() => setIsDeleteMediaExcerptCitationsDialogVisible(false)}
+        className="md-overlay--wide-dialog"
+      >
+        <DeleteMediaExcerptCitationsControl mediaExcerpt={mediaExcerpt} />
+        <footer className="md-dialog-footer md-dialog-footer--inline">
+          <Button
+            raised
+            primary
+            onClick={() => setIsDeleteMediaExcerptCitationsDialogVisible(false)}
+          >
+            Close
+          </Button>
+        </footer>
       </DialogContainer>
     </div>
   );

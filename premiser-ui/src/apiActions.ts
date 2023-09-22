@@ -51,6 +51,7 @@ import {
   CreatePasswordResetRequest,
   PasswordResetConfirmation,
   CreateMediaExcerptCitationsInput,
+  MediaExcerptCitationOut,
 } from "howdju-common";
 import {
   InferPathParams,
@@ -683,6 +684,21 @@ export const api = {
       normalizationSchema: {
         citations: mediaExcerptCitationsSchema,
       },
+    })
+  ),
+  deleteMediaExcerptCitation: apiActionCreator(
+    "DELETE_MEDIA_EXCERPT_CITATION",
+    serviceRoutes.deleteMediaExcerptCitation,
+    ({
+      mediaExcerptId,
+      source: { id: sourceId },
+      normalPincite,
+    }: MediaExcerptCitationOut) => ({
+      config: {
+        pathParams: { mediaExcerptId },
+        queryStringParams: { sourceId, normalPincite },
+      },
+      meta: { mediaExcerptId, sourceId, normalPincite },
     })
   ),
 

@@ -565,20 +565,18 @@ export type CreateMediaExcerptCitationInput = z.output<
 >;
 
 /**
- * A model identifying MediaExcerptCitations for deletion.
+ * A model identifying MediaExcerptCitations.
  *
  * Since MediaExcerptCitation is a relation and not an Entity (and so has no singular unique ID), we
- * need a model to uniquely identify it for deletion.
+ * need a model to uniquely identify it e.g. for deletion.
  */
-export const DeleteMediaExcerptCitation = z.object({
+export const MediaExcerptCitationIdentifier = z.object({
   mediaExcerptId: z.string(),
-  source: z.object({
-    id: z.string(),
-  }),
+  sourceId: z.string(),
   normalPincite: z.string().optional(),
 });
-export type DeleteMediaExcerptCitation = z.output<
-  typeof DeleteMediaExcerptCitation
+export type MediaExcerptCitationIdentifier = z.output<
+  typeof MediaExcerptCitationIdentifier
 >;
 
 export const MediaExcerptSpeaker = z.object({
@@ -1528,6 +1526,7 @@ const EntityType = z.enum([
   "JUSTIFICATION",
   "JUSTIFICATION_VOTE",
   "MEDIA_EXCERPT",
+  "MEDIA_EXCERPT_CITATION",
   "PASSWORD_HASH",
   "PASSWORD_RESET_REQUEST",
   "PERSORG",
@@ -1716,3 +1715,9 @@ export const Credentials = z.object({
   password: Password,
 });
 export type Credentials = z.infer<typeof Credentials>;
+
+export const CreationInfo = z.object({
+  creatorUserId: z.string(),
+  created: momentObject,
+});
+export type CreationInfo = z.output<typeof CreationInfo>;

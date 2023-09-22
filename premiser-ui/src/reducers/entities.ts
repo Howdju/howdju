@@ -278,10 +278,31 @@ const slice = createSlice({
       }
       const { urlLocatorId, mediaExcerptId } = action.meta.requestMeta;
       delete state.urlLocators[urlLocatorId];
+
       const mediaExcerpt = state.mediaExcerpts[mediaExcerptId];
       const index = mediaExcerpt.locators.urlLocators.indexOf(urlLocatorId);
       mediaExcerpt.locators.urlLocators.splice(index, 1);
     });
+    builder.addCase(
+      api.deleteMediaExcerptCitation.response,
+      (state, action) => {
+        if (action.error) {
+          return;
+        }
+        const { mediaExcerptId, sourceId, normalPincite } =
+          action.meta.requestMeta;
+        const key = mediaExcerptCitationKey({
+          mediaExcerptId,
+          sourceId,
+          normalPincite,
+        });
+        delete state.mediaExcerptCitations[key];
+
+        const mediaExcerpt = state.mediaExcerpts[mediaExcerptId];
+        const index = mediaExcerpt.citations.indexOf(key);
+        mediaExcerpt.citations.splice(index, 1);
+      }
+    );
     builder.addCase(
       api.createCounterJustification.response,
       (state, action) => {

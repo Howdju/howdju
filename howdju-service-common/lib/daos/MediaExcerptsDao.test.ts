@@ -126,8 +126,13 @@ describe("MediaExcerptsDao", () => {
       const { authToken } = await testHelper.makeUser();
       const mediaExcerpt = await testHelper.makeMediaExcerpt({ authToken });
       const deletedAt = utcNow();
+      const {
+        mediaExcerptId,
+        source: { id: sourceId },
+        normalPincite,
+      } = mediaExcerpt.citations[0];
       await dao.deleteMediaExcerptCitation(
-        mediaExcerpt.citations[0],
+        { mediaExcerptId, sourceId, normalPincite },
         deletedAt
       );
 

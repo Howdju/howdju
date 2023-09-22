@@ -894,8 +894,12 @@ describe("MediaExcerptsService", () => {
       );
 
       await Promise.all(
-        mediaExcerpt.citations.map((citation) =>
-          service.deleteCitation({ authToken }, citation)
+        mediaExcerpt.citations.map(
+          ({ mediaExcerptId, source: { id: sourceId }, normalPincite }) =>
+            service.deleteCitation(
+              { authToken },
+              { mediaExcerptId, sourceId, normalPincite }
+            )
         )
       );
 

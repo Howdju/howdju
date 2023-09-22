@@ -7,6 +7,7 @@ import {
   ContextTrailItem,
   JustificationView,
   JustificationVote,
+  MediaExcerptCitationIdentifier,
   MediaExcerptCitationOut,
   MediaExcerptCitationView,
   MediaExcerptOut,
@@ -195,9 +196,21 @@ export const urlLocatorsSchema = new schema.Array(urlLocatorSchema);
 export const sourceSchema = new schema.Entity<SourceOut>("sources");
 export const sourcesSchema = new schema.Array(sourceSchema);
 
-export function mediaExcerptCitationKey(citation: MediaExcerptCitationOut) {
-  return `${citation.mediaExcerptId}-${citation.source.id}${
-    citation.normalPincite ? "-" + citation.normalPincite : ""
+export function mediaExcerptCitationKey(
+  citation: MediaExcerptCitationOut
+): string;
+export function mediaExcerptCitationKey(
+  citationIdentifier: MediaExcerptCitationIdentifier
+): string;
+export function mediaExcerptCitationKey(
+  model: MediaExcerptCitationOut | MediaExcerptCitationIdentifier
+): string {
+  const { mediaExcerptId, normalPincite } = model;
+  const sourceId = "source" in model ? model.source.id : model.sourceId;
+
+  // toMediaExcerptCitationIdentifier
+  return `${mediaExcerptId}-${sourceId}${
+    normalPincite ? "-" + normalPincite : ""
   }`;
 }
 export const mediaExcerptCitationSchema =

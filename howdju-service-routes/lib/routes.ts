@@ -1078,10 +1078,8 @@ export const serviceRoutes = {
     path: "media-excerpts/:mediaExcerptId/citations",
     method: httpMethods.POST,
     request: handler(
-      Authed.merge(
-        PathParams("mediaExcerptId").merge(
-          Body({ citations: z.array(CreateMediaExcerptCitation) })
-        )
+      Authed.merge(PathParams("mediaExcerptId")).merge(
+        Body({ citations: z.array(CreateMediaExcerptCitation) })
       ),
       async (
         appProvider: ServicesProvider,
@@ -1098,6 +1096,31 @@ export const serviceRoutes = {
             createCitations
           );
         return { body: { citations, isExtant } };
+      }
+    ),
+  },
+  deleteMediaExcerptCitation: {
+    path: "media-excerpts/:mediaExcerptId/citations",
+    method: httpMethods.DELETE,
+    request: handler(
+      Authed.merge(PathParams("mediaExcerptId")).merge(
+        QueryStringParams("sourceId", "normalPincite")
+      ),
+      async (
+        appProvider: ServicesProvider,
+        {
+          authToken,
+          pathParams: { mediaExcerptId },
+          queryStringParams: { sourceId, normalPincite },
+        }
+      ) => {
+        if (!sourceId) {
+          throw new InvalidRequestError("sourceId is required");
+        }
+        await appProvider.mediaExcerptsService.deleteCitation(
+          { authToken },
+          { mediaExcerptId, sourceId, normalPincite }
+        );
       }
     ),
   },
