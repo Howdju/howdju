@@ -41,7 +41,7 @@ export default function ReportContentDialog() {
           <Card>
             <ContentReportEditor
               id={id}
-              editorCommitBehavior={
+              commitBehavior={
                 new CommitThenPutAction(app.addToast("Submitted report."))
               }
               editorId={editorId}

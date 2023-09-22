@@ -101,7 +101,7 @@ export default function RegistrationConfirmationPage() {
     <RegistrationConfirmationEditor
       id="registration-confirmation-editor"
       editorId={editorId}
-      editorCommitBehavior="JustCommit"
+      commitBehavior="JustCommit"
       submitButtonText="Complete Registration"
       email={email}
     />
