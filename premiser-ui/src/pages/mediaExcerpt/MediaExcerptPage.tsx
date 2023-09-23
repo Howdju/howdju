@@ -329,7 +329,7 @@ export default function MediaExcerptPage(props: Props) {
           editorId={createSpeakersEditorId}
           showButtons={true}
           submitButtonText="Add"
-          editorCommitBehavior={
+          commitBehavior={
             new CommitThenPutAction(mediaExcerptPage.hideAddSpeakersDialog())
           }
         />
