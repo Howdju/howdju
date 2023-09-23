@@ -31,6 +31,7 @@ import {
   mergeCopy,
   MediaExcerptSpeakerOut,
   CreationInfo,
+  MediaExcerptSpeakerIdentifier,
 } from "howdju-common";
 
 import { Database, TxnClient } from "../database";
@@ -1180,6 +1181,31 @@ export class MediaExcerptsDao {
     };
   }
 
+  async readMediaExcerptSpeakerCreationInfo({
+    mediaExcerptId,
+    persorgId,
+  }: MediaExcerptSpeakerIdentifier): Promise<CreationInfo | undefined> {
+    const args = [mediaExcerptId, persorgId];
+    const { rows } = await this.database.query(
+      "readMediaExcerptSpeakerCreationInfo",
+      `
+        select * from media_excerpt_speakers
+        where media_excerpt_id = $1 and speaker_persorg_id = $2 and deleted is null
+      `,
+      args
+    );
+    if (rows.length < 1) {
+      return undefined;
+    }
+
+    const row = rows[0];
+
+    return {
+      created: row.created,
+      creatorUserId: row.creator_user_id,
+    };
+  }
+
   async readMediaExcerptIdForCitation(
     sourceId: EntityId,
     normalPincite: string | undefined
@@ -1209,7 +1235,7 @@ export class MediaExcerptsDao {
     return toIdString(row.media_excerpt_id);
   }
 
-  deleteMediaExcerptCitation(
+  deleteCitation(
     { mediaExcerptId, sourceId, normalPincite }: MediaExcerptCitationIdentifier,
     deletedAt: Moment
   ) {
@@ -1218,7 +1244,7 @@ export class MediaExcerptsDao {
       args.push(normalPincite);
     }
     return this.database.query(
-      "deleteMediaExcerptCitation",
+      "deleteCitation",
       `
       update media_excerpt_citations
       set deleted = $1
@@ -1226,6 +1252,24 @@ export class MediaExcerptsDao {
             media_excerpt_id = $2
         and source_id = $3
         and ${normalPincite ? `normal_pincite = $4` : `normal_pincite is null`}
+        and deleted is null`,
+      args
+    );
+  }
+
+  deleteSpeaker(
+    { mediaExcerptId, persorgId }: MediaExcerptSpeakerIdentifier,
+    deletedAt: Moment
+  ) {
+    const args = [deletedAt, mediaExcerptId, persorgId];
+    return this.database.query(
+      "deleteSpeaker",
+      `
+      update media_excerpt_speakers
+      set deleted = $1
+      where
+            media_excerpt_id = $2
+        and persorg_id = $3
         and deleted is null`,
       args
     );

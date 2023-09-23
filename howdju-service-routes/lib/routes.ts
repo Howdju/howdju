@@ -49,6 +49,7 @@ import {
   PasswordResetConfirmation,
   JustificationVoteOut,
   CreateMediaExcerptCitation,
+  CreateMediaExcerptSpeaker,
 } from "howdju-common";
 import {
   EntityNotFoundError,
@@ -1120,6 +1121,57 @@ export const serviceRoutes = {
         await appProvider.mediaExcerptsService.deleteCitation(
           { authToken },
           { mediaExcerptId, sourceId, normalPincite }
+        );
+      }
+    ),
+  },
+
+  createMediaExcerptSpeakers: {
+    path: "media-excerpts/:mediaExcerptId/speakers",
+    method: httpMethods.POST,
+    request: handler(
+      Authed.merge(PathParams("mediaExcerptId")).merge(
+        Body({ speakers: z.array(CreateMediaExcerptSpeaker) })
+      ),
+      async (
+        appProvider: ServicesProvider,
+        {
+          authToken,
+          pathParams: { mediaExcerptId },
+          body: { speakers: createSpeakers },
+        }
+      ) => {
+        const { speakers, isExtant } =
+          await appProvider.mediaExcerptsService.createSpeakers(
+            { authToken },
+            mediaExcerptId,
+            createSpeakers
+          );
+        return { body: { speakers, isExtant } };
+      }
+    ),
+  },
+  deleteMediaExcerptSpeaker: {
+    path: "media-excerpts/:mediaExcerptId/speakers",
+    method: httpMethods.DELETE,
+    request: handler(
+      Authed.merge(PathParams("mediaExcerptId")).merge(
+        QueryStringParams("persorgId")
+      ),
+      async (
+        appProvider: ServicesProvider,
+        {
+          authToken,
+          pathParams: { mediaExcerptId },
+          queryStringParams: { persorgId },
+        }
+      ) => {
+        if (!persorgId) {
+          throw new InvalidRequestError("persorgId is required");
+        }
+        await appProvider.mediaExcerptsService.deleteSpeaker(
+          { authToken },
+          { mediaExcerptId, persorgId }
         );
       }
     ),

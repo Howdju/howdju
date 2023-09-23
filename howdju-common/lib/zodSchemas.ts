@@ -579,6 +579,14 @@ export type MediaExcerptCitationIdentifier = z.output<
   typeof MediaExcerptCitationIdentifier
 >;
 
+export const MediaExcerptSpeakerIdentifier = z.object({
+  mediaExcerptId: z.string(),
+  persorgId: z.string(),
+});
+export type MediaExcerptSpeakerIdentifier = z.output<
+  typeof MediaExcerptSpeakerIdentifier
+>;
+
 export const MediaExcerptSpeaker = z.object({
   mediaExcerptId: z.string(),
   persorg: Persorg,
@@ -1257,6 +1265,14 @@ export type CreateMediaExcerptCitationsInput = z.output<
   typeof CreateMediaExcerptCitationsInput
 >;
 
+export const CreateMediaExcerptSpeakersInput = z.object({
+  mediaExcerptId: z.string(),
+  speakers: z.array(CreateMediaExcerptSpeaker),
+});
+export type CreateMediaExcerptSpeakersInput = z.output<
+  typeof CreateMediaExcerptSpeakersInput
+>;
+
 export type CreateJustificationInput = Entity & {
   // A justification can target anything that can be a root target.
   // Additionally, it can target other justifications to counter them.
@@ -1527,6 +1543,7 @@ const EntityType = z.enum([
   "JUSTIFICATION_VOTE",
   "MEDIA_EXCERPT",
   "MEDIA_EXCERPT_CITATION",
+  "MEDIA_EXCERPT_SPEAKER",
   "PASSWORD_HASH",
   "PASSWORD_RESET_REQUEST",
   "PERSORG",

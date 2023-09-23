@@ -21,6 +21,8 @@ import {
   UrlOut,
   UserBlurb,
   utcNow,
+  CreateMediaExcerptSpeaker,
+  MediaExcerptSpeakerIdentifier,
 } from "howdju-common";
 
 import { AuthService } from "./AuthService";
@@ -369,6 +371,39 @@ export class MediaExcerptsService {
     };
   }
 
+  async createSpeakers(
+    userIdent: UserIdent,
+    mediaExcerptId: EntityId,
+    createSpeakers: CreateMediaExcerptSpeaker[]
+  ) {
+    const creator = await this.authService.readUserBlurbForUserIdent(userIdent);
+    const mediaExcerpt = await this.mediaExcerptsDao.readMediaExcerptForId(
+      mediaExcerptId
+    );
+    if (!mediaExcerpt) {
+      throw new EntityNotFoundError("MEDIA_EXCERPT", mediaExcerptId);
+    }
+
+    const createdAt = utcNow();
+    const { isExtant: isExtantPersorgs, persorgs } =
+      await this.persorgsService.readOrCreatePersorgs(
+        creator.id,
+        createSpeakers.map((c) => c.persorg),
+        createdAt
+      );
+    const { speakers, isExtant: isExtantSpeakers } =
+      await this.ensureMediaExcerptSpeakers(
+        creator.id,
+        mediaExcerptId,
+        persorgs,
+        createdAt
+      );
+    return {
+      speakers,
+      isExtant: isExtantPersorgs && isExtantSpeakers,
+    };
+  }
+
   private async readOrCreateMediaExcerptCitations(
     creator: UserBlurb,
     mediaExcerptId: EntityId,
@@ -566,26 +601,39 @@ export class MediaExcerptsService {
 
     await this.checkModifyPermission(userId, citationCreationInfo, "Citation");
 
-    const citationMediaExcerptId =
-      await this.mediaExcerptsDao.readMediaExcerptIdForCitation(
-        sourceId,
-        normalPincite
-      );
-    if (!citationMediaExcerptId) {
-      throw new EntityNotFoundError("MEDIA_EXCERPT_CITATION", {
-        sourceId,
-        normalPincite,
+    const deletedAt = utcNow();
+    await this.mediaExcerptsDao.deleteCitation(
+      { mediaExcerptId, sourceId, normalPincite },
+      deletedAt
+    );
+  }
+
+  async deleteSpeaker(
+    userIdent: UserIdent,
+    { mediaExcerptId, persorgId }: MediaExcerptSpeakerIdentifier
+  ) {
+    const userId = await this.authService.readUserIdForUserIdent(userIdent);
+    const [mediaExcerpt, creationInfo] = await Promise.all([
+      this.mediaExcerptsDao.readMediaExcerptForId(mediaExcerptId),
+      this.mediaExcerptsDao.readMediaExcerptSpeakerCreationInfo({
+        mediaExcerptId,
+        persorgId,
+      }),
+    ]);
+    if (!mediaExcerpt) {
+      throw new EntityNotFoundError("MEDIA_EXCERPT", mediaExcerptId);
+    }
+    if (!creationInfo) {
+      throw new EntityNotFoundError("MEDIA_EXCERPT_SPEAKER", {
+        persorgId,
       });
     }
-    if (citationMediaExcerptId !== mediaExcerptId) {
-      throw new RequestValidationError(
-        `MediaExcerptCitation (sourceId: ${sourceId}, normalPincite: ${normalPincite} does not belong to MediaExcerpt ${mediaExcerptId}.`
-      );
-    }
+
+    await this.checkModifyPermission(userId, creationInfo, "Speaker");
 
     const deletedAt = utcNow();
-    await this.mediaExcerptsDao.deleteMediaExcerptCitation(
-      { mediaExcerptId, sourceId, normalPincite },
+    await this.mediaExcerptsDao.deleteSpeaker(
+      { mediaExcerptId, persorgId },
       deletedAt
     );
   }
@@ -609,14 +657,7 @@ export class MediaExcerptsService {
 
     await this.checkModifyPermission(userId, urlLocator, "URL Locator");
 
-    const urlLocatorMediaExcerptId =
-      await this.mediaExcerptsDao.readMediaExcerptIdForUrlLocatorId(
-        urlLocatorId
-      );
-    if (!urlLocatorMediaExcerptId) {
-      throw new EntityNotFoundError("URL_LOCATOR", urlLocatorId);
-    }
-    if (urlLocatorMediaExcerptId !== mediaExcerptId) {
+    if (urlLocator.mediaExcerptId !== mediaExcerptId) {
       throw new RequestValidationError(
         `UrlLocator ${urlLocatorId} does not belong to MediaExcerpt ${mediaExcerptId}.`
       );

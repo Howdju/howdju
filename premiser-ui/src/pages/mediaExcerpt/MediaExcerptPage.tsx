@@ -16,13 +16,14 @@ import { push } from "connected-react-router";
 import {
   EntityId,
   makeCreateMediaExcerptCitationInput,
+  makeCreateMediaExcerptSpeakerInput,
   makeCreateUrlLocatorInput,
 } from "howdju-common";
 
 import { useAppDispatch, useAppEntitySelector, useAppSelector } from "@/hooks";
 import { api } from "@/apiActions";
 import { mediaExcerptSchema } from "@/normalizationSchemas";
-import { combineIds } from "@/viewModels";
+import { combineEditorIds, combineIds } from "@/viewModels";
 import MediaExcerptCard from "@/components/mediaExcerpts/MediaExcerptCard";
 import HowdjuHelmet from "@/Helmet";
 import paths from "@/paths";
@@ -35,6 +36,8 @@ import DeleteUrlLocatorsControl from "./DeleteUrlLocatorsControl";
 import MediaExcerptUsages from "./MediaExcerptUsages";
 import CreateMediaExcerptCitationsEditor from "./CreateMediaExcerptCitationsEditor";
 import DeleteMediaExcerptCitationsControl from "./DeleteMediaExcerptCitationsControl";
+import DeleteMediaExcerptSpeakersControl from "./DeleteMediaExcerptSpeakersControl";
+import CreateMediaExcerptSpeakersEditor from "./CreateMediaExcerptSpeakersEditor";
 
 interface MatchParams {
   mediaExcerptId: EntityId;
@@ -42,8 +45,12 @@ interface MatchParams {
 type Props = RouteComponentProps<MatchParams>;
 
 const id = "media-excerpt-page";
-const createUrlLocatorsEditorId = combineIds(id, "create-url-locators-editor");
-const createCitationsEditorId = combineIds(id, "create-citations-editor");
+const createUrlLocatorsEditorId = combineEditorIds(
+  id,
+  "create-url-locators-editor"
+);
+const createCitationsEditorId = combineEditorIds(id, "create-citations-editor");
+const createSpeakersEditorId = combineEditorIds(id, "create-speakers-editor");
 
 export default function MediaExcerptPage(props: Props) {
   const dispatch = useAppDispatch();
@@ -59,10 +66,10 @@ export default function MediaExcerptPage(props: Props) {
     isDeleteUrlLocatorsDialogVisible,
     setIsDeleteUrlLocatorsDialogVisible,
   ] = useState(false);
-  const [
-    isDeleteMediaExcerptCitationsDialogVisible,
-    setIsDeleteMediaExcerptCitationsDialogVisible,
-  ] = useState(false);
+  const [isDeleteCitationsDialogVisible, setIsDeleteCitationsDialogVisible] =
+    useState(false);
+  const [isDeleteSpeakersDialogVisible, setIsDeleteSpeakersDialogVisible] =
+    useState(false);
 
   function deleteMediaExcerpt() {
     dispatch(
@@ -86,6 +93,13 @@ export default function MediaExcerptPage(props: Props) {
   }
   function hideAddCitationsDialog() {
     dispatch(mediaExcerptPage.hideAddCitationsDialog());
+  }
+
+  function showAddSpeakersDialog() {
+    dispatch(mediaExcerptPage.showAddSpeakersDialog());
+  }
+  function hideAddSpeakersDialog() {
+    dispatch(mediaExcerptPage.hideAddSpeakersDialog());
   }
 
   function onAddUrlLocatorsClick() {
@@ -112,10 +126,25 @@ export default function MediaExcerptPage(props: Props) {
     showAddCitationsDialog();
   }
 
+  function onAddSpeakersClick() {
+    dispatch(
+      editors.beginEdit(
+        "CREATE_MEDIA_EXCERPT_SPEAKERS",
+        createSpeakersEditorId,
+        {
+          mediaExcerptId,
+          speakers: [makeCreateMediaExcerptSpeakerInput()],
+        }
+      )
+    );
+    showAddSpeakersDialog();
+  }
+
   const {
     isFetching,
     isAddUrlLocatorsDialogVisible,
     isAddCitationsDialogVisible,
+    isAddSpeakersDialogVisible,
   } = useAppSelector((state) => state.mediaExcerptPage);
 
   // TODO(17): pass props directly after upgrading react-md to a version with correct types
@@ -157,6 +186,12 @@ export default function MediaExcerptPage(props: Props) {
           onClick={onAddCitationsClick}
         />,
         <ListItem
+          primaryText="Add Speakers…"
+          key="add-speakers"
+          leftIcon={<MaterialSymbol icon="record_voice_over" />}
+          onClick={onAddSpeakersClick}
+        />,
+        <ListItem
           primaryText="Delete URLs…"
           key="delete-urls"
           leftIcon={<MaterialSymbol icon="link_off" />}
@@ -164,9 +199,15 @@ export default function MediaExcerptPage(props: Props) {
         />,
         <ListItem
           primaryText="Delete Citations…"
-          key="delete-urls"
+          key="delete-citations"
           leftIcon={<MaterialSymbol icon="auto_stories" />}
-          onClick={() => setIsDeleteMediaExcerptCitationsDialogVisible(true)}
+          onClick={() => setIsDeleteCitationsDialogVisible(true)}
+        />,
+        <ListItem
+          primaryText="Delete Speakers…"
+          key="delete-speakers"
+          leftIcon={<MaterialSymbol icon="voice_over_off" />}
+          onClick={() => setIsDeleteCitationsDialogVisible(true)}
         />,
         <Divider key="divider-delete" />,
         <ListItem
@@ -260,9 +301,9 @@ export default function MediaExcerptPage(props: Props) {
       </DialogContainer>
       <DialogContainer
         id={combineIds(id, "delete-media-excerpt-citations-dialog")}
-        visible={isDeleteMediaExcerptCitationsDialogVisible}
+        visible={isDeleteCitationsDialogVisible}
         title="Delete Citations"
-        onHide={() => setIsDeleteMediaExcerptCitationsDialogVisible(false)}
+        onHide={() => setIsDeleteCitationsDialogVisible(false)}
         className="md-overlay--wide-dialog"
       >
         <DeleteMediaExcerptCitationsControl mediaExcerpt={mediaExcerpt} />
@@ -270,7 +311,42 @@ export default function MediaExcerptPage(props: Props) {
           <Button
             raised
             primary
-            onClick={() => setIsDeleteMediaExcerptCitationsDialogVisible(false)}
+            onClick={() => setIsDeleteCitationsDialogVisible(false)}
+          >
+            Close
+          </Button>
+        </footer>
+      </DialogContainer>
+      <DialogContainer
+        id={combineIds(id, "add-speakers-dialog")}
+        visible={isAddSpeakersDialogVisible}
+        title="Add speakers"
+        onHide={hideAddSpeakersDialog}
+        className="md-overlay--wide-dialog"
+      >
+        <CreateMediaExcerptSpeakersEditor
+          id={combineIds(id, "create-speakers-editor")}
+          editorId={createSpeakersEditorId}
+          showButtons={true}
+          submitButtonText="Add"
+          commitBehavior={
+            new CommitThenPutAction(mediaExcerptPage.hideAddSpeakersDialog())
+          }
+        />
+      </DialogContainer>
+      <DialogContainer
+        id={combineIds(id, "delete-speakers-dialog")}
+        visible={isDeleteSpeakersDialogVisible}
+        title="Delete speakers"
+        onHide={() => setIsDeleteSpeakersDialogVisible(false)}
+        className="md-overlay--wide-dialog"
+      >
+        <DeleteMediaExcerptSpeakersControl mediaExcerpt={mediaExcerpt} />
+        <footer className="md-dialog-footer md-dialog-footer--inline">
+          <Button
+            raised
+            primary
+            onClick={() => setIsDeleteSpeakersDialogVisible(false)}
           >
             Close
           </Button>

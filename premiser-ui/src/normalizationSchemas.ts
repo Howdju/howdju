@@ -10,8 +10,10 @@ import {
   MediaExcerptCitationIdentifier,
   MediaExcerptCitationOut,
   MediaExcerptCitationView,
-  MediaExcerptOut,
+  MediaExcerptSpeakerIdentifier,
+  MediaExcerptSpeakerOut,
   MediaExcerptSpeakerView,
+  MediaExcerptView,
   mergeCopy,
   PersorgOut,
   PicRegion,
@@ -197,12 +199,6 @@ export const sourceSchema = new schema.Entity<SourceOut>("sources");
 export const sourcesSchema = new schema.Array(sourceSchema);
 
 export function mediaExcerptCitationKey(
-  citation: MediaExcerptCitationOut
-): string;
-export function mediaExcerptCitationKey(
-  citationIdentifier: MediaExcerptCitationIdentifier
-): string;
-export function mediaExcerptCitationKey(
   model: MediaExcerptCitationOut | MediaExcerptCitationIdentifier
 ): string {
   const { mediaExcerptId, normalPincite } = model;
@@ -235,6 +231,14 @@ export const mediaExcerptCitationsSchema = new schema.Array(
   mediaExcerptCitationSchema
 );
 
+export function mediaExcerptSpeakerKey(
+  model: MediaExcerptSpeakerOut | MediaExcerptSpeakerIdentifier
+): string {
+  const { mediaExcerptId } = model;
+  const persorgId = "persorg" in model ? model.persorg.id : model.persorgId;
+  return `${mediaExcerptId}-${persorgId}`;
+}
+
 export const mediaExcerptSpeakerSchema =
   new schema.Entity<MediaExcerptSpeakerView>(
     "mediaExcerptSpeakers",
@@ -242,16 +246,14 @@ export const mediaExcerptSpeakerSchema =
       persorg: persorgSchema,
     },
     {
-      idAttribute(speaker) {
-        return `${speaker.mediaExcerptId}-${speaker.persorg.id}`;
-      },
+      idAttribute: mediaExcerptSpeakerKey,
     }
   );
 export const mediaExcerptSpeakersSchema = new schema.Array(
   mediaExcerptSpeakerSchema
 );
 
-export const mediaExcerptSchema = new schema.Entity<MediaExcerptOut>(
+export const mediaExcerptSchema = new schema.Entity<MediaExcerptView>(
   "mediaExcerpts",
   {
     locators: {

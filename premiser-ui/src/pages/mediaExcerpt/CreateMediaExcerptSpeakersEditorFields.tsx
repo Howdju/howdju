@@ -1,19 +1,19 @@
 import React from "react";
 
-import { CreateMediaExcerptCitationsInput } from "howdju-common";
+import { CreateMediaExcerptSpeakersInput } from "howdju-common";
 
 import { EntityEditorFieldsProps } from "@/editors/withEditor";
 import { combineIds, combineNames } from "@/viewModels";
-import { MediaExcerptCitationsEditorFields } from "@/editors/MediaExcerptCitationsEditorFields";
+import { MediaExcerptSpeakersEditorFields } from "@/editors/MediaExcerptSpeakersEditorFields";
 
 interface Props
   extends EntityEditorFieldsProps<
     "editModel",
-    CreateMediaExcerptCitationsInput
+    CreateMediaExcerptSpeakersInput
   > {}
 
-/** Translates an edit entity into a wrapped MediaExcerptCitationsEditorFields' citations. */
-export default function CreateMediaExcerptCitationsEditorFields({
+/** Translates an edit entity into a wrapped MediaExcerptSpeakersEditorFields' speakers. */
+export default function CreateMediaExcerptSpeakersEditorFields({
   id,
   name,
   disabled,
@@ -31,17 +31,17 @@ export default function CreateMediaExcerptCitationsEditorFields({
   if (!editModel) {
     return null;
   }
-  const { citations } = editModel;
+  const { speakers } = editModel;
 
   return (
-    <MediaExcerptCitationsEditorFields
-      id={combineIds(id, `citations`)}
-      key={combineIds(id, `citations`)}
-      name={combineNames(name, `citations`)}
-      citations={citations}
-      errors={errors?.citations}
-      dirtyFields={dirtyFields?.citations}
-      blurredFields={blurredFields?.citations}
+    <MediaExcerptSpeakersEditorFields
+      id={combineIds(id, `speakers`)}
+      key={combineIds(id, `speakers`)}
+      name={combineNames(name, `speakers`)}
+      speakers={speakers}
+      errors={errors?.speakers}
+      dirtyFields={dirtyFields?.speakers}
+      blurredFields={blurredFields?.speakers}
       editorDispatch={editorDispatch}
       disabled={disabled}
       suggestionsKey={suggestionsKey}

@@ -1,17 +1,12 @@
 import React from "react";
-import { Button } from "react-md";
-import { MaterialSymbol } from "react-material-symbols";
 
 import {
   CreateMediaExcerptInput,
   extractQuotationFromTextFragment,
   MediaExcerpt,
-  makeCreateMediaExcerptSpeakerInput,
-  PersorgOut,
 } from "howdju-common";
-import { toCreatePersorgInput } from "howdju-client-common";
 
-import { combineNames, combineIds, combineSuggestionsKeys } from "@/viewModels";
+import { combineNames, combineIds } from "@/viewModels";
 import {
   EditorFieldsDispatch,
   EntityEditorFieldsProps,
@@ -19,14 +14,13 @@ import {
 import { makeErrorPropCreator } from "@/modelErrorMessages";
 import TextField from "@/TextField";
 import { EditorType } from "@/reducers/editors";
-import EntityViewer from "@/EntityViewer";
-import PersorgEditorFields from "@/PersorgEditorFields";
 import { editors } from "@/actions";
 import { EditorId } from "@/types";
 import UrlLocatorsEditorFields from "./UrlLocatorsEditorFields";
 
 import "./MediaExcerptEditorFields.scss";
 import { MediaExcerptCitationsEditorFields } from "./MediaExcerptCitationsEditorFields";
+import { MediaExcerptSpeakersEditorFields } from "./MediaExcerptSpeakersEditorFields";
 
 interface Props
   extends EntityEditorFieldsProps<"mediaExcerpt", CreateMediaExcerptInput> {
@@ -55,42 +49,6 @@ export default function MediaExcerptEditorFields(props: Props) {
     dirtyFields,
     blurredFields
   );
-
-  function onAddSpeaker() {
-    editorDispatch((editorType: EditorType, editorId: EditorId) =>
-      editors.addListItem(
-        editorType,
-        editorId,
-        combineNames(name, "speakers"),
-        mediaExcerpt?.speakers?.length ?? 0,
-        makeCreateMediaExcerptSpeakerInput
-      )
-    );
-  }
-
-  function onRemoveSpeaker(index: number) {
-    editorDispatch((editorType: EditorType, editorId: EditorId) =>
-      editors.removeListItem(
-        editorType,
-        editorId,
-        combineNames(name, "speakers"),
-        index
-      )
-    );
-  }
-  function onPersorgAutocomplete(persorg: PersorgOut, index: number) {
-    editorDispatch((editorType: EditorType, editorId: EditorId) =>
-      editors.replaceListItem(
-        editorType,
-        editorId,
-        combineNames(name, "speakers"),
-        index,
-        makeCreateMediaExcerptSpeakerInput({
-          persorg: toCreatePersorgInput(persorg),
-        })
-      )
-    );
-  }
 
   function onInferMediaExcerptInfo(url: string, index: number) {
     const quotation = mediaExcerpt?.localRep?.quotation;
@@ -161,70 +119,38 @@ export default function MediaExcerptEditorFields(props: Props) {
             key={combineIds(id, `citations`)}
             name={combineNames(name, `citations`)}
             citations={mediaExcerpt.citations}
-            errors={errors?.locators?.urlLocators}
-            dirtyFields={dirtyFields?.locators?.urlLocators}
-            blurredFields={blurredFields?.locators?.urlLocators}
+            errors={errors?.citations}
+            dirtyFields={dirtyFields?.citations}
+            blurredFields={blurredFields?.citations}
             editorDispatch={editorDispatch}
             disabled={disabled}
             suggestionsKey={suggestionsKey}
             onPropertyChange={onPropertyChange}
             wasSubmitAttempted={wasSubmitAttempted}
+            onSubmit={onSubmit}
           />
         </fieldset>
       )}
-      <fieldset className="speakers">
-        <legend>Speakers</legend>
-        {mediaExcerpt?.speakers?.map(({ persorg }, index) => {
-          return (
-            <EntityViewer
-              icon="person"
-              iconTitle="Person/Organization"
-              key={index}
-              menu={
-                <Button
-                  icon
-                  onClick={() => onRemoveSpeaker(index)}
-                  title="Delete speaker"
-                >
-                  delete
-                </Button>
-              }
-              entity={
-                <PersorgEditorFields
-                  id={combineIds(id, `speakers[${index}].persorg`)}
-                  key={combineIds(id, `speakers[${index}].persorg`)}
-                  persorg={persorg}
-                  suggestionsKey={combineSuggestionsKeys(
-                    suggestionsKey,
-                    `speakers[${index}].persorg`
-                  )}
-                  name={combineNames(name, `speakers[${index}].persorg`)}
-                  disabled={disabled}
-                  onPersorgNameAutocomplete={(persorg: PersorgOut) =>
-                    onPersorgAutocomplete(persorg, index)
-                  }
-                  onPropertyChange={onPropertyChange}
-                  errors={errors?.speakers?.[index]}
-                  wasSubmitAttempted={wasSubmitAttempted}
-                  blurredFields={blurredFields?.speakers?.[index]}
-                  dirtyFields={dirtyFields?.speakers?.[index]}
-                  onSubmit={onSubmit}
-                  editorDispatch={editorDispatch}
-                />
-              }
-            />
-          );
-        })}
-        <Button
-          iconEl={<MaterialSymbol icon="person_add" />}
-          raised
-          onClick={onAddSpeaker}
-          title="Add speaker"
-          disabled={disabled}
-        >
-          Add Speaker
-        </Button>
-      </fieldset>
+      {mediaExcerpt.speakers && (
+        <fieldset className="speakers">
+          <legend>Speakers</legend>
+          <MediaExcerptSpeakersEditorFields
+            id={combineIds(id, `speakers`)}
+            key={combineIds(id, `speakers`)}
+            name={combineNames(name, `speakers`)}
+            speakers={mediaExcerpt.speakers}
+            errors={errors?.speakers}
+            dirtyFields={dirtyFields?.speakers}
+            blurredFields={blurredFields?.speakers}
+            editorDispatch={editorDispatch}
+            disabled={disabled}
+            suggestionsKey={suggestionsKey}
+            onPropertyChange={onPropertyChange}
+            wasSubmitAttempted={wasSubmitAttempted}
+            onSubmit={onSubmit}
+          />
+        </fieldset>
+      )}
     </div>
   );
 }
