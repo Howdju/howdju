@@ -25,11 +25,12 @@ import {
   SourceOut,
   removeQueryParamsAndFragment,
   MediaExcerptCitationOut,
-  DeleteMediaExcerptCitation,
+  MediaExcerptCitationIdentifier,
   toJson,
   UserBlurb,
   mergeCopy,
   MediaExcerptSpeakerOut,
+  CreationInfo,
 } from "howdju-common";
 
 import { Database, TxnClient } from "../database";
@@ -1148,11 +1149,71 @@ export class MediaExcerptsDao {
     );
   }
 
+  async readMediaExcerptCitationCreationInfo({
+    mediaExcerptId,
+    sourceId,
+    normalPincite,
+  }: MediaExcerptCitationIdentifier): Promise<CreationInfo | undefined> {
+    const args = [mediaExcerptId, sourceId];
+    if (normalPincite) {
+      args.push(normalPincite);
+    }
+    const { rows } = await this.database.query(
+      "readMediaExcerptCitationCreationInfo",
+      `
+        select * from media_excerpt_citations
+        where media_excerpt_id = $1 and source_id = $2 and normal_pincite ${
+          normalPincite ? "= $3" : "is null"
+        } and deleted is null
+      `,
+      args
+    );
+    if (rows.length < 1) {
+      return undefined;
+    }
+
+    const row = rows[0];
+
+    return {
+      created: row.created,
+      creatorUserId: row.creator_user_id,
+    };
+  }
+
+  async readMediaExcerptIdForCitation(
+    sourceId: EntityId,
+    normalPincite: string | undefined
+  ) {
+    const args = [sourceId];
+    if (normalPincite) {
+      args.push(normalPincite);
+    }
+    const {
+      rows: [row],
+    } = await this.database.query(
+      "readMediaExcerptIdForCitation",
+      `select
+        media_excerpt_id
+        from media_excerpt_citations
+        where
+          source_id = $1
+          and ${
+            normalPincite ? `normal_pincite = $2` : `normal_pincite is null`
+          }
+          and deleted is null`,
+      args
+    );
+    if (!row) {
+      return undefined;
+    }
+    return toIdString(row.media_excerpt_id);
+  }
+
   deleteMediaExcerptCitation(
-    { mediaExcerptId, source, normalPincite }: DeleteMediaExcerptCitation,
+    { mediaExcerptId, sourceId, normalPincite }: MediaExcerptCitationIdentifier,
     deletedAt: Moment
   ) {
-    const args = [deletedAt, mediaExcerptId, source.id];
+    const args = [deletedAt, mediaExcerptId, sourceId];
     if (normalPincite) {
       args.push(normalPincite);
     }
@@ -1194,19 +1255,6 @@ export class MediaExcerptsDao {
       set deleted = $1
       where url_locator_id = $2 and deleted is null`,
       [deletedAt, urlLocatorId]
-    );
-  }
-
-  async deleteMediaExcerptCitationsForSourceId(
-    sourceId: EntityId,
-    deletedAt: Moment
-  ) {
-    await this.database.query(
-      "deleteMediaExcerptCitationsForSourceId",
-      `update media_excerpt_citations
-      set deleted = $1
-      where source_id = $2`,
-      [deletedAt, sourceId]
     );
   }
 

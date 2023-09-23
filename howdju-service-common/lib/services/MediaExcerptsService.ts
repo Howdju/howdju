@@ -6,7 +6,7 @@ import {
   CreateMediaExcerpt,
   CreateMediaExcerptCitation,
   CreateUrlLocator,
-  DeleteMediaExcerptCitation,
+  MediaExcerptCitationIdentifier,
   EntityId,
   makeModelErrors,
   MediaExcerptCitationOut,
@@ -534,7 +534,7 @@ export class MediaExcerptsService {
       throw new EntityNotFoundError("MEDIA_EXCERPT", mediaExcerptId);
     }
 
-    await this.checkModifyPermission(userId, mediaExcerpt);
+    await this.checkModifyPermission(userId, mediaExcerpt, "Media Excerpt");
 
     const deletedAt = utcNow();
     await this.mediaExcerptsDao.deleteMediaExcerpt(mediaExcerptId, deletedAt);
@@ -543,24 +543,49 @@ export class MediaExcerptsService {
 
   async deleteCitation(
     userIdent: UserIdent,
-    deleteMediaExcerptCitation: DeleteMediaExcerptCitation
+    { mediaExcerptId, sourceId, normalPincite }: MediaExcerptCitationIdentifier
   ) {
     const userId = await this.authService.readUserIdForUserIdent(userIdent);
-    const mediaExcerpt = await this.mediaExcerptsDao.readMediaExcerptForId(
-      deleteMediaExcerptCitation.mediaExcerptId
-    );
+    const [mediaExcerpt, citationCreationInfo] = await Promise.all([
+      this.mediaExcerptsDao.readMediaExcerptForId(mediaExcerptId),
+      this.mediaExcerptsDao.readMediaExcerptCitationCreationInfo({
+        mediaExcerptId,
+        sourceId,
+        normalPincite,
+      }),
+    ]);
     if (!mediaExcerpt) {
-      throw new EntityNotFoundError(
-        "MEDIA_EXCERPT",
-        deleteMediaExcerptCitation.mediaExcerptId
+      throw new EntityNotFoundError("MEDIA_EXCERPT", mediaExcerptId);
+    }
+    if (!citationCreationInfo) {
+      throw new EntityNotFoundError("MEDIA_EXCERPT_CITATION", {
+        sourceId,
+        normalPincite,
+      });
+    }
+
+    await this.checkModifyPermission(userId, citationCreationInfo, "Citation");
+
+    const citationMediaExcerptId =
+      await this.mediaExcerptsDao.readMediaExcerptIdForCitation(
+        sourceId,
+        normalPincite
+      );
+    if (!citationMediaExcerptId) {
+      throw new EntityNotFoundError("MEDIA_EXCERPT_CITATION", {
+        sourceId,
+        normalPincite,
+      });
+    }
+    if (citationMediaExcerptId !== mediaExcerptId) {
+      throw new RequestValidationError(
+        `MediaExcerptCitation (sourceId: ${sourceId}, normalPincite: ${normalPincite} does not belong to MediaExcerpt ${mediaExcerptId}.`
       );
     }
 
-    await this.checkModifyPermission(userId, mediaExcerpt);
-
     const deletedAt = utcNow();
     await this.mediaExcerptsDao.deleteMediaExcerptCitation(
-      deleteMediaExcerptCitation,
+      { mediaExcerptId, sourceId, normalPincite },
       deletedAt
     );
   }
@@ -571,14 +596,18 @@ export class MediaExcerptsService {
     urlLocatorId: EntityId
   ) {
     const userId = await this.authService.readUserIdForUserIdent(userIdent);
-    const mediaExcerpt = await this.mediaExcerptsDao.readMediaExcerptForId(
-      mediaExcerptId
-    );
+    const [mediaExcerpt, urlLocator] = await Promise.all([
+      this.mediaExcerptsDao.readMediaExcerptForId(mediaExcerptId),
+      this.mediaExcerptsDao.readUrlLocatorForId(urlLocatorId),
+    ]);
     if (!mediaExcerpt) {
       throw new EntityNotFoundError("MEDIA_EXCERPT", mediaExcerptId);
     }
+    if (!urlLocator) {
+      throw new EntityNotFoundError("URL_LOCATOR", urlLocatorId);
+    }
 
-    await this.checkModifyPermission(userId, mediaExcerpt);
+    await this.checkModifyPermission(userId, urlLocator, "URL Locator");
 
     const urlLocatorMediaExcerptId =
       await this.mediaExcerptsDao.readMediaExcerptIdForUrlLocatorId(
@@ -599,7 +628,8 @@ export class MediaExcerptsService {
 
   private async checkModifyPermission(
     userId: EntityId,
-    mediaExcerpt: MediaExcerptOut
+    { creatorUserId, created }: { creatorUserId: EntityId; created: Moment },
+    entityName: string
   ) {
     const hasEditPermission = await this.permissionsService.userHasPermission(
       userId,
@@ -609,18 +639,16 @@ export class MediaExcerptsService {
       return;
     }
 
-    if (mediaExcerpt.creatorUserId !== userId) {
+    if (creatorUserId !== userId) {
       throw new AuthorizationError(
-        makeModelErrors<MediaExcerptOut>((e) =>
-          e("Only a Media Excerpt's creator may edit it.")
+        makeModelErrors<any>((e) =>
+          e(`Only a ${entityName}'s creator may edit it.`)
         )
       );
     }
     // TODO(473) disallow deletes if other users have already depended on it.
     if (
-      utcNow().isAfter(
-        momentAdd(mediaExcerpt.created, this.config.modifyEntityGracePeriod)
-      )
+      utcNow().isAfter(momentAdd(created, this.config.modifyEntityGracePeriod))
     ) {
       throw new EntityTooOldToModifyError(this.config.modifyEntityGracePeriod);
     }
