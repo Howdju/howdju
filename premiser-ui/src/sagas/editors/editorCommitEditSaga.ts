@@ -386,6 +386,11 @@ export const CreateMediaExcerptCitationsCommitConfig = {
   inputTransformer: identity,
 };
 
+export const CreateMediaExcerptSpeakersCommitConfig = {
+  requestActionCreator: api.createMediaExcerptSpeakers,
+  inputTransformer: identity,
+};
+
 export const editorCommitConfigs: Partial<
   Record<EditorType, EditorCommitConfig>
 > = {
@@ -440,6 +445,9 @@ export const editorCommitConfigs: Partial<
   },
   CREATE_MEDIA_EXCERPT_CITATIONS: {
     CREATE: CreateMediaExcerptCitationsCommitConfig,
+  },
+  CREATE_MEDIA_EXCERPT_SPEAKERS: {
+    CREATE: CreateMediaExcerptSpeakersCommitConfig,
   },
   APPEARANCE: {
     CREATE: AppearanceConfig,

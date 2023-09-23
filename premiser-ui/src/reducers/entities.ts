@@ -34,6 +34,7 @@ import {
   writQuoteSchema,
   writSchema,
   mediaExcerptCitationKey,
+  mediaExcerptSpeakerKey,
 } from "@/normalizationSchemas";
 import { MergeDeep } from "type-fest";
 
@@ -272,6 +273,18 @@ const slice = createSlice({
         });
       }
     );
+    builder.addCase(
+      api.createMediaExcerptSpeakers.response,
+      (state, action) => {
+        if (action.error) {
+          return;
+        }
+        action.payload.speakers.forEach((speaker) => {
+          const key = mediaExcerptSpeakerKey(speaker);
+          state.mediaExcerpts[speaker.mediaExcerptId].speakers.push(key);
+        });
+      }
+    );
     builder.addCase(api.deleteUrlLocator.response, (state, action) => {
       if (action.error) {
         return;
@@ -303,6 +316,21 @@ const slice = createSlice({
         mediaExcerpt.citations.splice(index, 1);
       }
     );
+    builder.addCase(api.deleteMediaExcerptSpeaker.response, (state, action) => {
+      if (action.error) {
+        return;
+      }
+      const { mediaExcerptId, persorgId } = action.meta.requestMeta;
+      const key = mediaExcerptSpeakerKey({
+        mediaExcerptId,
+        persorgId,
+      });
+      delete state.mediaExcerptSpeakers[key];
+
+      const mediaExcerpt = state.mediaExcerpts[mediaExcerptId];
+      const index = mediaExcerpt.speakers.indexOf(key);
+      mediaExcerpt.speakers.splice(index, 1);
+    });
     builder.addCase(
       api.createCounterJustification.response,
       (state, action) => {

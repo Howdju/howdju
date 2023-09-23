@@ -21,6 +21,7 @@ import { OnClickUrlLocator } from "@/types";
 import mediaExcerptApparitionsDialog from "../mediaExcerptApparitionsDialog/mediaExcerptApparitionsDialogSlice";
 
 import "./MediaExcerptViewer.scss";
+import MediaExcerptSpeakerViewer from "./MediaExcerptSpeakerViewer";
 
 interface Props {
   id: string;
@@ -93,9 +94,9 @@ export default function MediaExcerptViewer({
         ))}
       </ul>
       <ul className="speakers">
-        {mediaExcerpt.speakers.map(({ key, persorg }) => (
-          <li key={key} className="speaker">
-            <Link to={paths.persorg(persorg)}>{persorg.name}</Link>
+        {mediaExcerpt.speakers.map((speaker) => (
+          <li key={speaker.key} className="speaker">
+            <MediaExcerptSpeakerViewer speaker={speaker} />
           </li>
         ))}
       </ul>

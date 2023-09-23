@@ -131,7 +131,7 @@ describe("MediaExcerptsDao", () => {
         source: { id: sourceId },
         normalPincite,
       } = mediaExcerpt.citations[0];
-      await dao.deleteMediaExcerptCitation(
+      await dao.deleteCitation(
         { mediaExcerptId, sourceId, normalPincite },
         deletedAt
       );

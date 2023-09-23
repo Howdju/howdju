@@ -30,6 +30,7 @@ export function MediaExcerptCitationsEditorFields({
   blurredFields,
   suggestionsKey,
   editorDispatch,
+  onSubmit,
 }: Props) {
   const errorProps = makeErrorPropCreator(
     wasSubmitAttempted,
@@ -58,6 +59,7 @@ export function MediaExcerptCitationsEditorFields({
             onBlur={onBlur}
             onPropertyChange={onPropertyChange}
             wasSubmitAttempted={wasSubmitAttempted}
+            onSubmit={onSubmit}
           />
           <SingleLineTextField
             {...errorProps((me) => me[index].pincite)}
@@ -72,6 +74,7 @@ export function MediaExcerptCitationsEditorFields({
             onBlur={onBlur}
             onPropertyChange={onPropertyChange}
             disabled={disabled}
+            onSubmit={onSubmit}
           />
         </React.Fragment>
       ))}

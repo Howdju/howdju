@@ -16,7 +16,7 @@ interface Props
   maxUrlLocatorCount?: number;
 }
 
-/** Wraps UrlLocatorsEditorFields and adds a mediaExcerptId */
+/** Translates an edit entity into a wrapped UrlLocatorsEditorFields' urlLocators. */
 export default function CreateUrlLocatorsEditorFields({
   id,
   name,

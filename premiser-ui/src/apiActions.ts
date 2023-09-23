@@ -52,6 +52,8 @@ import {
   PasswordResetConfirmation,
   CreateMediaExcerptCitationsInput,
   MediaExcerptCitationOut,
+  MediaExcerptSpeakerOut,
+  CreateMediaExcerptSpeakersInput,
 } from "howdju-common";
 import {
   InferPathParams,
@@ -74,6 +76,7 @@ import {
   mainSearchResultSchema,
   mediaExcerptCitationsSchema,
   mediaExcerptSchema,
+  mediaExcerptSpeakersSchema,
   mediaExcerptsSchema,
   nullSchema,
   persorgSchema,
@@ -699,6 +702,32 @@ export const api = {
         queryStringParams: { sourceId, normalPincite },
       },
       meta: { mediaExcerptId, sourceId, normalPincite },
+    })
+  ),
+
+  createMediaExcerptSpeakers: apiActionCreator(
+    "CREATE_MEDIA_EXCERPT_SPEAKERS",
+    serviceRoutes.createMediaExcerptSpeakers,
+    ({ mediaExcerptId, speakers }: CreateMediaExcerptSpeakersInput) => ({
+      body: { speakers },
+      pathParams: { mediaExcerptId },
+      normalizationSchema: {
+        speakers: mediaExcerptSpeakersSchema,
+      },
+    })
+  ),
+  deleteMediaExcerptSpeaker: apiActionCreator(
+    "DELETE_MEDIA_EXCERPT_SPEAKER",
+    serviceRoutes.deleteMediaExcerptSpeaker,
+    ({
+      mediaExcerptId,
+      persorg: { id: persorgId },
+    }: MediaExcerptSpeakerOut) => ({
+      config: {
+        pathParams: { mediaExcerptId },
+        queryStringParams: { persorgId },
+      },
+      meta: { mediaExcerptId, persorgId },
     })
   ),
 
