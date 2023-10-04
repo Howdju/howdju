@@ -69,29 +69,31 @@ export default function ListEntitiesWidget({
   const hasEntities = !!entities?.length;
   const cards = () => map(entities, entityToCard);
   const fetchMoreButtonCell = (
-    <FlipMoveWrapper key="fetch-more-button">
-      <FetchMoreButton
-        id={`${id}-fetch-more-button`}
-        className={cellClasses}
-        key="fetch-more-button"
-        onClick={fetchMore}
-        disabled={isFetching}
-        isFetching={isFetching}
-      />
-    </FlipMoveWrapper>
+    <div className={cellClasses}>
+      <FlipMoveWrapper key="fetch-more-button">
+        <FetchMoreButton
+          id={`${id}-fetch-more-button`}
+          key="fetch-more-button"
+          onClick={fetchMore}
+          disabled={isFetching}
+          isFetching={isFetching}
+        />
+      </FlipMoveWrapper>
+    </div>
   );
   const retryButtonCell = (
-    <FlipMoveWrapper key="retry-button">
-      <FetchButton
-        id={`${id}-retry-button`}
-        className={cellClasses}
-        disabled={isFetching}
-        isFetching={isFetching}
-        onClick={fetchMore}
-      >
-        Retry
-      </FetchButton>
-    </FlipMoveWrapper>
+    <div className={cellClasses}>
+      <FlipMoveWrapper key="retry-button">
+        <FetchButton
+          id={`${id}-retry-button`}
+          disabled={isFetching}
+          isFetching={isFetching}
+          onClick={fetchMore}
+        >
+          Retry
+        </FetchButton>
+      </FlipMoveWrapper>
+    </div>
   );
   const progress = !hasEntities && !didError && (
     <CircularProgress

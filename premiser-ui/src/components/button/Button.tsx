@@ -16,6 +16,7 @@ export type ButtonProps =
       href: string;
     });
 
+/** A button that navigates to a href on click, if provided. */
 export function Button(props: ButtonProps) {
   const dispatch = useAppDispatch();
   if ("href" in props && props.href) {

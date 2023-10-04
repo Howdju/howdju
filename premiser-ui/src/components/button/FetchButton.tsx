@@ -1,5 +1,6 @@
 import React from "react";
 import { CircularProgress, getProgressA11y } from "@react-md/progress";
+import { TextIconSpacing } from "@react-md/icon";
 
 import { Button, ButtonProps } from "./Button";
 
@@ -12,13 +13,6 @@ export type FetchButtonProps = ButtonProps & {
 export default function FetchButton(props: FetchButtonProps) {
   const { id, isFetching, children, ...rest } = props;
   const progressId = `${id}-progress`;
-  const fetchingContent = (
-    <div>
-      {children}
-      <CircularProgress key={progressId} id={progressId} />
-    </div>
-  );
-  const content = isFetching ? fetchingContent : children;
   return (
     <Button
       {...rest}
@@ -26,8 +20,13 @@ export default function FetchButton(props: FetchButtonProps) {
       theme={isFetching ? "disabled" : "primary"}
       disabled={isFetching}
     >
-      {isFetching && <CircularProgress id={progressId} centered={false} />}
-      {content}
+      <TextIconSpacing
+        icon={
+          isFetching && <CircularProgress id={progressId} centered={false} />
+        }
+      >
+        {children}
+      </TextIconSpacing>
     </Button>
   );
 }
