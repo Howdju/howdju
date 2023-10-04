@@ -128,29 +128,9 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows initial recent propos
         </div>
       </section>
     </div>
-    <svg
-      aria-valuemax="100"
-      aria-valuemin="0"
-      class="md-progress md-progress--circular md-block-centered md-progress--circular-indeterminate md-cell md-cell--12"
-      height="24"
-      id="recent-propositions-id-progress"
-      role="progressbar"
-      style="position: absolute; top: 0px; left: 0px; right: 0px; transform: scale(0); opacity: 0; transition: transform 630ms ease 100ms, opacity 630ms ease 100ms;"
-      viewBox="0 0 66 66"
-      width="24"
-    >
-      <circle
-        class="md-circular-progress-path md-circular-progress-path--animated"
-        cx="33"
-        cy="33"
-        r="30"
-        stroke-linecap="round"
-        stroke-width="6"
-      />
-    </svg>
     <div
       class="md-paper md-paper--1 md-card md-background--card md-cell md-cell--3 md-cell--8-tablet md-cell--4-phone entity-card"
-      style="transition: transform 645ms ease 150ms, opacity 645ms ease 150ms;"
+      style="transition: transform 630ms ease 100ms, opacity 630ms ease 100ms;"
     >
       <section
         class="md-card-text"
@@ -266,7 +246,7 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows initial recent propos
     </div>
     <div
       class="md-paper md-paper--1 md-card md-background--card md-cell md-cell--3 md-cell--8-tablet md-cell--4-phone entity-card"
-      style="transition: transform 660ms ease 200ms, opacity 660ms ease 200ms;"
+      style="transition: transform 645ms ease 150ms, opacity 645ms ease 150ms;"
     >
       <section
         class="md-card-text"
@@ -382,7 +362,7 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows initial recent propos
     </div>
     <div
       class="md-paper md-paper--1 md-card md-background--card md-cell md-cell--3 md-cell--8-tablet md-cell--4-phone entity-card"
-      style="transition: transform 675ms ease 250ms, opacity 675ms ease 250ms;"
+      style="transition: transform 660ms ease 200ms, opacity 660ms ease 200ms;"
     >
       <section
         class="md-card-text"
@@ -498,7 +478,7 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows initial recent propos
     </div>
     <div
       class="md-paper md-paper--1 md-card md-background--card md-cell md-cell--3 md-cell--8-tablet md-cell--4-phone entity-card"
-      style="transition: transform 690ms ease 300ms, opacity 690ms ease 300ms;"
+      style="transition: transform 675ms ease 250ms, opacity 675ms ease 250ms;"
     >
       <section
         class="md-card-text"
@@ -614,7 +594,7 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows initial recent propos
     </div>
     <div
       class="md-paper md-paper--1 md-card md-background--card md-cell md-cell--3 md-cell--8-tablet md-cell--4-phone entity-card"
-      style="transition: transform 705ms ease 350ms, opacity 705ms ease 350ms;"
+      style="transition: transform 690ms ease 300ms, opacity 690ms ease 300ms;"
     >
       <section
         class="md-card-text"
@@ -730,7 +710,7 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows initial recent propos
     </div>
     <div
       class="md-paper md-paper--1 md-card md-background--card md-cell md-cell--3 md-cell--8-tablet md-cell--4-phone entity-card"
-      style="transition: transform 720ms ease 400ms, opacity 720ms ease 400ms;"
+      style="transition: transform 705ms ease 350ms, opacity 705ms ease 350ms;"
     >
       <section
         class="md-card-text"
@@ -845,10 +825,11 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows initial recent propos
       </section>
     </div>
     <div
-      style="transition: transform 735ms ease 450ms, opacity 735ms ease 450ms;"
+      class="md-cell md-cell--3 md-cell--8-tablet md-cell--4-phone"
+      style="transition: transform 720ms ease 400ms, opacity 720ms ease 400ms;"
     >
       <button
-        class="rmd-button rmd-button--text rmd-button--text-primary md-cell md-cell--3 md-cell--8-tablet md-cell--4-phone"
+        class="rmd-button rmd-button--text rmd-button--text-primary"
         type="button"
       >
         Fetch more
@@ -875,7 +856,7 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows more propositions whe
     </div>
     <div
       class="md-paper md-paper--1 md-card md-background--card md-cell md-cell--3 md-cell--8-tablet md-cell--4-phone entity-card"
-      style=""
+      style="transition: transform 615ms ease 50ms, opacity 615ms ease 50ms;"
     >
       <section
         class="md-card-text"
@@ -991,7 +972,7 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows more propositions whe
     </div>
     <div
       class="md-paper md-paper--1 md-card md-background--card md-cell md-cell--3 md-cell--8-tablet md-cell--4-phone entity-card"
-      style=""
+      style="transition: transform 630ms ease 100ms, opacity 630ms ease 100ms;"
     >
       <section
         class="md-card-text"
@@ -1107,7 +1088,7 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows more propositions whe
     </div>
     <div
       class="md-paper md-paper--1 md-card md-background--card md-cell md-cell--3 md-cell--8-tablet md-cell--4-phone entity-card"
-      style=""
+      style="transition: transform 645ms ease 150ms, opacity 645ms ease 150ms;"
     >
       <section
         class="md-card-text"
@@ -1223,7 +1204,7 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows more propositions whe
     </div>
     <div
       class="md-paper md-paper--1 md-card md-background--card md-cell md-cell--3 md-cell--8-tablet md-cell--4-phone entity-card"
-      style=""
+      style="transition: transform 660ms ease 200ms, opacity 660ms ease 200ms;"
     >
       <section
         class="md-card-text"
@@ -1337,29 +1318,9 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows more propositions whe
         </div>
       </section>
     </div>
-    <svg
-      aria-valuemax="100"
-      aria-valuemin="0"
-      class="md-progress md-progress--circular md-block-centered md-progress--circular-indeterminate md-cell md-cell--12"
-      height="24"
-      id="recent-propositions-id-progress"
-      role="progressbar"
-      style="position: absolute; top: 0px; left: 0px; right: 0px; transform: scale(0); opacity: 0; transition: transform 615ms ease 50ms, opacity 615ms ease 50ms;"
-      viewBox="0 0 66 66"
-      width="24"
-    >
-      <circle
-        class="md-circular-progress-path md-circular-progress-path--animated"
-        cx="33"
-        cy="33"
-        r="30"
-        stroke-linecap="round"
-        stroke-width="6"
-      />
-    </svg>
     <div
       class="md-paper md-paper--1 md-card md-background--card md-cell md-cell--3 md-cell--8-tablet md-cell--4-phone entity-card"
-      style=""
+      style="transition: transform 675ms ease 250ms, opacity 675ms ease 250ms;"
     >
       <section
         class="md-card-text"
@@ -1475,7 +1436,7 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows more propositions whe
     </div>
     <div
       class="md-paper md-paper--1 md-card md-background--card md-cell md-cell--3 md-cell--8-tablet md-cell--4-phone entity-card"
-      style=""
+      style="transition: transform 690ms ease 300ms, opacity 690ms ease 300ms;"
     >
       <section
         class="md-card-text"
@@ -1591,7 +1552,7 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows more propositions whe
     </div>
     <div
       class="md-paper md-paper--1 md-card md-background--card md-cell md-cell--3 md-cell--8-tablet md-cell--4-phone entity-card"
-      style=""
+      style="transition: transform 705ms ease 350ms, opacity 705ms ease 350ms;"
     >
       <section
         class="md-card-text"
@@ -1707,7 +1668,7 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows more propositions whe
     </div>
     <div
       class="md-paper md-paper--1 md-card md-background--card md-cell md-cell--3 md-cell--8-tablet md-cell--4-phone entity-card"
-      style="transition: transform 630ms ease 100ms, opacity 630ms ease 100ms;"
+      style="transition: transform 615ms ease 50ms, opacity 615ms ease 50ms;"
     >
       <section
         class="md-card-text"
@@ -1823,7 +1784,7 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows more propositions whe
     </div>
     <div
       class="md-paper md-paper--1 md-card md-background--card md-cell md-cell--3 md-cell--8-tablet md-cell--4-phone entity-card"
-      style="transition: transform 645ms ease 150ms, opacity 645ms ease 150ms;"
+      style="transition: transform 630ms ease 100ms, opacity 630ms ease 100ms;"
     >
       <section
         class="md-card-text"
@@ -1939,7 +1900,7 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows more propositions whe
     </div>
     <div
       class="md-paper md-paper--1 md-card md-background--card md-cell md-cell--3 md-cell--8-tablet md-cell--4-phone entity-card"
-      style="transition: transform 660ms ease 200ms, opacity 660ms ease 200ms;"
+      style="transition: transform 645ms ease 150ms, opacity 645ms ease 150ms;"
     >
       <section
         class="md-card-text"
@@ -2055,7 +2016,7 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows more propositions whe
     </div>
     <div
       class="md-paper md-paper--1 md-card md-background--card md-cell md-cell--3 md-cell--8-tablet md-cell--4-phone entity-card"
-      style="transition: transform 675ms ease 250ms, opacity 675ms ease 250ms;"
+      style="transition: transform 660ms ease 200ms, opacity 660ms ease 200ms;"
     >
       <section
         class="md-card-text"
@@ -2171,7 +2132,7 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows more propositions whe
     </div>
     <div
       class="md-paper md-paper--1 md-card md-background--card md-cell md-cell--3 md-cell--8-tablet md-cell--4-phone entity-card"
-      style="transition: transform 690ms ease 300ms, opacity 690ms ease 300ms;"
+      style="transition: transform 675ms ease 250ms, opacity 675ms ease 250ms;"
     >
       <section
         class="md-card-text"
@@ -2287,7 +2248,7 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows more propositions whe
     </div>
     <div
       class="md-paper md-paper--1 md-card md-background--card md-cell md-cell--3 md-cell--8-tablet md-cell--4-phone entity-card"
-      style="transition: transform 705ms ease 350ms, opacity 705ms ease 350ms;"
+      style="transition: transform 690ms ease 300ms, opacity 690ms ease 300ms;"
     >
       <section
         class="md-card-text"
@@ -2403,7 +2364,7 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows more propositions whe
     </div>
     <div
       class="md-paper md-paper--1 md-card md-background--card md-cell md-cell--3 md-cell--8-tablet md-cell--4-phone entity-card"
-      style="transition: transform 720ms ease 400ms, opacity 720ms ease 400ms;"
+      style="transition: transform 705ms ease 350ms, opacity 705ms ease 350ms;"
     >
       <section
         class="md-card-text"
@@ -2519,7 +2480,7 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows more propositions whe
     </div>
     <div
       class="md-paper md-paper--1 md-card md-background--card md-cell md-cell--3 md-cell--8-tablet md-cell--4-phone entity-card"
-      style="transition: transform 735ms ease 450ms, opacity 735ms ease 450ms;"
+      style="transition: transform 720ms ease 400ms, opacity 720ms ease 400ms;"
     >
       <section
         class="md-card-text"
@@ -2634,10 +2595,11 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows more propositions whe
       </section>
     </div>
     <div
-      style=""
+      class="md-cell md-cell--3 md-cell--8-tablet md-cell--4-phone"
+      style="transition: transform 720ms ease 400ms, opacity 720ms ease 400ms;"
     >
       <button
-        class="rmd-button rmd-button--text rmd-button--text-primary md-cell md-cell--3 md-cell--8-tablet md-cell--4-phone"
+        class="rmd-button rmd-button--text rmd-button--text-primary"
         type="button"
       >
         Fetch more
