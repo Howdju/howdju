@@ -1,6 +1,12 @@
 import React from "react";
 import { useDispatch } from "react-redux";
-import { Card, DialogContainer } from "react-md";
+import { Card } from "react-md";
+import {
+  Dialog,
+  DialogHeader,
+  DialogTitle,
+  DialogContent,
+} from "@react-md/dialog";
 
 import { isTruthy } from "howdju-common";
 
@@ -29,27 +35,30 @@ export default function ReportContentDialog() {
   const isEditing = isTruthy(editEntity);
 
   return (
-    <DialogContainer
+    <Dialog
       id="report-content-dialog"
       title="Report Content"
-      onHide={() => dispatch(editors.cancelEdit(editorType, editorId))}
+      onRequestClose={() => dispatch(editors.cancelEdit(editorType, editorId))}
       visible={isEditing}
-      className="md-overlay--wide-dialog"
+      aria-labelledby="report-content-dialog-title"
     >
-      <div className="md-grid report-content-dialog">
-        <div className="md-cell md-cell--12">
-          <Card>
-            <ContentReportEditor
-              id={id}
-              commitBehavior={
-                new CommitThenPutAction(app.addToast("Submitted report."))
-              }
-              editorId={editorId}
-              submitButtonText="Report"
-            />
-          </Card>
-        </div>
-      </div>
-    </DialogContainer>
+      <DialogHeader>
+        <DialogTitle id="report-content-dialog-title">
+          Report Content
+        </DialogTitle>
+      </DialogHeader>
+      <DialogContent>
+        <Card>
+          <ContentReportEditor
+            id={id}
+            commitBehavior={
+              new CommitThenPutAction(app.addToast("Submitted report."))
+            }
+            editorId={editorId}
+            submitButtonText="Report"
+          />
+        </Card>
+      </DialogContent>
+    </Dialog>
   );
 }
