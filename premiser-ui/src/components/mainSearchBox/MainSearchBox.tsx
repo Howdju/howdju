@@ -1,5 +1,13 @@
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
+import {
+  Dialog,
+  DialogHeader,
+  DialogTitle,
+  DialogContent,
+  DialogFooter,
+} from "@react-md/dialog";
+import { MaterialSymbol } from "react-material-symbols";
 
 import { PropositionOut } from "howdju-common";
 
@@ -13,8 +21,8 @@ import { PropertyChanges } from "@/types";
 import ApiAutoComplete from "@/ApiAutoComplete";
 
 import "./MainSearchBox.scss";
-import { Button, DialogContainer } from "react-md";
-import { MaterialSymbol } from "react-material-symbols";
+import IconButton from "../button/IconButton";
+import SolidButton from "../button/SolidButton";
 
 const mainSearchSuggestionsKey = "mainSearch";
 
@@ -75,24 +83,24 @@ export default function MainSearchBox() {
         singleLine={true}
         onSubmit={onSubmit}
         rightControls={
-          <Button
-            className="show-main-search-help-dialog"
-            flat
-            onClick={showMainSearchHelpDialog}
-          >
+          <IconButton onClick={showMainSearchHelpDialog}>
             <MaterialSymbol icon="help" />
-          </Button>
+          </IconButton>
         }
       />
-      <DialogContainer
-        id="main-search-help-dialog"
+      <Dialog
+        id="main-search--help-dialog"
+        onRequestClose={hideMainSearchHelpDialog}
         visible={isMainSearchHelpDialogVisible}
-        title="Search Help"
-        onHide={hideMainSearchHelpDialog}
-        className="main-search-help-dialog"
+        aria-labelledby="main-search--help-dialog--header"
       >
-        <p>
-          Supported search terms:
+        <DialogHeader>
+          <DialogTitle id="main-search--help-dialog--header">
+            Search Help
+          </DialogTitle>
+        </DialogHeader>
+        <DialogContent>
+          <p>Supported search terms:</p>
           <ul>
             <li>
               Full-text: if you enter regular text, the search will be over
@@ -106,11 +114,11 @@ export default function MainSearchBox() {
               ending with the domain.
             </li>
           </ul>
-        </p>
-        <Button raised primary onClick={hideMainSearchHelpDialog}>
-          Close
-        </Button>
-      </DialogContainer>
+        </DialogContent>
+        <DialogFooter>
+          <SolidButton onClick={hideMainSearchHelpDialog}>Close</SolidButton>
+        </DialogFooter>
+      </Dialog>
     </form>
   );
 }

@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, FontIcon } from "react-md";
+import { FontIcon } from "react-md";
 
 import {
   UpdateWritQuoteInput,
@@ -24,6 +24,8 @@ import WritEditorFields from "./editors/WritEditorFields";
 import TextField from "./TextField";
 
 import "./WritQuoteEditorFields.scss";
+import IconButton from "./components/button/IconButton";
+import TextButton from "./components/button/TextButton";
 
 interface Props
   extends EntityEditorFieldsProps<
@@ -134,13 +136,12 @@ const WritQuoteEditorFields = (props: Props) => {
               label="URL"
               value={url.url}
               rightIcon={
-                <Button
-                  icon
+                <IconButton
                   onClick={() => onRemoveUrl(url, index, urls)}
                   disabled={disabled}
                 >
-                  delete
-                </Button>
+                  <FontIcon>delete</FontIcon>
+                </IconButton>
               }
               rightIconStateful={false}
               disabled={!!url.id || disabled}
@@ -150,14 +151,14 @@ const WritQuoteEditorFields = (props: Props) => {
             />
           )
       )}
-      <Button
-        flat
+      <TextButton
         className="add-button"
-        children="Add URL"
-        iconEl={<FontIcon>add</FontIcon>}
+        icon={<FontIcon>add</FontIcon>}
         onClick={() => onAddUrl(urls.length)}
         disabled={disabled}
-      />
+      >
+        Add URL
+      </TextButton>
       <ErrorMessages errors={errors?._errors} />
     </div>
   );

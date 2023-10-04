@@ -3,7 +3,6 @@ import { goBack } from "connected-react-router";
 import { get, map } from "lodash";
 import React, { Component, FormEvent } from "react";
 import {
-  Button,
   Card,
   CardActions,
   CardText,
@@ -33,6 +32,8 @@ import { selectAuthEmail } from "./selectors";
 import { RootState } from "./setupStore";
 import t from "./texts";
 import { PropertyChanges } from "./types";
+import CancelButton from "./editors/CancelButton";
+import SolidButton from "./components/button/SolidButton";
 
 interface OwnProps {
   authEmail: string | undefined;
@@ -141,19 +142,15 @@ class LoginPage extends Component<Props> {
                     {isLoggingIn && (
                       <CircularProgress key="progress" id="progress" />
                     )}
-                    <Button
-                      flat
-                      children="Cancel"
+                    <CancelButton
                       disabled={isLoggingIn}
                       onClick={this.onCancel}
-                    />
-                    <Button
-                      raised
-                      primary
-                      type="submit"
-                      children="Login"
-                      disabled={isLoggingIn}
-                    />
+                    >
+                      Cancel
+                    </CancelButton>
+                    <SolidButton type="submit" disabled={isLoggingIn}>
+                      Login
+                    </SolidButton>
                   </CardActions>
                 </FocusContainer>
               </form>
@@ -201,13 +198,9 @@ class LoginPage extends Component<Props> {
                   />
                 </CardText>
                 <CardActions>
-                  <Button
-                    raised
-                    primary
-                    type="submit"
-                    children="Subscribe"
-                    name="subscribe"
-                  />
+                  <SolidButton type="submit" name="subscribe">
+                    Subscribe
+                  </SolidButton>
                 </CardActions>
               </form>
             </Card>

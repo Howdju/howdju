@@ -1,5 +1,5 @@
 import React, { FormEventHandler, useState } from "react";
-import { Button, Switch } from "react-md";
+import { Switch } from "react-md";
 
 import {
   CreatePersorgInput,
@@ -24,6 +24,7 @@ import {
   EditorFieldsDispatch,
   EntityEditorFieldsProps,
 } from "./editors/withEditor";
+import TextButton from "./components/button/TextButton";
 
 const nameName = "name";
 export interface Props
@@ -132,9 +133,9 @@ export default function PersorgEditorFields(props: Props) {
           {...errorProps((p) => p.knownFor)}
         />
       )}
-      <Button flat onClick={onShowUrlsClick}>
+      <TextButton onClick={onShowUrlsClick}>
         {showUrls ? "Hide URLs" : "Show URLs"}
-      </Button>
+      </TextButton>
       {showUrls && [
         <UrlTextField
           key="website"

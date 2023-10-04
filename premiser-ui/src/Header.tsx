@@ -1,11 +1,14 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { Button, TabsProps, Toolbar } from "react-md";
+import { TabsProps, Toolbar } from "react-md";
 
 import app from "./app/appSlice";
+import MainSearch from "@/components/mainSearchBox/MainSearchBox";
+import IconButton from "@/components/button/IconButton";
+
 import "./Header.scss";
-import MainSearch from "./components/mainSearchBox/MainSearchBox";
+import { FontIcon } from "@react-md/icon";
 
 interface Props {
   tabs: React.ComponentClass<TabsProps>;
@@ -27,13 +30,12 @@ export default function Header(props: Props) {
       }
       prominent={hasTabs}
       actions={
-        <Button
-          icon
+        <IconButton
           className="toggleNavDrawerVisibility"
           onClick={() => dispatch(app.toggleNavDrawerVisibility())}
         >
-          menu
-        </Button>
+          <FontIcon>menu</FontIcon>
+        </IconButton>
       }
     >
       <MainSearch />

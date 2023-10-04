@@ -41,18 +41,14 @@
 
 #main-search-box-form {
   padding-left: 0.5rem;
-  #main-search-help-dialog {
-    h2,
-    p,
-    li {
-      color: $primary-text-color;
-    }
-    li {
-      list-style-type: disc;
-    }
-    ul {
-      margin: 10px 0;
-    }
+}
+
+#main-search--help-dialog {
+  li {
+    list-style-type: disc;
+  }
+  ul {
+    margin: 10px 0;
   }
 }
 

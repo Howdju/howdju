@@ -1,7 +1,7 @@
 import React, { useState, HTMLAttributes } from "react";
-import { Button } from "react-md";
 
 import { truncateText } from "@/viewModels";
+import TextButton from "../button/TextButton";
 
 import "./CollapsableTextViewer.scss";
 
@@ -54,20 +54,20 @@ export default function CollapsableTextViewer({
         })}
       </div>
       {isTextLong && !isExpanded && (
-        <Button
-          flat
-          children="More"
+        <TextButton
           className="text-expand-toggle"
           onClick={() => setIsExpanded(true)}
-        />
+        >
+          More
+        </TextButton>
       )}
       {isTextLong && isExpanded && (
-        <Button
-          flat
-          children="Less"
+        <TextButton
           className="text-expand-toggle"
           onClick={() => setIsExpanded(false)}
-        />
+        >
+          Less
+        </TextButton>
       )}
     </div>
   );

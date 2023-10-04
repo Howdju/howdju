@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { Button } from "react-md";
 import cn from "classnames";
 import concat from "lodash/concat";
 import filter from "lodash/filter";
@@ -8,14 +7,15 @@ import get from "lodash/get";
 import map from "lodash/map";
 import sortBy from "lodash/sortBy";
 import zipObject from "lodash/zipObject";
+import { some } from "lodash";
 
 import { tagEqual, Tag, TagVote } from "howdju-common";
 
 import ChipsList from "./ChipsList";
+import { ListClickCallback, ListEventCallback } from "./types";
 
 import "./TagsViewer.scss";
-import { ListClickCallback, ListEventCallback } from "./types";
-import { some } from "lodash";
+import TextButton from "./components/button/TextButton";
 
 interface Props {
   tags: Tag[];
@@ -77,21 +77,21 @@ export default function TagsViewer(props: Props) {
   if (canHide && hasHideableTags) {
     if (doShowAllTags) {
       hideControls.push(
-        <Button
-          flat
+        <TextButton
           key="dont-show-all-button"
-          children="Don't show all"
           onClick={() => setDoShowAllTags(false)}
-        />
+        >
+          Don&rquo;t show all
+        </TextButton>
       );
     } else {
       hideControls.push(
-        <Button
-          flat
+        <TextButton
           key="show-all-button"
-          children="Show all"
           onClick={() => setDoShowAllTags(true)}
-        />
+        >
+          Show all
+        </TextButton>
       );
     }
   }

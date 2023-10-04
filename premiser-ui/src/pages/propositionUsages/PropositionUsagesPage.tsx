@@ -1,5 +1,5 @@
 import React, { UIEvent, useEffect } from "react";
-import { Button, CircularProgress } from "react-md";
+import { CircularProgress } from "react-md";
 import { map, isEmpty } from "lodash";
 import { RouteComponentProps } from "react-router";
 
@@ -25,6 +25,7 @@ import FlipMoveWrapper from "@/FlipMoveWrapper";
 import AppearanceCard from "../appearances/AppearanceCard";
 import PropositionCompoundCard from "@/PropositionCompoundCard";
 import PropositionCard from "@/PropositionCard";
+import FetchMoreButton from "@/components/button/FetchMoreButton";
 
 const pageId = "proposition-usages-page";
 const fetchCount = 20;
@@ -112,11 +113,8 @@ function ValidPropositionUsagesPage({ propositionId }: ValidProps) {
   const hasPropositionCompounds = !isEmpty(propositionCompounds);
 
   const fetchMoreJustificationsButton = (
-    <Button
-      flat
-      key="fetch-more-button"
-      children="Fetch more"
-      disabled={isFetchingJustifications}
+    <FetchMoreButton
+      isFetching={isFetchingJustifications}
       onClick={fetchMoreJustifications}
     />
   );

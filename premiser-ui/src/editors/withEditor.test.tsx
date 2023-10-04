@@ -2,6 +2,7 @@ import React from "react";
 import { screen } from "@testing-library/react";
 
 import {
+  DISABLED_BUTTON_CLASS,
   renderWithProviders,
   setupDefaultStore,
   setupUserEvent,
@@ -33,8 +34,7 @@ describe("withEditor", () => {
 
       // Assert
       const submitButton = screen.getByRole("button", { name: /save/i });
-      expect(submitButton).toHaveClass("md-btn--raised-disabled");
-      expect(submitButton).toHaveClass("md-text--disabled");
+      expect(submitButton).toHaveClass(DISABLED_BUTTON_CLASS);
     });
 
     test("submitting invalid entity shows errors", async () => {

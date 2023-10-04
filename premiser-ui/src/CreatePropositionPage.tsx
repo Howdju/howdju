@@ -2,7 +2,6 @@ import React, { FormEvent } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import { goBack } from "connected-react-router";
 import {
-  Button,
   Card,
   CardTitle,
   CardActions,
@@ -71,6 +70,8 @@ import { toCompatibleTagVotes } from "./util";
 import { toCreatePersorgInput } from "howdju-client-common";
 import { useAppDispatch, useAppSelector } from "./hooks";
 import useDeepCompareEffect from "use-deep-compare-effect";
+import TextButton from "@/components/button/TextButton";
+import IconButton from "@/components/button/IconButton";
 
 const titleTextKeyByMode = {
   [CreatePropositionPageMode.CREATE_PROPOSITION]: CREATE_PROPOSITION_TITLE,
@@ -329,15 +330,14 @@ export default function CreatePropositionPage({ mode, location }: Props) {
               <CardTitle title={title} />
 
               <CardText>
-                <Button
-                  flat
-                  iconEl={<FontIcon>person_add</FontIcon>}
+                <TextButton
+                  icon={<FontIcon>person_add</FontIcon>}
                   title={"Add Speaker"}
                   onClick={onAddSpeakerClick}
                   disabled={isSaving}
                 >
                   Add Speaker
-                </Button>
+                </TextButton>
                 {hasSpeakers && (
                   <div className="md-grid">
                     <div className="md-cell md-cell--6">
@@ -347,15 +347,14 @@ export default function CreatePropositionPage({ mode, location }: Props) {
                             icon="person"
                             iconTitle="Person/Organization"
                             menu={
-                              <Button
-                                icon
+                              <IconButton
                                 onClick={() =>
                                   onRemoveSpeakerClick(speaker, index)
                                 }
                                 title="Delete speaker"
                               >
-                                delete
-                              </Button>
+                                <FontIcon>delete</FontIcon>
+                              </IconButton>
                             }
                             entity={
                               <PersorgEditorFields
@@ -466,20 +465,17 @@ export default function CreatePropositionPage({ mode, location }: Props) {
 
               <CardActions>
                 {isSaving && <CircularProgress key="progress" id="progress" />}
-                <Button
-                  flat
-                  children="Cancel"
-                  disabled={isSaving}
-                  onClick={onCancel}
-                />
+                <TextButton disabled={isSaving} onClick={onCancel}>
+                  Cancel
+                </TextButton>
                 <SubmitButton
-                  type="submit"
-                  children={submitButtonLabel}
                   title={submitButtonTitle}
                   disabled={isSaving}
                   appearDisabled={!isValidRequest}
                   onClick={onClickSubmit}
-                />
+                >
+                  {submitButtonLabel}
+                </SubmitButton>
               </CardActions>
             </Card>
           </div>

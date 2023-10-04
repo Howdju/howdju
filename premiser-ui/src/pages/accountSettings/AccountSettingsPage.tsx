@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Button, Card, CardActions, CardText, CardTitle } from "react-md";
+import { Card, CardActions, CardText, CardTitle } from "react-md";
 
 import Helmet from "../../Helmet";
 import EditableAccountSettings from "./EditableAccountSettings";
@@ -11,6 +11,7 @@ import { isTruthy } from "howdju-common";
 import { showPrivacyConsentDialog } from "../../cookieConsent";
 import { useAppDispatch, useAppSelector } from "@/hooks";
 import { logger } from "@/logger";
+import OutlineButton from "@/components/button/OutlineButton";
 
 const baseId = "accountSettingsPage";
 const accountSettingsId = combineIds(baseId, "accountSettings");
@@ -74,13 +75,13 @@ export default function AccountSettingsPage() {
           </CardText>
           <CardActions>
             {!isEditing && (
-              <Button
-                raised
+              <OutlineButton
                 key="editButton"
-                children={t(EDIT_ENTITY_BUTTON_LABEL)}
                 disabled={isFetching}
                 onClick={beginEdit}
-              />
+              >
+                {t(EDIT_ENTITY_BUTTON_LABEL)}
+              </OutlineButton>
             )}
           </CardActions>
         </Card>
@@ -89,9 +90,9 @@ export default function AccountSettingsPage() {
         <Card className="md-cell--12">
           <CardTitle title="Privacy settings" />
           <CardText>
-            <Button raised primary onClick={showPrivacyConsentDialog}>
+            <OutlineButton onClick={showPrivacyConsentDialog}>
               Show privacy consent dialog
-            </Button>
+            </OutlineButton>
           </CardText>
         </Card>
       </div>

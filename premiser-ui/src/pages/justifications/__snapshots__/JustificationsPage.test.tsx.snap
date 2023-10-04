@@ -139,18 +139,19 @@ exports[`JustificationsPage Shows a justified proposition 1`] = `
                   class="chips-list"
                 >
                   <button
-                    class="md-btn md-btn--icon md-pointer--hover md-inline-block"
+                    class="rmd-button rmd-button--icon rmd-button--text-primary"
                     title="Add tag"
                     type="button"
                   >
-                    <div
-                      class="md-ink-container"
-                    />
                     <i
-                      class="md-icon material-icons md-text--inherit"
+                      aria-hidden="true"
+                      class="rmd-icon rmd-icon--font material-icons"
                     >
                       add
                     </i>
+                    <span
+                      class="rmd-ripple-container"
+                    />
                   </button>
                 </div>
               </section>
@@ -169,13 +170,13 @@ exports[`JustificationsPage Shows a justified proposition 1`] = `
         class="md-cell md-cell--12 cell--centered-contents"
       >
         <button
-          class="md-btn md-btn--flat md-btn--text md-pointer--hover md-text md-inline-block"
+          class="rmd-button rmd-button--text rmd-button--text-primary"
           type="button"
         >
-          <div
-            class="md-ink-container"
-          />
           Add one now
+          <span
+            class="rmd-ripple-container"
+          />
         </button>
       </div>
     </div>
@@ -334,18 +335,19 @@ exports[`JustificationsPage can add a compound-based justification 1`] = `
                   class="chips-list"
                 >
                   <button
-                    class="md-btn md-btn--icon md-pointer--hover md-inline-block"
+                    class="rmd-button rmd-button--icon rmd-button--text-primary"
                     title="Add tag"
                     type="button"
                   >
-                    <div
-                      class="md-ink-container"
-                    />
                     <i
-                      class="md-icon material-icons md-text--inherit"
+                      aria-hidden="true"
+                      class="rmd-icon rmd-icon--font material-icons"
                     >
                       add
                     </i>
+                    <span
+                      class="rmd-ripple-container"
+                    />
                   </button>
                 </div>
               </section>
@@ -635,46 +637,49 @@ exports[`JustificationsPage can add a compound-based justification 1`] = `
                 class="md-cell md-cell--12 actions"
               >
                 <button
-                  class="md-btn md-btn--icon md-pointer--hover md-inline-block inactive hiding"
+                  class="rmd-button rmd-button--icon rmd-button--text-primary inactive hiding"
                   title="Verify this justification"
                   type="button"
                 >
-                  <div
-                    class="md-ink-container"
-                  />
                   <i
-                    class="md-icon material-icons md-text--inherit"
+                    aria-hidden="true"
+                    class="rmd-icon rmd-icon--font material-icons"
                   >
                     thumb_up
                   </i>
+                  <span
+                    class="rmd-ripple-container"
+                  />
                 </button>
                 <button
-                  class="md-btn md-btn--icon md-pointer--hover md-inline-block inactive hiding"
+                  class="rmd-button rmd-button--icon rmd-button--text-primary inactive hiding"
                   title="Dis-verify this justification"
                   type="button"
                 >
-                  <div
-                    class="md-ink-container"
-                  />
                   <i
-                    class="md-icon material-icons md-text--inherit"
+                    aria-hidden="true"
+                    class="rmd-icon rmd-icon--font material-icons"
                   >
                     thumb_down
                   </i>
+                  <span
+                    class="rmd-ripple-container"
+                  />
                 </button>
                 <button
-                  class="md-btn md-btn--icon md-pointer--hover md-inline-block hiding"
+                  class="rmd-button rmd-button--icon rmd-button--text-primary hiding"
                   title="Counter this justification"
                   type="button"
                 >
-                  <div
-                    class="md-ink-container"
-                  />
                   <i
-                    class="md-icon material-icons md-text--inherit"
+                    aria-hidden="true"
+                    class="rmd-icon rmd-icon--font material-icons"
                   >
                     reply
                   </i>
+                  <span
+                    class="rmd-ripple-container"
+                  />
                 </button>
                 <div
                   class="justification-status-text"
@@ -723,13 +728,13 @@ exports[`JustificationsPage can add a compound-based justification 1`] = `
           style="transition: transform 630ms ease 100ms, opacity 630ms ease 100ms;"
         >
           <button
-            class="md-btn md-btn--flat md-btn--text md-pointer--hover md-text md-inline-block"
+            class="rmd-button rmd-button--text rmd-button--text-primary"
             type="button"
           >
-            <div
-              class="md-ink-container"
-            />
             Add one now
+            <span
+              class="rmd-ripple-container"
+            />
           </button>
         </div>
       </div>

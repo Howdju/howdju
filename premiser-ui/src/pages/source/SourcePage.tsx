@@ -1,7 +1,6 @@
 import React, { useEffect } from "react";
 import { toString } from "lodash";
 import {
-  Button,
   CircularProgress,
   Divider,
   DropdownMenu,
@@ -26,6 +25,7 @@ import MediaExcerptCard from "@/components/mediaExcerpts/MediaExcerptCard";
 import SourceEntityCard from "@/components/sources/SourceEntityCard";
 import sourcePage from "./sourcePageSlice";
 import paths from "@/paths";
+import FetchMoreButton from "@/components/button/FetchMoreButton";
 
 const id = "source-page";
 const editorId = "sourcePageEditorId";
@@ -160,9 +160,10 @@ export default function SourcePage(props: Props) {
       )}
       <CellList className="md-grid md-cell md-cell--12 md-grid--card-list--tablet">
         {mediaExcerptCards}
-        <Button raised onClick={fetchMoreMediaExcerpts}>
-          More
-        </Button>
+        <FetchMoreButton
+          isFetching={isFetchingMediaExcerpts}
+          onClick={fetchMoreMediaExcerpts}
+        />
       </CellList>
     </div>
   );

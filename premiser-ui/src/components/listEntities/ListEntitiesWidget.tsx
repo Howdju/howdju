@@ -1,13 +1,13 @@
 import React, { MouseEvent, useEffect } from "react";
 import { ActionCreator } from "@reduxjs/toolkit";
-import { CircularProgress } from "react-md";
 import concat from "lodash/concat";
 import map from "lodash/map";
 import { denormalize, Schema } from "normalizr";
 
 import CellList, { smallCellClasses } from "../../CellList";
-import FetchButton from "../../FetchButton";
 import { useAppDispatch, useAppSelector } from "../../hooks";
+import FetchMoreButton from "../button/FetchMoreButton";
+import FetchButton from "../button/FetchButton";
 
 type ListEntitiesWidgetProps = {
   id?: string;
@@ -67,35 +67,26 @@ export default function ListEntitiesWidget({
   const hasEntities = !!entities?.length;
   const cards = () => map(entities, entityToCard);
   const fetchMoreButtonCell = (
-    <FetchButton
-      flat
-      className={cellClasses}
-      key="fetch-more-button"
-      progressId={`${id}-fetch-more-button-progress`}
-      label="Fetch more"
-      onClick={fetchMore}
-      disabled={isFetching}
-      isFetching={isFetching}
-    />
+    <div className={cellClasses} key="fetch-more-button">
+      <FetchMoreButton
+        id={`${id}-fetch-more-button`}
+        onClick={fetchMore}
+        disabled={isFetching}
+        isFetching={isFetching}
+      />
+    </div>
   );
   const retryButtonCell = (
-    <FetchButton
-      flat
-      className={cellClasses}
-      key="retry-button"
-      progressId={`${id}-retry-button-progress`}
-      label="Retry"
-      disabled={isFetching}
-      isFetching={isFetching}
-      onClick={fetchMore}
-    />
-  );
-  const progress = !hasEntities && !didError && (
-    <CircularProgress
-      key={`${id}-progress`}
-      id={`${id}-progress`}
-      className="md-cell md-cell--12"
-    />
+    <div className={cellClasses} key="retry-button">
+      <FetchButton
+        id={`${id}-retry-button`}
+        disabled={isFetching}
+        isFetching={isFetching}
+        onClick={fetchMore}
+      >
+        Retry
+      </FetchButton>
+    </div>
   );
   return (
     <CellList id={id} {...rest}>
@@ -105,7 +96,6 @@ export default function ListEntitiesWidget({
           {emptyEntitiesMessage}
         </div>
       )}
-      {progress}
       {didError && (
         <span key="error-message" className="error-message">
           {loadErrorMessage}

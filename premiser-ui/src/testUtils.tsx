@@ -15,6 +15,8 @@ import { normalize, schema } from "normalizr";
 
 import { AppStore, RootState, sagaMiddleware, setupStore } from "./setupStore";
 
+export const DISABLED_BUTTON_CLASS = "rmd-button--disabled";
+
 interface ProviderRenderOptions
   extends DefaultStoreOptions,
     Omit<RenderOptions, "queries"> {

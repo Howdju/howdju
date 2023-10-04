@@ -8,9 +8,7 @@ import throttle from "lodash/throttle";
 import React, { Component, ComponentClass, MouseEvent } from "react";
 import { hot } from "react-hot-loader/root";
 import {
-  Button,
   Drawer,
-  FontIcon,
   ListItem,
   Snackbar,
   Tab,
@@ -22,6 +20,7 @@ import { IdPropType } from "react-md/lib";
 import { connect, ConnectedProps } from "react-redux";
 import { Switch } from "react-router";
 import { Link } from "react-router-dom";
+import { FontIcon } from "@react-md/icon";
 
 import { actions, inIframe } from "howdju-client-common";
 import { isTruthy } from "howdju-common";
@@ -35,6 +34,7 @@ import {
   privacyConsent,
   ui,
 } from "./actions";
+import IconButton from "./components/button/IconButton";
 import MediaExcerptApparitionsDialog from "./components/mediaExcerptApparitionsDialog/MediaExcerptApparitionsDialog";
 import PropositionAppearancesDialog from "./components/propositionAppearancesDialog/PropositionAppearancesDialog";
 import config from "./config";
@@ -484,9 +484,13 @@ class App extends Component<Props> {
         header={
           <Toolbar
             nav={
-              <Button icon onClick={this.hideNavDrawer}>
-                close
-              </Button>
+              <IconButton
+                id="close-app-nav-drawer-button"
+                aria-label="Close Nav Drawer"
+                onClick={this.hideNavDrawer}
+              >
+                <FontIcon>close</FontIcon>
+              </IconButton>
             }
             className="md-divider-border md-divider-border--bottom"
           >

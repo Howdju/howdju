@@ -81,6 +81,7 @@ export const setupStore = (
             // TODO(484) figure out how to handle timestamps in a way that is acceptable to redux.
             /entities\.mediaExcerpts\.[^.]+\.created/,
             /entities\.mediaExcerptCitations\.[^.]+\.created/,
+            /entities\.mediaExcerptSpeakers\.[^.]+\.created/,
             /entities\.urlLocators\.[^.]+\.created/,
             /entities\.urlLocators.[^.]+\.autoConfirmationStatus\.(earliest|latest)(Not)?FoundAt/,
           ],

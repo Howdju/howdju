@@ -247,6 +247,14 @@ export const mediaExcerptSpeakerSchema =
     },
     {
       idAttribute: mediaExcerptSpeakerKey,
+      processStrategy(speaker) {
+        return applyCustomizations(
+          mergeCopy(speaker, {
+            key: mediaExcerptSpeakerKey(speaker),
+          }),
+          momentConversion("created")
+        );
+      },
     }
   );
 export const mediaExcerptSpeakersSchema = new schema.Array(

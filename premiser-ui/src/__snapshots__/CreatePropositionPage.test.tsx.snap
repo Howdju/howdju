@@ -28,27 +28,19 @@ exports[`CreatePropositionPage (with fake timers) renders correctly with query p
               class="md-card-text"
             >
               <button
-                class="md-btn md-btn--flat md-btn--text md-pointer--hover md-text md-inline-block"
+                class="rmd-button rmd-button--text rmd-button--text-primary"
                 title="Add Speaker"
                 type="button"
               >
-                <div
-                  class="md-ink-container"
-                />
-                <div
-                  class="md-icon-separator"
+                <i
+                  class="md-icon material-icons rmd-icon--before"
                 >
-                  <i
-                    class="md-icon material-icons md-text--inherit"
-                  >
-                    person_add
-                  </i>
-                  <span
-                    class="md-icon-text"
-                  >
-                    Add Speaker
-                  </span>
-                </div>
+                  person_add
+                </i>
+                Add Speaker
+                <span
+                  class="rmd-ripple-container"
+                />
               </button>
             </section>
             <section
@@ -613,41 +605,33 @@ exports[`CreatePropositionPage (with fake timers) renders correctly with query p
                         />
                       </div>
                       <button
-                        class="md-btn md-btn--icon md-pointer--hover md-inline-block md-text-field-icon md-text-field-icon--positioned"
+                        class="rmd-button rmd-button--icon rmd-button--text-primary md-text-field-icon md-text-field-icon--positioned"
                         type="button"
                       >
-                        <div
-                          class="md-ink-container"
-                        />
                         <i
-                          class="md-icon material-icons md-text--inherit"
+                          class="md-icon material-icons"
                         >
                           delete
                         </i>
+                        <span
+                          class="rmd-ripple-container"
+                        />
                       </button>
                     </div>
                   </div>
                   <button
-                    class="md-btn md-btn--flat md-btn--text md-pointer--hover md-text md-inline-block add-button"
+                    class="rmd-button rmd-button--text rmd-button--text-primary add-button"
                     type="button"
                   >
-                    <div
-                      class="md-ink-container"
-                    />
-                    <div
-                      class="md-icon-separator"
+                    <i
+                      class="md-icon material-icons rmd-icon--before"
                     >
-                      <i
-                        class="md-icon material-icons md-text--inherit"
-                      >
-                        add
-                      </i>
-                      <span
-                        class="md-icon-text"
-                      >
-                        Add URL
-                      </span>
-                    </div>
+                      add
+                    </i>
+                    Add URL
+                    <span
+                      class="rmd-ripple-container"
+                    />
                   </button>
                 </div>
               </div>
@@ -656,23 +640,24 @@ exports[`CreatePropositionPage (with fake timers) renders correctly with query p
               class="md-dialog-footer--card md-dialog-footer--inline"
             >
               <button
-                class="md-btn md-btn--flat md-btn--text md-pointer--hover md-text md-inline-block"
+                class="rmd-button rmd-button--text rmd-button--text-primary"
                 type="button"
               >
-                <div
-                  class="md-ink-container"
-                />
                 Cancel
+                <span
+                  class="rmd-ripple-container"
+                />
               </button>
               <button
-                class="md-btn md-btn--flat md-btn--text md-pointer--hover md-text md-inline-block md-btn--raised-disabled md-text--disabled"
+                aria-disabled="true"
+                class="rmd-button rmd-button--text rmd-button--contained rmd-button--disabled"
                 title="A proposition is only as good as its justification"
                 type="submit"
               >
-                <div
-                  class="md-ink-container"
-                />
                 Create
+                <span
+                  class="rmd-ripple-container"
+                />
               </button>
             </section>
           </div>

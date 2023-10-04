@@ -1,6 +1,7 @@
 import React, { Component } from "react";
-import { Button, Card, CardText } from "react-md";
+import { Card, CardText } from "react-md";
 
+import SolidButton from "@/components/button/SolidButton";
 import Helmet from "./Helmet";
 import { showPrivacyConsentDialog } from "./cookieConsent";
 
@@ -22,9 +23,9 @@ export default class PrivacySettingsPage extends Component {
         <Card className="md-cell--12">
           <CardText>
             <h1 className="md-cell md-cell--12">Privacy Settings</h1>
-            <Button raised primary onClick={showPrivacyConsentDialog}>
+            <SolidButton onClick={showPrivacyConsentDialog}>
               Show privacy consent dialog
-            </Button>
+            </SolidButton>
           </CardText>
         </Card>
       </div>

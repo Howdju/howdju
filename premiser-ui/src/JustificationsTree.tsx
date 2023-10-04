@@ -4,7 +4,6 @@ import get from "lodash/get";
 import groupBy from "lodash/groupBy";
 import map from "lodash/map";
 import cn from "classnames";
-import { Button } from "react-md";
 
 import {
   ContextTrailItem,
@@ -22,6 +21,7 @@ import { selectIsWindowNarrow } from "./selectors";
 import FlipMoveWrapper from "./FlipMoveWrapper";
 
 import "./JustificationsTree.scss";
+import TextButton from "./components/button/TextButton";
 
 interface Props {
   id: ComponentId;
@@ -153,11 +153,9 @@ export default function JustificationsTree({
               className="md-cell md-cell--12 cell--centered-contents"
               key="justification-propositions-page-no-positive-justifications-add-justification-button"
             >
-              <Button
-                flat
-                children={t(ADD_JUSTIFICATION_CALL_TO_ACTION)}
-                onClick={showNewPositiveJustificationDialog}
-              />
+              <TextButton onClick={showNewPositiveJustificationDialog}>
+                {t(ADD_JUSTIFICATION_CALL_TO_ACTION)}
+              </TextButton>
             </div>,
           ]}
         {map(positiveJustifications, toBranch)}
@@ -187,11 +185,9 @@ export default function JustificationsTree({
               className="md-cell md-cell--12 cell--centered-contents"
               key="justification-propositions-page-no-negative-justifications-add-justification-button"
             >
-              <Button
-                flat
-                children={t(ADD_JUSTIFICATION_CALL_TO_ACTION)}
-                onClick={showNewNegativeJustificationDialog}
-              />
+              <TextButton onClick={showNewNegativeJustificationDialog}>
+                {t(ADD_JUSTIFICATION_CALL_TO_ACTION)}
+              </TextButton>
             </div>,
           ]}
         {map(negativeJustifications, toBranch)}

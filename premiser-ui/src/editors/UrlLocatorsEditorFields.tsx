@@ -1,6 +1,6 @@
 import React, { MouseEvent, useState } from "react";
 import { MaterialSymbol } from "react-material-symbols";
-import { Button, CircularProgress } from "react-md";
+import { CircularProgress } from "react-md";
 import { isEmpty } from "lodash";
 
 import {
@@ -19,6 +19,9 @@ import { isValidUrl } from "@/util";
 import { useAppDispatch, useAppSelector } from "@/hooks";
 
 import "./UrlLocatorsEditorFields.scss";
+import IconButton from "@/components/button/IconButton";
+import { FontIcon } from "@react-md/icon";
+import TextButton from "@/components/button/TextButton";
 
 interface Props
   extends EntityEditorFieldsProps<"urlLocators", CreateUrlLocatorInput[]> {
@@ -137,9 +140,8 @@ export default function UrlLocatorsEditorFields({
               rightIcon={
                 <>
                   {onInferMediaExcerptInfo && (
-                    <Button
+                    <IconButton
                       key="infer-media-excerpt-info-button"
-                      icon
                       onClick={() => onInferMediaExcerptInfo(url.url, index)}
                       disabled={disabled || !url.url}
                     >
@@ -148,16 +150,15 @@ export default function UrlLocatorsEditorFields({
                         size={22}
                         title="Infer quotation and source description"
                       />
-                    </Button>
+                    </IconButton>
                   )}
-                  <Button
+                  <IconButton
                     key="delete-url-locator-button"
-                    icon
                     onClick={() => onRemoveUrlLocator(index)}
                     disabled={disabled}
                   >
-                    delete
-                  </Button>
+                    <FontIcon>delete</FontIcon>
+                  </IconButton>
                 </>
               }
               rightIconStateful={false}
@@ -185,15 +186,14 @@ export default function UrlLocatorsEditorFields({
         );
       })}
       {(urlLocators?.length ?? 0) < maxUrlLocatorCount && (
-        <Button
-          iconEl={<MaterialSymbol icon="add_link" />}
-          raised
+        <TextButton
+          icon={<MaterialSymbol icon="add_link" />}
           onClick={onAddUrlLocator}
           title="Add URL locator"
           disabled={disabled}
         >
           Add URL locator
-        </Button>
+        </TextButton>
       )}
     </div>
   );

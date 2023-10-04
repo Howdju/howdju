@@ -1,6 +1,5 @@
 import React, { MouseEvent, useState } from "react";
 import { Link } from "react-router-dom";
-import { Button } from "react-md";
 import filter from "lodash/filter";
 import map from "lodash/map";
 import split from "lodash/split";
@@ -11,11 +10,11 @@ import { extractDomain, UrlOut, WritQuoteOut } from "howdju-common";
 
 import { truncateWritQuoteText, isTextLong } from "./viewModels";
 import * as characters from "./characters";
-import t from "./texts";
 import config from "./config";
 import paths from "./paths";
 
 import "./WritQuoteViewer.scss";
+import TextButton from "./components/button/TextButton";
 
 export type OnClickWritQuoteUrl = (
   event: MouseEvent,
@@ -108,20 +107,20 @@ export default function WritQuoteViewer({
               {}
             </div>
             {_isQuoteTextLong && !isExpanded && (
-              <Button
-                flat
-                children={t("More")}
+              <TextButton
                 className="text-expand-toggle"
                 onClick={() => setIsExpanded(true)}
-              />
+              >
+                More
+              </TextButton>
             )}
             {_isQuoteTextLong && isExpanded && (
-              <Button
-                flat
-                children={t("Less")}
+              <TextButton
                 className="text-expand-toggle"
                 onClick={() => setIsExpanded(false)}
-              />
+              >
+                Less
+              </TextButton>
             )}
           </div>
           <div className="writ-title">

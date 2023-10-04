@@ -1,5 +1,4 @@
 import React from "react";
-import { Button } from "react-md";
 
 import { MediaExcerptSpeakerOut, MediaExcerptView } from "howdju-common";
 
@@ -8,6 +7,7 @@ import { api } from "@/apiActions";
 import MediaExcerptSpeakerViewer from "@/components/mediaExcerpts/MediaExcerptSpeakerViewer";
 
 import "./DeleteMediaExcerptSpeakersControl.scss";
+import OutlineButton from "@/components/button/OutlineButton";
 
 interface Props {
   mediaExcerpt: MediaExcerptView;
@@ -27,9 +27,9 @@ export default function DeleteMediaExcerptSpeakersControl({
       {mediaExcerpt.speakers.map((speaker) => (
         <li key={speaker.key}>
           <MediaExcerptSpeakerViewer speaker={speaker} />
-          <Button raised onClick={() => deleteSpeaker(speaker)}>
+          <OutlineButton onClick={() => deleteSpeaker(speaker)}>
             Delete
-          </Button>
+          </OutlineButton>
         </li>
       ))}
     </ul>

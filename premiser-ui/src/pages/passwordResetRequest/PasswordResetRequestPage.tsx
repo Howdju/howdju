@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Button, Card, CardActions, CardText, CardTitle } from "react-md";
+import { Card, CardActions, CardText, CardTitle } from "react-md";
 import moment from "moment";
 
 import { makeCreatePasswordResetRequestInput } from "howdju-client-common";
@@ -14,6 +14,7 @@ import passwordResetRequestPage, {
 } from "./passwordResetRequestPageSlice";
 import { combineIds } from "@/viewModels";
 import ErrorMessages from "@/ErrorMessages";
+import SolidButton from "@/components/button/SolidButton";
 
 const id = "password-reset-request-page";
 
@@ -52,12 +53,9 @@ export default function PasswordResetRequestPage() {
         reset expires, please request a password reset again.
       </CardText>
       <CardActions>
-        <Button
-          raised
-          primary
-          children="Return"
-          onClick={() => dispatch(passwordResetRequestPage.reset())}
-        />
+        <SolidButton onClick={() => dispatch(passwordResetRequestPage.reset())}>
+          Return
+        </SolidButton>
       </CardActions>
     </React.Fragment>
   ) : undefined;

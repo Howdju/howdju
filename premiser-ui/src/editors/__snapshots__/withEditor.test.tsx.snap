@@ -67,23 +67,24 @@ exports[`withEditor Exemplary component (RegistrationRequestEditor) submitting i
       class="md-dialog-footer--card md-dialog-footer--inline"
     >
       <button
-        class="md-btn md-btn--flat md-btn--text md-pointer--hover md-text md-inline-block"
+        class="rmd-button rmd-button--text rmd-button--text-primary"
         type="button"
       >
-        <div
-          class="md-ink-container"
-        />
         Cancel
+        <span
+          class="rmd-ripple-container"
+        />
       </button>
       <button
-        class="md-btn md-btn--flat md-btn--text md-btn--hover md-pointer--hover md-text md-inline-block md-btn--raised-disabled md-text--disabled"
+        aria-disabled="true"
+        class="rmd-button rmd-button--text rmd-button--contained rmd-button--disabled"
         title="Please correct the errors to continue"
         type="submit"
       >
-        <div
-          class="md-ink-container"
-        />
         Save
+        <span
+          class="rmd-ripple-container"
+        />
       </button>
     </section>
   </form>
