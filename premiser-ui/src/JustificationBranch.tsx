@@ -1,51 +1,45 @@
+import { FontIcon } from "@react-md/icon";
 import cn from "classnames";
 import get from "lodash/get";
 import map from "lodash/map";
 import moment from "moment";
 import React, { useState } from "react";
 import FlipMove from "react-flip-move";
-import { Link } from "react-router-dom";
+import { Card, Divider, DropdownMenu, ListItem, MenuButton } from "react-md";
 import { connect, ConnectedProps } from "react-redux";
-import {
-  Divider,
-  Card,
-  Button,
-  FontIcon,
-  MenuButton,
-  ListItem,
-  DropdownMenu,
-} from "react-md";
+import { Link } from "react-router-dom";
 
+import { isDisverified, isVerified } from "howdju-client-common";
 import {
-  isWritQuoteBased,
-  isRootPositive,
-  isRootNegative,
-  JustificationSearchFilters,
-  newExhaustedEnumError,
-  makeCreateCounterJustificationInput,
   ContextTrailItem,
+  isRootNegative,
+  isRootPositive,
+  isWritQuoteBased,
+  JustificationSearchFilters,
   JustificationView,
+  makeCreateCounterJustificationInput,
+  newExhaustedEnumError,
 } from "howdju-common";
-import { isVerified, isDisverified } from "howdju-client-common";
 
-import { api, editors } from "./actions";
-import config from "./config";
 import CounterJustificationEditor from "@/editors/CounterJustificationEditor";
+import { api, editors } from "./actions";
+import IconButton from "./components/button/IconButton";
+import config from "./config";
 import {
   counterJustificationEditorId,
   justificationBasisEditorId,
 } from "./editorIds";
+import { useAppDispatch } from "./hooks";
 import JustificationChatBubble from "./JustificationChatBubble";
+import { logger } from "./logger";
 import paths from "./paths";
 import { EditorTypes } from "./reducers/editors";
+import { RootState } from "./setupStore";
 import t from "./texts";
+import { OnClickJustificationWritQuoteUrl } from "./types";
+import { extendContextTrailItems } from "./viewModels";
 
 import "./JustificationBranch.scss";
-import { extendContextTrailItems } from "./viewModels";
-import { useAppDispatch } from "./hooks";
-import { RootState } from "./setupStore";
-import { OnClickJustificationWritQuoteUrl } from "./types";
-import { logger } from "./logger";
 
 interface OwnProps {
   justification: JustificationView;
@@ -253,8 +247,7 @@ function JustificationBranch({
   const creatorNameDescription = (creatorName && ` by ${creatorName}`) || "";
 
   const actions = [
-    <Button
-      icon
+    <IconButton
       key="verifyButton"
       className={cn({
         verified: _isVerified,
@@ -265,10 +258,9 @@ function JustificationBranch({
       title="Verify this justification"
       onClick={onVerify}
     >
-      thumb_up
-    </Button>,
-    <Button
-      icon
+      <FontIcon>thumb_up</FontIcon>
+    </IconButton>,
+    <IconButton
       key="disverifyButton"
       className={cn({
         disverified: _isDisverified,
@@ -279,10 +271,9 @@ function JustificationBranch({
       title="Dis-verify this justification"
       onClick={onDisverify}
     >
-      thumb_down
-    </Button>,
-    <Button
-      icon
+      <FontIcon>thumb_down</FontIcon>
+    </IconButton>,
+    <IconButton
       key="counterButton"
       className={cn({
         hiding: doHideControls,
@@ -290,8 +281,8 @@ function JustificationBranch({
       title="Counter this justification"
       onClick={onEditNewCounterJustification}
     >
-      reply
-    </Button>,
+      <FontIcon>reply</FontIcon>
+    </IconButton>,
   ];
   const hasCounterJustifications =
     justification.counterJustifications &&
@@ -300,8 +291,7 @@ function JustificationBranch({
     const toggleCounterJustificationsExpandedButtonIcon =
       areCounterJustificationsExpanded ? "expand_more" : "expand_less";
     actions.push(
-      <Button
-        icon
+      <IconButton
         key="toggleCounterJustificationsExpandedButton"
         className={cn({
           hiding: doHideControls,
@@ -313,8 +303,8 @@ function JustificationBranch({
         }
         onClick={toggleCounterJustificationsExpanded}
       >
-        {toggleCounterJustificationsExpandedButtonIcon}
-      </Button>
+        <FontIcon>{toggleCounterJustificationsExpandedButtonIcon}</FontIcon>
+      </IconButton>
     );
   }
   actions.push(

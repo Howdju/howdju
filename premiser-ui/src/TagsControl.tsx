@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import find from "lodash/find";
 import get from "lodash/get";
 import includes from "lodash/includes";
-import { Button } from "react-md";
+import { FontIcon } from "@react-md/icon";
 
 import {
   makeCreateTagInput,
@@ -14,6 +14,7 @@ import {
   CreateTagInput,
 } from "howdju-common";
 
+import IconButton from "./components/button/IconButton";
 import { combineIds } from "./viewModels";
 import TagNameAutocomplete from "./TagNameAutocomplete";
 import TagsViewer from "./TagsViewer";
@@ -191,9 +192,9 @@ export default function TagsControl(props: Props) {
         onKeyDown={onTagNameKeyDown}
         rightControls={
           inputCollapsable ? (
-            <Button icon onClick={() => closeInput()}>
-              done
-            </Button>
+            <IconButton onClick={() => closeInput()}>
+              <FontIcon>done</FontIcon>
+            </IconButton>
           ) : undefined
         }
         autocompleteDebounceMs={autocompleteDebounceMs}
@@ -202,14 +203,13 @@ export default function TagsControl(props: Props) {
   }
   if (inputCollapsable && isInputCollapsed) {
     extraChildren.push(
-      <Button
-        icon
+      <IconButton
         onClick={() => setIsInputCollapsed(false)}
         title={addTitle}
         key="show-input"
       >
-        add
-      </Button>
+        <FontIcon>add</FontIcon>
+      </IconButton>
     );
   }
 

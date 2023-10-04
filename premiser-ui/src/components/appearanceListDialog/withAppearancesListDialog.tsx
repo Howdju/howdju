@@ -1,7 +1,15 @@
 import React from "react";
 import FlipMove from "react-flip-move";
-import { Button, CircularProgress, DialogContainer } from "react-md";
 import { Action } from "redux";
+import {
+  Dialog,
+  DialogHeader,
+  DialogTitle,
+  DialogContent,
+  DialogFooter,
+} from "@react-md/dialog";
+import { Button } from "@react-md/button";
+import { CircularProgress } from "@react-md/progress";
 
 import config from "@/config";
 import FlipMoveWrapper from "@/FlipMoveWrapper";
@@ -29,32 +37,40 @@ export default function withAppearancesListDialog(
 
     const appearances = useAppEntitySelector(appearanceIds, appearancesSchema);
     return (
-      <DialogContainer
+      <Dialog
         id={id}
         visible={isDialogVisible}
         title={title}
-        onHide={() => dispatch(hideDialogAction)}
-        className="md-overlay--wide-dialog"
+        onRequestClose={() => dispatch(hideDialogAction)}
+        aria-labelledby={combineIds(id, "dialog-title")}
       >
-        <FlipMove
-          {...config.ui.flipMove}
-          className="md-cell md-cell--12 center-text"
-        >
-          {isFetching && <CircularProgress id={combineIds(id, "progress")} />}
-          {!isFetching &&
-            appearances.map((appearance) => (
-              <FlipMoveWrapper key={appearance.id}>
-                <AppearanceCard
-                  id={combineIds(id, "appearance", appearance.id)}
-                  appearance={appearance}
-                />
-              </FlipMoveWrapper>
-            ))}
-          <Button raised primary onClick={() => dispatch(hideDialogAction)}>
+        <DialogHeader>
+          <DialogTitle id={combineIds(id, "dialog-title")}>{title}</DialogTitle>
+        </DialogHeader>
+        <DialogContent>
+          <FlipMove {...config.ui.flipMove} className="center-text">
+            {isFetching && <CircularProgress id={combineIds(id, "progress")} />}
+            {!isFetching &&
+              appearances.map((appearance) => (
+                <FlipMoveWrapper key={appearance.id}>
+                  <AppearanceCard
+                    id={combineIds(id, "appearance", appearance.id)}
+                    appearance={appearance}
+                  />
+                </FlipMoveWrapper>
+              ))}
+          </FlipMove>
+        </DialogContent>
+        <DialogFooter>
+          <Button
+            themeType="contained"
+            theme="primary"
+            onClick={() => dispatch(hideDialogAction)}
+          >
             Close
           </Button>
-        </FlipMove>
-      </DialogContainer>
+        </DialogFooter>
+      </Dialog>
     );
   };
 }

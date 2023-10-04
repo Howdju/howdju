@@ -1,4 +1,6 @@
 import React, { FormEventHandler, useState } from "react";
+import { DialogContainer } from "react-md";
+import { MaterialSymbol } from "react-material-symbols";
 
 import {
   CreateSourceInput,
@@ -16,8 +18,9 @@ import {
   EntityEditorFieldsProps,
 } from "@/editors/withEditor";
 import SourceDescriptionAutocomplete from "./SourceDescriptionAutocomplete";
-import { Button, DialogContainer } from "react-md";
-import { MaterialSymbol } from "react-material-symbols";
+
+import IconButton from "../button/IconButton";
+import SolidButton from "../button/SolidButton";
 
 const descriptionName = "description";
 export interface Props
@@ -89,13 +92,12 @@ export default function SourceEditorFields(props: Props) {
     helpText: (
       <span>
         MLA-like, omitting the authors{" "}
-        <Button
+        <IconButton
           className="show-source-description-help-dialog"
-          flat
           onClick={showSourceDescriptionHelpDialog}
         >
           <MaterialSymbol icon="help" />
-        </Button>
+        </IconButton>
       </span>
     ),
     ...errorProps((s) => s.description),
@@ -155,9 +157,9 @@ export default function SourceEditorFields(props: Props) {
             </li>
           </ul>
         </p>
-        <Button raised primary onClick={hideSourceDescriptionHelpDialog}>
+        <SolidButton onClick={hideSourceDescriptionHelpDialog}>
           Close
-        </Button>
+        </SolidButton>
       </DialogContainer>
     </div>
   );

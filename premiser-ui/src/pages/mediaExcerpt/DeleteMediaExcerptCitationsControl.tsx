@@ -1,11 +1,11 @@
 import React from "react";
-import { Button } from "react-md";
 
 import { MediaExcerptCitationOut, MediaExcerptOut } from "howdju-common";
 
 import { useAppDispatch } from "@/hooks";
 import { api } from "@/apiActions";
 import MediaExcerptCitationViewer from "@/components/mediaExcerpts/MediaExcerptCitationViewer";
+import OutlineButton from "@/components/button/OutlineButton";
 
 import "./DeleteMediaExcerptCitationsControl.scss";
 
@@ -27,9 +27,9 @@ export default function DeleteMediaExcerptCitationsControl({
       {mediaExcerpt.citations.map((citation, index) => (
         <li key={index}>
           <MediaExcerptCitationViewer citation={citation} />
-          <Button raised onClick={() => deleteCitation(citation)}>
+          <OutlineButton onClick={() => deleteCitation(citation)}>
             Delete
-          </Button>
+          </OutlineButton>
         </li>
       ))}
     </ul>

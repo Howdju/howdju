@@ -1,6 +1,5 @@
 import React, { MouseEvent, useState } from "react";
 import {
-  Button,
   Card,
   CardActions,
   CardText,
@@ -15,6 +14,7 @@ import { PropertyChanges } from "./types";
 import { ListValue } from "react-md/lib/SelectFields/SelectField";
 import { toString } from "lodash";
 import { SeverityLevel } from "@sentry/browser";
+import OutlineButton from "./components/button/OutlineButton";
 
 const LEVELS = [
   {
@@ -89,18 +89,12 @@ export default function TestErrorPage() {
           />
         </CardText>
         <CardActions>
-          <Button
-            raised
-            children="Create test error"
-            disabled={!message}
-            onClick={onCreateError}
-          />
-          <Button
-            raised
-            children="Create test message"
-            disabled={!message}
-            onClick={onCreateMessage}
-          />
+          <OutlineButton disabled={!message} onClick={onCreateError}>
+            Create test error
+          </OutlineButton>
+          <OutlineButton disabled={!message} onClick={onCreateMessage}>
+            Create test message
+          </OutlineButton>
         </CardActions>
       </FocusContainer>
     </Card>

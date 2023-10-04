@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { useSelector } from "react-redux";
 import { AnyAction } from "@reduxjs/toolkit";
-import { Button, CardActions, CardText, CircularProgress } from "react-md";
+import { CardActions, CardText, CircularProgress } from "react-md";
 import get from "lodash/get";
 import { z } from "zod";
 import { isArray, merge } from "lodash";
@@ -56,6 +56,7 @@ import {
   editorCommitResultGotoActionCreators,
   ViewableEditorType,
 } from "@/sagas/editors/commitEditorThenViewSaga";
+import CancelButton from "@/editors/CancelButton";
 
 export class CommitThenPutAction {
   constructor(public readonly action: AnyAction) {}
@@ -343,13 +344,13 @@ export default function withEditor<
             <CircularProgress key="progress" id={combineIds(id, "progress")} />
           )}
           {showButtons && [
-            <Button
-              flat
+            <CancelButton
               key="cancelButton"
-              children={t(CANCEL_BUTTON_LABEL)}
               onClick={onCancelEdit}
               disabled={isSaving}
-            />,
+            >
+              {t(CANCEL_BUTTON_LABEL)}
+            </CancelButton>,
             <SubmitButton
               key="submitButton"
               disabled={disabled}

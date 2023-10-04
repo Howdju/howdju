@@ -2,7 +2,6 @@ import { isArray } from "lodash";
 import queryString from "query-string";
 import React, { useEffect } from "react";
 import {
-  Button,
   Card,
   CardActions,
   CardText,
@@ -24,6 +23,8 @@ import passwordResetConfirmationPage, {
   editorId,
 } from "./passwordResetConfirmationPageSlice";
 import { combineIds } from "@/viewModels";
+import SolidButton from "@/components/button/SolidButton";
+import { push } from "connected-react-router";
 
 export default function PasswordResetConfirmationPage() {
   const location = useLocation();
@@ -74,12 +75,9 @@ function ValidPasswordResetConfirmationPage({
     <React.Fragment>
       <CardText>Your password has been changed.</CardText>
       <CardActions>
-        <Button
-          raised
-          primary
-          children="Go to recent activity"
-          href={paths.recentActivity()}
-        />
+        <SolidButton onClick={() => dispatch(push(paths.recentActivity()))}>
+          Go to recent activity
+        </SolidButton>
       </CardActions>
     </React.Fragment>
   );

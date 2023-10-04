@@ -844,15 +844,19 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows initial recent propos
         </div>
       </section>
     </div>
-    <button
-      class="md-btn md-btn--flat md-btn--text md-pointer--hover md-text md-inline-block md-cell md-cell--3 md-cell--8-tablet md-cell--4-phone"
-      type="button"
+    <div
+      style="transition: transform 735ms ease 450ms, opacity 735ms ease 450ms;"
     >
-      <div
-        class="md-ink-container"
-      />
-      Fetch more
-    </button>
+      <button
+        class="rmd-button rmd-button--text rmd-button--text-primary md-cell md-cell--3 md-cell--8-tablet md-cell--4-phone"
+        type="button"
+      >
+        Fetch more
+        <span
+          class="rmd-ripple-container"
+        />
+      </button>
+    </div>
   </div>
 </div>
 `;
@@ -2629,15 +2633,19 @@ exports[`ListEntitiesWidget RecentPropositionsWidget shows more propositions whe
         </div>
       </section>
     </div>
-    <button
-      class="md-btn md-btn--flat md-btn--text md-pointer--hover md-text md-inline-block md-cell md-cell--3 md-cell--8-tablet md-cell--4-phone"
-      type="button"
+    <div
+      style=""
     >
-      <div
-        class="md-ink-container"
-      />
-      Fetch more
-    </button>
+      <button
+        class="rmd-button rmd-button--text rmd-button--text-primary md-cell md-cell--3 md-cell--8-tablet md-cell--4-phone"
+        type="button"
+      >
+        Fetch more
+        <span
+          class="rmd-ripple-container"
+        />
+      </button>
+    </div>
   </div>
 </div>
 `;

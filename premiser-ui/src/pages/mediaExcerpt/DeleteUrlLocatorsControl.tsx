@@ -1,10 +1,10 @@
 import React from "react";
-import { Button } from "react-md";
 
 import { MediaExcerptOut, UrlLocatorOut } from "howdju-common";
 
 import { useAppDispatch } from "@/hooks";
 import { api } from "@/apiActions";
+import OutlineButton from "@/components/button/OutlineButton";
 
 import "./DeleteUrlLocatorsControl.scss";
 
@@ -24,9 +24,9 @@ export default function DeleteUrlLocatorsControl({ mediaExcerpt }: Props) {
       {mediaExcerpt.locators.urlLocators.map((urlLocator, index) => (
         <li key={index}>
           {urlLocator.url.url}
-          <Button raised onClick={() => deleteUrlLocator(urlLocator)}>
+          <OutlineButton onClick={() => deleteUrlLocator(urlLocator)}>
             Delete
-          </Button>
+          </OutlineButton>
         </li>
       ))}
     </ul>

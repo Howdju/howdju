@@ -6581,7 +6581,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-md/button@npm:^2.9.1":
+"@react-md/button@npm:^2, @react-md/button@npm:^2.9.1":
   version: 2.9.1
   resolution: "@react-md/button@npm:2.9.1"
   dependencies:
@@ -6603,7 +6603,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-md/dialog@npm:^2.9.1":
+"@react-md/dialog@npm:^2, @react-md/dialog@npm:^2.9.1":
   version: 2.9.1
   resolution: "@react-md/dialog@npm:2.9.1"
   dependencies:
@@ -6858,7 +6858,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-md/progress@npm:^2.9.1":
+"@react-md/progress@npm:^2, @react-md/progress@npm:^2.9.1":
   version: 2.9.1
   resolution: "@react-md/progress@npm:2.9.1"
   dependencies:
@@ -28434,9 +28434,12 @@ __metadata:
     "@babel/runtime-corejs3": ^7.22.6
     "@grrr/cookie-consent": ^1.0.4
     "@react-md/autocomplete": "Howdju/react-md#workspace=@react-md/autocomplete&commit=739fcf8b359727d958d6befe46014fe8b3dfe11c"
+    "@react-md/button": ^2
+    "@react-md/dialog": ^2
     "@react-md/icon": ^2
     "@react-md/layout": ^2
     "@react-md/menu": ^2
+    "@react-md/progress": ^2
     "@react-md/states": ^2
     "@react-md/theme": ^2
     "@react-md/typography": ^2

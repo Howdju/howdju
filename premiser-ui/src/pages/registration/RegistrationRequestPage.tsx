@@ -1,7 +1,6 @@
 import React, { useEffect } from "react";
 import { goBack } from "connected-react-router";
 import {
-  Button,
   Card,
   CardActions,
   CardText,
@@ -21,6 +20,7 @@ import { editors } from "../../actions";
 import { EditorState, EditorTypes } from "../../reducers/editors";
 import { useAppDispatch, useAppSelector } from "@/hooks";
 import RegistrationRequestEditor from "./RegistrationRequestEditor";
+import SolidButton from "@/components/button/SolidButton";
 
 const editorId = "registration-request-page";
 const editorType = EditorTypes.REGISTRATION_REQUEST;
@@ -76,7 +76,7 @@ export default function RegistrationRequestPage() {
         {durationText}. If your registration expires, please register again.
       </CardText>
       <CardActions>
-        <Button raised primary children="Return" onClick={reset} />
+        <SolidButton children="Return" onClick={reset} />
       </CardActions>
     </React.Fragment>
   );

@@ -1,6 +1,6 @@
 import React from "react";
 import { AnyAction } from "@reduxjs/toolkit";
-import { Button, FontIcon } from "react-md";
+import { FontIcon } from "react-md";
 import get from "lodash/get";
 
 import {
@@ -18,6 +18,7 @@ import { combineNames, combineIds, combineSuggestionsKeys } from "./viewModels";
 import { EntityEditorFieldsProps } from "./editors/withEditor";
 import { EditorType } from "./reducers/editors";
 import { editors } from "./actions";
+import IconButton from "./components/button/IconButton";
 
 interface Props
   extends EntityEditorFieldsProps<
@@ -100,21 +101,19 @@ export default function PropositionCompoundEditorFields(props: Props) {
           <div />
         ) : (
           <>
-            <Button
-              icon
+            <IconButton
               title="Add atom"
               onClick={() => onAddPropositionCompoundAtom(index)}
             >
-              add
-            </Button>
-            <Button
-              icon
+              <FontIcon>add</FontIcon>
+            </IconButton>
+            <IconButton
               onClick={() =>
                 onRemovePropositionCompoundAtom(atom, index, atoms)
               }
             >
-              delete
-            </Button>
+              <FontIcon>delete</FontIcon>
+            </IconButton>
           </>
         );
         const inputProps = {

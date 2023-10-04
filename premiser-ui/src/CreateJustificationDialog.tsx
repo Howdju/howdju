@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { EventHandler } from "react";
 import { AnyAction } from "@reduxjs/toolkit";
-import { Button, DialogContainer as Dialog } from "react-md";
+import { DialogContainer as Dialog } from "react-md";
 import get from "lodash/get";
 
 import { EditorTypes } from "./reducers/editors";
@@ -21,6 +21,7 @@ import justificationsPage from "./pages/justifications/justificationsPageSlice";
 import SubmitButton from "./editors/SubmitButton";
 
 import "./CreateJustificationDialog.scss";
+import CancelButton from "./editors/CancelButton";
 
 type Props = {
   id: ComponentId;
@@ -69,8 +70,7 @@ export default function CreateJustificationDialog(props: Props) {
   // "ButtonTooltipedInked: `key` is not a prop. Trying to access it will result in `undefined` being returned."
   // So just handle them separately so that we don't need to give them a key
   const addNewJustificationDialogCancelButton = (
-    <Button
-      flat
+    <CancelButton
       children={t(CANCEL_BUTTON_LABEL)}
       onClick={onCancel}
       disabled={isSaving}

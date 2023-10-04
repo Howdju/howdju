@@ -1,5 +1,5 @@
 import React, { UIEvent, useEffect } from "react";
-import { Button, CircularProgress } from "react-md";
+import { CircularProgress } from "react-md";
 import isEmpty from "lodash/isEmpty";
 import map from "lodash/map";
 import FlipMove from "react-flip-move";
@@ -16,6 +16,7 @@ import { useAppDispatch, useAppSelector, useAppEntitySelector } from "@/hooks";
 import FlipMoveWrapper from "@/FlipMoveWrapper";
 import AppearanceCard from "../appearances/AppearanceCard";
 import page from "./mediaExcerptUsagesSlice";
+import FetchMoreButton from "@/components/button/FetchMoreButton";
 
 interface Props {
   mediaExcerptId: EntityId;
@@ -67,20 +68,16 @@ export default function MediaExcerptUsages({ mediaExcerptId }: Props) {
   const hasAppearances = !isEmpty(appearances);
 
   const fetchMoreJustificationsButton = (
-    <Button
-      flat
+    <FetchMoreButton
       key="fetch-more-justifications-button"
-      children="Fetch more"
-      disabled={isFetchingJustifications}
+      isFetching={isFetchingJustifications}
       onClick={fetchMoreJustifications}
     />
   );
   const fetchMoreAppearancesButton = (
-    <Button
-      flat
+    <FetchMoreButton
       key="fetch-more-appearances-button"
-      children="Fetch more"
-      disabled={isFetchingAppearances}
+      isFetching={isFetchingAppearances}
       onClick={fetchMoreAppearances}
     />
   );

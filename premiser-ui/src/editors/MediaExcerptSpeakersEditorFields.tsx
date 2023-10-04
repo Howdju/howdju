@@ -1,4 +1,5 @@
 import React from "react";
+import { MaterialSymbol } from "react-material-symbols";
 
 import {
   CreateMediaExcerptSpeakerInput,
@@ -6,17 +7,18 @@ import {
   makeCreateMediaExcerptSpeakerInput,
   PersorgOut,
 } from "howdju-common";
+import { toCreatePersorgInput } from "howdju-client-common";
 
 import { EntityEditorFieldsProps } from "./withEditor";
 import { combineIds, combineNames, combineSuggestionsKeys } from "@/viewModels";
 import EntityViewer from "@/EntityViewer";
-import { Button } from "react-md";
 import PersorgEditorFields from "@/PersorgEditorFields";
 import { EditorType } from "@/reducers/editors";
 import { EditorId } from "@/types";
-import { MaterialSymbol } from "react-material-symbols";
 import { editors } from "@/actions";
-import { toCreatePersorgInput } from "howdju-client-common";
+import IconButton from "@/components/button/IconButton";
+import { FontIcon } from "@react-md/icon";
+import OutlineButton from "@/components/button/OutlineButton";
 
 interface Props
   extends EntityEditorFieldsProps<
@@ -98,13 +100,12 @@ export function MediaExcerptSpeakersEditorFields({
             iconTitle="Person/Organization"
             key={index}
             menu={
-              <Button
-                icon
+              <IconButton
                 onClick={() => onRemoveSpeaker(index)}
                 title="Delete speaker"
               >
-                delete
-              </Button>
+                <FontIcon>delete</FontIcon>
+              </IconButton>
             }
             entity={
               <PersorgEditorFields
@@ -133,15 +134,14 @@ export function MediaExcerptSpeakersEditorFields({
           />
         );
       })}
-      <Button
-        iconEl={<MaterialSymbol icon="person_add" />}
-        raised
+      <OutlineButton
+        icon={<MaterialSymbol icon="person_add" />}
         onClick={onAddSpeaker}
         title="Add speaker"
         disabled={disabled}
       >
         Add Speaker
-      </Button>
+      </OutlineButton>
     </div>
   );
 }

@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { RouteComponentProps } from "react-router";
 import {
-  Button,
   CircularProgress,
   DialogContainer,
   Divider,
@@ -38,6 +37,7 @@ import CreateMediaExcerptCitationsEditor from "./CreateMediaExcerptCitationsEdit
 import DeleteMediaExcerptCitationsControl from "./DeleteMediaExcerptCitationsControl";
 import DeleteMediaExcerptSpeakersControl from "./DeleteMediaExcerptSpeakersControl";
 import CreateMediaExcerptSpeakersEditor from "./CreateMediaExcerptSpeakersEditor";
+import SolidButton from "@/components/button/SolidButton";
 
 interface MatchParams {
   mediaExcerptId: EntityId;
@@ -270,13 +270,11 @@ export default function MediaExcerptPage(props: Props) {
       >
         <DeleteUrlLocatorsControl mediaExcerpt={mediaExcerpt} />
         <footer className="md-dialog-footer md-dialog-footer--inline">
-          <Button
-            raised
-            primary
+          <SolidButton
             onClick={() => setIsDeleteUrlLocatorsDialogVisible(false)}
           >
             Close
-          </Button>
+          </SolidButton>
         </footer>
       </DialogContainer>
       <DialogContainer
@@ -308,13 +306,9 @@ export default function MediaExcerptPage(props: Props) {
       >
         <DeleteMediaExcerptCitationsControl mediaExcerpt={mediaExcerpt} />
         <footer className="md-dialog-footer md-dialog-footer--inline">
-          <Button
-            raised
-            primary
-            onClick={() => setIsDeleteCitationsDialogVisible(false)}
-          >
+          <SolidButton onClick={() => setIsDeleteCitationsDialogVisible(false)}>
             Close
-          </Button>
+          </SolidButton>
         </footer>
       </DialogContainer>
       <DialogContainer
@@ -343,13 +337,9 @@ export default function MediaExcerptPage(props: Props) {
       >
         <DeleteMediaExcerptSpeakersControl mediaExcerpt={mediaExcerpt} />
         <footer className="md-dialog-footer md-dialog-footer--inline">
-          <Button
-            raised
-            primary
-            onClick={() => setIsDeleteSpeakersDialogVisible(false)}
-          >
+          <SolidButton onClick={() => setIsDeleteSpeakersDialogVisible(false)}>
             Close
-          </Button>
+          </SolidButton>
         </footer>
       </DialogContainer>
     </div>

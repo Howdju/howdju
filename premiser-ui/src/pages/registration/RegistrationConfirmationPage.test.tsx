@@ -4,6 +4,7 @@ import { screen } from "@testing-library/react";
 
 import RegistrationConfirmationPage from "./RegistrationConfirmationPage";
 import {
+  DISABLED_BUTTON_CLASS,
   renderWithProviders,
   setupUserEvent,
   withFakeTimers,
@@ -42,7 +43,7 @@ describe("RegistrationConfirmationPage", () => {
     );
     expect(
       screen.getByRole("button", { name: /complete registration/i })
-    ).toHaveClass("md-btn--raised-disabled");
+    ).toHaveClass(DISABLED_BUTTON_CLASS);
     expect(container).toMatchSnapshot();
   });
 

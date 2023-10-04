@@ -1,7 +1,7 @@
 import React, { ComponentType } from "react";
-import { Button } from "react-md";
 import { Props as ReactMdProps } from "react-md/lib";
 import moment from "moment";
+import { FontIcon } from "@react-md/icon";
 
 import {
   ContextTrailItem,
@@ -20,6 +20,7 @@ import {
   SuggestionsKey,
 } from "./types";
 import { RootTargetProps } from "./JustificationRootTargetViewer";
+import IconButton from "./components/button/IconButton";
 
 interface Props {
   id: ComponentId;
@@ -63,9 +64,9 @@ export default function JustificationEntityViewer({
 
   const expander = onExpandCounterAncestors && (
     <div className="justification-expander-wrapper">
-      <Button icon onClick={onExpandCounterAncestors}>
-        more_horiz
-      </Button>
+      <IconButton onClick={onExpandCounterAncestors}>
+        <FontIcon>more_horiz</FontIcon>
+      </IconButton>
     </div>
   );
 

@@ -1,6 +1,5 @@
 import React, { useEffect } from "react";
 import {
-  Button,
   Card,
   CardActions,
   CardText,
@@ -31,6 +30,7 @@ import {
 } from "../../selectors";
 import { useAppDispatch, useAppSelector } from "@/hooks";
 import RegistrationConfirmationEditor from "./RegistrationConfirmationEditor";
+import SolidButton from "@/components/button/SolidButton";
 
 const editorId = "registration-confirmation-page";
 const editorType = EditorTypes.REGISTRATION_CONFIRMATION;
@@ -111,12 +111,9 @@ export default function RegistrationConfirmationPage() {
     <React.Fragment>
       <CardText>You are now logged in.</CardText>
       <CardActions>
-        <Button
-          raised
-          primary
-          children="Go to recent activity"
-          href={paths.recentActivity()}
-        />
+        <SolidButton href={paths.recentActivity()}>
+          Go to recent activity
+        </SolidButton>
       </CardActions>
     </React.Fragment>
   );

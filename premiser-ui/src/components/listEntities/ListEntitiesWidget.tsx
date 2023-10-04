@@ -6,8 +6,10 @@ import map from "lodash/map";
 import { denormalize, Schema } from "normalizr";
 
 import CellList, { smallCellClasses } from "../../CellList";
-import FetchButton from "../../FetchButton";
 import { useAppDispatch, useAppSelector } from "../../hooks";
+import FlipMoveWrapper from "@/FlipMoveWrapper";
+import FetchMoreButton from "../button/FetchMoreButton";
+import FetchButton from "../button/FetchButton";
 
 type ListEntitiesWidgetProps = {
   id?: string;
@@ -67,28 +69,29 @@ export default function ListEntitiesWidget({
   const hasEntities = !!entities?.length;
   const cards = () => map(entities, entityToCard);
   const fetchMoreButtonCell = (
-    <FetchButton
-      flat
-      className={cellClasses}
-      key="fetch-more-button"
-      progressId={`${id}-fetch-more-button-progress`}
-      label="Fetch more"
-      onClick={fetchMore}
-      disabled={isFetching}
-      isFetching={isFetching}
-    />
+    <FlipMoveWrapper key="fetch-more-button">
+      <FetchMoreButton
+        id={`${id}-fetch-more-button`}
+        className={cellClasses}
+        key="fetch-more-button"
+        onClick={fetchMore}
+        disabled={isFetching}
+        isFetching={isFetching}
+      />
+    </FlipMoveWrapper>
   );
   const retryButtonCell = (
-    <FetchButton
-      flat
-      className={cellClasses}
-      key="retry-button"
-      progressId={`${id}-retry-button-progress`}
-      label="Retry"
-      disabled={isFetching}
-      isFetching={isFetching}
-      onClick={fetchMore}
-    />
+    <FlipMoveWrapper key="retry-button">
+      <FetchButton
+        id={`${id}-retry-button`}
+        className={cellClasses}
+        disabled={isFetching}
+        isFetching={isFetching}
+        onClick={fetchMore}
+      >
+        Retry
+      </FetchButton>
+    </FlipMoveWrapper>
   );
   const progress = !hasEntities && !didError && (
     <CircularProgress

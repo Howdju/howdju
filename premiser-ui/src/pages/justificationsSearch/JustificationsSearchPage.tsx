@@ -1,7 +1,7 @@
 import React, { MouseEvent, useEffect } from "react";
 import { useLocation } from "react-router";
 import FlipMove from "react-flip-move";
-import { Button, CircularProgress } from "react-md";
+import { CircularProgress } from "react-md";
 import isEmpty from "lodash/isEmpty";
 import map from "lodash/map";
 import { denormalize } from "normalizr";
@@ -16,6 +16,7 @@ import { makeExtensionHighlightOnClickWritQuoteUrlCallback } from "../../extensi
 import { useAppDispatch, useAppSelector } from "@/hooks";
 import { extractFilters, extractIncludeUrls } from "./queryStringExtraction";
 import FlipMoveWrapper from "@/FlipMoveWrapper";
+import FetchMoreButton from "@/components/button/FetchMoreButton";
 
 const fetchCount = 20;
 
@@ -59,11 +60,9 @@ export default function JustificationsSearchPage() {
   const hasJustifications = justifications && justifications.length > 0;
 
   const fetchMoreButton = (
-    <Button
-      flat
+    <FetchMoreButton
       key="fetch-more-button"
-      children="Fetch more"
-      disabled={isFetching}
+      isFetching={isFetching}
       onClick={fetchMore}
     />
   );

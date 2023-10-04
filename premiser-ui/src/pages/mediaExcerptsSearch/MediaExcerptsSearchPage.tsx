@@ -1,7 +1,7 @@
 import React, { MouseEvent, useEffect } from "react";
 import { useLocation } from "react-router";
 import FlipMove from "react-flip-move";
-import { Button, CircularProgress } from "react-md";
+import { CircularProgress } from "react-md";
 import { isArray, mapValues, pick, map, isEmpty } from "lodash";
 import queryString from "query-string";
 
@@ -16,6 +16,7 @@ import { useAppDispatch, useAppSelector, useAppEntitySelector } from "@/hooks";
 import FlipMoveWrapper from "@/FlipMoveWrapper";
 import MediaExcerptCard from "@/components/mediaExcerpts/MediaExcerptCard";
 import { mediaExcerptsSchema } from "@/normalizationSchemas";
+import FetchMoreButton from "@/components/button/FetchMoreButton";
 
 const fetchCount = 20;
 
@@ -41,11 +42,9 @@ export default function MediaExcerptsSearchPage() {
   };
 
   const fetchMoreButton = (
-    <Button
-      flat
+    <FetchMoreButton
       key="fetch-more-button"
-      children="Fetch more"
-      disabled={isFetching}
+      isFetching={isFetching}
       onClick={fetchMore}
     />
   );

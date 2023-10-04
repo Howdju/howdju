@@ -1,5 +1,5 @@
 import React, { Component, UIEvent } from "react";
-import { Button, CircularProgress, FontIcon, ListItem } from "react-md";
+import { CircularProgress, FontIcon, ListItem } from "react-md";
 import { connect, ConnectedProps } from "react-redux";
 import isEmpty from "lodash/isEmpty";
 import isEqual from "lodash/isEqual";
@@ -51,6 +51,7 @@ import "./JustificationsPage.scss";
 import { PrimaryContextTrail } from "@/components/contextTrail/PrimaryContextTrailProvider";
 import FocusValidatingContextTrail from "@/components/contextTrail/FocusValidatingContextTrail";
 import { RootTargetProps } from "@/JustificationRootTargetViewer";
+import TextButton from "@/components/button/TextButton";
 
 const justificationsPageId = "justifications-page";
 
@@ -223,11 +224,9 @@ class JustificationsPage extends Component<Props> {
               className="md-cell md-cell--12 cell--centered-contents"
               key="add-justification-button"
             >
-              <Button
-                flat
-                children={t(ADD_JUSTIFICATION_CALL_TO_ACTION)}
-                onClick={this.showNewJustificationDialog}
-              />
+              <TextButton onClick={this.showNewJustificationDialog}>
+                {t(ADD_JUSTIFICATION_CALL_TO_ACTION)}
+              </TextButton>
             </div>
           )}
         </div>

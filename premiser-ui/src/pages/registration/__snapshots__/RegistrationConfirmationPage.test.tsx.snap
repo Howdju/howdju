@@ -488,23 +488,23 @@ exports[`RegistrationConfirmationPage shows error message for duplicate username
                 class="md-dialog-footer--card md-dialog-footer--inline"
               >
                 <button
-                  class="md-btn md-btn--flat md-btn--text md-pointer--hover md-text md-inline-block"
+                  class="rmd-button rmd-button--text rmd-button--text-primary"
                   type="button"
                 >
-                  <div
-                    class="md-ink-container"
-                  />
                   Cancel
+                  <span
+                    class="rmd-ripple-container"
+                  />
                 </button>
                 <button
-                  class="md-btn md-btn--raised md-btn--text md-pointer--hover md-background--primary md-background--primary-hover md-inline-block"
+                  class="rmd-button rmd-button--text rmd-button--contained rmd-button--primary"
                   title="Submit"
                   type="submit"
                 >
-                  <div
-                    class="md-ink-container"
-                  />
                   Complete Registration
+                  <span
+                    class="rmd-ripple-container"
+                  />
                 </button>
               </section>
             </form>
@@ -1025,23 +1025,24 @@ exports[`RegistrationConfirmationPage shows form 1`] = `
                 class="md-dialog-footer--card md-dialog-footer--inline"
               >
                 <button
-                  class="md-btn md-btn--flat md-btn--text md-pointer--hover md-text md-inline-block"
+                  class="rmd-button rmd-button--text rmd-button--text-primary"
                   type="button"
                 >
-                  <div
-                    class="md-ink-container"
-                  />
                   Cancel
+                  <span
+                    class="rmd-ripple-container"
+                  />
                 </button>
                 <button
-                  class="md-btn md-btn--flat md-btn--text md-pointer--hover md-text md-inline-block md-btn--raised-disabled md-text--disabled"
+                  aria-disabled="true"
+                  class="rmd-button rmd-button--text rmd-button--contained rmd-button--disabled"
                   title="Please complete the form to continue"
                   type="submit"
                 >
-                  <div
-                    class="md-ink-container"
-                  />
                   Complete Registration
+                  <span
+                    class="rmd-ripple-container"
+                  />
                 </button>
               </section>
             </form>
@@ -1087,15 +1088,16 @@ exports[`RegistrationConfirmationPage shows success message upon confirmation. 1
             <section
               class="md-dialog-footer--card md-dialog-footer--inline"
             >
-              <a
-                class="md-btn md-btn--raised md-btn--text md-pointer--hover md-background--primary md-background--primary-hover md-inline-block"
+              <button
+                class="rmd-button rmd-button--text rmd-button--contained rmd-button--primary"
                 href="/recent-activity"
+                type="button"
               >
-                <div
-                  class="md-ink-container"
-                />
                 Go to recent activity
-              </a>
+                <span
+                  class="rmd-ripple-container"
+                />
+              </button>
             </section>
           </section>
         </div>

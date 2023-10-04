@@ -1,7 +1,6 @@
-import classNames from "classnames";
 import React from "react";
-import { Button } from "react-md";
-import type { ButtonProps } from "react-md/lib/Buttons";
+import { Button, ButtonProps } from "@react-md/button";
+import classNames from "classnames";
 
 interface Props extends ButtonProps {
   appearDisabled?: boolean;
@@ -20,16 +19,18 @@ export default function SubmitButton({
   appearDisabled = false,
   ...rest
 }: Props) {
+  if (appearDisabled) {
+    rest["aria-disabled"] = true;
+  }
+  // I tried using theme=disabled, but it prevented click events.
   return (
     <Button
       {...rest}
-      raised={!appearDisabled}
-      flat={appearDisabled}
-      primary={!appearDisabled}
+      theme={appearDisabled ? "clear" : "primary"}
+      themeType="contained"
       type="submit"
       className={classNames({
-        "md-btn--raised-disabled": appearDisabled,
-        "md-text--disabled": appearDisabled,
+        "rmd-button--disabled": appearDisabled,
       })}
     />
   );
