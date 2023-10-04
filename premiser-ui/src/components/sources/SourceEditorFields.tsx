@@ -1,5 +1,11 @@
 import React, { FormEventHandler, useState } from "react";
-import { DialogContainer } from "react-md";
+import {
+  Dialog,
+  DialogHeader,
+  DialogTitle,
+  DialogContent,
+  DialogFooter,
+} from "@react-md/dialog";
 import { MaterialSymbol } from "react-material-symbols";
 
 import {
@@ -121,46 +127,55 @@ export default function SourceEditorFields(props: Props) {
     <div>
       <ErrorMessages errors={errors?._errors} />
       {descriptionInput}
-      <DialogContainer
+      <Dialog
         id="source-description-help-dialog"
         visible={isSourceDescriptionHelpDialogVisible}
-        title="About Source Description"
-        onHide={hideSourceDescriptionHelpDialog}
+        onRequestClose={hideSourceDescriptionHelpDialog}
+        aria-labelledby="source-description-help-dialog-title"
         className="source-description-help-dialog"
       >
-        <p>
-          The preferred style is MLA-like, but omitting the Authors:
-          <ul>
-            <li>
-              The title of the source comes first and should be in quotes unless
-              it is the only field.
-            </li>
-            <li>
-              The date format should be ISO 8601 (YYYY-MM-DD) unless the source
-              is updated frequently, in which case including the time is
-              recommended.
-            </li>
-          </ul>
-        </p>
-        <p>
-          Examples:
-          <ul>
-            <li>
-              “Russia Accuses Prigozhin of Trying to Mount a Coup: Live Updates”
-              The New York Times (2023-06-23)
-            </li>
-            <li>
-              “Comparison of Blood and Brain Mercury Levels in Infant Monkeys
-              Exposed to Methylmercury or Vaccines Containing Thimerosal”
-              Environmental Health Perspectives vol. 113,8 (2005): 1015.
-              doi:10.1289/ehp.7712
-            </li>
-          </ul>
-        </p>
-        <SolidButton onClick={hideSourceDescriptionHelpDialog}>
-          Close
-        </SolidButton>
-      </DialogContainer>
+        <DialogHeader>
+          <DialogTitle id="source-description-help-dialog-title">
+            About Source Description
+          </DialogTitle>
+        </DialogHeader>
+        <DialogContent>
+          <p>
+            The preferred style is MLA-like, but omitting the Authors:
+            <ul>
+              <li>
+                The title of the source comes first and should be in quotes
+                unless it is the only field.
+              </li>
+              <li>
+                The date format should be ISO 8601 (YYYY-MM-DD) unless the
+                source is updated frequently, in which case including the time
+                is recommended.
+              </li>
+            </ul>
+          </p>
+          <p>
+            Examples:
+            <ul>
+              <li>
+                “Russia Accuses Prigozhin of Trying to Mount a Coup: Live
+                Updates” The New York Times (2023-06-23)
+              </li>
+              <li>
+                “Comparison of Blood and Brain Mercury Levels in Infant Monkeys
+                Exposed to Methylmercury or Vaccines Containing Thimerosal”
+                Environmental Health Perspectives vol. 113,8 (2005): 1015.
+                doi:10.1289/ehp.7712
+              </li>
+            </ul>
+          </p>
+        </DialogContent>
+        <DialogFooter>
+          <SolidButton onClick={hideSourceDescriptionHelpDialog}>
+            Close
+          </SolidButton>
+        </DialogFooter>
+      </Dialog>
     </div>
   );
 }

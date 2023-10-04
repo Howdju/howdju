@@ -2,12 +2,18 @@ import React, { useEffect, useState } from "react";
 import { RouteComponentProps } from "react-router";
 import {
   CircularProgress,
-  DialogContainer,
   Divider,
   DropdownMenu,
   ListItem,
   MenuButton,
 } from "react-md";
+import {
+  Dialog,
+  DialogHeader,
+  DialogTitle,
+  DialogContent,
+  DialogFooter,
+} from "@react-md/dialog";
 import { MaterialSymbol } from "react-material-symbols";
 import { Link } from "react-router-dom";
 import { push } from "connected-react-router";
@@ -241,107 +247,157 @@ export default function MediaExcerptPage(props: Props) {
         className="md-cell md-cell--12"
       />
       <MediaExcerptUsages mediaExcerptId={mediaExcerptId} />
-      <DialogContainer
+      <Dialog
         id={combineIds(id, "add-url-locators-dialog")}
         visible={isAddUrlLocatorsDialogVisible}
-        title="Add URL locators"
-        onHide={hideAddUrlLocatorsDialog}
-        className="md-overlay--wide-dialog"
+        onRequestClose={hideAddUrlLocatorsDialog}
+        aria-labelledby={combineIds(id, "add-url-locators-dialog", "title")}
       >
-        <CreateUrlLocatorsEditor
-          id="media-excerpt-page--create-url-locators-editor"
-          editorId={createUrlLocatorsEditorId}
-          showButtons={true}
-          submitButtonText="Add"
-          commitBehavior={
-            new CommitThenPutAction(mediaExcerptPage.hideAddUrlLocatorsDialog())
-          }
-          cancelBehavior={
-            new CancelThenPutAction(mediaExcerptPage.hideAddUrlLocatorsDialog())
-          }
-        />
-      </DialogContainer>
-      <DialogContainer
+        <DialogHeader>
+          <DialogTitle id={combineIds(id, "add-url-locators-dialog", "title")}>
+            Add URL locators
+          </DialogTitle>
+        </DialogHeader>
+        <DialogContent>
+          <CreateUrlLocatorsEditor
+            id="media-excerpt-page--create-url-locators-editor"
+            editorId={createUrlLocatorsEditorId}
+            showButtons={true}
+            submitButtonText="Add"
+            commitBehavior={
+              new CommitThenPutAction(
+                mediaExcerptPage.hideAddUrlLocatorsDialog()
+              )
+            }
+            cancelBehavior={
+              new CancelThenPutAction(
+                mediaExcerptPage.hideAddUrlLocatorsDialog()
+              )
+            }
+          />
+        </DialogContent>
+      </Dialog>
+      <Dialog
         id={combineIds(id, "delete-url-locators-dialog")}
         visible={isDeleteUrlLocatorsDialogVisible}
-        title="Delete URL locators"
-        onHide={() => setIsDeleteUrlLocatorsDialogVisible(false)}
-        className="md-overlay--wide-dialog"
+        onRequestClose={() => setIsDeleteUrlLocatorsDialogVisible(false)}
+        aria-labelledby={combineIds(id, "delete-url-locators-dialog", "title")}
       >
-        <DeleteUrlLocatorsControl mediaExcerpt={mediaExcerpt} />
-        <footer className="md-dialog-footer md-dialog-footer--inline">
+        <DialogHeader>
+          <DialogTitle
+            id={combineIds(id, "delete-url-locators-dialog", "title")}
+          >
+            Delete URL locators
+          </DialogTitle>
+        </DialogHeader>
+        <DialogContent>
+          <DeleteUrlLocatorsControl mediaExcerpt={mediaExcerpt} />
+        </DialogContent>
+        <DialogFooter>
           <SolidButton
             onClick={() => setIsDeleteUrlLocatorsDialogVisible(false)}
           >
             Close
           </SolidButton>
-        </footer>
-      </DialogContainer>
-      <DialogContainer
+        </DialogFooter>
+      </Dialog>
+      <Dialog
         id={combineIds(id, "add-citations-dialog")}
         visible={isAddCitationsDialogVisible}
-        title="Add citations"
-        onHide={hideAddCitationsDialog}
-        className="md-overlay--wide-dialog"
+        onRequestClose={hideAddCitationsDialog}
+        aria-labelledby={combineIds(id, "add-citations-dialog", "title")}
       >
-        <CreateMediaExcerptCitationsEditor
-          id="media-excerpt-page--create-citations-editor"
-          editorId={createCitationsEditorId}
-          showButtons={true}
-          submitButtonText="Add"
-          commitBehavior={
-            new CommitThenPutAction(mediaExcerptPage.hideAddCitationsDialog())
-          }
-          cancelBehavior={
-            new CancelThenPutAction(mediaExcerptPage.hideAddCitationsDialog())
-          }
-        />
-      </DialogContainer>
-      <DialogContainer
+        <DialogHeader>
+          <DialogTitle title={combineIds(id, "add-citations-dialog", "title")}>
+            Add citations
+          </DialogTitle>
+        </DialogHeader>
+        <DialogContent>
+          <CreateMediaExcerptCitationsEditor
+            id="media-excerpt-page--create-citations-editor"
+            editorId={createCitationsEditorId}
+            showButtons={true}
+            submitButtonText="Add"
+            commitBehavior={
+              new CommitThenPutAction(mediaExcerptPage.hideAddCitationsDialog())
+            }
+            cancelBehavior={
+              new CancelThenPutAction(mediaExcerptPage.hideAddCitationsDialog())
+            }
+          />
+        </DialogContent>
+      </Dialog>
+      <Dialog
         id={combineIds(id, "delete-media-excerpt-citations-dialog")}
         visible={isDeleteCitationsDialogVisible}
-        title="Delete Citations"
-        onHide={() => setIsDeleteCitationsDialogVisible(false)}
-        className="md-overlay--wide-dialog"
+        onRequestClose={() => setIsDeleteCitationsDialogVisible(false)}
+        aria-labelledby={combineIds(
+          id,
+          "delete-media-excerpt-citations-dialog-title"
+        )}
       >
-        <DeleteMediaExcerptCitationsControl mediaExcerpt={mediaExcerpt} />
-        <footer className="md-dialog-footer md-dialog-footer--inline">
+        <DialogHeader>
+          <DialogTitle
+            title={combineIds(
+              id,
+              "delete-media-excerpt-citations-dialog-title"
+            )}
+          >
+            Delete citations
+          </DialogTitle>
+        </DialogHeader>
+        <DialogContent>
+          <DeleteMediaExcerptCitationsControl mediaExcerpt={mediaExcerpt} />
+        </DialogContent>
+        <DialogFooter>
           <SolidButton onClick={() => setIsDeleteCitationsDialogVisible(false)}>
             Close
           </SolidButton>
-        </footer>
-      </DialogContainer>
-      <DialogContainer
+        </DialogFooter>
+      </Dialog>
+      <Dialog
         id={combineIds(id, "add-speakers-dialog")}
         visible={isAddSpeakersDialogVisible}
-        title="Add speakers"
-        onHide={hideAddSpeakersDialog}
-        className="md-overlay--wide-dialog"
+        onRequestClose={hideAddSpeakersDialog}
+        aria-labelledby={combineIds(id, "add-speakers-dialog-title")}
       >
-        <CreateMediaExcerptSpeakersEditor
-          id={combineIds(id, "create-speakers-editor")}
-          editorId={createSpeakersEditorId}
-          showButtons={true}
-          submitButtonText="Add"
-          commitBehavior={
-            new CommitThenPutAction(mediaExcerptPage.hideAddSpeakersDialog())
-          }
-        />
-      </DialogContainer>
-      <DialogContainer
+        <DialogHeader>
+          <DialogTitle id={combineIds(id, "add-speakers-dialog-title")}>
+            Add speakers
+          </DialogTitle>
+        </DialogHeader>
+        <DialogContent>
+          <CreateMediaExcerptSpeakersEditor
+            id={combineIds(id, "create-speakers-editor")}
+            editorId={createSpeakersEditorId}
+            showButtons={true}
+            submitButtonText="Add"
+            commitBehavior={
+              new CommitThenPutAction(mediaExcerptPage.hideAddSpeakersDialog())
+            }
+          />
+        </DialogContent>
+      </Dialog>
+      <Dialog
         id={combineIds(id, "delete-speakers-dialog")}
         visible={isDeleteSpeakersDialogVisible}
-        title="Delete speakers"
-        onHide={() => setIsDeleteSpeakersDialogVisible(false)}
-        className="md-overlay--wide-dialog"
+        onRequestClose={() => setIsDeleteSpeakersDialogVisible(false)}
+        aria-labelledby={combineIds(id, "delete-speakers-dialog-title")}
       >
-        <DeleteMediaExcerptSpeakersControl mediaExcerpt={mediaExcerpt} />
-        <footer className="md-dialog-footer md-dialog-footer--inline">
+        <DialogHeader>
+          <DialogTitle id={combineIds(id, "delete-speakers-dialog-title")}>
+            Delete speakers
+          </DialogTitle>
+        </DialogHeader>
+        <DialogContent>
+          <DeleteMediaExcerptSpeakersControl mediaExcerpt={mediaExcerpt} />
+        </DialogContent>
+        <DialogFooter>
           <SolidButton onClick={() => setIsDeleteSpeakersDialogVisible(false)}>
             Close
           </SolidButton>
-        </footer>
-      </DialogContainer>
+        </DialogFooter>
+      </Dialog>
     </div>
   );
 }
