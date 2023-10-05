@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { useSelector } from "react-redux";
 import { AnyAction } from "@reduxjs/toolkit";
-import { CardActions, CardText, CircularProgress } from "react-md";
+import { CircularProgress } from "react-md";
 import get from "lodash/get";
 import { z } from "zod";
 import { isArray, merge } from "lodash";
@@ -16,6 +16,7 @@ import {
 } from "howdju-common";
 import { validateRawErrors } from "howdju-ajv-sourced";
 
+import { CardActions, CardContent } from "@/components/card/Card";
 import { editors, flows } from "@/actions";
 import { RootState } from "@/setupStore";
 import {
@@ -332,13 +333,13 @@ export default function withEditor<
 
     return (
       <form onSubmit={onSubmit} className={className}>
-        <CardText>
+        <CardContent>
           {editEntity ? (
             <EntityEditorFields {...editorFieldsProps} />
           ) : (
             <CircularProgress id={combineIds(id, "editor-fields-progress")} />
           )}
-        </CardText>
+        </CardContent>
         <CardActions>
           {(isSaving || isFetching) && (
             <CircularProgress key="progress" id={combineIds(id, "progress")} />

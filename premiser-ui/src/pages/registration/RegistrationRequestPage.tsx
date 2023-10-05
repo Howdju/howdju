@@ -1,12 +1,6 @@
 import React, { useEffect } from "react";
 import { goBack } from "connected-react-router";
-import {
-  Card,
-  CardActions,
-  CardText,
-  CardTitle,
-  CircularProgress,
-} from "react-md";
+import { CircularProgress } from "react-md";
 import get from "lodash/get";
 import moment from "moment";
 
@@ -15,6 +9,11 @@ import {
   RegistrationRequest,
 } from "howdju-common";
 
+import {
+  Card,
+  CardActions,
+  CardContent,
+} from "@/components/card/Card";
 import Helmet from "../../Helmet";
 import { editors } from "../../actions";
 import { EditorState, EditorTypes } from "../../reducers/editors";
@@ -70,11 +69,11 @@ export default function RegistrationRequestPage() {
       .format(duration.formatTemplate, { trim: duration.formatTrim });
   const submissionMessage = (
     <React.Fragment>
-      <CardText>
+      <CardContent>
         Your registration has been submitted. Please check your email to
         complete your registration. You must complete your registration within{" "}
         {durationText}. If your registration expires, please register again.
-      </CardText>
+      </CardContent>
       <CardActions>
         <SolidButton children="Return" onClick={reset} />
       </CardActions>
@@ -88,8 +87,7 @@ export default function RegistrationRequestPage() {
       </Helmet>
       <div className="md-grid">
         <div className="md-cell md-cell--12">
-          <Card>
-            <CardTitle title="Request Registration" />
+          <Card title="Request Registration">
             {isSubmitted ? submissionMessage : form}
           </Card>
         </div>

@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Card, CardText } from "react-md";
+import { Card, CardContent } from "@/components/card/Card";
 import cn from "classnames";
 
 import { EmptyObject, WritOut } from "howdju-common";
@@ -19,9 +19,9 @@ export default class WritCard extends Component<WritCardProps, EmptyObject> {
     const { id, writ, className, ...rest } = this.props;
     return (
       <Card {...rest} className={cn(className, "entity-card")}>
-        <CardText>
+        <CardContent>
           <WritEntityViewer id={id} writ={writ} />
-        </CardText>
+        </CardContent>
       </Card>
     );
   }

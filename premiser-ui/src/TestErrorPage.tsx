@@ -1,13 +1,7 @@
 import React, { MouseEvent, useState } from "react";
-import {
-  Card,
-  CardActions,
-  CardText,
-  CardTitle,
-  FocusContainer,
-  SelectField,
-} from "react-md";
+import { FocusContainer, SelectField } from "react-md";
 
+import { Card, CardActions, CardContent } from "@/components/card/Card";
 import SingleLineTextField from "./SingleLineTextField";
 import * as sentry from "./sentry";
 import { PropertyChanges } from "./types";
@@ -70,10 +64,9 @@ export default function TestErrorPage() {
 
   const { message, level } = state;
   return (
-    <Card>
-      <CardTitle title="Test error" />
+    <Card title="Test error">
       <FocusContainer focusOnMount containFocus={false}>
-        <CardText>
+        <CardContent>
           <SingleLineTextField
             name="message"
             value={message}
@@ -87,7 +80,7 @@ export default function TestErrorPage() {
             onChange={onLevelChange}
             menuItems={LEVELS}
           />
-        </CardText>
+        </CardContent>
         <CardActions>
           <OutlineButton disabled={!message} onClick={onCreateError}>
             Create test error

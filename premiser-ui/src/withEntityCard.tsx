@@ -1,5 +1,5 @@
 import React, { ComponentType, ReactNode } from "react";
-import { Card, CardText } from "react-md";
+import { Card, CardContent } from "@/components/card/Card";
 import cn from "classnames";
 
 import { ContextTrailItem } from "howdju-common";
@@ -58,10 +58,13 @@ export default function withEntityCard<
         ...rest,
       } as unknown as ComponentProps;
       return (
-        <Card className={cn("entity-card", className)}>
-          <CardText className="entity-card-contents">
+        <Card
+          style={{ width: "100%" }}
+          className={cn("entity-card", className)}
+        >
+          <CardContent className="entity-card-contents">
             <EntityViewerComponent {...entityProps} />
-          </CardText>
+          </CardContent>
         </Card>
       );
     }

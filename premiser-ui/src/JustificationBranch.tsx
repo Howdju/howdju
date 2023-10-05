@@ -5,7 +5,7 @@ import map from "lodash/map";
 import moment from "moment";
 import React, { useState } from "react";
 import FlipMove from "react-flip-move";
-import { Card, Divider, DropdownMenu, ListItem, MenuButton } from "react-md";
+import { Divider, DropdownMenu, ListItem, MenuButton } from "react-md";
 import { connect, ConnectedProps } from "react-redux";
 import { Link } from "react-router-dom";
 
@@ -21,6 +21,7 @@ import {
   newExhaustedEnumError,
 } from "howdju-common";
 
+import { Card, CardContent } from "@/components/card/Card";
 import CounterJustificationEditor from "@/editors/CounterJustificationEditor";
 import { api, editors } from "./actions";
 import IconButton from "./components/button/IconButton";
@@ -329,10 +330,12 @@ function JustificationBranch({
             key="newCounterJustificationCard"
             className="justification-card"
           >
-            <CounterJustificationEditor
-              editorId={counterJustificationEditorId(justification)}
-              id={`justification-${justification.id}-new-counter-justification-editor`}
-            />
+            <CardContent>
+              <CounterJustificationEditor
+                editorId={counterJustificationEditorId(justification)}
+                id={`justification-${justification.id}-new-counter-justification-editor`}
+              />
+            </CardContent>
           </Card>
         )}
         {map(justification.counterJustifications, (j) => {

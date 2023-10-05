@@ -1,16 +1,10 @@
 import React, { Component } from "react";
-import {
-  Card,
-  CardText,
-  DropdownMenu,
-  FontIcon,
-  ListItem,
-  MenuButton,
-} from "react-md";
+import { DropdownMenu, FontIcon, ListItem, MenuButton } from "react-md";
 import cn from "classnames";
 
 import { newUnimplementedError, WritQuoteOut } from "howdju-common";
 
+import { Card, CardContent } from "@/components/card/Card";
 import WritQuoteEntityViewer from "./WritQuoteEntityViewer";
 import { combineIds } from "./viewModels";
 import { ComponentId } from "./types";
@@ -75,7 +69,7 @@ export default class WritQuoteCard extends Component<WritQuoteCardProps> {
     );
     return (
       <Card className={cn(className, "entity-card")}>
-        <CardText>
+        <CardContent>
           <WritQuoteEntityViewer
             {...rest}
             id={id}
@@ -84,7 +78,7 @@ export default class WritQuoteCard extends Component<WritQuoteCardProps> {
             menu={menuButton}
             showStatusText={true}
           />
-        </CardText>
+        </CardContent>
       </Card>
     );
   }

@@ -1,21 +1,20 @@
 import React, { FormEvent } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import { goBack } from "connected-react-router";
-import {
-  Card,
-  CardTitle,
-  CardActions,
-  CardText,
-  CircularProgress,
-  FontIcon,
-  Switch,
-} from "react-md";
+import { CircularProgress, FontIcon, Switch } from "react-md";
 import cn from "classnames";
 import get from "lodash/get";
 import map from "lodash/map";
 import { isArray, keys, toString } from "lodash";
 import queryString from "query-string";
 
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardActions,
+  CardContent,
+} from "@/components/card/Card";
 import {
   JustificationBasisTypes,
   makeCreateJustifiedSentenceInput,
@@ -326,10 +325,8 @@ export default function CreatePropositionPage({ mode, location }: Props) {
       <form onSubmit={onSubmit}>
         <div className="md-grid">
           <div className="md-cell md-cell--12">
-            <Card>
-              <CardTitle title={title} />
-
-              <CardText>
+            <Card title={title}>
+              <CardContent>
                 <TextButton
                   icon={<FontIcon>person_add</FontIcon>}
                   title={"Add Speaker"}
@@ -395,9 +392,9 @@ export default function CreatePropositionPage({ mode, location }: Props) {
                     </div>
                   </div>
                 )}
-              </CardText>
+              </CardContent>
 
-              <CardText>
+              <CardContent>
                 <PropositionEditorFields
                   id={combineIds(id, propositionName)}
                   proposition={proposition}
@@ -421,27 +418,32 @@ export default function CreatePropositionPage({ mode, location }: Props) {
                   onTag={onTagProposition}
                   onUnTag={onUnTagProposition}
                 />
-              </CardText>
+              </CardContent>
 
               {!isCreateJustificationMode && (
-                <Switch
-                  id={combineIds(id, doCreateJustificationName)}
-                  name={doCreateJustificationName}
-                  label={t(ADD_JUSTIFICATION_TO_CREATE_PROPOSITION)}
-                  checked={doCreateJustification}
-                  onChange={onDoCreateJustificationSwitchChange}
-                  disabled={isSaving}
-                />
+                <CardContent>
+                  <Switch
+                    id={combineIds(id, doCreateJustificationName)}
+                    name={doCreateJustificationName}
+                    label={t(ADD_JUSTIFICATION_TO_CREATE_PROPOSITION)}
+                    checked={doCreateJustification}
+                    onChange={onDoCreateJustificationSwitchChange}
+                    disabled={isSaving}
+                  />
+                </CardContent>
               )}
 
-              <CardTitle
-                title={t(JUSTIFICATION_TITLE)}
-                className={cn({
-                  hidden: !isCreateJustificationMode && !doCreateJustification,
-                })}
-              />
+              <CardHeader>
+                <CardTitle
+                  title={t(JUSTIFICATION_TITLE)}
+                  className={cn({
+                    hidden:
+                      !isCreateJustificationMode && !doCreateJustification,
+                  })}
+                />
+              </CardHeader>
 
-              <CardText
+              <CardContent
                 className={cn({
                   hidden: !isCreateJustificationMode && !doCreateJustification,
                 })}
@@ -461,7 +463,7 @@ export default function CreatePropositionPage({ mode, location }: Props) {
                   wasSubmitAttempted={wasSubmitAttempted}
                   onSubmit={onSubmit}
                 />
-              </CardText>
+              </CardContent>
 
               <CardActions>
                 {isSaving && <CircularProgress key="progress" id="progress" />}

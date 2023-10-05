@@ -1,11 +1,5 @@
 import React, { useEffect } from "react";
-import {
-  Card,
-  CardActions,
-  CardText,
-  CardTitle,
-  CircularProgress,
-} from "react-md";
+import { CircularProgress } from "react-md";
 import get from "lodash/get";
 import queryString from "query-string";
 import { isArray } from "lodash";
@@ -18,6 +12,11 @@ import {
   RegistrationConfirmation,
 } from "howdju-common";
 
+import {
+  Card,
+  CardActions,
+  CardContent,
+} from "@/components/card/Card";
 import Helmet from "../../Helmet";
 import { api, editors } from "../../actions";
 import Link from "../../Link";
@@ -109,7 +108,7 @@ export default function RegistrationConfirmationPage() {
 
   const confirmedMessage = (
     <React.Fragment>
-      <CardText>You are now logged in.</CardText>
+      <CardContent>You are now logged in.</CardContent>
       <CardActions>
         <SolidButton href={paths.recentActivity()}>
           Go to recent activity
@@ -131,9 +130,9 @@ export default function RegistrationConfirmationPage() {
 
   const formWithMessage = (
     <>
-      <CardText>
+      <CardContent>
         Please enter the following to complete your registration
-      </CardText>
+      </CardContent>
       {form}
     </>
   );
@@ -161,9 +160,8 @@ const makePage = (subtitle: string | undefined, cardContents: JSX.Element) => (
     </Helmet>
     <div className="md-grid">
       <div className="md-cell md-cell--12">
-        <Card>
-          <CardTitle title="Complete Registration" subtitle={subtitle} />
-          <CardText>{cardContents}</CardText>
+        <Card title="Complete Registration" subtitle={subtitle}>
+          <CardContent>{cardContents}</CardContent>
         </Card>
       </div>
     </div>
@@ -178,26 +176,26 @@ const subtitleByRegistrationErrorCode = {
 
 const registrationErrorMessageByCode = {
   [apiErrorCodes.ENTITY_NOT_FOUND]: (
-    <CardText>
+    <CardContent>
       That registration could not be found. Please double check the link in the
       confirmation email. If this problem persists, please{" "}
       <Link className="text-link" to={paths.requestRegistration()}>
         register
       </Link>{" "}
       again.
-    </CardText>
+    </CardContent>
   ),
   [apiErrorCodes.EXPIRED]: (
-    <CardText>
+    <CardContent>
       This registration has expired. Please{" "}
       <Link className="text-link" to={paths.requestRegistration()}>
         register
       </Link>{" "}
       again.
-    </CardText>
+    </CardContent>
   ),
   [apiErrorCodes.CONSUMED]: (
-    <CardText>
+    <CardContent>
       That registration has already been used. Please{" "}
       <Link className="text-link" to={paths.login()}>
         login
@@ -211,6 +209,6 @@ const registrationErrorMessageByCode = {
         register
       </Link>{" "}
       again.
-    </CardText>
+    </CardContent>
   ),
 };

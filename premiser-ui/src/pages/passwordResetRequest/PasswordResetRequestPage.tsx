@@ -1,9 +1,9 @@
 import React, { useEffect } from "react";
-import { Card, CardActions, CardText, CardTitle } from "react-md";
 import moment from "moment";
 
 import { makeCreatePasswordResetRequestInput } from "howdju-client-common";
 
+import { Card, CardActions, CardContent } from "@/components/card/Card";
 import Helmet from "@/Helmet";
 import { useAppDispatch, useAppSelector } from "@/hooks";
 import { editors } from "@/actions";
@@ -47,11 +47,11 @@ export default function PasswordResetRequestPage() {
       .format(duration.formatTemplate, { trim: duration.formatTrim });
   const submissionMessage = durationText ? (
     <React.Fragment>
-      <CardText>
+      <CardContent>
         Please check your email to complete your password reset. You must
         complete the password reset within {durationText}. If your password
         reset expires, please request a password reset again.
-      </CardText>
+      </CardContent>
       <CardActions>
         <SolidButton onClick={() => dispatch(passwordResetRequestPage.reset())}>
           Return
@@ -70,10 +70,11 @@ export default function PasswordResetRequestPage() {
       </Helmet>
       <div className="md-grid">
         <div className="md-cell md-cell--12">
-          <Card>
-            <CardTitle title="Request Password Reset" />
-            {errorMessage}
-            {submissionMessage ?? form}
+          <Card title="Request Password Reset">
+            <CardContent>
+              {errorMessage}
+              {submissionMessage ?? form}
+            </CardContent>
           </Card>
         </div>
       </div>

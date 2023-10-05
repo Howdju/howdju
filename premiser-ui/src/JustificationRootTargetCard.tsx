@@ -2,18 +2,12 @@ import React from "react";
 import cn from "classnames";
 import concat from "lodash/concat";
 import some from "lodash/some";
-import {
-  Card,
-  CardText,
-  DropdownMenu,
-  FontIcon,
-  ListItem,
-  MenuButton,
-} from "react-md";
+import { DropdownMenu, FontIcon, ListItem, MenuButton } from "react-md";
 import { Link } from "react-router-dom";
 import { connect, ConnectedProps } from "react-redux";
 import { push } from "connected-react-router";
 
+import { Card, CardContent } from "@/components/card/Card";
 import {
   EntityId,
   isNegative,
@@ -153,6 +147,7 @@ class JustificationRootTargetCard extends React.Component<Props> {
       <TreePolarity polarity={contextTrailItem?.polarity}>
         <div className="root-target-background">
           <Card
+            style={{ width: "100%" }}
             className={cn("root-target-card", {
               agreement: hasAgreement,
               disagreement: hasDisagreement,
@@ -160,7 +155,7 @@ class JustificationRootTargetCard extends React.Component<Props> {
             onMouseOver={this.onMouseOver}
             onMouseLeave={this.onMouseLeave}
           >
-            <CardText className="root-target-card-contents">
+            <CardContent className="root-target-card-contents">
               <JustificationRootTargetViewer
                 id={combineIds(id, "proposition-entity-viewer")}
                 {...rootTargetProps}
@@ -199,7 +194,7 @@ class JustificationRootTargetCard extends React.Component<Props> {
                     )}
                   />
                 )}
-            </CardText>
+            </CardContent>
           </Card>
         </div>
       </TreePolarity>

@@ -1,20 +1,14 @@
+import React, { Component, FormEvent } from "react";
 import cn from "classnames";
 import { goBack } from "connected-react-router";
 import { get, map } from "lodash";
-import React, { Component, FormEvent } from "react";
-import {
-  Card,
-  CardActions,
-  CardText,
-  CardTitle,
-  CircularProgress,
-  FocusContainer,
-} from "react-md";
+import { CircularProgress, FocusContainer } from "react-md";
 import { connect, ConnectedProps } from "react-redux";
-import { Link } from "react-router-dom";
+import { Grid, GridCell } from "@react-md/utils";
 
 import { makeCredentials } from "howdju-common";
 
+import { Card, CardContent, CardActions } from "@/components/card/Card";
 import {
   api,
   editors,
@@ -34,6 +28,7 @@ import t from "./texts";
 import { PropertyChanges } from "./types";
 import CancelButton from "./editors/CancelButton";
 import SolidButton from "./components/button/SolidButton";
+import OutlineButton from "./components/button/OutlineButton";
 
 interface OwnProps {
   authEmail: string | undefined;
@@ -92,14 +87,14 @@ class LoginPage extends Component<Props> {
         : {};
 
     const modelErrorMessages = modelErrors && modelErrors.length && (
-      <CardText className={cn("error-message md-cell md-cell--12")}>
+      <CardContent className={cn("error-message md-cell md-cell--12")}>
         {/* This somewhat duplicates ErrorMessages; but the error codes for these credentials don't really seem to belong there */}
         <ul className="error-message">
           {map(modelErrors, (error) => <li key={error}>{t(error)}</li>) || (
             <li>t(AN_UNEXPECTED_ERROR_OCCURRED)</li>
           )}
         </ul>
-      </CardText>
+      </CardContent>
     );
 
     return (
@@ -107,14 +102,13 @@ class LoginPage extends Component<Props> {
         <Helmet>
           <title>Login — Howdju</title>
         </Helmet>
-        <div className="md-grid">
-          <div className="md-cell md-cell--12">
-            <Card>
-              <CardTitle title="Login" subtitle={subtitle} />
-              {modelErrorMessages}
-              <form onSubmit={this.onSubmit}>
-                <FocusContainer focusOnMount containFocus={false}>
-                  <CardText>
+        <Grid>
+          <GridCell colSpan={12}>
+            <Card style={{ width: "100%" }} title="Login" subtitle={subtitle}>
+              <CardContent>
+                {modelErrorMessages}
+                <form onSubmit={this.onSubmit}>
+                  <FocusContainer focusOnMount containFocus={false}>
                     <EmailTextField
                       {...emailInputProps}
                       id="email"
@@ -137,7 +131,8 @@ class LoginPage extends Component<Props> {
                       onSubmit={this.onSubmit}
                       disabled={isLoggingIn}
                     />
-                  </CardText>
+                  </FocusContainer>
+
                   <CardActions>
                     {isLoggingIn && (
                       <CircularProgress key="progress" id="progress" />
@@ -152,60 +147,50 @@ class LoginPage extends Component<Props> {
                       Login
                     </SolidButton>
                   </CardActions>
-                </FocusContainer>
-              </form>
-              {config.isRegistrationEnabled
-                ? [
-                    <CardText key="register">
-                      <Link
-                        className="text-link"
-                        to={paths.requestRegistration()}
-                      >
+                  {config.isRegistrationEnabled && (
+                    <CardActions align="start">
+                      <OutlineButton href={paths.requestRegistration()}>
                         register
-                      </Link>
-                    </CardText>,
-                    <CardText key="reset-password">
-                      <Link
-                        className="text-link"
-                        to={paths.requestPasswordReset()}
-                      >
+                      </OutlineButton>
+                      <OutlineButton href={paths.requestPasswordReset()}>
                         reset password
-                      </Link>
-                    </CardText>,
-                  ]
-                : null}
+                      </OutlineButton>
+                    </CardActions>
+                  )}
+                </form>
+              </CardContent>
             </Card>
-          </div>
-          <div className="md-cell md-cell--12">
-            <Card>
-              <form
-                action="//howdju.us16.list-manage.com/subscribe/post?u=ccf334287da1fbf7af0904629&amp;id=f08c3a775d"
-                method="post"
-                target="_blank"
-                // https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/rel/noopener
-                {...{ rel: "noopener" }}
-              >
-                <CardText>
-                  Howdju 2.0 is currently in private gamma. Enter your email to
-                  be notified when signups are available:
-                </CardText>
-                <CardText>
+          </GridCell>
+          <GridCell colSpan={12}>
+            <Card style={{ width: "100%" }}>
+              <CardContent>
+                Howdju 2.0 is currently in private gamma. Enter your email to
+                sign up for updates:
+              </CardContent>
+              <CardContent>
+                <form
+                  action="//howdju.us16.list-manage.com/subscribe/post?u=ccf334287da1fbf7af0904629&amp;id=f08c3a775d"
+                  method="post"
+                  target="_blank"
+                  // https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/rel/noopener
+                  {...{ rel: "noopener" }}
+                >
                   <EmailTextField id="mce-email" name="EMAIL" required />
                   <input
                     type="hidden"
                     name="b_ccf334287da1fbf7af0904629_f08c3a775d"
                     tabIndex={-1}
                   />
-                </CardText>
-                <CardActions>
-                  <SolidButton type="submit" name="subscribe">
-                    Subscribe
-                  </SolidButton>
-                </CardActions>
-              </form>
+                  <CardActions>
+                    <SolidButton type="submit" name="subscribe">
+                      Subscribe
+                    </SolidButton>
+                  </CardActions>
+                </form>
+              </CardContent>
             </Card>
-          </div>
-        </div>
+          </GridCell>
+        </Grid>
       </div>
     );
   }

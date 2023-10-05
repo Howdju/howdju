@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Card, CardText } from "react-md";
+import { Card, CardContent } from "@/components/card/Card";
 import cn from "classnames";
 
 import { ContextTrailItem, PropositionOut } from "howdju-common";
@@ -28,14 +28,14 @@ export default class PropositionCard extends Component<Props> {
     } = this.props;
     return (
       <Card {...rest} className={cn(className, "entity-card")}>
-        <CardText>
+        <CardContent>
           <PropositionEntityViewer
             id={id}
             proposition={proposition}
             contextTrailItems={contextTrailItems}
             showStatusText={showStatusText}
           />
-        </CardText>
+        </CardContent>
       </Card>
     );
   }
