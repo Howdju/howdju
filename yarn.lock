@@ -6603,6 +6603,28 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@react-md/card@npm:2":
+  version: 2.9.1
+  resolution: "@react-md/card@npm:2.9.1"
+  dependencies:
+    "@react-md/divider": ^2.9.1
+    "@react-md/elevation": ^2.9.1
+    "@react-md/icon": ^2.9.1
+    "@react-md/states": ^2.9.1
+    "@react-md/theme": ^2.9.1
+    "@react-md/typography": ^2.9.1
+    "@react-md/utils": ^2.9.1
+    classnames: ^2.3.1
+    prop-types: ">= 15.6"
+  peerDependencies:
+    react: ">= 16.8"
+  dependenciesMeta:
+    prop-types:
+      optional: true
+  checksum: 78ab76107a49aada779f3a4e16f4d6a89e68d764d2d85be99f4e937565812f71c4fbdd852a1b919d992995ee46551b14b24d356a61677d8c633b1359e33fe7fe
+  languageName: node
+  linkType: hard
+
 "@react-md/dialog@npm:^2, @react-md/dialog@npm:^2.9.1":
   version: 2.9.1
   resolution: "@react-md/dialog@npm:2.9.1"
@@ -28435,6 +28457,7 @@ __metadata:
     "@grrr/cookie-consent": ^1.0.4
     "@react-md/autocomplete": "Howdju/react-md#workspace=@react-md/autocomplete&commit=739fcf8b359727d958d6befe46014fe8b3dfe11c"
     "@react-md/button": ^2
+    "@react-md/card": 2
     "@react-md/dialog": ^2
     "@react-md/icon": ^2
     "@react-md/layout": ^2

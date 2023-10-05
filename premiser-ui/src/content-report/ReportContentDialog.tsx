@@ -1,6 +1,5 @@
 import React from "react";
 import { useDispatch } from "react-redux";
-import { Card } from "react-md";
 import {
   Dialog,
   DialogHeader,
@@ -10,6 +9,7 @@ import {
 
 import { isTruthy } from "howdju-common";
 
+import { Card } from "@/components/card/Card";
 import app from "@/app/appSlice";
 import { editors } from "../actions";
 import { defaultEditorState } from "../reducers/editors";

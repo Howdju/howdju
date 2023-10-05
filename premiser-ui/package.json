@@ -120,6 +120,7 @@
     "@grrr/cookie-consent": "^1.0.4",
     "@react-md/autocomplete": "Howdju/react-md#workspace=@react-md/autocomplete&commit=739fcf8b359727d958d6befe46014fe8b3dfe11c",
     "@react-md/button": "^2",
+    "@react-md/card": "2",
     "@react-md/dialog": "^2",
     "@react-md/icon": "^2",
     "@react-md/layout": "^2",

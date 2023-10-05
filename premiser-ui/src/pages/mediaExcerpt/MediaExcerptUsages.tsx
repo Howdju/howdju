@@ -94,7 +94,7 @@ export default function MediaExcerptUsages({ mediaExcerptId }: Props) {
           return (
             <FlipMoveWrapper key={id}>
               <JustificationCard
-                className="md-cell md-cell--12"
+                className="md-cell md-cell--6"
                 id={id}
                 justification={j}
               />
@@ -126,7 +126,7 @@ export default function MediaExcerptUsages({ mediaExcerptId }: Props) {
           return (
             <FlipMoveWrapper key={id}>
               <AppearanceCard
-                className="md-cell md-cell--12"
+                className="md-cell md-cell--6"
                 id={id}
                 appearance={a}
               />

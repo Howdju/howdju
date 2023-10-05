@@ -1,5 +1,4 @@
 import React from "react";
-import { Card, CardText } from "react-md";
 import cn from "classnames";
 
 import {
@@ -8,6 +7,7 @@ import {
   PropositionOut,
 } from "howdju-common";
 
+import { Card, CardContent } from "@/components/card/Card";
 import { ComponentId } from "./types";
 import PropositionCompoundEntityViewer from "./PropositionCompoundEntityViewer";
 
@@ -31,7 +31,7 @@ export default function PropositionCompoundCard({
 }: Props) {
   return (
     <Card {...rest} className={cn(className, "entity-card")}>
-      <CardText>
+      <CardContent>
         <PropositionCompoundEntityViewer
           id={id}
           propositionCompound={propositionCompound}
@@ -39,7 +39,7 @@ export default function PropositionCompoundCard({
           contextTrailItems={contextTrailItems}
           showStatusText={showStatusText}
         />
-      </CardText>
+      </CardContent>
     </Card>
   );
 }

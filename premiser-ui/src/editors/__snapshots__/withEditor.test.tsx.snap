@@ -3,8 +3,8 @@
 exports[`withEditor Exemplary component (RegistrationRequestEditor) submitting invalid entity shows errors 1`] = `
 <div>
   <form>
-    <section
-      class="md-card-text"
+    <div
+      class="rmd-card__content rmd-card__content--padded rmd-card__content--extra-padding rmd-card__content--remove-margin rmd-card__content--secondary"
     >
       <ul
         class="error-message"
@@ -62,9 +62,9 @@ exports[`withEditor Exemplary component (RegistrationRequestEditor) submitting i
           </div>
         </div>
       </div>
-    </section>
-    <section
-      class="md-dialog-footer--card md-dialog-footer--inline"
+    </div>
+    <div
+      class="rmd-card__actions"
     >
       <button
         class="rmd-button rmd-button--text rmd-button--text-primary"
@@ -86,7 +86,7 @@ exports[`withEditor Exemplary component (RegistrationRequestEditor) submitting i
           class="rmd-ripple-container"
         />
       </button>
-    </section>
+    </div>
   </form>
 </div>
 `;

@@ -1,17 +1,12 @@
 import { isArray } from "lodash";
 import queryString from "query-string";
 import React, { useEffect } from "react";
-import {
-  Card,
-  CardActions,
-  CardText,
-  CardTitle,
-  CircularProgress,
-} from "react-md";
+import { CircularProgress } from "react-md";
 import { Link, useLocation } from "react-router-dom";
 
 import { makePasswordResetConfirmation } from "howdju-client-common";
 
+import { Card, CardActions, CardContent } from "@/components/card/Card";
 import { editors } from "@/actions";
 import Helmet from "@/Helmet";
 import { useAppDispatch, useAppSelector } from "@/hooks";
@@ -73,7 +68,7 @@ function ValidPasswordResetConfirmationPage({
 
   const confirmedMessage = (
     <React.Fragment>
-      <CardText>Your password has been changed.</CardText>
+      <CardContent>Your password has been changed.</CardContent>
       <CardActions>
         <SolidButton onClick={() => dispatch(push(paths.recentActivity()))}>
           Go to recent activity
@@ -88,9 +83,9 @@ function ValidPasswordResetConfirmationPage({
 
   const form = (
     <React.Fragment>
-      <CardText>
+      <CardContent>
         Please change the password for <strong>{email}</strong>
-      </CardText>
+      </CardContent>
       <PasswordResetConfirmationEditor
         id={combineIds(id, "editor")}
         editorId={editorId}
@@ -105,16 +100,17 @@ function ValidPasswordResetConfirmationPage({
       </Helmet>
       <div className="md-grid">
         <div className="md-cell md-cell--12">
-          <Card>
-            <CardTitle title="Password Reset" subtitle={subtitle} />
-            {!email && (
-              <CardText>
-                Checking password reset code…
-                <CircularProgress id="checking-password-reset-code-progress" />
-              </CardText>
-            )}
-            {errorMessage}
-            {email && isSubmitted ? confirmedMessage : form}
+          <Card title="Password Reset" subtitle={subtitle}>
+            <CardContent>
+              {!email && (
+                <div>
+                  Checking password reset code…
+                  <CircularProgress id="checking-password-reset-code-progress" />
+                </div>
+              )}
+              {errorMessage}
+              {email && isSubmitted ? confirmedMessage : form}
+            </CardContent>
           </Card>
         </div>
       </div>
@@ -132,26 +128,26 @@ const subtitleByErrorCode: Record<ErrorCode, string> = {
 
 const passwordResetErrorMessageByCode = {
   ENTITY_NOT_FOUND: (
-    <CardText>
+    <CardContent>
       That registration could not be found. Please double check the link in the
       confirmation email. If this problem persists, please{" "}
       <Link className="text-link" to={paths.requestRegistration()}>
         register
       </Link>{" "}
       again.
-    </CardText>
+    </CardContent>
   ),
   EXPIRED: (
-    <CardText>
+    <CardContent>
       This registration has expired. Please{" "}
       <Link className="text-link" to={paths.requestRegistration()}>
         register
       </Link>{" "}
       again.
-    </CardText>
+    </CardContent>
   ),
   CONSUMED: (
-    <CardText>
+    <CardContent>
       That registration has already been used. Please{" "}
       <Link className="text-link" to={paths.login()}>
         login
@@ -165,16 +161,16 @@ const passwordResetErrorMessageByCode = {
         register
       </Link>{" "}
       again.
-    </CardText>
+    </CardContent>
   ),
   TIMEOUT: (
-    <CardText>
+    <CardContent>
       The password reset request has timed out. Please try again.
-    </CardText>
+    </CardContent>
   ),
   UNKNOWN: (
-    <CardText>
+    <CardContent>
       The password reset request failed for an unknown reason. Please try again.
-    </CardText>
+    </CardContent>
   ),
 };

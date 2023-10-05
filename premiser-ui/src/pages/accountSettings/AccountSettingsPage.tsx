@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
-import { Card, CardActions, CardText, CardTitle } from "react-md";
 
+import { Card, CardActions, CardContent } from "@/components/card/Card";
 import Helmet from "../../Helmet";
 import EditableAccountSettings from "./EditableAccountSettings";
 import { defaultEditorState, EditorTypes } from "../../reducers/editors";
@@ -58,12 +58,12 @@ export default function AccountSettingsPage() {
 
         <h1>Settings</h1>
 
-        <Card className="md-cell--12">
-          <CardTitle
-            title="Profile"
-            subtitle="Your profile is the part of your account settings that are visible to other users"
-          />
-          <CardText>
+        <Card
+          className="md-cell--12"
+          title="Profile"
+          subtitle="Your profile is the part of your account settings that are visible to other users"
+        >
+          <CardContent>
             <EditableAccountSettings
               id={accountSettingsId}
               name="accountSettings"
@@ -72,7 +72,7 @@ export default function AccountSettingsPage() {
               accountSettings={accountSettings}
               suggestionsKey="accountSettings"
             />
-          </CardText>
+          </CardContent>
           <CardActions>
             {!isEditing && (
               <OutlineButton
@@ -87,13 +87,12 @@ export default function AccountSettingsPage() {
         </Card>
       </div>
       <div className="md-cell md-cell--12">
-        <Card className="md-cell--12">
-          <CardTitle title="Privacy settings" />
-          <CardText>
+        <Card className="md-cell--12" title="Privacy settings">
+          <CardContent>
             <OutlineButton onClick={showPrivacyConsentDialog}>
               Show privacy consent dialog
             </OutlineButton>
-          </CardText>
+          </CardContent>
         </Card>
       </div>
     </div>

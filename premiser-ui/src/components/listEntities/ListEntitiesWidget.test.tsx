@@ -21,6 +21,8 @@ import {
   progressToBeGone,
 } from "@/testUtils";
 
+const REACT_MD_CARD_CLASS = ".rmd-card";
+
 withFakeTimers({ now: new Date("2023-01-12T16:44:00-08:00") });
 const server = withMockServer();
 
@@ -71,7 +73,7 @@ describe("ListEntitiesWidget", () => {
       });
 
       // TODO(17) update the widgets to be accessible so we can do `screen.findAllByRole("list-item")`
-      expect(container.querySelectorAll(".md-card")).toHaveLength(
+      expect(container.querySelectorAll(REACT_MD_CARD_CLASS)).toHaveLength(
         initialFetchCount
       );
       jest.runAllTimers();
@@ -107,7 +109,7 @@ describe("ListEntitiesWidget", () => {
       });
       jest.runAllTimers();
       // TODO(17): update the widgets to be accessible so we can do `screen.findAllByRole("list-item")`
-      expect(container.querySelectorAll(".md-card")).toHaveLength(
+      expect(container.querySelectorAll(REACT_MD_CARD_CLASS)).toHaveLength(
         initialFetchCount + fetchCount
       );
       expect(container).toMatchSnapshot();

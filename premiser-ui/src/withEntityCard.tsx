@@ -1,9 +1,9 @@
 import React, { ComponentType, ReactNode } from "react";
-import { Card, CardText } from "react-md";
 import cn from "classnames";
 
 import { ContextTrailItem } from "howdju-common";
 
+import { Card, CardContent } from "@/components/card/Card";
 import { ComponentId, EditorId, SuggestionsKey } from "./types";
 import { combineIds } from "./viewModels";
 
@@ -59,9 +59,9 @@ export default function withEntityCard<
       } as unknown as ComponentProps;
       return (
         <Card className={cn("entity-card", className)}>
-          <CardText className="entity-card-contents">
+          <CardContent className="entity-card-contents">
             <EntityViewerComponent {...entityProps} />
-          </CardText>
+          </CardContent>
         </Card>
       );
     }

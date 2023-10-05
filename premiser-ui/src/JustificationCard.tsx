@@ -1,10 +1,10 @@
 import React, { Component } from "react";
-import { Card, CardText } from "react-md";
 import { Props as ReactMdProps } from "react-md/lib";
 import cn from "classnames";
 
 import { ContextTrailItem, JustificationView } from "howdju-common";
 
+import { Card, CardContent } from "@/components/card/Card";
 import JustificationEntityViewer from "./JustificationEntityViewer";
 import { ComponentId, OnClickJustificationWritQuoteUrl } from "./types";
 
@@ -41,7 +41,7 @@ export default class JustificationCard extends Component<Props> {
     } = this.props;
     return (
       <Card {...rest} className={cn(className, "entity-card")}>
-        <CardText>
+        <CardContent>
           <JustificationEntityViewer
             id={id}
             justification={justification}
@@ -54,7 +54,7 @@ export default class JustificationCard extends Component<Props> {
             showStatusText={showStatusText}
             contextTrailItems={contextTrailItems}
           />
-        </CardText>
+        </CardContent>
       </Card>
     );
   }
