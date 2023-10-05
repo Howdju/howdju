@@ -7,7 +7,6 @@ import { Link } from "react-router-dom";
 import { connect, ConnectedProps } from "react-redux";
 import { push } from "connected-react-router";
 
-import { Card, CardContent } from "@/components/card/Card";
 import {
   EntityId,
   isNegative,
@@ -26,6 +25,7 @@ import {
   toUpdatePropositionInput,
 } from "howdju-client-common";
 
+import { Card, CardContent } from "@/components/card/Card";
 import JustificationRootTargetViewer, {
   RootTargetProps,
 } from "./JustificationRootTargetViewer";

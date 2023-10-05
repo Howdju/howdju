@@ -1,9 +1,9 @@
 import React, { ComponentType, ReactNode } from "react";
-import { Card, CardContent } from "@/components/card/Card";
 import cn from "classnames";
 
 import { ContextTrailItem } from "howdju-common";
 
+import { Card, CardContent } from "@/components/card/Card";
 import { ComponentId, EditorId, SuggestionsKey } from "./types";
 import { combineIds } from "./viewModels";
 

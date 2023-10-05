@@ -1,9 +1,9 @@
 import React, { Component } from "react";
-import { Card, CardContent } from "@/components/card/Card";
 import cn from "classnames";
 
 import { ContextTrailItem, PropositionOut } from "howdju-common";
 
+import { Card, CardContent } from "@/components/card/Card";
 import PropositionEntityViewer from "./PropositionEntityViewer";
 import { ComponentId } from "./types";
 

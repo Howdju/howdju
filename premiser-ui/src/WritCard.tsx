@@ -1,9 +1,9 @@
 import React, { Component } from "react";
-import { Card, CardContent } from "@/components/card/Card";
 import cn from "classnames";
 
 import { EmptyObject, WritOut } from "howdju-common";
 
+import { Card, CardContent } from "@/components/card/Card";
 import WritEntityViewer from "./WritEntityViewer";
 import { ComponentId } from "./types";
 

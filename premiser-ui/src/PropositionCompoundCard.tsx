@@ -1,5 +1,4 @@
 import React from "react";
-import { Card, CardContent } from "@/components/card/Card";
 import cn from "classnames";
 
 import {
@@ -8,6 +7,7 @@ import {
   PropositionOut,
 } from "howdju-common";
 
+import { Card, CardContent } from "@/components/card/Card";
 import { ComponentId } from "./types";
 import PropositionCompoundEntityViewer from "./PropositionCompoundEntityViewer";
 
