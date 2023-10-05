@@ -58,10 +58,7 @@ export default function withEntityCard<
         ...rest,
       } as unknown as ComponentProps;
       return (
-        <Card
-          style={{ width: "100%" }}
-          className={cn("entity-card", className)}
-        >
+        <Card className={cn("entity-card", className)}>
           <CardContent className="entity-card-contents">
             <EntityViewerComponent {...entityProps} />
           </CardContent>

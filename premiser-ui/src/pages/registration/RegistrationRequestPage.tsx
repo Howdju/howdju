@@ -9,11 +9,7 @@ import {
   RegistrationRequest,
 } from "howdju-common";
 
-import {
-  Card,
-  CardActions,
-  CardContent,
-} from "@/components/card/Card";
+import { Card, CardActions, CardContent } from "@/components/card/Card";
 import Helmet from "../../Helmet";
 import { editors } from "../../actions";
 import { EditorState, EditorTypes } from "../../reducers/editors";
@@ -52,12 +48,14 @@ export default function RegistrationRequestPage() {
   const duration = get(editorState, "duration");
 
   const form = (
-    <RegistrationRequestEditor
-      id="registration-request-editor"
-      editorId={editorId}
-      commitBehavior="JustCommit"
-      submitButtonText="Request Registration"
-    />
+    <CardContent>
+      <RegistrationRequestEditor
+        id="registration-request-editor"
+        editorId={editorId}
+        commitBehavior="JustCommit"
+        submitButtonText="Request Registration"
+      />
+    </CardContent>
   );
 
   const isSubmitted = editorState?.isSaved;
@@ -87,7 +85,7 @@ export default function RegistrationRequestPage() {
       </Helmet>
       <div className="md-grid">
         <div className="md-cell md-cell--12">
-          <Card title="Request Registration">
+          <Card title="Request Registration" style={{ width: "100%" }}>
             {isSubmitted ? submissionMessage : form}
           </Card>
         </div>

@@ -12,28 +12,32 @@ exports[`RegistrationConfirmationPage shows error message for duplicate username
         class="md-cell md-cell--12"
       >
         <div
-          class="md-paper md-paper--1 md-card md-background--card"
+          class="rmd-card rmd-card--shadowed"
         >
-          <div
-            class="md-card-title md-card-title--primary"
+          <header
+            class="rmd-card__header rmd-card__header--center"
           >
-            <h2
-              class="md-card-title--title md-card-title--large md-text"
+            <span
+              class="rmd-card__header-content"
             >
-              Complete Registration
-            </h2>
-          </div>
-          <section
-            class="md-card-text"
+              <h5
+                class="rmd-card__title"
+              >
+                Complete Registration
+              </h5>
+            </span>
+          </header>
+          <div
+            class="rmd-card__content rmd-card__content--padded rmd-card__content--extra-padding rmd-card__content--remove-margin rmd-card__content--secondary"
           >
-            <section
-              class="md-card-text"
+            <div
+              class="rmd-card__content rmd-card__content--padded rmd-card__content--extra-padding rmd-card__content--remove-margin rmd-card__content--secondary"
             >
               Please enter the following to complete your registration
-            </section>
+            </div>
             <form>
-              <section
-                class="md-card-text"
+              <div
+                class="rmd-card__content rmd-card__content--padded rmd-card__content--extra-padding rmd-card__content--remove-margin rmd-card__content--secondary"
               >
                 <ul
                   class="error-message"
@@ -483,9 +487,9 @@ exports[`RegistrationConfirmationPage shows error message for duplicate username
                     </span>
                   </label>
                 </div>
-              </section>
-              <section
-                class="md-dialog-footer--card md-dialog-footer--inline"
+              </div>
+              <div
+                class="rmd-card__actions"
               >
                 <button
                   class="rmd-button rmd-button--text rmd-button--text-primary"
@@ -506,9 +510,9 @@ exports[`RegistrationConfirmationPage shows error message for duplicate username
                     class="rmd-ripple-container"
                   />
                 </button>
-              </section>
+              </div>
             </form>
-          </section>
+          </div>
         </div>
       </div>
     </div>
@@ -528,26 +532,30 @@ exports[`RegistrationConfirmationPage shows error message for missing registrati
         class="md-cell md-cell--12"
       >
         <div
-          class="md-paper md-paper--1 md-card md-background--card"
+          class="rmd-card rmd-card--shadowed"
         >
-          <div
-            class="md-card-title md-card-title--primary"
+          <header
+            class="rmd-card__header rmd-card__header--center"
           >
-            <h2
-              class="md-card-title--title md-card-title--large md-text"
+            <span
+              class="rmd-card__header-content"
             >
-              Complete Registration
-            </h2>
-          </div>
-          <section
-            class="md-card-text"
+              <h5
+                class="rmd-card__title"
+              >
+                Complete Registration
+              </h5>
+            </span>
+          </header>
+          <div
+            class="rmd-card__content rmd-card__content--padded rmd-card__content--extra-padding rmd-card__content--remove-margin rmd-card__content--secondary"
           >
             <span
               class="error-message"
             >
               Missing registration code
             </span>
-          </section>
+          </div>
         </div>
       </div>
     </div>
@@ -567,28 +575,32 @@ exports[`RegistrationConfirmationPage shows form 1`] = `
         class="md-cell md-cell--12"
       >
         <div
-          class="md-paper md-paper--1 md-card md-background--card"
+          class="rmd-card rmd-card--shadowed"
         >
-          <div
-            class="md-card-title md-card-title--primary"
+          <header
+            class="rmd-card__header rmd-card__header--center"
           >
-            <h2
-              class="md-card-title--title md-card-title--large md-text"
+            <span
+              class="rmd-card__header-content"
             >
-              Complete Registration
-            </h2>
-          </div>
-          <section
-            class="md-card-text"
+              <h5
+                class="rmd-card__title"
+              >
+                Complete Registration
+              </h5>
+            </span>
+          </header>
+          <div
+            class="rmd-card__content rmd-card__content--padded rmd-card__content--extra-padding rmd-card__content--remove-margin rmd-card__content--secondary"
           >
-            <section
-              class="md-card-text"
+            <div
+              class="rmd-card__content rmd-card__content--padded rmd-card__content--extra-padding rmd-card__content--remove-margin rmd-card__content--secondary"
             >
               Please enter the following to complete your registration
-            </section>
+            </div>
             <form>
-              <section
-                class="md-card-text"
+              <div
+                class="rmd-card__content rmd-card__content--padded rmd-card__content--extra-padding rmd-card__content--remove-margin rmd-card__content--secondary"
               >
                 <ul
                   class="error-message"
@@ -1020,9 +1032,9 @@ exports[`RegistrationConfirmationPage shows form 1`] = `
                     </span>
                   </label>
                 </div>
-              </section>
-              <section
-                class="md-dialog-footer--card md-dialog-footer--inline"
+              </div>
+              <div
+                class="rmd-card__actions"
               >
                 <button
                   class="rmd-button rmd-button--text rmd-button--text-primary"
@@ -1044,9 +1056,9 @@ exports[`RegistrationConfirmationPage shows form 1`] = `
                     class="rmd-ripple-container"
                   />
                 </button>
-              </section>
+              </div>
             </form>
-          </section>
+          </div>
         </div>
       </div>
     </div>
@@ -1066,27 +1078,31 @@ exports[`RegistrationConfirmationPage shows success message upon confirmation. 1
         class="md-cell md-cell--12"
       >
         <div
-          class="md-paper md-paper--1 md-card md-background--card"
+          class="rmd-card rmd-card--shadowed"
         >
-          <div
-            class="md-card-title md-card-title--primary"
+          <header
+            class="rmd-card__header rmd-card__header--center"
           >
-            <h2
-              class="md-card-title--title md-card-title--large md-text"
+            <span
+              class="rmd-card__header-content"
             >
-              Complete Registration
-            </h2>
-          </div>
-          <section
-            class="md-card-text"
+              <h5
+                class="rmd-card__title"
+              >
+                Complete Registration
+              </h5>
+            </span>
+          </header>
+          <div
+            class="rmd-card__content rmd-card__content--padded rmd-card__content--extra-padding rmd-card__content--remove-margin rmd-card__content--secondary"
           >
-            <section
-              class="md-card-text"
+            <div
+              class="rmd-card__content rmd-card__content--padded rmd-card__content--extra-padding rmd-card__content--remove-margin rmd-card__content--secondary"
             >
               You are now logged in.
-            </section>
-            <section
-              class="md-dialog-footer--card md-dialog-footer--inline"
+            </div>
+            <div
+              class="rmd-card__actions"
             >
               <button
                 class="rmd-button rmd-button--text rmd-button--contained rmd-button--primary"
@@ -1098,8 +1114,8 @@ exports[`RegistrationConfirmationPage shows success message upon confirmation. 1
                   class="rmd-ripple-container"
                 />
               </button>
-            </section>
-          </section>
+            </div>
+          </div>
         </div>
       </div>
     </div>

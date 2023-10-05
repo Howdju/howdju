@@ -10,179 +10,183 @@ exports[`CreatePropositionPage (with fake timers) renders correctly with query p
         class="md-grid"
       >
         <div
-          class="md-cell md-cell--12"
+          class="rmd-card rmd-card--shadowed md-cell md-cell--12"
         >
-          <div
-            class="md-paper md-paper--1 md-card md-background--card"
+          <header
+            class="rmd-card__header rmd-card__header--center"
           >
-            <div
-              class="md-card-title md-card-title--primary"
+            <span
+              class="rmd-card__header-content"
             >
-              <h2
-                class="md-card-title--title md-card-title--large md-text"
+              <h5
+                class="rmd-card__title"
               >
                 Justify proposition
-              </h2>
-            </div>
-            <section
-              class="md-card-text"
+              </h5>
+            </span>
+          </header>
+          <div
+            class="rmd-card__content rmd-card__content--padded rmd-card__content--extra-padding rmd-card__content--remove-margin rmd-card__content--secondary"
+          >
+            <button
+              class="rmd-button rmd-button--text rmd-button--text-primary"
+              title="Add Speaker"
+              type="button"
             >
-              <button
-                class="rmd-button rmd-button--text rmd-button--text-primary"
-                title="Add Speaker"
-                type="button"
+              <i
+                class="md-icon material-icons rmd-icon--before"
               >
-                <i
-                  class="md-icon material-icons rmd-icon--before"
-                >
-                  person_add
-                </i>
-                Add Speaker
-                <span
-                  class="rmd-ripple-container"
-                />
-              </button>
-            </section>
-            <section
-              class="md-card-text"
-            >
-              <div>
-                <ul
-                  class="error-message"
-                />
-                <div
-                  style="display: flex; align-items: center;"
-                >
-                  <div
-                    class="rmd-field-message-container"
-                  >
-                    <div
-                      aria-expanded="false"
-                      aria-haspopup="listbox"
-                      aria-owns="create-proposition-page--proposition--text-listbox"
-                      class="rmd-text-field-container rmd-text-field-container--hoverable rmd-text-field-container--label rmd-text-field-container--underline rmd-text-field-container--underline-labelled rmd-text-field-container--underline-active rmd-text-field-container--underline-left rmd-textarea-container rmd-textarea-container--animate rmd-textarea-container--cursor rmd-autocomplate api-autocomplete"
-                      id="create-proposition-page--proposition--text-combobox"
-                      role="combobox"
-                      style="flex-grow: 1;"
-                    >
-                      <label
-                        class="rmd-label rmd-label--active rmd-floating-label rmd-floating-label--active"
-                        for="create-proposition-page--proposition--text"
-                      >
-                        Text
-                      </label>
-                      <div
-                        class="rmd-textarea-container__inner rmd-textarea-container__inner--animate"
-                      >
-                        <textarea
-                          aria-activedescendant=""
-                          aria-autocomplete="list"
-                          aria-controls="create-proposition-page--proposition--text-combobox"
-                          autocomplete="off"
-                          class="rmd-textarea rmd-textarea--floating rmd-textarea--rn"
-                          id="create-proposition-page--proposition--text"
-                          maxlength="512"
-                          name="proposition.text"
-                          required=""
-                          rows="1"
-                        />
-                        <textarea
-                          aria-hidden="true"
-                          class="rmd-textarea rmd-textarea--rn rmd-textarea--mask rmd-textarea--floating"
-                          id="create-proposition-page--proposition--text-mask"
-                          readonly=""
-                          rows="1"
-                          tabindex="-1"
-                        />
-                      </div>
-                    </div>
-                    <div
-                      aria-live="polite"
-                      class="rmd-form-message rmd-form-message--outline"
-                      id="create-proposition-page--proposition--text-message"
-                    >
-                      <span
-                        class="rmd-form-message__counter"
-                        id="create-proposition-page--proposition--text-message-counter"
-                      >
-                        0 / 512
-                      </span>
-                    </div>
-                  </div>
-                  <input
-                    style="display: none;"
-                    type="submit"
-                  />
-                </div>
-              </div>
+                person_add
+              </i>
+              Add Speaker
+              <span
+                class="rmd-ripple-container"
+              />
+            </button>
+          </div>
+          <div
+            class="rmd-card__content rmd-card__content--padded rmd-card__content--extra-padding rmd-card__content--remove-margin rmd-card__content--secondary"
+          >
+            <div>
+              <ul
+                class="error-message"
+              />
               <div
-                class="chips-list"
+                style="display: flex; align-items: center;"
               >
                 <div
-                  style="display: flex; align-items: center;"
+                  class="rmd-field-message-container"
                 >
                   <div
-                    class="rmd-field-message-container"
+                    aria-expanded="false"
+                    aria-haspopup="listbox"
+                    aria-owns="create-proposition-page--proposition--text-listbox"
+                    class="rmd-text-field-container rmd-text-field-container--hoverable rmd-text-field-container--label rmd-text-field-container--underline rmd-text-field-container--underline-labelled rmd-text-field-container--underline-active rmd-text-field-container--underline-left rmd-textarea-container rmd-textarea-container--animate rmd-textarea-container--cursor rmd-autocomplate api-autocomplete"
+                    id="create-proposition-page--proposition--text-combobox"
+                    role="combobox"
+                    style="flex-grow: 1;"
                   >
-                    <div
-                      aria-expanded="false"
-                      aria-haspopup="listbox"
-                      aria-owns="create-proposition-page--tags--tag-name-listbox"
-                      class="rmd-text-field-container rmd-text-field-container--hoverable rmd-text-field-container--label rmd-text-field-container--underline rmd-text-field-container--underline-labelled rmd-text-field-container--underline-left rmd-textarea-container rmd-textarea-container--animate rmd-textarea-container--cursor rmd-autocomplate api-autocomplete"
-                      id="create-proposition-page--tags--tag-name-combobox"
-                      role="combobox"
-                      style="flex-grow: 1;"
+                    <label
+                      class="rmd-label rmd-label--active rmd-floating-label rmd-floating-label--active"
+                      for="create-proposition-page--proposition--text"
                     >
-                      <label
-                        class="rmd-label rmd-floating-label"
-                        for="create-proposition-page--tags--tag-name"
-                      >
-                        Tag
-                      </label>
-                      <div
-                        class="rmd-textarea-container__inner rmd-textarea-container__inner--animate"
-                      >
-                        <textarea
-                          aria-activedescendant=""
-                          aria-autocomplete="list"
-                          aria-controls="create-proposition-page--tags--tag-name-combobox"
-                          autocomplete="off"
-                          class="rmd-textarea rmd-textarea--floating rmd-textarea--rn"
-                          id="create-proposition-page--tags--tag-name"
-                          maxlength="64"
-                          name="tagName"
-                          rows="1"
-                        />
-                        <textarea
-                          aria-hidden="true"
-                          class="rmd-textarea rmd-textarea--rn rmd-textarea--mask rmd-textarea--floating"
-                          id="create-proposition-page--tags--tag-name-mask"
-                          readonly=""
-                          rows="1"
-                          tabindex="-1"
-                        />
-                      </div>
-                    </div>
+                      Text
+                    </label>
                     <div
-                      aria-live="polite"
-                      class="rmd-form-message rmd-form-message--outline"
-                      id="create-proposition-page--tags--tag-name-message"
+                      class="rmd-textarea-container__inner rmd-textarea-container__inner--animate"
                     >
-                      <span
-                        class="rmd-form-message__counter"
-                        id="create-proposition-page--tags--tag-name-message-counter"
-                      >
-                        0 / 64
-                      </span>
+                      <textarea
+                        aria-activedescendant=""
+                        aria-autocomplete="list"
+                        aria-controls="create-proposition-page--proposition--text-combobox"
+                        autocomplete="off"
+                        class="rmd-textarea rmd-textarea--floating rmd-textarea--rn"
+                        id="create-proposition-page--proposition--text"
+                        maxlength="512"
+                        name="proposition.text"
+                        required=""
+                        rows="1"
+                      />
+                      <textarea
+                        aria-hidden="true"
+                        class="rmd-textarea rmd-textarea--rn rmd-textarea--mask rmd-textarea--floating"
+                        id="create-proposition-page--proposition--text-mask"
+                        readonly=""
+                        rows="1"
+                        tabindex="-1"
+                      />
                     </div>
                   </div>
-                  <input
-                    style="display: none;"
-                    type="submit"
-                  />
+                  <div
+                    aria-live="polite"
+                    class="rmd-form-message rmd-form-message--outline"
+                    id="create-proposition-page--proposition--text-message"
+                  >
+                    <span
+                      class="rmd-form-message__counter"
+                      id="create-proposition-page--proposition--text-message-counter"
+                    >
+                      0 / 512
+                    </span>
+                  </div>
                 </div>
+                <input
+                  style="display: none;"
+                  type="submit"
+                />
               </div>
-            </section>
+            </div>
+            <div
+              class="chips-list"
+            >
+              <div
+                style="display: flex; align-items: center;"
+              >
+                <div
+                  class="rmd-field-message-container"
+                >
+                  <div
+                    aria-expanded="false"
+                    aria-haspopup="listbox"
+                    aria-owns="create-proposition-page--tags--tag-name-listbox"
+                    class="rmd-text-field-container rmd-text-field-container--hoverable rmd-text-field-container--label rmd-text-field-container--underline rmd-text-field-container--underline-labelled rmd-text-field-container--underline-left rmd-textarea-container rmd-textarea-container--animate rmd-textarea-container--cursor rmd-autocomplate api-autocomplete"
+                    id="create-proposition-page--tags--tag-name-combobox"
+                    role="combobox"
+                    style="flex-grow: 1;"
+                  >
+                    <label
+                      class="rmd-label rmd-floating-label"
+                      for="create-proposition-page--tags--tag-name"
+                    >
+                      Tag
+                    </label>
+                    <div
+                      class="rmd-textarea-container__inner rmd-textarea-container__inner--animate"
+                    >
+                      <textarea
+                        aria-activedescendant=""
+                        aria-autocomplete="list"
+                        aria-controls="create-proposition-page--tags--tag-name-combobox"
+                        autocomplete="off"
+                        class="rmd-textarea rmd-textarea--floating rmd-textarea--rn"
+                        id="create-proposition-page--tags--tag-name"
+                        maxlength="64"
+                        name="tagName"
+                        rows="1"
+                      />
+                      <textarea
+                        aria-hidden="true"
+                        class="rmd-textarea rmd-textarea--rn rmd-textarea--mask rmd-textarea--floating"
+                        id="create-proposition-page--tags--tag-name-mask"
+                        readonly=""
+                        rows="1"
+                        tabindex="-1"
+                      />
+                    </div>
+                  </div>
+                  <div
+                    aria-live="polite"
+                    class="rmd-form-message rmd-form-message--outline"
+                    id="create-proposition-page--tags--tag-name-message"
+                  >
+                    <span
+                      class="rmd-form-message__counter"
+                      id="create-proposition-page--tags--tag-name-message-counter"
+                    >
+                      0 / 64
+                    </span>
+                  </div>
+                </div>
+                <input
+                  style="display: none;"
+                  type="submit"
+                />
+              </div>
+            </div>
+          </div>
+          <div
+            class="rmd-card__content rmd-card__content--padded rmd-card__content--extra-padding rmd-card__content--remove-margin rmd-card__content--secondary"
+          >
             <div
               class="md-selection-control-container md-switch-container"
             >
@@ -222,444 +226,447 @@ exports[`CreatePropositionPage (with fake timers) renders correctly with query p
                 </span>
               </label>
             </div>
-            <div
-              class="md-card-title md-card-title--primary"
+          </div>
+          <header
+            class="rmd-card__header rmd-card__header--center"
+          >
+            <span
+              class="rmd-card__header-content"
             >
-              <h2
-                class="md-card-title--title md-card-title--large md-text"
+              <h5
+                class="rmd-card__title"
+                title="Justification"
+              />
+            </span>
+          </header>
+          <div
+            class="rmd-card__content rmd-card__content--padded rmd-card__content--extra-padding rmd-card__content--remove-margin rmd-card__content--secondary"
+          >
+            <div>
+              <div
+                class=""
               >
-                Justification
-              </h2>
-            </div>
-            <section
-              class="md-card-text"
-            >
-              <div>
-                <div
-                  class=""
-                >
-                  <fieldset
-                    class="md-selection-control-group"
-                  >
-                    <div
-                      class="md-selection-control-container md-selection-control-container--inline"
-                      title="Support the truth of the proposition"
-                    >
-                      <input
-                        aria-hidden="true"
-                        checked=""
-                        class="md-selection-control-input"
-                        id="create-proposition-page--justification--polarity0"
-                        name="justification.polarity"
-                        type="radio"
-                        value="POSITIVE"
-                      />
-                      <label
-                        class="md-selection-control-label md-pointer--hover md-text"
-                        for="create-proposition-page--justification--polarity0"
-                      >
-                        <div
-                          aria-checked="true"
-                          aria-describedby="create-proposition-page--justification--polarity-group-label"
-                          aria-labelledby="create-proposition-page--justification--polarity0-label"
-                          aria-pressed="false"
-                          class="md-fake-btn md-pointer--hover md-fake-btn--no-outline md-selection-control-toggle md-btn md-btn--icon md-text--theme-secondary"
-                          role="radio"
-                          tabindex="0"
-                        >
-                          <div
-                            class="md-ink-container"
-                          />
-                          <i
-                            class="md-icon material-icons md-text--inherit"
-                          >
-                            radio_button_checked
-                          </i>
-                        </div>
-                        <span
-                          id="create-proposition-page--justification--polarity0-label"
-                        >
-                          Supporting
-                        </span>
-                      </label>
-                    </div>
-                    <div
-                      class="md-selection-control-container md-selection-control-container--inline"
-                      title="Oppose the truth of the proposition"
-                    >
-                      <input
-                        aria-hidden="true"
-                        class="md-selection-control-input"
-                        id="create-proposition-page--justification--polarity1"
-                        name="justification.polarity"
-                        type="radio"
-                        value="NEGATIVE"
-                      />
-                      <label
-                        class="md-selection-control-label md-pointer--hover md-text"
-                        for="create-proposition-page--justification--polarity1"
-                      >
-                        <div
-                          aria-checked="false"
-                          aria-describedby="create-proposition-page--justification--polarity-group-label"
-                          aria-labelledby="create-proposition-page--justification--polarity1-label"
-                          aria-pressed="false"
-                          class="md-fake-btn md-pointer--hover md-fake-btn--no-outline md-selection-control-toggle md-btn md-btn--icon md-text--secondary"
-                          role="radio"
-                          tabindex="-1"
-                        >
-                          <div
-                            class="md-ink-container"
-                          />
-                          <i
-                            class="md-icon material-icons md-text--inherit"
-                          >
-                            radio_button_unchecked
-                          </i>
-                        </div>
-                        <span
-                          id="create-proposition-page--justification--polarity1-label"
-                        >
-                          Opposing
-                        </span>
-                      </label>
-                    </div>
-                  </fieldset>
-                </div>
-                <hr
-                  class="md-divider"
-                />
-                <div
-                  class="md-subheader md-text--theme-primary"
-                >
-                  Type
-                </div>
-                <div
-                  class=""
-                >
-                  <fieldset
-                    class="md-selection-control-group"
-                  >
-                    <div
-                      class="md-selection-control-container md-selection-control-container--inline"
-                    >
-                      <input
-                        aria-hidden="true"
-                        class="md-selection-control-input"
-                        id="create-proposition-page--justification--basis-type0"
-                        name="justification.basis.type"
-                        type="radio"
-                        value="PROPOSITION_COMPOUND"
-                      />
-                      <label
-                        class="md-selection-control-label md-pointer--hover md-text"
-                        for="create-proposition-page--justification--basis-type0"
-                      >
-                        <div
-                          aria-checked="false"
-                          aria-describedby="create-proposition-page--justification--basis-type-group-label"
-                          aria-labelledby="create-proposition-page--justification--basis-type0-label"
-                          aria-pressed="false"
-                          class="md-fake-btn md-pointer--hover md-fake-btn--no-outline md-selection-control-toggle md-btn md-btn--icon md-text--secondary"
-                          role="radio"
-                          tabindex="0"
-                        >
-                          <div
-                            class="md-ink-container"
-                          />
-                          <i
-                            class="md-icon material-icons md-text--inherit"
-                          >
-                            radio_button_unchecked
-                          </i>
-                        </div>
-                        <span
-                          id="create-proposition-page--justification--basis-type0-label"
-                        >
-                          <div
-                            title="An argument based on an ordered list of propositions"
-                          >
-                            Proposition(s)
-                          </div>
-                        </span>
-                      </label>
-                    </div>
-                    <div
-                      class="md-selection-control-container md-selection-control-container--inline"
-                    >
-                      <input
-                        aria-hidden="true"
-                        class="md-selection-control-input"
-                        id="create-proposition-page--justification--basis-type1"
-                        name="justification.basis.type"
-                        type="radio"
-                        value="MEDIA_EXCERPT"
-                      />
-                      <label
-                        class="md-selection-control-label md-pointer--hover md-text"
-                        for="create-proposition-page--justification--basis-type1"
-                      >
-                        <div
-                          aria-checked="false"
-                          aria-describedby="create-proposition-page--justification--basis-type-group-label"
-                          aria-labelledby="create-proposition-page--justification--basis-type1-label"
-                          aria-pressed="false"
-                          class="md-fake-btn md-pointer--hover md-fake-btn--no-outline md-selection-control-toggle md-btn md-btn--icon md-text--secondary"
-                          role="radio"
-                          tabindex="-1"
-                        >
-                          <div
-                            class="md-ink-container"
-                          />
-                          <i
-                            class="md-icon material-icons md-text--inherit"
-                          >
-                            radio_button_unchecked
-                          </i>
-                        </div>
-                        <span
-                          id="create-proposition-page--justification--basis-type1-label"
-                        >
-                          <div
-                            title="Evidence based on an excerpt of an external media source"
-                          >
-                            Media Excerpt
-                          </div>
-                        </span>
-                      </label>
-                    </div>
-                  </fieldset>
-                </div>
-                <hr
-                  class="md-divider"
-                />
-                <div
-                  class="writ-quote-editor-fields"
+                <fieldset
+                  class="md-selection-control-group"
                 >
                   <div
-                    class="md-text-field-container md-full-width md-text-field-container--multiline"
+                    class="md-selection-control-container md-selection-control-container--inline"
+                    title="Support the truth of the proposition"
                   >
+                    <input
+                      aria-hidden="true"
+                      checked=""
+                      class="md-selection-control-input"
+                      id="create-proposition-page--justification--polarity0"
+                      name="justification.polarity"
+                      type="radio"
+                      value="POSITIVE"
+                    />
                     <label
-                      class="md-floating-label md-floating-label--floating md-text--secondary"
-                      for="create-proposition-page--justification--basis-writ-quote--quote-text"
+                      class="md-selection-control-label md-pointer--hover md-text"
+                      for="create-proposition-page--justification--polarity0"
                     >
-                      Quote
-                    </label>
-                    <div
-                      class="md-text-field-multiline-container md-text-field--floating-margin"
-                      style="height: 0px;"
-                    >
+                      <div
+                        aria-checked="true"
+                        aria-describedby="create-proposition-page--justification--polarity-group-label"
+                        aria-labelledby="create-proposition-page--justification--polarity0-label"
+                        aria-pressed="false"
+                        class="md-fake-btn md-pointer--hover md-fake-btn--no-outline md-selection-control-toggle md-btn md-btn--icon md-text--theme-secondary"
+                        role="radio"
+                        tabindex="0"
+                      >
+                        <div
+                          class="md-ink-container"
+                        />
+                        <i
+                          class="md-icon material-icons md-text--inherit"
+                        >
+                          radio_button_checked
+                        </i>
+                      </div>
                       <span
-                        aria-hidden="true"
-                      />
-                      <textarea
-                        aria-hidden="true"
-                        class="md-text-field md-text-field--multiline md-full-width md-text md-text-field--multiline-mask"
-                        readonly=""
-                        rows="2"
+                        id="create-proposition-page--justification--polarity0-label"
+                      >
+                        Supporting
+                      </span>
+                    </label>
+                  </div>
+                  <div
+                    class="md-selection-control-container md-selection-control-container--inline"
+                    title="Oppose the truth of the proposition"
+                  >
+                    <input
+                      aria-hidden="true"
+                      class="md-selection-control-input"
+                      id="create-proposition-page--justification--polarity1"
+                      name="justification.polarity"
+                      type="radio"
+                      value="NEGATIVE"
+                    />
+                    <label
+                      class="md-selection-control-label md-pointer--hover md-text"
+                      for="create-proposition-page--justification--polarity1"
+                    >
+                      <div
+                        aria-checked="false"
+                        aria-describedby="create-proposition-page--justification--polarity-group-label"
+                        aria-labelledby="create-proposition-page--justification--polarity1-label"
+                        aria-pressed="false"
+                        class="md-fake-btn md-pointer--hover md-fake-btn--no-outline md-selection-control-toggle md-btn md-btn--icon md-text--secondary"
+                        role="radio"
                         tabindex="-1"
                       >
-                        An important conclusion.
-                      </textarea>
-                      <textarea
-                        class="md-text-field md-text-field--multiline md-full-width md-text"
-                        id="create-proposition-page--justification--basis-writ-quote--quote-text"
-                        name="justification.basis.writQuote.quoteText"
-                        rows="2"
-                        style="height: 0px;"
-                      >
-                        An important conclusion.
-                      </textarea>
-                    </div>
-                    <hr
-                      class="md-divider md-divider--text-field md-divider--expand-from-left"
-                    />
-                    <div
-                      class="md-text-field-message-container md-text-field-message-container--count-only md-full-width md-text--disabled"
-                    >
-                      <div
-                        aria-hidden="true"
-                        class="md-text-field-message md-text-field-message--inactive md-text-field-message--counter"
-                      >
-                        24 / 4096
-                      </div>
-                    </div>
-                  </div>
-                  <div
-                    class="writ-editor-fields"
-                  >
-                    <div
-                      style="display: flex; align-items: center;"
-                    >
-                      <div
-                        class="rmd-field-message-container"
-                      >
                         <div
-                          aria-expanded="false"
-                          aria-haspopup="listbox"
-                          aria-owns="create-proposition-page--justification--basis-writ-quote--writ--title-listbox"
-                          class="rmd-text-field-container rmd-text-field-container--hoverable rmd-text-field-container--label rmd-text-field-container--underline rmd-text-field-container--underline-labelled rmd-text-field-container--underline-left rmd-textarea-container rmd-textarea-container--animate rmd-textarea-container--cursor rmd-autocomplate api-autocomplete"
-                          id="create-proposition-page--justification--basis-writ-quote--writ--title-combobox"
-                          role="combobox"
-                          style="flex-grow: 1;"
+                          class="md-ink-container"
+                        />
+                        <i
+                          class="md-icon material-icons md-text--inherit"
                         >
-                          <label
-                            class="rmd-label rmd-floating-label rmd-floating-label--active rmd-floating-label--inactive"
-                            for="create-proposition-page--justification--basis-writ-quote--writ--title"
-                          >
-                            Title
-                          </label>
-                          <div
-                            class="rmd-textarea-container__inner rmd-textarea-container__inner--animate"
-                          >
-                            <textarea
-                              aria-activedescendant=""
-                              aria-autocomplete="list"
-                              aria-controls="create-proposition-page--justification--basis-writ-quote--writ--title-combobox"
-                              autocomplete="off"
-                              class="rmd-textarea rmd-textarea--floating rmd-textarea--rn"
-                              id="create-proposition-page--justification--basis-writ-quote--writ--title"
-                              maxlength="512"
-                              minlength="1"
-                              name="justification.basis.writQuote.writ.title"
-                              required=""
-                              rows="1"
-                            >
-                              A credible source
-                            </textarea>
-                            <textarea
-                              aria-hidden="true"
-                              class="rmd-textarea rmd-textarea--rn rmd-textarea--mask rmd-textarea--floating"
-                              id="create-proposition-page--justification--basis-writ-quote--writ--title-mask"
-                              readonly=""
-                              rows="1"
-                              tabindex="-1"
-                            >
-                              A credible source
-                            </textarea>
-                          </div>
-                        </div>
-                        <div
-                          aria-live="polite"
-                          class="rmd-form-message rmd-form-message--outline"
-                          id="create-proposition-page--justification--basis-writ-quote--writ--title-message"
-                        >
-                          <span
-                            class="rmd-form-message__counter"
-                            id="create-proposition-page--justification--basis-writ-quote--writ--title-message-counter"
-                          >
-                            17 / 512
-                          </span>
-                        </div>
+                          radio_button_unchecked
+                        </i>
                       </div>
-                      <input
-                        style="display: none;"
-                        type="submit"
-                      />
-                    </div>
-                  </div>
-                  <div
-                    class="md-text-field-container md-full-width md-text-field-container--multiline writ-quote-url-input"
-                  >
-                    <label
-                      class="md-floating-label md-floating-label--floating md-text--secondary"
-                      for="create-proposition-page--justification--basis-writ-quote--urls-0--url"
-                    >
-                      URL
+                      <span
+                        id="create-proposition-page--justification--polarity1-label"
+                      >
+                        Opposing
+                      </span>
                     </label>
-                    <div
-                      class="md-text-field-icon-container"
+                  </div>
+                </fieldset>
+              </div>
+              <hr
+                class="md-divider"
+              />
+              <div
+                class="md-subheader md-text--theme-primary"
+              >
+                Type
+              </div>
+              <div
+                class=""
+              >
+                <fieldset
+                  class="md-selection-control-group"
+                >
+                  <div
+                    class="md-selection-control-container md-selection-control-container--inline"
+                  >
+                    <input
+                      aria-hidden="true"
+                      class="md-selection-control-input"
+                      id="create-proposition-page--justification--basis-type0"
+                      name="justification.basis.type"
+                      type="radio"
+                      value="PROPOSITION_COMPOUND"
+                    />
+                    <label
+                      class="md-selection-control-label md-pointer--hover md-text"
+                      for="create-proposition-page--justification--basis-type0"
                     >
                       <div
-                        class="md-text-field-divider-container md-text-field-divider-container--grow"
+                        aria-checked="false"
+                        aria-describedby="create-proposition-page--justification--basis-type-group-label"
+                        aria-labelledby="create-proposition-page--justification--basis-type0-label"
+                        aria-pressed="false"
+                        class="md-fake-btn md-pointer--hover md-fake-btn--no-outline md-selection-control-toggle md-btn md-btn--icon md-text--secondary"
+                        role="radio"
+                        tabindex="0"
                       >
                         <div
-                          class="md-text-field-multiline-container md-text-field--floating-margin"
-                          style="height: 0px;"
+                          class="md-ink-container"
+                        />
+                        <i
+                          class="md-icon material-icons md-text--inherit"
                         >
-                          <span
-                            aria-hidden="true"
-                          />
+                          radio_button_unchecked
+                        </i>
+                      </div>
+                      <span
+                        id="create-proposition-page--justification--basis-type0-label"
+                      >
+                        <div
+                          title="An argument based on an ordered list of propositions"
+                        >
+                          Proposition(s)
+                        </div>
+                      </span>
+                    </label>
+                  </div>
+                  <div
+                    class="md-selection-control-container md-selection-control-container--inline"
+                  >
+                    <input
+                      aria-hidden="true"
+                      class="md-selection-control-input"
+                      id="create-proposition-page--justification--basis-type1"
+                      name="justification.basis.type"
+                      type="radio"
+                      value="MEDIA_EXCERPT"
+                    />
+                    <label
+                      class="md-selection-control-label md-pointer--hover md-text"
+                      for="create-proposition-page--justification--basis-type1"
+                    >
+                      <div
+                        aria-checked="false"
+                        aria-describedby="create-proposition-page--justification--basis-type-group-label"
+                        aria-labelledby="create-proposition-page--justification--basis-type1-label"
+                        aria-pressed="false"
+                        class="md-fake-btn md-pointer--hover md-fake-btn--no-outline md-selection-control-toggle md-btn md-btn--icon md-text--secondary"
+                        role="radio"
+                        tabindex="-1"
+                      >
+                        <div
+                          class="md-ink-container"
+                        />
+                        <i
+                          class="md-icon material-icons md-text--inherit"
+                        >
+                          radio_button_unchecked
+                        </i>
+                      </div>
+                      <span
+                        id="create-proposition-page--justification--basis-type1-label"
+                      >
+                        <div
+                          title="Evidence based on an excerpt of an external media source"
+                        >
+                          Media Excerpt
+                        </div>
+                      </span>
+                    </label>
+                  </div>
+                </fieldset>
+              </div>
+              <hr
+                class="md-divider"
+              />
+              <div
+                class="writ-quote-editor-fields"
+              >
+                <div
+                  class="md-text-field-container md-full-width md-text-field-container--multiline"
+                >
+                  <label
+                    class="md-floating-label md-floating-label--floating md-text--secondary"
+                    for="create-proposition-page--justification--basis-writ-quote--quote-text"
+                  >
+                    Quote
+                  </label>
+                  <div
+                    class="md-text-field-multiline-container md-text-field--floating-margin"
+                    style="height: 0px;"
+                  >
+                    <span
+                      aria-hidden="true"
+                    />
+                    <textarea
+                      aria-hidden="true"
+                      class="md-text-field md-text-field--multiline md-full-width md-text md-text-field--multiline-mask"
+                      readonly=""
+                      rows="2"
+                      tabindex="-1"
+                    >
+                      An important conclusion.
+                    </textarea>
+                    <textarea
+                      class="md-text-field md-text-field--multiline md-full-width md-text"
+                      id="create-proposition-page--justification--basis-writ-quote--quote-text"
+                      name="justification.basis.writQuote.quoteText"
+                      rows="2"
+                      style="height: 0px;"
+                    >
+                      An important conclusion.
+                    </textarea>
+                  </div>
+                  <hr
+                    class="md-divider md-divider--text-field md-divider--expand-from-left"
+                  />
+                  <div
+                    class="md-text-field-message-container md-text-field-message-container--count-only md-full-width md-text--disabled"
+                  >
+                    <div
+                      aria-hidden="true"
+                      class="md-text-field-message md-text-field-message--inactive md-text-field-message--counter"
+                    >
+                      24 / 4096
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="writ-editor-fields"
+                >
+                  <div
+                    style="display: flex; align-items: center;"
+                  >
+                    <div
+                      class="rmd-field-message-container"
+                    >
+                      <div
+                        aria-expanded="false"
+                        aria-haspopup="listbox"
+                        aria-owns="create-proposition-page--justification--basis-writ-quote--writ--title-listbox"
+                        class="rmd-text-field-container rmd-text-field-container--hoverable rmd-text-field-container--label rmd-text-field-container--underline rmd-text-field-container--underline-labelled rmd-text-field-container--underline-left rmd-textarea-container rmd-textarea-container--animate rmd-textarea-container--cursor rmd-autocomplate api-autocomplete"
+                        id="create-proposition-page--justification--basis-writ-quote--writ--title-combobox"
+                        role="combobox"
+                        style="flex-grow: 1;"
+                      >
+                        <label
+                          class="rmd-label rmd-floating-label rmd-floating-label--active rmd-floating-label--inactive"
+                          for="create-proposition-page--justification--basis-writ-quote--writ--title"
+                        >
+                          Title
+                        </label>
+                        <div
+                          class="rmd-textarea-container__inner rmd-textarea-container__inner--animate"
+                        >
+                          <textarea
+                            aria-activedescendant=""
+                            aria-autocomplete="list"
+                            aria-controls="create-proposition-page--justification--basis-writ-quote--writ--title-combobox"
+                            autocomplete="off"
+                            class="rmd-textarea rmd-textarea--floating rmd-textarea--rn"
+                            id="create-proposition-page--justification--basis-writ-quote--writ--title"
+                            maxlength="512"
+                            minlength="1"
+                            name="justification.basis.writQuote.writ.title"
+                            required=""
+                            rows="1"
+                          >
+                            A credible source
+                          </textarea>
                           <textarea
                             aria-hidden="true"
-                            class="md-text-field md-text-field--multiline md-full-width md-text md-text-field--multiline-mask"
+                            class="rmd-textarea rmd-textarea--rn rmd-textarea--mask rmd-textarea--floating"
+                            id="create-proposition-page--justification--basis-writ-quote--writ--title-mask"
                             readonly=""
                             rows="1"
                             tabindex="-1"
                           >
-                            https://www.info.com
-                          </textarea>
-                          <textarea
-                            aria-label="url"
-                            class="md-text-field md-text-field--multiline md-full-width md-text"
-                            id="create-proposition-page--justification--basis-writ-quote--urls-0--url"
-                            name="justification.basis.writQuote.urls[0].url"
-                            rows="1"
-                            style="height: 0px;"
-                          >
-                            https://www.info.com
+                            A credible source
                           </textarea>
                         </div>
-                        <hr
-                          class="md-divider md-divider--text-field md-divider--expand-from-left"
-                        />
                       </div>
-                      <button
-                        class="rmd-button rmd-button--icon rmd-button--text-primary md-text-field-icon md-text-field-icon--positioned"
-                        type="button"
+                      <div
+                        aria-live="polite"
+                        class="rmd-form-message rmd-form-message--outline"
+                        id="create-proposition-page--justification--basis-writ-quote--writ--title-message"
                       >
-                        <i
-                          class="md-icon material-icons"
-                        >
-                          delete
-                        </i>
                         <span
-                          class="rmd-ripple-container"
-                        />
-                      </button>
+                          class="rmd-form-message__counter"
+                          id="create-proposition-page--justification--basis-writ-quote--writ--title-message-counter"
+                        >
+                          17 / 512
+                        </span>
+                      </div>
                     </div>
-                  </div>
-                  <button
-                    class="rmd-button rmd-button--text rmd-button--text-primary add-button"
-                    type="button"
-                  >
-                    <i
-                      class="md-icon material-icons rmd-icon--before"
-                    >
-                      add
-                    </i>
-                    Add URL
-                    <span
-                      class="rmd-ripple-container"
+                    <input
+                      style="display: none;"
+                      type="submit"
                     />
-                  </button>
+                  </div>
                 </div>
+                <div
+                  class="md-text-field-container md-full-width md-text-field-container--multiline writ-quote-url-input"
+                >
+                  <label
+                    class="md-floating-label md-floating-label--floating md-text--secondary"
+                    for="create-proposition-page--justification--basis-writ-quote--urls-0--url"
+                  >
+                    URL
+                  </label>
+                  <div
+                    class="md-text-field-icon-container"
+                  >
+                    <div
+                      class="md-text-field-divider-container md-text-field-divider-container--grow"
+                    >
+                      <div
+                        class="md-text-field-multiline-container md-text-field--floating-margin"
+                        style="height: 0px;"
+                      >
+                        <span
+                          aria-hidden="true"
+                        />
+                        <textarea
+                          aria-hidden="true"
+                          class="md-text-field md-text-field--multiline md-full-width md-text md-text-field--multiline-mask"
+                          readonly=""
+                          rows="1"
+                          tabindex="-1"
+                        >
+                          https://www.info.com
+                        </textarea>
+                        <textarea
+                          aria-label="url"
+                          class="md-text-field md-text-field--multiline md-full-width md-text"
+                          id="create-proposition-page--justification--basis-writ-quote--urls-0--url"
+                          name="justification.basis.writQuote.urls[0].url"
+                          rows="1"
+                          style="height: 0px;"
+                        >
+                          https://www.info.com
+                        </textarea>
+                      </div>
+                      <hr
+                        class="md-divider md-divider--text-field md-divider--expand-from-left"
+                      />
+                    </div>
+                    <button
+                      class="rmd-button rmd-button--icon rmd-button--text-primary md-text-field-icon md-text-field-icon--positioned"
+                      type="button"
+                    >
+                      <i
+                        class="md-icon material-icons"
+                      >
+                        delete
+                      </i>
+                      <span
+                        class="rmd-ripple-container"
+                      />
+                    </button>
+                  </div>
+                </div>
+                <button
+                  class="rmd-button rmd-button--text rmd-button--text-primary add-button"
+                  type="button"
+                >
+                  <i
+                    class="md-icon material-icons rmd-icon--before"
+                  >
+                    add
+                  </i>
+                  Add URL
+                  <span
+                    class="rmd-ripple-container"
+                  />
+                </button>
               </div>
-            </section>
-            <section
-              class="md-dialog-footer--card md-dialog-footer--inline"
+            </div>
+          </div>
+          <div
+            class="rmd-card__actions"
+          >
+            <button
+              class="rmd-button rmd-button--text rmd-button--text-primary"
+              type="button"
             >
-              <button
-                class="rmd-button rmd-button--text rmd-button--text-primary"
-                type="button"
-              >
-                Cancel
-                <span
-                  class="rmd-ripple-container"
-                />
-              </button>
-              <button
-                aria-disabled="true"
-                class="rmd-button rmd-button--text rmd-button--contained rmd-button--disabled"
-                title="A proposition is only as good as its justification"
-                type="submit"
-              >
-                Create
-                <span
-                  class="rmd-ripple-container"
-                />
-              </button>
-            </section>
+              Cancel
+              <span
+                class="rmd-ripple-container"
+              />
+            </button>
+            <button
+              aria-disabled="true"
+              class="rmd-button rmd-button--text rmd-button--contained rmd-button--disabled"
+              title="A proposition is only as good as its justification"
+              type="submit"
+            >
+              Create
+              <span
+                class="rmd-ripple-container"
+              />
+            </button>
           </div>
         </div>
       </div>

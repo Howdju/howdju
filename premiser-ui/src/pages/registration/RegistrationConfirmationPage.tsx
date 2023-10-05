@@ -12,11 +12,7 @@ import {
   RegistrationConfirmation,
 } from "howdju-common";
 
-import {
-  Card,
-  CardActions,
-  CardContent,
-} from "@/components/card/Card";
+import { Card, CardActions, CardContent } from "@/components/card/Card";
 import Helmet from "../../Helmet";
 import { api, editors } from "../../actions";
 import Link from "../../Link";

@@ -19,10 +19,11 @@ exports[`JustificationsPage Shows a justified proposition 1`] = `
             class="root-target-background"
           >
             <div
-              class="md-paper md-paper--1 md-card md-background--card root-target-card"
+              class="rmd-card rmd-card--shadowed root-target-card"
+              style="width: 100%;"
             >
-              <section
-                class="md-card-text root-target-card-contents"
+              <div
+                class="rmd-card__content rmd-card__content--padded rmd-card__content--extra-padding rmd-card__content--remove-margin rmd-card__content--secondary root-target-card-contents"
               >
                 <div
                   class="entity-viewer"
@@ -154,7 +155,7 @@ exports[`JustificationsPage Shows a justified proposition 1`] = `
                     />
                   </button>
                 </div>
-              </section>
+              </div>
             </div>
           </div>
         </div>
@@ -215,10 +216,11 @@ exports[`JustificationsPage can add a compound-based justification 1`] = `
             class="root-target-background"
           >
             <div
-              class="md-paper md-paper--1 md-card md-background--card root-target-card"
+              class="rmd-card rmd-card--shadowed root-target-card"
+              style="width: 100%;"
             >
-              <section
-                class="md-card-text root-target-card-contents"
+              <div
+                class="rmd-card__content rmd-card__content--padded rmd-card__content--extra-padding rmd-card__content--remove-margin rmd-card__content--secondary root-target-card-contents"
               >
                 <div
                   class="entity-viewer"
@@ -350,7 +352,7 @@ exports[`JustificationsPage can add a compound-based justification 1`] = `
                     />
                   </button>
                 </div>
-              </section>
+              </div>
             </div>
           </div>
         </div>

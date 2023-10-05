@@ -6,11 +6,7 @@ import { Link, useLocation } from "react-router-dom";
 
 import { makePasswordResetConfirmation } from "howdju-client-common";
 
-import {
-  Card,
-  CardActions,
-  CardContent,
-} from "@/components/card/Card";
+import { Card, CardActions, CardContent } from "@/components/card/Card";
 import { editors } from "@/actions";
 import Helmet from "@/Helmet";
 import { useAppDispatch, useAppSelector } from "@/hooks";
