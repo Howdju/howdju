@@ -1,13 +1,6 @@
 import React from "react";
 import FlipMove from "react-flip-move";
 import { Action } from "redux";
-import {
-  Dialog,
-  DialogHeader,
-  DialogTitle,
-  DialogContent,
-  DialogFooter,
-} from "@react-md/dialog";
 import { Button } from "@react-md/button";
 import { CircularProgress } from "@react-md/progress";
 
@@ -19,6 +12,11 @@ import AppearanceCard from "@/pages/appearances/AppearanceCard";
 import { RootState } from "@/setupStore";
 import { combineIds } from "@/viewModels";
 import { DialogState } from "./appearancesListDialogSlices";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+} from "@/components/dialog/Dialog";
 
 export default function withAppearancesListDialog(
   /** The HTML id of the dialog. */
@@ -44,9 +42,6 @@ export default function withAppearancesListDialog(
         onRequestClose={() => dispatch(hideDialogAction)}
         aria-labelledby={combineIds(id, "dialog-title")}
       >
-        <DialogHeader>
-          <DialogTitle id={combineIds(id, "dialog-title")}>{title}</DialogTitle>
-        </DialogHeader>
         <DialogContent>
           <FlipMove {...config.ui.flipMove} className="center-text">
             {isFetching && <CircularProgress id={combineIds(id, "progress")} />}

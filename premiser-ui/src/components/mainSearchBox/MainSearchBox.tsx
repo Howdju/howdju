@@ -1,12 +1,5 @@
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
-import {
-  Dialog,
-  DialogHeader,
-  DialogTitle,
-  DialogContent,
-  DialogFooter,
-} from "@react-md/dialog";
 import { MaterialSymbol } from "react-material-symbols";
 
 import { PropositionOut } from "howdju-common";
@@ -19,10 +12,15 @@ import { goto } from "../../actions";
 import mainSearch from "./mainSearchBoxSlice";
 import { PropertyChanges } from "@/types";
 import ApiAutoComplete from "@/ApiAutoComplete";
-
-import "./MainSearchBox.scss";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+} from "@/components/dialog/Dialog";
 import IconButton from "../button/IconButton";
 import SolidButton from "../button/SolidButton";
+
+import "./MainSearchBox.scss";
 
 const mainSearchSuggestionsKey = "mainSearch";
 
@@ -92,13 +90,8 @@ export default function MainSearchBox() {
         id="main-search--help-dialog"
         onRequestClose={hideMainSearchHelpDialog}
         visible={isMainSearchHelpDialogVisible}
-        aria-labelledby="main-search--help-dialog--header"
+        title="Search Help"
       >
-        <DialogHeader>
-          <DialogTitle id="main-search--help-dialog--header">
-            Search Help
-          </DialogTitle>
-        </DialogHeader>
         <DialogContent>
           <p>Supported search terms:</p>
           <ul>

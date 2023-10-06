@@ -1,11 +1,4 @@
 import React, { FormEventHandler, useState } from "react";
-import {
-  Dialog,
-  DialogHeader,
-  DialogTitle,
-  DialogContent,
-  DialogFooter,
-} from "@react-md/dialog";
 import { MaterialSymbol } from "react-material-symbols";
 
 import {
@@ -24,7 +17,11 @@ import {
   EntityEditorFieldsProps,
 } from "@/editors/withEditor";
 import SourceDescriptionAutocomplete from "./SourceDescriptionAutocomplete";
-
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+} from "@/components/dialog/Dialog";
 import IconButton from "../button/IconButton";
 import SolidButton from "../button/SolidButton";
 
@@ -131,14 +128,9 @@ export default function SourceEditorFields(props: Props) {
         id="source-description-help-dialog"
         visible={isSourceDescriptionHelpDialogVisible}
         onRequestClose={hideSourceDescriptionHelpDialog}
-        aria-labelledby="source-description-help-dialog-title"
+        title="About Source Description"
         className="source-description-help-dialog"
       >
-        <DialogHeader>
-          <DialogTitle id="source-description-help-dialog-title">
-            About Source Description
-          </DialogTitle>
-        </DialogHeader>
         <DialogContent>
           <p>
             The preferred style is MLA-like, but omitting the Authors:

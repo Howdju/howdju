@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { EventHandler } from "react";
 import { AnyAction } from "@reduxjs/toolkit";
-import { DialogContainer as Dialog } from "react-md";
 import get from "lodash/get";
 
 import { EditorTypes } from "./reducers/editors";
@@ -9,7 +8,6 @@ import t, {
   CANCEL_BUTTON_LABEL,
   CREATE_JUSTIFICATION_SUBMIT_BUTTON_LABEL,
 } from "./texts";
-import { selectIsWindowNarrow } from "./selectors";
 import { ESCAPE_KEY_CODE } from "./keyCodes";
 import JustificationEditor from "./editors/JustificationEditor";
 import { useAppDispatch, useAppSelector } from "./hooks";
@@ -19,9 +17,14 @@ import { ComponentId } from "./types";
 import { editors, flows } from "./actions";
 import justificationsPage from "./pages/justifications/justificationsPageSlice";
 import SubmitButton from "./editors/SubmitButton";
+import CancelButton from "./editors/CancelButton";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+} from "./components/dialog/Dialog";
 
 import "./CreateJustificationDialog.scss";
-import CancelButton from "./editors/CancelButton";
 
 type Props = {
   id: ComponentId;
@@ -29,7 +32,7 @@ type Props = {
   visible?: boolean;
   commitAction?: AnyAction;
   onCancel?: EventHandler<React.SyntheticEvent>;
-  onHide?: (...args: any[]) => any;
+  onHide: () => void;
 };
 
 export default function CreateJustificationDialog(props: Props) {
@@ -39,7 +42,6 @@ export default function CreateJustificationDialog(props: Props) {
     get(state.editors, [EditorTypes.NEW_JUSTIFICATION, editorId])
   );
 
-  const isWindowNarrow = useAppSelector(selectIsWindowNarrow);
   const dispatch = useAppDispatch();
   const [isValid, setIsValid] = useState(false);
 
@@ -84,57 +86,32 @@ export default function CreateJustificationDialog(props: Props) {
       appearDisabled={!isValid || isSaving}
     />
   );
-  // react-md bug: even though fullPage is documented as a boolean property, its presence appears to be interpreted as true
-  const addNewJustificationDialogTitle = "Add justification";
-  const narrowDialogAttributes = {
-    fullPage: true,
-    "aria-label": addNewJustificationDialogTitle,
-  };
-  const notNarrowDialogAttributes = {
-    title: addNewJustificationDialogTitle,
-    actions: [
-      addNewJustificationDialogCancelButton,
-      addNewJustificationDialogSubmitButton,
-    ],
-  };
-  const widthDependentAttributes = isWindowNarrow
-    ? narrowDialogAttributes
-    : notNarrowDialogAttributes;
   return (
     <Dialog
       id="newJustificationDialog"
       visible={visible || false}
-      onHide={onHide}
+      onRequestClose={onHide}
       className="md-overlay--wide-dialog"
-      {...widthDependentAttributes}
+      title="Add justification"
     >
-      {isWindowNarrow && (
-        <h2
-          id="newJustificationDialogTitle"
-          className="md-title md-title--dialog"
-        >
-          {addNewJustificationDialogTitle}
-        </h2>
-      )}
-      <JustificationEditor
-        id={combineIds(id, "editor")}
-        editorId={editorId}
-        onKeyDown={onKeyDown}
-        showButtons={false}
-        onValidityChange={setIsValid}
-        commitBehavior={
-          commitAction
-            ? new CommitThenPutAction(commitAction)
-            : "CommitThenView"
-        }
-      />
-
-      {isWindowNarrow && (
-        <footer className="md-dialog-footer md-dialog-footer--inline">
-          {addNewJustificationDialogCancelButton}
-          {addNewJustificationDialogSubmitButton}
-        </footer>
-      )}
+      <DialogContent>
+        <JustificationEditor
+          id={combineIds(id, "editor")}
+          editorId={editorId}
+          onKeyDown={onKeyDown}
+          showButtons={false}
+          onValidityChange={setIsValid}
+          commitBehavior={
+            commitAction
+              ? new CommitThenPutAction(commitAction)
+              : "CommitThenView"
+          }
+        />
+      </DialogContent>
+      <DialogFooter className="md-dialog-footer md-dialog-footer--inline">
+        {addNewJustificationDialogCancelButton}
+        {addNewJustificationDialogSubmitButton}
+      </DialogFooter>
     </Dialog>
   );
 }

@@ -7,13 +7,6 @@ import {
   ListItem,
   MenuButton,
 } from "react-md";
-import {
-  Dialog,
-  DialogHeader,
-  DialogTitle,
-  DialogContent,
-  DialogFooter,
-} from "@react-md/dialog";
 import { MaterialSymbol } from "react-material-symbols";
 import { Link } from "react-router-dom";
 import { push } from "connected-react-router";
@@ -44,6 +37,11 @@ import DeleteMediaExcerptCitationsControl from "./DeleteMediaExcerptCitationsCon
 import DeleteMediaExcerptSpeakersControl from "./DeleteMediaExcerptSpeakersControl";
 import CreateMediaExcerptSpeakersEditor from "./CreateMediaExcerptSpeakersEditor";
 import SolidButton from "@/components/button/SolidButton";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+} from "@/components/dialog/Dialog";
 
 interface MatchParams {
   mediaExcerptId: EntityId;
@@ -213,7 +211,7 @@ export default function MediaExcerptPage(props: Props) {
           primaryText="Delete Speakers…"
           key="delete-speakers"
           leftIcon={<MaterialSymbol icon="voice_over_off" />}
-          onClick={() => setIsDeleteCitationsDialogVisible(true)}
+          onClick={() => setIsDeleteSpeakersDialogVisible(true)}
         />,
         <Divider key="divider-delete" />,
         <ListItem
@@ -251,13 +249,8 @@ export default function MediaExcerptPage(props: Props) {
         id={combineIds(id, "add-url-locators-dialog")}
         visible={isAddUrlLocatorsDialogVisible}
         onRequestClose={hideAddUrlLocatorsDialog}
-        aria-labelledby={combineIds(id, "add-url-locators-dialog", "title")}
+        title="Add URL locators"
       >
-        <DialogHeader>
-          <DialogTitle id={combineIds(id, "add-url-locators-dialog", "title")}>
-            Add URL locators
-          </DialogTitle>
-        </DialogHeader>
         <DialogContent>
           <CreateUrlLocatorsEditor
             id="media-excerpt-page--create-url-locators-editor"
@@ -281,15 +274,8 @@ export default function MediaExcerptPage(props: Props) {
         id={combineIds(id, "delete-url-locators-dialog")}
         visible={isDeleteUrlLocatorsDialogVisible}
         onRequestClose={() => setIsDeleteUrlLocatorsDialogVisible(false)}
-        aria-labelledby={combineIds(id, "delete-url-locators-dialog", "title")}
+        title="Delete URL locators"
       >
-        <DialogHeader>
-          <DialogTitle
-            id={combineIds(id, "delete-url-locators-dialog", "title")}
-          >
-            Delete URL locators
-          </DialogTitle>
-        </DialogHeader>
         <DialogContent>
           <DeleteUrlLocatorsControl mediaExcerpt={mediaExcerpt} />
         </DialogContent>
@@ -305,13 +291,8 @@ export default function MediaExcerptPage(props: Props) {
         id={combineIds(id, "add-citations-dialog")}
         visible={isAddCitationsDialogVisible}
         onRequestClose={hideAddCitationsDialog}
-        aria-labelledby={combineIds(id, "add-citations-dialog", "title")}
+        title="Add citations"
       >
-        <DialogHeader>
-          <DialogTitle title={combineIds(id, "add-citations-dialog", "title")}>
-            Add citations
-          </DialogTitle>
-        </DialogHeader>
         <DialogContent>
           <CreateMediaExcerptCitationsEditor
             id="media-excerpt-page--create-citations-editor"
@@ -331,21 +312,8 @@ export default function MediaExcerptPage(props: Props) {
         id={combineIds(id, "delete-media-excerpt-citations-dialog")}
         visible={isDeleteCitationsDialogVisible}
         onRequestClose={() => setIsDeleteCitationsDialogVisible(false)}
-        aria-labelledby={combineIds(
-          id,
-          "delete-media-excerpt-citations-dialog-title"
-        )}
+        title="Delete citations"
       >
-        <DialogHeader>
-          <DialogTitle
-            title={combineIds(
-              id,
-              "delete-media-excerpt-citations-dialog-title"
-            )}
-          >
-            Delete citations
-          </DialogTitle>
-        </DialogHeader>
         <DialogContent>
           <DeleteMediaExcerptCitationsControl mediaExcerpt={mediaExcerpt} />
         </DialogContent>
@@ -359,13 +327,8 @@ export default function MediaExcerptPage(props: Props) {
         id={combineIds(id, "add-speakers-dialog")}
         visible={isAddSpeakersDialogVisible}
         onRequestClose={hideAddSpeakersDialog}
-        aria-labelledby={combineIds(id, "add-speakers-dialog-title")}
+        title="Add speakers"
       >
-        <DialogHeader>
-          <DialogTitle id={combineIds(id, "add-speakers-dialog-title")}>
-            Add speakers
-          </DialogTitle>
-        </DialogHeader>
         <DialogContent>
           <CreateMediaExcerptSpeakersEditor
             id={combineIds(id, "create-speakers-editor")}
@@ -382,13 +345,8 @@ export default function MediaExcerptPage(props: Props) {
         id={combineIds(id, "delete-speakers-dialog")}
         visible={isDeleteSpeakersDialogVisible}
         onRequestClose={() => setIsDeleteSpeakersDialogVisible(false)}
-        aria-labelledby={combineIds(id, "delete-speakers-dialog-title")}
+        title="Delete speakers"
       >
-        <DialogHeader>
-          <DialogTitle id={combineIds(id, "delete-speakers-dialog-title")}>
-            Delete speakers
-          </DialogTitle>
-        </DialogHeader>
         <DialogContent>
           <DeleteMediaExcerptSpeakersControl mediaExcerpt={mediaExcerpt} />
         </DialogContent>
