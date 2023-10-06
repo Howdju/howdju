@@ -1,13 +1,14 @@
 import React, { FormEvent } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import { goBack } from "connected-react-router";
-import { CircularProgress, FontIcon, Switch } from "react-md";
+import { FontIcon, Switch } from "react-md";
 import cn from "classnames";
 import get from "lodash/get";
 import map from "lodash/map";
 import { isArray, keys, toString } from "lodash";
 import queryString from "query-string";
 
+import { CircularProgress } from "@/components/progress/CircularProgress";
 import {
   Card,
   CardHeader,

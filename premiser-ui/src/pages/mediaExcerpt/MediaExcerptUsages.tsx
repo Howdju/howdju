@@ -1,5 +1,4 @@
 import React, { UIEvent, useEffect } from "react";
-import { CircularProgress } from "react-md";
 import isEmpty from "lodash/isEmpty";
 import map from "lodash/map";
 import FlipMove from "react-flip-move";
@@ -74,13 +73,6 @@ export default function MediaExcerptUsages({ mediaExcerptId }: Props) {
       onClick={fetchMoreJustifications}
     />
   );
-  const fetchMoreAppearancesButton = (
-    <FetchMoreButton
-      key="fetch-more-appearances-button"
-      isFetching={isFetchingAppearances}
-      onClick={fetchMoreAppearances}
-    />
-  );
 
   return (
     <div className="md-grid">
@@ -104,13 +96,6 @@ export default function MediaExcerptUsages({ mediaExcerptId }: Props) {
       </FlipMove>
       {!isFetchingJustifications && !hasJustifications && (
         <div className="md-cell md-cell--12 text-center">No justifications</div>
-      )}
-      {isFetchingJustifications && (
-        <div className="md-cell md-cell--12 cell--centered-contents">
-          <CircularProgress
-            id={`$media-excerpt-usages-page--justifications--Progress`}
-          />
-        </div>
       )}
       <div className="md-cell md-cell--12 cell--centered-contents">
         {fetchMoreJustificationsButton}
@@ -137,15 +122,12 @@ export default function MediaExcerptUsages({ mediaExcerptId }: Props) {
       {!isFetchingAppearances && !hasAppearances && (
         <div className="md-cell md-cell--12 text-center">No appearances</div>
       )}
-      {isFetchingAppearances && (
-        <div className="md-cell md-cell--12 cell--centered-contents">
-          <CircularProgress
-            id={`$media-excerpt-usages-page--appearances--progress`}
-          />
-        </div>
-      )}
       <div className="md-cell md-cell--12 cell--centered-contents">
-        {fetchMoreAppearancesButton}
+        <FetchMoreButton
+          key="fetch-more-appearances-button"
+          isFetching={isFetchingAppearances}
+          onClick={fetchMoreAppearances}
+        />
       </div>
     </div>
   );

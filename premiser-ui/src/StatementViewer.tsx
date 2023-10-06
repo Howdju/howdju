@@ -1,5 +1,4 @@
 import React from "react";
-import { CircularProgress } from "react-md";
 import { Link } from "react-router-dom";
 import cn from "classnames";
 import get from "lodash/get";
@@ -11,6 +10,7 @@ import {
   StatementOut,
 } from "howdju-common";
 
+import { CircularProgress } from "@/components/progress/CircularProgress";
 import config from "./config";
 import JustificationCountViewer from "./JustificationCountViewer";
 import paths from "./paths";

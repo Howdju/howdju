@@ -1,9 +1,9 @@
 import React, { useEffect } from "react";
-import { CircularProgress } from "react-md";
 import { RouteComponentProps } from "react-router";
 
 import { EntityId, makeCreatePropositionInput } from "howdju-common";
 
+import { CircularProgress } from "@/components/progress/CircularProgress";
 import { api } from "@/apiActions";
 import HowdjuHelmet from "@/Helmet";
 import { useAppDispatch, useAppEntitySelector, useAppSelector } from "@/hooks";

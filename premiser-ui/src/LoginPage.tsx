@@ -2,12 +2,13 @@ import React, { Component, FormEvent } from "react";
 import cn from "classnames";
 import { goBack } from "connected-react-router";
 import { get, map } from "lodash";
-import { CircularProgress, FocusContainer } from "react-md";
+import { FocusContainer } from "react-md";
 import { connect, ConnectedProps } from "react-redux";
 import { Grid, GridCell } from "@react-md/utils";
 
 import { makeCredentials } from "howdju-common";
 
+import { CircularProgress } from "@/components/progress/CircularProgress";
 import { Card, CardContent, CardActions } from "@/components/card/Card";
 import {
   api,

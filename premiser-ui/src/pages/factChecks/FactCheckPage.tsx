@@ -17,7 +17,7 @@ import AppearanceCard from "@/pages/appearances/AppearanceCard";
 import HowdjuHelmet from "@/Helmet";
 import CellList, { largeCellClasses } from "@/CellList";
 import page from "./factCheckPageSlice";
-import { CircularProgress } from "react-md";
+import { CircularProgress } from "@/components/progress/CircularProgress";
 
 /**
  * A page displaying Appearances that are part of a FactCheck.

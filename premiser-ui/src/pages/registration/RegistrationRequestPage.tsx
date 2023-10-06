@@ -1,6 +1,5 @@
 import React, { useEffect } from "react";
 import { goBack } from "connected-react-router";
-import { CircularProgress } from "react-md";
 import get from "lodash/get";
 import moment from "moment";
 
@@ -9,6 +8,7 @@ import {
   RegistrationRequest,
 } from "howdju-common";
 
+import { CircularProgress } from "@/components/progress/CircularProgress";
 import { Card, CardActions, CardContent } from "@/components/card/Card";
 import Helmet from "../../Helmet";
 import { editors } from "../../actions";

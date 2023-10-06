@@ -2,8 +2,8 @@ import React from "react";
 import FlipMove from "react-flip-move";
 import { Action } from "redux";
 import { Button } from "@react-md/button";
-import { CircularProgress } from "@react-md/progress";
 
+import { CircularProgress } from "@/components/progress/CircularProgress";
 import config from "@/config";
 import FlipMoveWrapper from "@/FlipMoveWrapper";
 import { useAppDispatch, useAppEntitySelector, useAppSelector } from "@/hooks";

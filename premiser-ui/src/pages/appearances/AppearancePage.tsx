@@ -1,5 +1,5 @@
 import React, { useContext, useEffect } from "react";
-import { CircularProgress, ListItem, MenuButton } from "react-md";
+import { ListItem, MenuButton } from "react-md";
 import { RouteComponentProps } from "react-router";
 import { DropdownMenu } from "react-md";
 import { MaterialSymbol } from "react-material-symbols";
@@ -7,6 +7,7 @@ import { Link } from "react-router-dom";
 
 import { EntityId } from "howdju-common";
 
+import { CircularProgress } from "@/components/progress/CircularProgress";
 import { api } from "@/apiActions";
 import { useAppDispatch, useAppEntitySelector } from "@/hooks";
 import { appearanceSchema } from "@/normalizationSchemas";

@@ -7,8 +7,10 @@ import ListEntitiesWidget from "./components/listEntities/ListEntitiesWidget";
 import { api } from "./actions";
 import { appearancesSchema } from "./normalizationSchemas";
 import AppearanceCard from "./pages/appearances/AppearanceCard";
+import { ComponentId } from "./types";
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
+  id: ComponentId;
   widgetId: string;
 }
 

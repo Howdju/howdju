@@ -1,5 +1,4 @@
 import React from "react";
-import { CircularProgress } from "react-md";
 
 import {
   AccountSettings,
@@ -13,6 +12,8 @@ import {
   UpdatePersorgInput,
   UpdateSourceInput,
 } from "howdju-common";
+
+import { CircularProgress } from "@/components/progress/CircularProgress";
 import { ComponentId, EditorId, SuggestionsKey } from "./types";
 import { useAppSelector } from "./hooks";
 import { EditorType } from "./reducers/editors";

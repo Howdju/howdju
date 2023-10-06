@@ -1,12 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { RouteComponentProps } from "react-router";
-import {
-  CircularProgress,
-  Divider,
-  DropdownMenu,
-  ListItem,
-  MenuButton,
-} from "react-md";
+import { Divider, DropdownMenu, ListItem, MenuButton } from "react-md";
 import { MaterialSymbol } from "react-material-symbols";
 import { Link } from "react-router-dom";
 import { push } from "connected-react-router";
@@ -18,6 +12,7 @@ import {
   makeCreateUrlLocatorInput,
 } from "howdju-common";
 
+import { CircularProgress } from "@/components/progress/CircularProgress";
 import { useAppDispatch, useAppEntitySelector, useAppSelector } from "@/hooks";
 import { api } from "@/apiActions";
 import { mediaExcerptSchema } from "@/normalizationSchemas";

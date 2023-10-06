@@ -1,7 +1,6 @@
 import React, { useEffect } from "react";
 import { toString } from "lodash";
 import {
-  CircularProgress,
   Divider,
   DropdownMenu,
   FontIcon,
@@ -13,6 +12,7 @@ import { push } from "connected-react-router";
 
 import { EntityId, logger } from "howdju-common";
 
+import { CircularProgress } from "@/components/progress/CircularProgress";
 import Helmet from "../../Helmet";
 import { api, editors, flows } from "../../actions";
 import app from "../../app/appSlice";

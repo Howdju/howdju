@@ -1,7 +1,6 @@
 import React, { MouseEvent, useEffect } from "react";
 import { useLocation } from "react-router";
 import FlipMove from "react-flip-move";
-import { CircularProgress } from "react-md";
 import { isArray, mapValues, pick, map, isEmpty } from "lodash";
 import queryString from "query-string";
 
@@ -10,6 +9,7 @@ import {
   MediaExcerptSearchFilterKeys,
 } from "howdju-common";
 
+import { CircularProgress } from "@/components/progress/CircularProgress";
 import { api } from "../../actions";
 import config from "../../config";
 import { useAppDispatch, useAppSelector, useAppEntitySelector } from "@/hooks";

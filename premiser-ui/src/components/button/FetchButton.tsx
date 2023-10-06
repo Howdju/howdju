@@ -1,8 +1,11 @@
 import React from "react";
-import { CircularProgress, getProgressA11y } from "@react-md/progress";
 import { TextIconSpacing } from "@react-md/icon";
 
 import { Button, ButtonProps } from "./Button";
+import {
+  CircularProgress,
+  getProgressA11y,
+} from "@/components/progress/CircularProgress";
 
 import "./FetchButton.scss";
 
@@ -21,6 +24,7 @@ export default function FetchButton(props: FetchButtonProps) {
       disabled={isFetching}
     >
       <TextIconSpacing
+        iconAfter={true}
         icon={
           isFetching && <CircularProgress id={progressId} centered={false} />
         }

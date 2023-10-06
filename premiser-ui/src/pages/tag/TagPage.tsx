@@ -2,7 +2,6 @@ import React, { useEffect } from "react";
 import Helmet from "../../Helmet";
 import get from "lodash/get";
 import map from "lodash/map";
-import { CircularProgress } from "react-md";
 
 import { api } from "../../actions";
 import PropositionCard from "../../PropositionCard";
@@ -12,6 +11,7 @@ import * as characters from "../../characters";
 import { EntityId } from "howdju-common";
 import { RouteComponentProps } from "react-router";
 import { useAppDispatch, useAppSelector } from "@/hooks";
+import { CircularProgress } from "@/components/progress/CircularProgress";
 
 interface MatchParams {
   tagId: EntityId;

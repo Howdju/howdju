@@ -1,6 +1,5 @@
 import React, { MouseEvent, useState } from "react";
 import { MaterialSymbol } from "react-material-symbols";
-import { CircularProgress } from "react-md";
 import { isEmpty } from "lodash";
 
 import {
@@ -9,6 +8,7 @@ import {
   normalizeUrl,
 } from "howdju-common";
 
+import { CircularProgress } from "@/components/progress/CircularProgress";
 import { makeErrorPropCreator } from "@/modelErrorMessages";
 import SingleLineTextField from "@/SingleLineTextField";
 import { EditorFieldsDispatch, EntityEditorFieldsProps } from "./withEditor";
@@ -17,11 +17,11 @@ import { EditorType } from "@/reducers/editors";
 import { api, editors } from "@/actions";
 import { isValidUrl } from "@/util";
 import { useAppDispatch, useAppSelector } from "@/hooks";
-
-import "./UrlLocatorsEditorFields.scss";
 import IconButton from "@/components/button/IconButton";
 import { FontIcon } from "@react-md/icon";
 import TextButton from "@/components/button/TextButton";
+
+import "./UrlLocatorsEditorFields.scss";
 
 interface Props
   extends EntityEditorFieldsProps<"urlLocators", CreateUrlLocatorInput[]> {

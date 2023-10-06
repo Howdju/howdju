@@ -1,7 +1,6 @@
 import React, { UIEvent, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { find, map } from "lodash";
-import { CircularProgress } from "react-md";
 import FlipMove from "react-flip-move";
 import { useLocation } from "react-router";
 
@@ -12,6 +11,7 @@ import {
   SourceOut,
 } from "howdju-common";
 
+import { CircularProgress } from "@/components/progress/CircularProgress";
 import mainSearcher from "../../mainSearcher";
 import PropositionCard from "../../PropositionCard";
 import { smallCellClasses } from "../../CellList";

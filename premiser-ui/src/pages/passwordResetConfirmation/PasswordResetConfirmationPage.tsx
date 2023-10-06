@@ -1,11 +1,11 @@
 import { isArray } from "lodash";
 import queryString from "query-string";
 import React, { useEffect } from "react";
-import { CircularProgress } from "react-md";
 import { Link, useLocation } from "react-router-dom";
 
 import { makePasswordResetConfirmation } from "howdju-client-common";
 
+import { CircularProgress } from "@/components/progress/CircularProgress";
 import { Card, CardActions, CardContent } from "@/components/card/Card";
 import { editors } from "@/actions";
 import Helmet from "@/Helmet";

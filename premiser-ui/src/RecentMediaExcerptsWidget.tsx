@@ -7,8 +7,10 @@ import ListEntitiesWidget from "./components/listEntities/ListEntitiesWidget";
 import { api } from "./actions";
 import { mediaExcerptsSchema } from "./normalizationSchemas";
 import MediaExcerptCard from "./components/mediaExcerpts/MediaExcerptCard";
+import { ComponentId } from "./types";
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
+  id: ComponentId;
   widgetId: string;
 }
 
