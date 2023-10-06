@@ -1,11 +1,5 @@
 import React from "react";
 import { useDispatch } from "react-redux";
-import {
-  Dialog,
-  DialogHeader,
-  DialogTitle,
-  DialogContent,
-} from "@react-md/dialog";
 
 import { isTruthy } from "howdju-common";
 
@@ -18,6 +12,7 @@ import { RootState } from "@/setupStore";
 import { useAppSelector } from "@/hooks";
 import ContentReportEditor from "./ContentReportEditor";
 import { CommitThenPutAction } from "@/editors/withEditor";
+import { Dialog, DialogContent } from "@/components/dialog/Dialog";
 
 const baseId = "reportContentDialog";
 const id = combineIds(baseId, "editor");
@@ -40,13 +35,7 @@ export default function ReportContentDialog() {
       title="Report Content"
       onRequestClose={() => dispatch(editors.cancelEdit(editorType, editorId))}
       visible={isEditing}
-      aria-labelledby="report-content-dialog-title"
     >
-      <DialogHeader>
-        <DialogTitle id="report-content-dialog-title">
-          Report Content
-        </DialogTitle>
-      </DialogHeader>
       <DialogContent>
         <Card>
           <ContentReportEditor
