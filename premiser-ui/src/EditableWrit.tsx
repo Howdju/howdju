@@ -1,8 +1,8 @@
 import React from "react";
-import { CircularProgress } from "react-md";
 
 import { WritOut } from "howdju-common";
 
+import { CircularProgress } from "@/components/progress/CircularProgress";
 import { OnClickWritQuoteUrl } from "./WritQuoteViewer";
 import { ComponentId, EditorId } from "./types";
 import { useAppSelector } from "./hooks";

@@ -1,5 +1,4 @@
 import React, { useEffect } from "react";
-import { CircularProgress } from "react-md";
 import get from "lodash/get";
 import queryString from "query-string";
 import { isArray } from "lodash";
@@ -12,6 +11,7 @@ import {
   RegistrationConfirmation,
 } from "howdju-common";
 
+import { CircularProgress } from "@/components/progress/CircularProgress";
 import { Card, CardActions, CardContent } from "@/components/card/Card";
 import Helmet from "../../Helmet";
 import { api, editors } from "../../actions";

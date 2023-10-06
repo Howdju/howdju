@@ -26,12 +26,14 @@ export default function RecentActivityPage() {
 
       <h1 className="md-cell--12">Recent media excerpts</h1>
       <RecentMediaExcerptsWidget
+        id="recent-activity-page-media-excerpts"
         className="md-grid md-cell md-cell--12 md-grid--card-list--tablet"
         widgetId={recentMediaExcerptsWidgetId}
       />
 
       <h1 className="md-cell--12">Recent appearances</h1>
       <RecentAppearancesWidget
+        id="recent-activity-page-appearances"
         className="md-grid md-cell md-cell--12 md-grid--card-list--tablet"
         widgetId={recentAppearancesWidgetId}
       />

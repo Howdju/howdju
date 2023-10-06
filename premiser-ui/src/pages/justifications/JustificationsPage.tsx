@@ -1,5 +1,5 @@
 import React, { Component, UIEvent } from "react";
-import { CircularProgress, FontIcon, ListItem } from "react-md";
+import { FontIcon, ListItem } from "react-md";
 import { connect, ConnectedProps } from "react-redux";
 import isEmpty from "lodash/isEmpty";
 import isEqual from "lodash/isEqual";
@@ -19,6 +19,7 @@ import {
 } from "howdju-common";
 import { actions, isVerified, isDisverified } from "howdju-client-common";
 
+import { CircularProgress } from "@/components/progress/CircularProgress";
 import Helmet from "@/Helmet";
 import {
   api,

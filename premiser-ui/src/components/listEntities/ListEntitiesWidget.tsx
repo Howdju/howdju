@@ -10,7 +10,7 @@ import FetchMoreButton from "../button/FetchMoreButton";
 import FetchButton from "../button/FetchButton";
 
 type ListEntitiesWidgetProps = {
-  id?: string;
+  id: string;
   widgetId: string;
   entitiesWidgetStateKey: string;
   fetchEntities: ActionCreator<any>;

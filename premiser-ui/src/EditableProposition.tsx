@@ -1,8 +1,8 @@
 import React from "react";
-import { CircularProgress } from "react-md";
 
 import { ContextTrailItem, isTruthy, PropositionOut } from "howdju-common";
 
+import { CircularProgress } from "@/components/progress/CircularProgress";
 import { defaultEditorState, EditorTypes } from "./reducers/editors";
 import PropositionViewer from "./PropositionViewer";
 import PropositionEditor from "./PropositionEditor";

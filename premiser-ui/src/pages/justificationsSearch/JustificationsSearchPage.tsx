@@ -1,13 +1,13 @@
 import React, { MouseEvent, useEffect } from "react";
 import { useLocation } from "react-router";
 import FlipMove from "react-flip-move";
-import { CircularProgress } from "react-md";
 import isEmpty from "lodash/isEmpty";
 import map from "lodash/map";
 import { denormalize } from "normalizr";
 
 import { JustificationView } from "howdju-common";
 
+import { CircularProgress } from "@/components/progress/CircularProgress";
 import { api } from "../../actions";
 import JustificationCard from "../../JustificationCard";
 import { justificationsSchema } from "../../normalizationSchemas";

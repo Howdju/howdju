@@ -1,10 +1,10 @@
 import React, { UIEvent, useEffect } from "react";
-import { CircularProgress } from "react-md";
 import { map, isEmpty } from "lodash";
 import { RouteComponentProps } from "react-router";
 
 import { EntityId } from "howdju-common";
 
+import { CircularProgress } from "@/components/progress/CircularProgress";
 import { api } from "../../actions";
 import CellList from "../../CellList";
 import {

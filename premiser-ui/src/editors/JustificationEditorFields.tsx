@@ -1,5 +1,5 @@
 import React, { ChangeEvent } from "react";
-import { CircularProgress, Divider, Subheader } from "react-md";
+import { Divider, Subheader } from "react-md";
 
 import {
   isWritQuoteBased,
@@ -12,6 +12,7 @@ import {
   isOnlyRef,
 } from "howdju-common";
 
+import { CircularProgress } from "@/components/progress/CircularProgress";
 import t, {
   JUSTIFICATION_POLARITY_NEGATIVE,
   JUSTIFICATION_POLARITY_POSITIVE,

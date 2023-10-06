@@ -9,6 +9,7 @@ import {
   ContextTrailItem,
 } from "howdju-common";
 
+import { CircularProgress } from "@/components/progress/CircularProgress";
 import ErrorMessages from "@/ErrorMessages";
 import ContextTrail from "./ContextTrail";
 import { PrimaryContextTrail } from "./PrimaryContextTrailProvider";
@@ -16,7 +17,6 @@ import { ComponentId } from "@/types";
 import { logger } from "@/logger";
 import { useAppEntitySelector } from "@/hooks";
 import { normalizationSchemaByEntityType } from "@/normalizationSchemas";
-import { CircularProgress } from "react-md";
 import { combineIds } from "@/viewModels";
 
 interface Props {
