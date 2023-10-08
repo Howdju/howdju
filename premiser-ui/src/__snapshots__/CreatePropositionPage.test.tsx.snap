@@ -445,52 +445,36 @@ exports[`CreatePropositionPage (with fake timers) renders correctly with query p
                 class="writ-quote-editor-fields"
               >
                 <div
-                  class="md-text-field-container md-full-width md-text-field-container--multiline"
+                  class="rmd-text-field-container rmd-text-field-container--outline rmd-text-field-container--hoverable rmd-text-field-container--label rmd-textarea-container rmd-textarea-container--animate rmd-textarea-container--cursor"
                 >
                   <label
-                    class="md-floating-label md-floating-label--floating md-text--secondary"
+                    class="rmd-label rmd-floating-label rmd-floating-label--active rmd-floating-label--inactive"
                     for="create-proposition-page--justification--basis-writ-quote--quote-text"
                   >
                     Quote
                   </label>
                   <div
-                    class="md-text-field-multiline-container md-text-field--floating-margin"
-                    style="height: 0px;"
+                    class="rmd-textarea-container__inner rmd-textarea-container__inner--animate"
                   >
-                    <span
-                      aria-hidden="true"
-                    />
+                    <textarea
+                      class="rmd-textarea rmd-textarea--floating rmd-textarea--rn"
+                      id="create-proposition-page--justification--basis-writ-quote--quote-text"
+                      maxlength="4096"
+                      name="justification.basis.writQuote.quoteText"
+                      rows="2"
+                    >
+                      An important conclusion.
+                    </textarea>
                     <textarea
                       aria-hidden="true"
-                      class="md-text-field md-text-field--multiline md-full-width md-text md-text-field--multiline-mask"
+                      class="rmd-textarea rmd-textarea--rn rmd-textarea--mask rmd-textarea--floating"
+                      id="create-proposition-page--justification--basis-writ-quote--quote-text-mask"
                       readonly=""
                       rows="2"
                       tabindex="-1"
                     >
                       An important conclusion.
                     </textarea>
-                    <textarea
-                      class="md-text-field md-text-field--multiline md-full-width md-text"
-                      id="create-proposition-page--justification--basis-writ-quote--quote-text"
-                      name="justification.basis.writQuote.quoteText"
-                      rows="2"
-                      style="height: 0px;"
-                    >
-                      An important conclusion.
-                    </textarea>
-                  </div>
-                  <hr
-                    class="md-divider md-divider--text-field md-divider--expand-from-left"
-                  />
-                  <div
-                    class="md-text-field-message-container md-text-field-message-container--count-only md-full-width md-text--disabled"
-                  >
-                    <div
-                      aria-hidden="true"
-                      class="md-text-field-message md-text-field-message--inactive md-text-field-message--counter"
-                    >
-                      24 / 4096
-                    </div>
                   </div>
                 </div>
                 <div
@@ -567,53 +551,36 @@ exports[`CreatePropositionPage (with fake timers) renders correctly with query p
                   </div>
                 </div>
                 <div
-                  class="md-text-field-container md-full-width md-text-field-container--multiline writ-quote-url-input"
+                  class="rmd-text-field-container rmd-text-field-container--outline rmd-text-field-container--hoverable rmd-text-field-container--label rmd-text-field-container--outline-left rmd-text-field-container--outline-right writ-quote-url-input"
                 >
+                  <span
+                    class="rmd-text-field-addon rmd-text-field-addon--presentational"
+                  >
+                    <span
+                      class="material-symbols"
+                    >
+                      link
+                    </span>
+                  </span>
                   <label
-                    class="md-floating-label md-floating-label--floating md-text--secondary"
+                    class="rmd-label rmd-floating-label rmd-floating-label--active rmd-floating-label--inactive"
                     for="create-proposition-page--justification--basis-writ-quote--urls-0--url"
                   >
                     URL
                   </label>
-                  <div
-                    class="md-text-field-icon-container"
+                  <input
+                    aria-label="url"
+                    class="rmd-text-field rmd-text-field--floating"
+                    id="create-proposition-page--justification--basis-writ-quote--urls-0--url"
+                    name="justification.basis.writQuote.urls[0].url"
+                    type="url"
+                    value="https://www.info.com"
+                  />
+                  <span
+                    class="rmd-text-field-addon rmd-text-field-addon--presentational"
                   >
-                    <div
-                      class="md-text-field-divider-container md-text-field-divider-container--grow"
-                    >
-                      <div
-                        class="md-text-field-multiline-container md-text-field--floating-margin"
-                        style="height: 0px;"
-                      >
-                        <span
-                          aria-hidden="true"
-                        />
-                        <textarea
-                          aria-hidden="true"
-                          class="md-text-field md-text-field--multiline md-full-width md-text md-text-field--multiline-mask"
-                          readonly=""
-                          rows="1"
-                          tabindex="-1"
-                        >
-                          https://www.info.com
-                        </textarea>
-                        <textarea
-                          aria-label="url"
-                          class="md-text-field md-text-field--multiline md-full-width md-text"
-                          id="create-proposition-page--justification--basis-writ-quote--urls-0--url"
-                          name="justification.basis.writQuote.urls[0].url"
-                          rows="1"
-                          style="height: 0px;"
-                        >
-                          https://www.info.com
-                        </textarea>
-                      </div>
-                      <hr
-                        class="md-divider md-divider--text-field md-divider--expand-from-left"
-                      />
-                    </div>
                     <button
-                      class="rmd-button rmd-button--icon rmd-button--text-primary md-text-field-icon md-text-field-icon--positioned"
+                      class="rmd-button rmd-button--icon rmd-button--text-primary"
                       type="button"
                     >
                       <i
@@ -625,7 +592,7 @@ exports[`CreatePropositionPage (with fake timers) renders correctly with query p
                         class="rmd-ripple-container"
                       />
                     </button>
-                  </div>
+                  </span>
                 </div>
                 <button
                   class="rmd-button rmd-button--text rmd-button--text-primary add-button"

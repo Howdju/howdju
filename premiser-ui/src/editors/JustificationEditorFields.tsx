@@ -28,7 +28,7 @@ import {
   EditorFieldsDispatch,
   EntityEditorFieldsProps,
 } from "@/editors/withEditor";
-import { makeErrorPropCreator } from "@/modelErrorMessages";
+import { makeReactMd1ErrorPropCreator } from "@/modelErrorMessages";
 import { logger } from "@/logger";
 
 import "./JustificationEditorFields.scss";
@@ -184,7 +184,7 @@ export default function JustificationEditorFields(props: Props) {
   const basisTypeName = "basis.type";
   const basisType = justification?.basis.type;
 
-  const errorProps = makeErrorPropCreator(
+  const reactMd1ErrorProps = makeReactMd1ErrorPropCreator(
     wasSubmitAttempted,
     errors,
     dirtyFields,
@@ -204,7 +204,7 @@ export default function JustificationEditorFields(props: Props) {
         }
         controls={polarityControls}
         disabled={disabled}
-        {...errorProps((i) => i.polarity)}
+        {...reactMd1ErrorProps((i) => i.polarity)}
       />
       <Divider />
       {doShowTypeSelection && (
@@ -221,7 +221,7 @@ export default function JustificationEditorFields(props: Props) {
             }
             controls={basisTypeControls}
             disabled={disabled}
-            {...errorProps((i) => i.basis.type)}
+            {...reactMd1ErrorProps((i) => i.basis.type)}
           />
         </>
       )}

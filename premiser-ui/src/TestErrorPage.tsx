@@ -2,7 +2,7 @@ import React, { MouseEvent, useState } from "react";
 import { FocusContainer, SelectField } from "react-md";
 
 import { Card, CardActions, CardContent } from "@/components/card/Card";
-import SingleLineTextField from "./SingleLineTextField";
+import SingleLineTextArea from "@/components/text/SingleLineTextArea";
 import * as sentry from "./sentry";
 import { PropertyChanges } from "./types";
 import { ListValue } from "react-md/lib/SelectFields/SelectField";
@@ -67,7 +67,8 @@ export default function TestErrorPage() {
     <Card title="Test error">
       <FocusContainer focusOnMount containFocus={false}>
         <CardContent>
-          <SingleLineTextField
+          <SingleLineTextArea
+            id="message"
             name="message"
             value={message}
             required

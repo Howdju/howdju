@@ -5,7 +5,7 @@ import {
   MediaExcerptCitation,
 } from "howdju-common";
 
-import SingleLineTextField from "@/SingleLineTextField";
+import SingleLineTextArea from "@/components/text/SingleLineTextArea";
 import { EntityEditorFieldsProps } from "./withEditor";
 import { combineIds, combineNames, combineSuggestionsKeys } from "@/viewModels";
 import SourceEditorFields from "@/components/sources/SourceEditorFields";
@@ -61,8 +61,8 @@ export function MediaExcerptCitationsEditorFields({
             wasSubmitAttempted={wasSubmitAttempted}
             onSubmit={onSubmit}
           />
-          <SingleLineTextField
-            {...errorProps((me) => me[index].pincite)}
+          <SingleLineTextArea
+            messageProps={errorProps((me) => me[index].pincite)}
             id={combineIds(id, `[${index}].pincite`)}
             name={combineNames(name, `[${index}].pincite`)}
             key={combineIds(id, `[${index}].pincite`)}

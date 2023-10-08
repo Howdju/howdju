@@ -11,6 +11,8 @@ import {
 import { editors } from "@/actions";
 import RegistrationRequestEditor from "@/pages/registration/RegistrationRequestEditor";
 
+const REACT_MD_LABEL_ERROR_CLASS = "rmd-label--error";
+
 withFakeTimers();
 
 describe("withEditor", () => {
@@ -59,7 +61,7 @@ describe("withEditor", () => {
       // Assert
       const titleInput = screen.getByLabelText(/email/i);
       const titleLabel = container.querySelector(`[for=${titleInput.id}]`);
-      expect(titleLabel).toHaveClass("md-text--error");
+      expect(titleLabel).toHaveClass(REACT_MD_LABEL_ERROR_CLASS);
 
       expect(screen.getByText(/invalid email/i)).toBeInTheDocument();
 

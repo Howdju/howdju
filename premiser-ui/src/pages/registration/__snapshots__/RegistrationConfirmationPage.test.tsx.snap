@@ -43,245 +43,194 @@ exports[`RegistrationConfirmationPage shows error message for duplicate username
                   class="error-message"
                 />
                 <div
-                  class="md-text-field-container md-full-width md-text-field-container--disabled md-text-field-container--multiline"
+                  class="rmd-text-field-container rmd-text-field-container--outline rmd-text-field-container--disabled rmd-text-field-container--label rmd-text-field-container--outline-left"
                 >
+                  <span
+                    class="rmd-text-field-addon rmd-text-field-addon--presentational"
+                  >
+                    <span
+                      class="material-symbols"
+                    >
+                      alternate_email
+                    </span>
+                  </span>
                   <label
-                    class="md-floating-label md-floating-label--floating md-text--disabled"
+                    class="rmd-label rmd-label--disabled rmd-floating-label rmd-floating-label--active"
                     for="email"
                   >
                     Email
                   </label>
-                  <div
-                    class="md-text-field-multiline-container md-text-field--floating-margin"
-                    style="height: 0px;"
-                  >
-                    <span
-                      aria-hidden="true"
-                    />
-                    <textarea
-                      aria-hidden="true"
-                      class="md-text-field md-text-field--multiline md-full-width md-text--disabled md-text-field--multiline-mask"
-                      readonly=""
-                      rows="1"
-                      tabindex="-1"
-                    >
-                      a@b.com
-                    </textarea>
-                    <textarea
-                      autocomplete="email"
-                      class="md-text-field md-text-field--multiline md-full-width md-text--disabled"
-                      disabled=""
-                      id="email"
-                      rows="1"
-                      style="height: 0px;"
-                    >
-                      a@b.com
-                    </textarea>
-                  </div>
-                  <hr
-                    class="md-divider md-divider--text-field md-divider--expand-from-left"
+                  <input
+                    autocomplete="email"
+                    class="rmd-text-field rmd-text-field--floating"
+                    disabled=""
+                    id="email"
+                    type="email"
+                    value="a@b.com"
                   />
                 </div>
                 <div
-                  class="md-text-field-container md-full-width md-text-field-container--multiline"
+                  class="rmd-text-field-container rmd-text-field-container--error rmd-text-field-container--outline rmd-text-field-container--hoverable rmd-text-field-container--label rmd-text-field-container--outline-error rmd-textarea-container rmd-textarea-container--animate rmd-textarea-container--cursor"
                 >
                   <label
-                    class="md-floating-label md-floating-label--floating md-text--error"
+                    class="rmd-label rmd-label--error rmd-floating-label rmd-floating-label--active"
                     for="username"
                   >
-                    Username *
+                    Username
                   </label>
                   <div
-                    class="md-text-field-multiline-container md-text-field--floating-margin"
-                    style="height: 0px;"
+                    class="rmd-textarea-container__inner rmd-textarea-container__inner--animate"
                   >
-                    <span
-                      aria-hidden="true"
-                    />
-                    <textarea
-                      aria-hidden="true"
-                      class="md-text-field md-text-field--multiline md-full-width md-text md-text-field--multiline-mask"
-                      readonly=""
-                      rows="1"
-                      tabindex="-1"
-                    >
-                      the_username
-                    </textarea>
                     <textarea
                       autocomplete="username"
-                      class="md-text-field md-text-field--multiline md-full-width md-text"
+                      class="rmd-textarea rmd-textarea--floating rmd-textarea--rn"
                       id="username"
+                      maxlength="64"
                       minlength="3"
                       name="username"
                       required=""
                       rows="1"
-                      style="height: 0px;"
+                    >
+                      the_username
+                    </textarea>
+                    <textarea
+                      aria-hidden="true"
+                      class="rmd-textarea rmd-textarea--rn rmd-textarea--mask rmd-textarea--floating"
+                      id="username-mask"
+                      readonly=""
+                      rows="1"
+                      tabindex="-1"
                     >
                       the_username
                     </textarea>
                   </div>
-                  <hr
-                    class="md-divider md-divider--text-field md-divider--expand-from-left md-divider--text-field-error"
-                  />
-                  <div
-                    class="md-text-field-message-container md-full-width md-text--error"
-                  >
-                    <div
-                      aria-hidden="false"
-                      class="md-text-field-message md-text-field-message--active"
-                    >
-                      The username is already in use: the_username
-                    </div>
-                    <div
-                      aria-hidden="true"
-                      class="md-text-field-message md-text-field-message--inactive md-text-field-message--counter"
-                    >
-                      12 / 64
-                    </div>
-                  </div>
                 </div>
                 <div
-                  class="md-text-field-container md-full-width md-text-field-container--input"
+                  aria-live="polite"
+                  class="rmd-form-message rmd-form-message--error rmd-form-message--outline"
+                  id="username--message"
                 >
+                  <p
+                    class="rmd-form-message__message"
+                    id="username--message-message"
+                  >
+                    The username is already in use: the_username
+                  </p>
+                </div>
+                <div
+                  class="rmd-text-field-container rmd-text-field-container--outline rmd-text-field-container--hoverable rmd-text-field-container--label rmd-text-field-container--outline-left rmd-text-field-container--outline-right rmd-password rmd-password--offset"
+                >
+                  <span
+                    class="rmd-text-field-addon rmd-text-field-addon--presentational"
+                  >
+                    <span
+                      class="material-symbols"
+                    >
+                      password
+                    </span>
+                  </span>
                   <label
-                    class="md-floating-label md-floating-label--floating md-text--secondary"
+                    class="rmd-label rmd-floating-label rmd-floating-label--active rmd-floating-label--inactive"
                     for="password"
                   >
-                    Password *
+                    Password
                   </label>
                   <input
                     autocomplete="new-password"
-                    class="md-text-field md-text-field--inline-indicator md-text-field--floating-margin md-full-width md-text"
+                    class="rmd-text-field rmd-text-field--floating rmd-password__input rmd-password__input--offset"
                     id="password"
+                    maxlength="64"
                     minlength="6"
                     name="password"
                     required=""
                     type="password"
                     value="password"
                   />
-                  <hr
-                    class="md-divider md-divider--text-field md-divider--expand-from-left"
-                  />
                   <button
-                    class="md-text-field-inline-indicator md-password-btn md-pointer--hover md-text-field-inline-indicator--floating md-text--disabled"
+                    aria-label="Show password"
+                    aria-pressed="false"
+                    class="rmd-button rmd-button--icon rmd-password__toggle"
+                    id="password-password-toggle"
                     type="button"
                   >
                     <i
-                      class="md-icon material-icons"
+                      aria-hidden="true"
+                      class="rmd-icon rmd-icon--font material-icons"
                     >
                       remove_red_eye
                     </i>
+                    <span
+                      class="rmd-ripple-container"
+                    />
                   </button>
-                  <div
-                    class="md-text-field-message-container md-text-field-message-container--count-only md-text-field-message-container--right-icon-offset md-full-width md-text--disabled"
-                  >
-                    <div
-                      aria-hidden="true"
-                      class="md-text-field-message md-text-field-message--inactive md-text-field-message--counter"
-                    >
-                      8 / 64
-                    </div>
-                  </div>
                 </div>
                 <div
-                  class="md-text-field-container md-full-width md-text-field-container--multiline"
+                  class="rmd-text-field-container rmd-text-field-container--outline rmd-text-field-container--hoverable rmd-text-field-container--label rmd-textarea-container rmd-textarea-container--animate rmd-textarea-container--cursor"
                 >
                   <label
-                    class="md-floating-label md-floating-label--floating md-text--secondary"
+                    class="rmd-label rmd-floating-label rmd-floating-label--active rmd-floating-label--inactive"
                     for="long-name"
                   >
-                    Full Name *
+                    Full Name
                   </label>
                   <div
-                    class="md-text-field-multiline-container md-text-field--floating-margin"
-                    style="height: 0px;"
+                    class="rmd-textarea-container__inner rmd-textarea-container__inner--animate"
                   >
-                    <span
-                      aria-hidden="true"
-                    />
+                    <textarea
+                      autocomplete="name"
+                      class="rmd-textarea rmd-textarea--floating rmd-textarea--rn"
+                      id="long-name"
+                      maxlength="64"
+                      name="longName"
+                      required=""
+                      rows="1"
+                    >
+                      Testius Maximus IV
+                    </textarea>
                     <textarea
                       aria-hidden="true"
-                      class="md-text-field md-text-field--multiline md-full-width md-text md-text-field--multiline-mask"
+                      class="rmd-textarea rmd-textarea--rn rmd-textarea--mask rmd-textarea--floating"
+                      id="long-name-mask"
                       readonly=""
                       rows="1"
                       tabindex="-1"
                     >
                       Testius Maximus IV
                     </textarea>
-                    <textarea
-                      autocomplete="name"
-                      class="md-text-field md-text-field--multiline md-full-width md-text"
-                      id="long-name"
-                      name="longName"
-                      required=""
-                      rows="1"
-                      style="height: 0px;"
-                    >
-                      Testius Maximus IV
-                    </textarea>
-                  </div>
-                  <hr
-                    class="md-divider md-divider--text-field md-divider--expand-from-left"
-                  />
-                  <div
-                    class="md-text-field-message-container md-text-field-message-container--count-only md-full-width md-text--disabled"
-                  >
-                    <div
-                      aria-hidden="true"
-                      class="md-text-field-message md-text-field-message--inactive md-text-field-message--counter"
-                    >
-                      18 / 64
-                    </div>
                   </div>
                 </div>
                 <div
-                  class="md-text-field-container md-full-width md-text-field-container--multiline"
+                  class="rmd-text-field-container rmd-text-field-container--outline rmd-text-field-container--hoverable rmd-text-field-container--label rmd-textarea-container rmd-textarea-container--animate rmd-textarea-container--cursor"
                 >
                   <label
-                    class="md-floating-label md-floating-label--floating md-text--secondary"
+                    class="rmd-label rmd-floating-label rmd-floating-label--active rmd-floating-label--inactive"
                     for="short-name"
                   >
                     First Name
                   </label>
                   <div
-                    class="md-text-field-multiline-container md-text-field--floating-margin"
-                    style="height: 0px;"
+                    class="rmd-textarea-container__inner rmd-textarea-container__inner--animate"
                   >
-                    <span
-                      aria-hidden="true"
-                    />
+                    <textarea
+                      autocomplete="given-name"
+                      class="rmd-textarea rmd-textarea--floating rmd-textarea--rn"
+                      id="short-name"
+                      maxlength="32"
+                      name="shortName"
+                      rows="1"
+                    >
+                      Testy
+                    </textarea>
                     <textarea
                       aria-hidden="true"
-                      class="md-text-field md-text-field--multiline md-full-width md-text md-text-field--multiline-mask"
+                      class="rmd-textarea rmd-textarea--rn rmd-textarea--mask rmd-textarea--floating"
+                      id="short-name-mask"
                       readonly=""
                       rows="1"
                       tabindex="-1"
                     >
                       Testy
                     </textarea>
-                    <textarea
-                      autocomplete="given-name"
-                      class="md-text-field md-text-field--multiline md-full-width md-text"
-                      id="short-name"
-                      name="shortName"
-                      rows="1"
-                      style="height: 0px;"
-                    >
-                      Testy
-                    </textarea>
-                  </div>
-                  <hr
-                    class="md-divider md-divider--text-field md-divider--expand-from-left"
-                  />
-                  <div
-                    class="md-text-field-message-container md-text-field-message-container--count-only md-full-width md-text--disabled"
-                  >
-                    <div
-                      aria-hidden="true"
-                      class="md-text-field-message md-text-field-message--inactive md-text-field-message--counter"
-                    >
-                      5 / 32
-                    </div>
                   </div>
                 </div>
                 <div
@@ -606,227 +555,170 @@ exports[`RegistrationConfirmationPage shows form 1`] = `
                   class="error-message"
                 />
                 <div
-                  class="md-text-field-container md-full-width md-text-field-container--disabled md-text-field-container--multiline"
+                  class="rmd-text-field-container rmd-text-field-container--outline rmd-text-field-container--disabled rmd-text-field-container--label rmd-text-field-container--outline-left"
                 >
+                  <span
+                    class="rmd-text-field-addon rmd-text-field-addon--presentational"
+                  >
+                    <span
+                      class="material-symbols"
+                    >
+                      alternate_email
+                    </span>
+                  </span>
                   <label
-                    class="md-floating-label md-floating-label--floating md-text--disabled"
+                    class="rmd-label rmd-label--disabled rmd-floating-label rmd-floating-label--active"
                     for="email"
                   >
                     Email
                   </label>
-                  <div
-                    class="md-text-field-multiline-container md-text-field--floating-margin"
-                    style="height: 0px;"
-                  >
-                    <span
-                      aria-hidden="true"
-                    />
-                    <textarea
-                      aria-hidden="true"
-                      class="md-text-field md-text-field--multiline md-full-width md-text--disabled md-text-field--multiline-mask"
-                      readonly=""
-                      rows="1"
-                      tabindex="-1"
-                    >
-                      the-email@domain.com
-                    </textarea>
-                    <textarea
-                      autocomplete="email"
-                      class="md-text-field md-text-field--multiline md-full-width md-text--disabled"
-                      disabled=""
-                      id="email"
-                      rows="1"
-                      style="height: 0px;"
-                    >
-                      the-email@domain.com
-                    </textarea>
-                  </div>
-                  <hr
-                    class="md-divider md-divider--text-field md-divider--expand-from-left"
+                  <input
+                    autocomplete="email"
+                    class="rmd-text-field rmd-text-field--floating"
+                    disabled=""
+                    id="email"
+                    type="email"
+                    value="the-email@domain.com"
                   />
                 </div>
                 <div
-                  class="md-text-field-container md-full-width md-text-field-container--multiline"
+                  class="rmd-text-field-container rmd-text-field-container--outline rmd-text-field-container--hoverable rmd-text-field-container--label rmd-textarea-container rmd-textarea-container--animate rmd-textarea-container--cursor"
                 >
                   <label
-                    class="md-floating-label md-floating-label--inactive md-floating-label--inactive-sized md-text--secondary"
+                    class="rmd-label rmd-floating-label"
                     for="username"
                   >
-                    Username *
+                    Username
                   </label>
                   <div
-                    class="md-text-field-multiline-container md-text-field--floating-margin"
-                    style="height: 0px;"
+                    class="rmd-textarea-container__inner rmd-textarea-container__inner--animate"
                   >
-                    <span
-                      aria-hidden="true"
-                    />
-                    <textarea
-                      aria-hidden="true"
-                      class="md-text-field md-text-field--multiline md-full-width md-text md-text-field--multiline-mask"
-                      readonly=""
-                      rows="1"
-                      tabindex="-1"
-                    />
                     <textarea
                       autocomplete="username"
-                      class="md-text-field md-text-field--multiline md-full-width md-text"
+                      class="rmd-textarea rmd-textarea--floating rmd-textarea--rn"
                       id="username"
+                      maxlength="64"
                       minlength="3"
                       name="username"
                       required=""
                       rows="1"
-                      style="height: 0px;"
                     />
-                  </div>
-                  <hr
-                    class="md-divider md-divider--text-field md-divider--expand-from-left"
-                  />
-                  <div
-                    class="md-text-field-message-container md-text-field-message-container--count-only md-full-width md-text--disabled"
-                  >
-                    <div
+                    <textarea
                       aria-hidden="true"
-                      class="md-text-field-message md-text-field-message--inactive md-text-field-message--counter"
-                    >
-                      0 / 64
-                    </div>
+                      class="rmd-textarea rmd-textarea--rn rmd-textarea--mask rmd-textarea--floating"
+                      id="username-mask"
+                      readonly=""
+                      rows="1"
+                      tabindex="-1"
+                    />
                   </div>
                 </div>
                 <div
-                  class="md-text-field-container md-full-width md-text-field-container--input"
+                  class="rmd-text-field-container rmd-text-field-container--outline rmd-text-field-container--hoverable rmd-text-field-container--label rmd-text-field-container--outline-left rmd-text-field-container--outline-right rmd-password rmd-password--offset"
                 >
+                  <span
+                    class="rmd-text-field-addon rmd-text-field-addon--presentational"
+                  >
+                    <span
+                      class="material-symbols"
+                    >
+                      password
+                    </span>
+                  </span>
                   <label
-                    class="md-floating-label md-floating-label--inactive md-floating-label--inactive-sized md-text--secondary"
+                    class="rmd-label rmd-floating-label"
                     for="password"
                   >
-                    Password *
+                    Password
                   </label>
                   <input
                     autocomplete="new-password"
-                    class="md-text-field md-text-field--inline-indicator md-text-field--floating-margin md-full-width md-text"
+                    class="rmd-text-field rmd-text-field--floating rmd-password__input rmd-password__input--offset"
                     id="password"
+                    maxlength="64"
                     minlength="6"
                     name="password"
                     required=""
                     type="password"
                     value=""
                   />
-                  <hr
-                    class="md-divider md-divider--text-field md-divider--expand-from-left"
-                  />
                   <button
-                    class="md-text-field-inline-indicator md-password-btn md-pointer--hover md-text-field-inline-indicator--floating md-text--disabled"
+                    aria-label="Show password"
+                    aria-pressed="false"
+                    class="rmd-button rmd-button--icon rmd-password__toggle"
+                    id="password-password-toggle"
                     type="button"
                   >
                     <i
-                      class="md-icon material-icons"
+                      aria-hidden="true"
+                      class="rmd-icon rmd-icon--font material-icons"
                     >
                       remove_red_eye
                     </i>
+                    <span
+                      class="rmd-ripple-container"
+                    />
                   </button>
-                  <div
-                    class="md-text-field-message-container md-text-field-message-container--count-only md-text-field-message-container--right-icon-offset md-full-width md-text--disabled"
-                  >
-                    <div
-                      aria-hidden="true"
-                      class="md-text-field-message md-text-field-message--inactive md-text-field-message--counter"
-                    >
-                      0 / 64
-                    </div>
-                  </div>
                 </div>
                 <div
-                  class="md-text-field-container md-full-width md-text-field-container--multiline"
+                  class="rmd-text-field-container rmd-text-field-container--outline rmd-text-field-container--hoverable rmd-text-field-container--label rmd-textarea-container rmd-textarea-container--animate rmd-textarea-container--cursor"
                 >
                   <label
-                    class="md-floating-label md-floating-label--inactive md-floating-label--inactive-sized md-text--secondary"
+                    class="rmd-label rmd-floating-label"
                     for="long-name"
                   >
-                    Full Name *
+                    Full Name
                   </label>
                   <div
-                    class="md-text-field-multiline-container md-text-field--floating-margin"
-                    style="height: 0px;"
+                    class="rmd-textarea-container__inner rmd-textarea-container__inner--animate"
                   >
-                    <span
-                      aria-hidden="true"
+                    <textarea
+                      autocomplete="name"
+                      class="rmd-textarea rmd-textarea--floating rmd-textarea--rn"
+                      id="long-name"
+                      maxlength="64"
+                      name="longName"
+                      required=""
+                      rows="1"
                     />
                     <textarea
                       aria-hidden="true"
-                      class="md-text-field md-text-field--multiline md-full-width md-text md-text-field--multiline-mask"
+                      class="rmd-textarea rmd-textarea--rn rmd-textarea--mask rmd-textarea--floating"
+                      id="long-name-mask"
                       readonly=""
                       rows="1"
                       tabindex="-1"
                     />
-                    <textarea
-                      autocomplete="name"
-                      class="md-text-field md-text-field--multiline md-full-width md-text"
-                      id="long-name"
-                      name="longName"
-                      required=""
-                      rows="1"
-                      style="height: 0px;"
-                    />
-                  </div>
-                  <hr
-                    class="md-divider md-divider--text-field md-divider--expand-from-left"
-                  />
-                  <div
-                    class="md-text-field-message-container md-text-field-message-container--count-only md-full-width md-text--disabled"
-                  >
-                    <div
-                      aria-hidden="true"
-                      class="md-text-field-message md-text-field-message--inactive md-text-field-message--counter"
-                    >
-                      0 / 64
-                    </div>
                   </div>
                 </div>
                 <div
-                  class="md-text-field-container md-full-width md-text-field-container--multiline"
+                  class="rmd-text-field-container rmd-text-field-container--outline rmd-text-field-container--hoverable rmd-text-field-container--label rmd-textarea-container rmd-textarea-container--animate rmd-textarea-container--cursor"
                 >
                   <label
-                    class="md-floating-label md-floating-label--inactive md-floating-label--inactive-sized md-text--secondary"
+                    class="rmd-label rmd-floating-label"
                     for="short-name"
                   >
                     First Name
                   </label>
                   <div
-                    class="md-text-field-multiline-container md-text-field--floating-margin"
-                    style="height: 0px;"
+                    class="rmd-textarea-container__inner rmd-textarea-container__inner--animate"
                   >
-                    <span
-                      aria-hidden="true"
+                    <textarea
+                      autocomplete="given-name"
+                      class="rmd-textarea rmd-textarea--floating rmd-textarea--rn"
+                      id="short-name"
+                      maxlength="32"
+                      name="shortName"
+                      rows="1"
                     />
                     <textarea
                       aria-hidden="true"
-                      class="md-text-field md-text-field--multiline md-full-width md-text md-text-field--multiline-mask"
+                      class="rmd-textarea rmd-textarea--rn rmd-textarea--mask rmd-textarea--floating"
+                      id="short-name-mask"
                       readonly=""
                       rows="1"
                       tabindex="-1"
                     />
-                    <textarea
-                      autocomplete="given-name"
-                      class="md-text-field md-text-field--multiline md-full-width md-text"
-                      id="short-name"
-                      name="shortName"
-                      rows="1"
-                      style="height: 0px;"
-                    />
-                  </div>
-                  <hr
-                    class="md-divider md-divider--text-field md-divider--expand-from-left"
-                  />
-                  <div
-                    class="md-text-field-message-container md-text-field-message-container--count-only md-full-width md-text--disabled"
-                  >
-                    <div
-                      aria-hidden="true"
-                      class="md-text-field-message md-text-field-message--inactive md-text-field-message--counter"
-                    >
-                      0 / 32
-                    </div>
                   </div>
                 </div>
                 <div

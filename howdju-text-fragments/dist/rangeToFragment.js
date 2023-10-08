@@ -18299,6 +18299,9 @@
     return url;
   }
   function normalizeUrl2(url, options) {
+    if (!isUrl(url)) {
+      throw new Error(`Invalid URL: ${url}`);
+    }
     const urlObj = new URL(url);
     return normalizeUrl(
       urlObj.toString(),
@@ -18324,7 +18327,14 @@
   });
 
   // ../howdju-common/lib/zodRefinements.ts
-  var import_moment3, import_isURL, urlRefinement, urlString, momentObject;
+  function isHttpUrl(val) {
+    return (0, import_isURL.default)(val, {
+      protocols: ["http", "https"],
+      require_protocol: true,
+      require_tld
+    });
+  }
+  var import_moment3, import_isURL, require_tld, urlRefinement, urlString, momentObject;
   var init_zodRefinements = __esm({
     "../howdju-common/lib/zodRefinements.ts"() {
       "use strict";
@@ -18332,14 +18342,10 @@
       import_moment3 = __toESM(require_moment());
       import_isURL = __toESM(require_isURL());
       init_urls();
+      require_tld = false;
       urlRefinement = (options) => (val, ctx) => {
         const { domain: domainPattern } = options != null ? options : {};
-        const require_tld = false;
-        if (!(0, import_isURL.default)(val, {
-          protocols: ["http", "https"],
-          require_protocol: true,
-          require_tld
-        })) {
+        if (!isHttpUrl(val)) {
           ctx.addIssue({
             code: mod.ZodIssueCode.custom,
             message: "Must be a valid URL",
@@ -18501,9 +18507,9 @@
         /** The official or primary website representing the persorg. */
         websiteUrl: urlString().optional(),
         /** The persorg's Twitter. */
-        twitterUrl: urlString({ domain: /twitter.com$/ }).optional(),
+        twitterUrl: urlString({ domain: /(^|\.)twitter.com$/ }).optional(),
         /** The persorg's Wikipedia URL. */
-        wikipediaUrl: urlString({ domain: /wikipedia.org$/ }).optional(),
+        wikipediaUrl: urlString({ domain: /(^|\.)wikipedia.org$/ }).optional(),
         created: momentObject,
         creatorUserId: mod.string()
       });
@@ -32340,6 +32346,7 @@
     isDefined: () => isDefined,
     isDomain: () => isDomain,
     isFalsey: () => isFalsey,
+    isHttpUrl: () => isHttpUrl,
     isJustificationBasisSourceType: () => isJustificationBasisSourceType,
     isMediaExcerptBased: () => isMediaExcerptBased,
     isNegative: () => isNegative,

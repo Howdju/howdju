@@ -10,7 +10,7 @@ import {
 
 import ErrorMessages from "@/ErrorMessages";
 import { makeErrorPropCreator } from "@/modelErrorMessages";
-import SingleLineTextField from "@/SingleLineTextField";
+import SingleLineTextArea from "@/components/text/SingleLineTextArea";
 import { combineIds, combineNames, combineSuggestionsKeys } from "@/viewModels";
 import {
   EditorFieldsDispatch,
@@ -92,18 +92,20 @@ export default function SourceEditorFields(props: Props) {
     onBlur,
     onPropertyChange,
     disabled,
-    helpText: (
-      <span>
-        MLA-like, omitting the authors{" "}
-        <IconButton
-          className="show-source-description-help-dialog"
-          onClick={showSourceDescriptionHelpDialog}
-        >
-          <MaterialSymbol icon="help" />
-        </IconButton>
-      </span>
-    ),
-    ...errorProps((s) => s.description),
+    messageProps: {
+      helpMessage: (
+        <span>
+          MLA-like, omitting the authors{" "}
+          <IconButton
+            className="show-source-description-help-dialog"
+            onClick={showSourceDescriptionHelpDialog}
+          >
+            <MaterialSymbol icon="help" />
+          </IconButton>
+        </span>
+      ),
+      ...errorProps((s) => s.description),
+    },
   };
 
   const descriptionInput =
@@ -117,7 +119,7 @@ export default function SourceEditorFields(props: Props) {
         suggestionsKey={combineSuggestionsKeys(suggestionsKey, descriptionName)}
       />
     ) : (
-      <SingleLineTextField {...rest} {...descriptionInputProps} />
+      <SingleLineTextArea {...rest} {...descriptionInputProps} />
     );
   // TODO(461) add DialogContainer to DOM once.
   return (

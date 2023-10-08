@@ -4,7 +4,7 @@ import { UpdateWritInput, Writ, CreateWritInput } from "howdju-common";
 
 import WritTitleAutocomplete from "@/WritTitleAutocomplete";
 import ErrorMessages from "@/ErrorMessages";
-import SingleLineTextField from "@/SingleLineTextField";
+import SingleLineTextArea from "@/components/text/SingleLineTextArea";
 import { combineIds, combineNames, combineSuggestionsKeys } from "@/viewModels";
 import { OnKeyDownCallback } from "@/types";
 import { EditorFieldsDispatch, EntityEditorFieldsProps } from "./withEditor";
@@ -40,7 +40,9 @@ export default function WritEditorFields(props: Props) {
     blurredFields
   );
 
-  const writTitleInputErrorProps = errorProps((wq) => wq.title);
+  const writTitleInputErrorProps = {
+    messageProps: errorProps((wq) => wq.title),
+  };
 
   const writTitle = writ?.title ?? "";
 
@@ -73,7 +75,7 @@ export default function WritEditorFields(props: Props) {
           suggestionsKey={combinedSuggestionKeys}
         />
       ) : (
-        <SingleLineTextField
+        <SingleLineTextArea
           {...writTitleInputProps}
           {...writTitleInputErrorProps}
         />

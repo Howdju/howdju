@@ -184,9 +184,9 @@ export const Persorg = Entity.extend({
   /** The official or primary website representing the persorg. */
   websiteUrl: urlString().optional(),
   /** The persorg's Twitter. */
-  twitterUrl: urlString({ domain: /twitter.com$/ }).optional(),
+  twitterUrl: urlString({ domain: /(^|\.)twitter.com$/ }).optional(),
   /** The persorg's Wikipedia URL. */
-  wikipediaUrl: urlString({ domain: /wikipedia.org$/ }).optional(),
+  wikipediaUrl: urlString({ domain: /(^|\.)wikipedia.org$/ }).optional(),
   created: momentObject,
   creatorUserId: z.string(),
 });

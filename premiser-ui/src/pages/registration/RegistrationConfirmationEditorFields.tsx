@@ -4,12 +4,15 @@ import cn from "classnames";
 
 import { CreateRegistrationConfirmationInput } from "howdju-common";
 
-import EmailTextField from "../../EmailTextField";
-import PasswordTextField from "../../PasswordTextField";
+import EmailField from "../../components/text/EmailTextField";
+import PasswordField from "../../components/text/PasswordField";
 import paths from "../../paths";
-import SingleLineTextField from "../../SingleLineTextField";
+import SingleLineTextArea from "@/components/text/SingleLineTextArea";
 import { EntityEditorFieldsProps } from "@/editors/withEditor";
-import { makeErrorPropCreator } from "@/modelErrorMessages";
+import {
+  makeErrorPropCreator,
+  makeReactMd1ErrorPropCreator,
+} from "@/modelErrorMessages";
 import ErrorMessages from "@/ErrorMessages";
 import { toCheckboxOnChangeCallback } from "@/util";
 import { toReactMdOnBlur } from "@/types";
@@ -46,16 +49,22 @@ export default function RegistrationConfirmationEditorFields({
     dirtyFields,
     blurredFields
   );
+  const reactMd1ErrorProps = makeReactMd1ErrorPropCreator(
+    wasSubmitAttempted,
+    errors,
+    dirtyFields,
+    blurredFields
+  );
 
   return (
     <>
       <ErrorMessages errors={errors?._errors} />
-      <EmailTextField id="email" value={email} disabled />
-      <SingleLineTextField
+      <EmailField id="email" value={email} disabled />
+      <SingleLineTextArea
         {...commonFieldsProps}
         id="username"
         name="username"
-        autocomplete="username"
+        autoComplete="username"
         label="Username"
         value={registrationConfirmation?.username}
         onPropertyChange={onPropertyChange}
@@ -68,13 +77,13 @@ export default function RegistrationConfirmationEditorFields({
           undefined
         }
         required
-        {...errorProps((rc) => rc.username)}
+        messageProps={errorProps((rc) => rc.username)}
       />
-      <PasswordTextField
+      <PasswordField
         {...commonFieldsProps}
         id="password"
         name="password"
-        autocomplete="new-password"
+        autoComplete="new-password"
         value={registrationConfirmation?.password}
         onPropertyChange={onPropertyChange}
         minLength={
@@ -86,14 +95,14 @@ export default function RegistrationConfirmationEditorFields({
           undefined
         }
         required
-        {...errorProps((rc) => rc.password)}
+        messageProps={errorProps((rc) => rc.password)}
       />
-      <SingleLineTextField
+      <SingleLineTextArea
         {...commonFieldsProps}
         id="long-name"
         name="longName"
         label="Full Name"
-        autocomplete="name"
+        autoComplete="name"
         value={registrationConfirmation?.longName}
         onPropertyChange={onPropertyChange}
         maxLength={
@@ -101,21 +110,21 @@ export default function RegistrationConfirmationEditorFields({
           undefined
         }
         required
-        {...errorProps((rc) => rc.longName)}
+        messageProps={errorProps((rc) => rc.longName)}
       />
-      <SingleLineTextField
+      <SingleLineTextArea
         {...commonFieldsProps}
         id="short-name"
         name="shortName"
         label="First Name"
-        autocomplete="given-name"
+        autoComplete="given-name"
         value={registrationConfirmation?.shortName}
         onPropertyChange={onPropertyChange}
         maxLength={
           CreateRegistrationConfirmationInput.shape.shortName.unwrap()
             .maxLength || undefined
         }
-        {...errorProps((rc) => rc.shortName)}
+        messageProps={errorProps((rc) => rc.shortName)}
       />
       <Checkbox
         {...commonFieldsProps}
@@ -128,7 +137,8 @@ export default function RegistrationConfirmationEditorFields({
         label={
           <div
             className={cn({
-              "error-message": errorProps((rc) => rc.doesAcceptTerms).error,
+              "error-message": !!errorProps((rc) => rc.doesAcceptTerms)
+                .errorMessage,
             })}
           >
             I have read and agree to the{" "}
@@ -152,7 +162,7 @@ export default function RegistrationConfirmationEditorFields({
             .
           </div>
         }
-        {...errorProps((rc) => rc.doesAcceptTerms)}
+        {...reactMd1ErrorProps((rc) => rc.doesAcceptTerms)}
       />
       <Checkbox
         {...commonFieldsProps}
@@ -165,13 +175,14 @@ export default function RegistrationConfirmationEditorFields({
         label={
           <div
             className={cn({
-              "error-message": errorProps((rc) => rc.is13YearsOrOlder).error,
+              "error-message": !!errorProps((rc) => rc.is13YearsOrOlder)
+                .errorMessage,
             })}
           >
             I am 13 years old or older.
           </div>
         }
-        {...errorProps((rc) => rc.is13YearsOrOlder)}
+        {...reactMd1ErrorProps((rc) => rc.is13YearsOrOlder)}
       />
       <Checkbox
         {...commonFieldsProps}
@@ -182,16 +193,19 @@ export default function RegistrationConfirmationEditorFields({
         value="true"
         onChange={onCheckboxChange}
         label={
+          // TODO(17) allow helpText to have an error state (don't forget other .errorMessage in
+          // this component.)
           <div
             className={cn({
-              "error-message": errorProps((rc) => rc.hasMajorityConsent).error,
+              "error-message": !!errorProps((rc) => rc.hasMajorityConsent)
+                .errorMessage,
             })}
           >
             I am old enough in my local jurisdiction to enter into legal
             agreements and to consent to the processing of my personal data.
           </div>
         }
-        {...errorProps((rc) => rc.hasMajorityConsent)}
+        {...reactMd1ErrorProps((rc) => rc.hasMajorityConsent)}
       />
       <Checkbox
         {...commonFieldsProps}
@@ -204,7 +218,7 @@ export default function RegistrationConfirmationEditorFields({
         label={
           <div
             className={cn({
-              "error-message": errorProps((rc) => rc.isNotGdpr).error,
+              "error-message": !!errorProps((rc) => rc.isNotGdpr).errorMessage,
             })}
           >
             I am not located in the European Union (EU), the European Economic
@@ -221,7 +235,7 @@ export default function RegistrationConfirmationEditorFields({
             .)
           </div>
         }
-        {...errorProps((rc) => rc.isNotGdpr)}
+        {...reactMd1ErrorProps((rc) => rc.isNotGdpr)}
       />
     </>
   );

@@ -10,7 +10,6 @@ import {
 } from "howdju-common";
 
 import ErrorMessages from "@/ErrorMessages";
-import SingleLineTextField from "@/SingleLineTextField";
 import { combineIds, combineNames, combineSuggestionsKeys } from "@/viewModels";
 import { OnKeyDownCallback } from "@/types";
 import {
@@ -21,11 +20,12 @@ import { makeErrorPropCreator } from "./modelErrorMessages";
 import { EditorType } from "./reducers/editors";
 import { editors } from "./actions";
 import WritEditorFields from "./editors/WritEditorFields";
-import TextField from "./TextField";
-
-import "./WritQuoteEditorFields.scss";
 import IconButton from "./components/button/IconButton";
 import TextButton from "./components/button/TextButton";
+import UrlTextField from "./components/text/UrlTextField";
+import { TextArea } from "./components/text/TextArea";
+
+import "./WritQuoteEditorFields.scss";
 
 interface Props
   extends EntityEditorFieldsProps<
@@ -93,12 +93,11 @@ const WritQuoteEditorFields = (props: Props) => {
 
   return (
     <div className="writ-quote-editor-fields">
-      <TextField
-        {...errorProps((wq) => wq.quoteText)}
+      <TextArea
+        messageProps={errorProps((wq) => wq.quoteText)}
         id={combineIds(id, writQuoteTextName)}
         key="quoteText"
         name={combineNames(name, writQuoteTextName)}
-        type="text"
         label="Quote"
         rows={2}
         maxRows={8}
@@ -125,17 +124,16 @@ const WritQuoteEditorFields = (props: Props) => {
       {urls.map(
         (url, index, urls) =>
           url && (
-            <SingleLineTextField
-              {...errorProps((wq) => wq.urls[index].url)}
+            <UrlTextField
+              messageProps={errorProps((wq) => wq.urls[index].url)}
               id={combineIds(id, `urls[${index}]`, "url")}
               key={combineIds(id, `urls[${index}]`, "url")}
               name={combineNames(name, `urls[${index}]`, "url")}
               className="writ-quote-url-input"
               aria-label="url"
-              type="url"
               label="URL"
               value={url.url}
-              rightIcon={
+              rightChildren={
                 <IconButton
                   onClick={() => onRemoveUrl(url, index, urls)}
                   disabled={disabled}
@@ -143,7 +141,6 @@ const WritQuoteEditorFields = (props: Props) => {
                   <FontIcon>delete</FontIcon>
                 </IconButton>
               }
-              rightIconStateful={false}
               disabled={!!url.id || disabled}
               onBlur={onBlur}
               onPropertyChange={onPropertyChange}

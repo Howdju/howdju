@@ -10,57 +10,51 @@ exports[`withEditor Exemplary component (RegistrationRequestEditor) submitting i
         class="error-message"
       />
       <div
-        class="md-text-field-container md-full-width md-text-field-container--multiline"
+        class="rmd-text-field-container rmd-text-field-container--error rmd-text-field-container--outline rmd-text-field-container--hoverable rmd-text-field-container--label rmd-text-field-container--outline-error rmd-text-field-container--outline-left"
       >
-        <label
-          class="md-floating-label md-floating-label--inactive md-floating-label--inactive-sized md-text--error"
-          for="email"
-        >
-          Email *
-        </label>
-        <div
-          class="md-text-field-multiline-container md-text-field--floating-margin"
-          style="height: 0px;"
+        <span
+          class="rmd-text-field-addon rmd-text-field-addon--presentational"
         >
           <span
-            aria-hidden="true"
-          />
-          <textarea
-            aria-hidden="true"
-            class="md-text-field md-text-field--multiline md-full-width md-text md-text-field--multiline-mask"
-            readonly=""
-            rows="1"
-            tabindex="-1"
-          />
-          <textarea
-            autocomplete="email"
-            class="md-text-field md-text-field--multiline md-full-width md-text"
-            id="email"
-            name="email"
-            required=""
-            rows="1"
-            style="height: 0px;"
-          />
-        </div>
-        <hr
-          class="md-divider md-divider--text-field md-divider--expand-from-left md-divider--text-field-error"
-        />
-        <div
-          class="md-text-field-message-container md-full-width md-text--error"
+            class="material-symbols"
+          >
+            alternate_email
+          </span>
+        </span>
+        <label
+          class="rmd-label rmd-label--error rmd-floating-label"
+          for="email"
         >
-          <div
-            aria-hidden="false"
-            class="md-text-field-message md-text-field-message--active"
-          >
-            Invalid email
-          </div>
-          <div
-            aria-hidden="true"
-            class="md-text-field-message md-text-field-message--inactive md-text-field-message--counter"
-          >
-            0 / 512
-          </div>
-        </div>
+          Email
+        </label>
+        <input
+          autocomplete="email"
+          class="rmd-text-field rmd-text-field--floating"
+          id="email"
+          maxlength="512"
+          name="email"
+          required=""
+          type="email"
+          value=""
+        />
+      </div>
+      <div
+        aria-live="polite"
+        class="rmd-form-message rmd-form-message--error rmd-form-message--outline"
+        id="email--message"
+      >
+        <p
+          class="rmd-form-message__message"
+          id="email--message-message"
+        >
+          Invalid email
+        </p>
+        <span
+          class="rmd-form-message__counter"
+          id="email--message-counter"
+        >
+          0 / 512
+        </span>
       </div>
     </div>
     <div

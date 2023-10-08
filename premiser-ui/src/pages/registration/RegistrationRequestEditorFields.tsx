@@ -2,7 +2,7 @@ import React from "react";
 
 import { CreateRegistrationRequestInput } from "howdju-common";
 
-import EmailTextField from "../../EmailTextField";
+import EmailField from "../../components/text/EmailTextField";
 import { EntityEditorFieldsProps } from "@/editors/withEditor";
 import { makeErrorPropCreator } from "@/modelErrorMessages";
 import ErrorMessages from "@/ErrorMessages";
@@ -26,12 +26,6 @@ export default function RegistrationRequestFields({
   onSubmit,
   wasSubmitAttempted,
 }: Props) {
-  const commonFieldsProps = {
-    onBlur,
-    onPropertyChange,
-    onSubmit,
-    disabled,
-  };
   const errorProps = makeErrorPropCreator(
     wasSubmitAttempted,
     errors,
@@ -42,20 +36,20 @@ export default function RegistrationRequestFields({
   return (
     <>
       <ErrorMessages errors={errors?._errors} />
-      <EmailTextField
-        {...commonFieldsProps}
+      <EmailField
         id="email"
         name={combineNames(name, "email")}
-        autocomplete="email"
+        autoComplete="email"
         value={registrationRequest?.email}
-        minLength={
-          CreateRegistrationRequestInput.shape.email.minLength ?? undefined
-        }
-        maxLength={
-          CreateRegistrationRequestInput.shape.email.maxLength ?? undefined
-        }
+        maxLength={CreateRegistrationRequestInput.shape.email.maxLength}
+        onBlur={onBlur}
+        onPropertyChange={onPropertyChange}
+        onSubmit={onSubmit}
+        disabled={disabled}
+        messageProps={{
+          ...errorProps((rr) => rr.email),
+        }}
         required
-        {...errorProps((rr) => rr.email)}
       />
     </>
   );

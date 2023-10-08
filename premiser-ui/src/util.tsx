@@ -1,22 +1,18 @@
-import get from "lodash/get";
-import validUrl from "valid-url";
-import isValidDomain from "is-valid-domain";
+import React, { ChangeEvent, ChangeEventHandler } from "react";
+import { get, isArray } from "lodash";
 import queryString from "query-string";
+import { Divider } from "react-md";
+import { Location } from "history";
 
 import {
   isDefined,
-  extractDomain,
   PropositionTagVoteOut,
   TagVote,
   CreatePropositionTagVoteInput,
 } from "howdju-common";
 
 import config from "./config";
-import { Divider } from "react-md";
-import React, { ChangeEvent } from "react";
 import { OnPropertyChangeCallback } from "./types";
-import { isArray } from "lodash";
-import { Location } from "history";
 import { newInvalidUrlError } from "./uiErrors";
 
 export const isWindowNarrow = () => {
@@ -93,26 +89,6 @@ export const getDimensionInfo = () => {
   return dimensionInfo;
 };
 
-export function isValidUrl(value: string) {
-  return !!validUrl.isWebUri(value);
-}
-
-export function hasValidDomain(url: string) {
-  const domain = extractDomain(url);
-  if (!domain) return false;
-  return isValidDomain(domain);
-}
-
-export function isWikipediaUrl(url: string) {
-  const domain = extractDomain(url);
-  return !!domain && /(^|\.)wikipedia\.org$/.test(domain);
-}
-
-export function isTwitterUrl(url: string) {
-  const domain = extractDomain(url);
-  return !!domain && /(^|\.)twitter\.com$/.test(domain);
-}
-
 /** Inserts a <Divider> between the groups of components. */
 export function divideMenuItems(...componentGroups: JSX.Element[][]) {
   const dividedComponents = [];
@@ -151,14 +127,13 @@ export const toCheckboxOnChangeCallback = (
 export function toTextFieldOnChangeCallback(
   onPropertyChange?: OnPropertyChangeCallback,
   transform?: (val: string | number) => string
-): (value: string | number, event: Event) => void {
-  return function onChange(value: string | number, event: Event) {
+): ChangeEventHandler<any> {
+  return function onChange(event: ChangeEvent<any>) {
     if (!onPropertyChange) {
       return;
     }
-    const name = (event as unknown as ChangeEvent<HTMLInputElement>).target
-      .name;
-    const val = transform ? transform(value) : value;
+    const name = event.target.name;
+    const val = transform ? transform(event.target.value) : event.target.value;
     onPropertyChange({ [name]: val });
   };
 }

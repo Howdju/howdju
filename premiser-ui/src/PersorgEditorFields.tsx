@@ -11,14 +11,10 @@ import {
 import PersorgNameAutocomplete from "./PersorgNameAutocomplete";
 import ErrorMessages from "./ErrorMessages";
 import { makeErrorPropCreator } from "./modelErrorMessages";
-import SingleLineTextField from "./SingleLineTextField";
+import SingleLineTextArea from "@/components/text/SingleLineTextArea";
 import { combineIds, combineNames, combineSuggestionsKeys } from "./viewModels";
-import UrlTextField from "./UrlTextField";
-import {
-  isTwitterUrl,
-  isWikipediaUrl,
-  toCheckboxOnChangeCallback,
-} from "./util";
+import UrlTextField from "./components/text/UrlTextField";
+import { toCheckboxOnChangeCallback } from "./util";
 import { ComponentId } from "./types";
 import {
   EditorFieldsDispatch,
@@ -94,7 +90,7 @@ export default function PersorgEditorFields(props: Props) {
     onSubmit,
     onPropertyChange,
     disabled: disabled,
-    ...errorProps((p) => p.name),
+    messageProps: errorProps((p) => p.name),
   };
 
   const nameInput =
@@ -106,7 +102,7 @@ export default function PersorgEditorFields(props: Props) {
         suggestionsKey={combineSuggestionsKeys(suggestionsKey, nameName)}
       />
     ) : (
-      <SingleLineTextField {...rest} {...nameInputProps} />
+      <SingleLineTextArea {...rest} {...nameInputProps} />
     );
   return (
     <div>
@@ -121,16 +117,19 @@ export default function PersorgEditorFields(props: Props) {
         onChange={onChange}
       />
       {persorg && !persorg.isOrganization && (
-        <SingleLineTextField
+        <SingleLineTextArea
           id={combineIds(id, "known-for")}
           name={combineNames(name, "knownFor")}
           label="Known for"
           value={persorg?.knownFor ?? ""}
-          helpText="What is this person or organization known for?  (Helps disambiguate people with the same name or for obscure organizations with a better known purpose.)"
           disabled={disabled}
           onPropertyChange={onPropertyChange}
           onSubmit={onSubmit}
-          {...errorProps((p) => p.knownFor)}
+          messageProps={{
+            helpMessage:
+              "What is this person or organization known for?  (Helps disambiguate people with the same name or for obscure organizations with a better known purpose.)",
+            ...errorProps((p) => p.knownFor),
+          }}
         />
       )}
       <TextButton onClick={onShowUrlsClick}>
@@ -146,7 +145,7 @@ export default function PersorgEditorFields(props: Props) {
           disabled={disabled}
           onPropertyChange={onPropertyChange}
           onSubmit={onSubmit}
-          {...errorProps((p) => p.websiteUrl)}
+          messageProps={errorProps((p) => p.websiteUrl)}
         />,
         <UrlTextField
           key="wikipedia"
@@ -154,12 +153,10 @@ export default function PersorgEditorFields(props: Props) {
           name={combineNames(name, "wikipediaUrl")}
           label="Wikipedia"
           value={persorg?.wikipediaUrl ?? ""}
-          validator={isWikipediaUrl}
-          invalidErrorText="Must be a wikipedia.org address"
           disabled={disabled}
           onPropertyChange={onPropertyChange}
           onSubmit={onSubmit}
-          {...errorProps((p) => p.wikipediaUrl)}
+          messageProps={errorProps((p) => p.wikipediaUrl)}
         />,
         <UrlTextField
           key="twitter"
@@ -167,12 +164,10 @@ export default function PersorgEditorFields(props: Props) {
           name={combineNames(name, "twitterUrl")}
           label="Twitter"
           value={persorg?.twitterUrl ?? ""}
-          validator={isTwitterUrl}
-          invalidErrorText="Must be a twitter.com address"
           disabled={disabled}
           onPropertyChange={onPropertyChange}
           onSubmit={onSubmit}
-          {...errorProps((p) => p.twitterUrl)}
+          messageProps={errorProps((p) => p.twitterUrl)}
         />,
       ]}
     </div>
