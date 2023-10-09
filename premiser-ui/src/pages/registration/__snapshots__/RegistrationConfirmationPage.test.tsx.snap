@@ -9,510 +9,445 @@ exports[`RegistrationConfirmationPage shows error message for duplicate username
       class="md-grid"
     >
       <div
-        class="md-cell md-cell--12"
+        class="rmd-card rmd-card--shadowed md-cell md-cell--12"
       >
-        <div
-          class="rmd-card rmd-card--shadowed"
+        <header
+          class="rmd-card__header rmd-card__header--center"
         >
-          <header
-            class="rmd-card__header rmd-card__header--center"
+          <span
+            class="rmd-card__header-content"
           >
-            <span
-              class="rmd-card__header-content"
+            <h5
+              class="rmd-card__title"
             >
-              <h5
-                class="rmd-card__title"
-              >
-                Complete Registration
-              </h5>
-            </span>
-          </header>
+              Complete Registration
+            </h5>
+          </span>
+        </header>
+        <div
+          class="rmd-card__content rmd-card__content--padded rmd-card__content--extra-padding rmd-card__content--remove-margin"
+        >
           <div
-            class="rmd-card__content rmd-card__content--padded rmd-card__content--extra-padding rmd-card__content--remove-margin rmd-card__content--secondary"
+            class="rmd-card__content rmd-card__content--padded rmd-card__content--extra-padding rmd-card__content--remove-margin"
           >
+            Please enter the following to complete your registration
+          </div>
+          <form>
             <div
-              class="rmd-card__content rmd-card__content--padded rmd-card__content--extra-padding rmd-card__content--remove-margin rmd-card__content--secondary"
+              class="rmd-card__content rmd-card__content--padded rmd-card__content--extra-padding rmd-card__content--remove-margin"
             >
-              Please enter the following to complete your registration
-            </div>
-            <form>
+              <ul
+                class="error-message"
+              />
               <div
-                class="rmd-card__content rmd-card__content--padded rmd-card__content--extra-padding rmd-card__content--remove-margin rmd-card__content--secondary"
+                style="display: flex;"
               >
-                <ul
-                  class="error-message"
-                />
                 <div
-                  class="md-text-field-container md-full-width md-text-field-container--disabled md-text-field-container--multiline"
+                  class="rmd-text-field-container rmd-text-field-container--outline rmd-text-field-container--disabled rmd-text-field-container--label rmd-text-field-container--outline-left"
+                  style="flex-grow: 1;"
                 >
+                  <span
+                    class="rmd-text-field-addon rmd-text-field-addon--presentational"
+                  >
+                    <span
+                      class="material-symbols"
+                    >
+                      alternate_email
+                    </span>
+                  </span>
                   <label
-                    class="md-floating-label md-floating-label--floating md-text--disabled"
+                    class="rmd-label rmd-label--disabled rmd-floating-label rmd-floating-label--active"
                     for="email"
                   >
                     Email
                   </label>
-                  <div
-                    class="md-text-field-multiline-container md-text-field--floating-margin"
-                    style="height: 0px;"
-                  >
-                    <span
-                      aria-hidden="true"
-                    />
-                    <textarea
-                      aria-hidden="true"
-                      class="md-text-field md-text-field--multiline md-full-width md-text--disabled md-text-field--multiline-mask"
-                      readonly=""
-                      rows="1"
-                      tabindex="-1"
-                    >
-                      a@b.com
-                    </textarea>
-                    <textarea
-                      autocomplete="email"
-                      class="md-text-field md-text-field--multiline md-full-width md-text--disabled"
-                      disabled=""
-                      id="email"
-                      rows="1"
-                      style="height: 0px;"
-                    >
-                      a@b.com
-                    </textarea>
-                  </div>
-                  <hr
-                    class="md-divider md-divider--text-field md-divider--expand-from-left"
+                  <input
+                    autocomplete="email"
+                    class="rmd-text-field rmd-text-field--floating"
+                    disabled=""
+                    id="email"
+                    type="email"
+                    value="a@b.com"
                   />
                 </div>
+              </div>
+              <div
+                style="display: flex;"
+              >
                 <div
-                  class="md-text-field-container md-full-width md-text-field-container--multiline"
+                  class="rmd-text-field-container rmd-text-field-container--error rmd-text-field-container--outline rmd-text-field-container--hoverable rmd-text-field-container--label rmd-text-field-container--outline-error rmd-text-field-container--outline-left"
+                  style="flex-grow: 1;"
                 >
+                  <span
+                    class="rmd-text-field-addon rmd-text-field-addon--presentational"
+                  >
+                    <span
+                      class="material-symbols"
+                    >
+                      person
+                    </span>
+                  </span>
                   <label
-                    class="md-floating-label md-floating-label--floating md-text--error"
+                    class="rmd-label rmd-label--error rmd-floating-label rmd-floating-label--active"
                     for="username"
                   >
-                    Username *
-                  </label>
-                  <div
-                    class="md-text-field-multiline-container md-text-field--floating-margin"
-                    style="height: 0px;"
-                  >
-                    <span
-                      aria-hidden="true"
-                    />
-                    <textarea
-                      aria-hidden="true"
-                      class="md-text-field md-text-field--multiline md-full-width md-text md-text-field--multiline-mask"
-                      readonly=""
-                      rows="1"
-                      tabindex="-1"
-                    >
-                      the_username
-                    </textarea>
-                    <textarea
-                      autocomplete="username"
-                      class="md-text-field md-text-field--multiline md-full-width md-text"
-                      id="username"
-                      minlength="3"
-                      name="username"
-                      required=""
-                      rows="1"
-                      style="height: 0px;"
-                    >
-                      the_username
-                    </textarea>
-                  </div>
-                  <hr
-                    class="md-divider md-divider--text-field md-divider--expand-from-left md-divider--text-field-error"
-                  />
-                  <div
-                    class="md-text-field-message-container md-full-width md-text--error"
-                  >
-                    <div
-                      aria-hidden="false"
-                      class="md-text-field-message md-text-field-message--active"
-                    >
-                      The username is already in use: the_username
-                    </div>
-                    <div
-                      aria-hidden="true"
-                      class="md-text-field-message md-text-field-message--inactive md-text-field-message--counter"
-                    >
-                      12 / 64
-                    </div>
-                  </div>
-                </div>
-                <div
-                  class="md-text-field-container md-full-width md-text-field-container--input"
-                >
-                  <label
-                    class="md-floating-label md-floating-label--floating md-text--secondary"
-                    for="password"
-                  >
-                    Password *
+                    Username
                   </label>
                   <input
-                    autocomplete="new-password"
-                    class="md-text-field md-text-field--inline-indicator md-text-field--floating-margin md-full-width md-text"
-                    id="password"
-                    minlength="6"
-                    name="password"
+                    autocomplete="username"
+                    class="rmd-text-field rmd-text-field--floating"
+                    id="username"
+                    maxlength="64"
+                    minlength="3"
+                    name="username"
                     required=""
-                    type="password"
-                    value="password"
+                    type="text"
+                    value="the_username"
                   />
-                  <hr
-                    class="md-divider md-divider--text-field md-divider--expand-from-left"
-                  />
-                  <button
-                    class="md-text-field-inline-indicator md-password-btn md-pointer--hover md-text-field-inline-indicator--floating md-text--disabled"
-                    type="button"
-                  >
-                    <i
-                      class="md-icon material-icons"
-                    >
-                      remove_red_eye
-                    </i>
-                  </button>
-                  <div
-                    class="md-text-field-message-container md-text-field-message-container--count-only md-text-field-message-container--right-icon-offset md-full-width md-text--disabled"
-                  >
-                    <div
-                      aria-hidden="true"
-                      class="md-text-field-message md-text-field-message--inactive md-text-field-message--counter"
-                    >
-                      8 / 64
-                    </div>
-                  </div>
                 </div>
+              </div>
+              <div
+                aria-live="polite"
+                class="rmd-form-message rmd-form-message--error rmd-form-message--outline"
+                id="username--message"
+              >
+                <p
+                  class="rmd-form-message__message"
+                  id="username--message-message"
+                >
+                  The username is already in use: the_username
+                </p>
+                <span
+                  class="rmd-form-message__counter"
+                  id="username--message-counter"
+                >
+                  12 / 64
+                </span>
+              </div>
+              <div
+                class="rmd-text-field-container rmd-text-field-container--outline rmd-text-field-container--hoverable rmd-text-field-container--label rmd-text-field-container--outline-left rmd-text-field-container--outline-right rmd-password rmd-password--offset"
+              >
+                <span
+                  class="rmd-text-field-addon rmd-text-field-addon--presentational"
+                >
+                  <span
+                    class="material-symbols"
+                  >
+                    password
+                  </span>
+                </span>
+                <label
+                  class="rmd-label rmd-floating-label rmd-floating-label--active rmd-floating-label--inactive"
+                  for="password"
+                >
+                  Password
+                </label>
+                <input
+                  autocomplete="new-password"
+                  class="rmd-text-field rmd-text-field--floating rmd-password__input rmd-password__input--offset"
+                  id="password"
+                  maxlength="64"
+                  minlength="6"
+                  name="password"
+                  required=""
+                  type="password"
+                  value="password"
+                />
+                <button
+                  aria-label="Show password"
+                  aria-pressed="false"
+                  class="rmd-button rmd-button--icon rmd-password__toggle"
+                  id="password-password-toggle"
+                  type="button"
+                >
+                  <i
+                    aria-hidden="true"
+                    class="rmd-icon rmd-icon--font material-icons"
+                  >
+                    remove_red_eye
+                  </i>
+                  <span
+                    class="rmd-ripple-container"
+                  />
+                </button>
+              </div>
+              <div
+                style="display: flex;"
+              >
                 <div
-                  class="md-text-field-container md-full-width md-text-field-container--multiline"
+                  class="rmd-text-field-container rmd-text-field-container--outline rmd-text-field-container--hoverable rmd-text-field-container--label"
+                  style="flex-grow: 1;"
                 >
                   <label
-                    class="md-floating-label md-floating-label--floating md-text--secondary"
+                    class="rmd-label rmd-floating-label rmd-floating-label--active rmd-floating-label--inactive"
                     for="long-name"
                   >
-                    Full Name *
+                    Full Name
                   </label>
-                  <div
-                    class="md-text-field-multiline-container md-text-field--floating-margin"
-                    style="height: 0px;"
-                  >
-                    <span
-                      aria-hidden="true"
-                    />
-                    <textarea
-                      aria-hidden="true"
-                      class="md-text-field md-text-field--multiline md-full-width md-text md-text-field--multiline-mask"
-                      readonly=""
-                      rows="1"
-                      tabindex="-1"
-                    >
-                      Testius Maximus IV
-                    </textarea>
-                    <textarea
-                      autocomplete="name"
-                      class="md-text-field md-text-field--multiline md-full-width md-text"
-                      id="long-name"
-                      name="longName"
-                      required=""
-                      rows="1"
-                      style="height: 0px;"
-                    >
-                      Testius Maximus IV
-                    </textarea>
-                  </div>
-                  <hr
-                    class="md-divider md-divider--text-field md-divider--expand-from-left"
+                  <input
+                    autocomplete="name"
+                    class="rmd-text-field rmd-text-field--floating"
+                    id="long-name"
+                    maxlength="64"
+                    name="longName"
+                    required=""
+                    type="text"
+                    value="Testius Maximus IV"
                   />
-                  <div
-                    class="md-text-field-message-container md-text-field-message-container--count-only md-full-width md-text--disabled"
-                  >
-                    <div
-                      aria-hidden="true"
-                      class="md-text-field-message md-text-field-message--inactive md-text-field-message--counter"
-                    >
-                      18 / 64
-                    </div>
-                  </div>
                 </div>
+              </div>
+              <div
+                style="display: flex;"
+              >
                 <div
-                  class="md-text-field-container md-full-width md-text-field-container--multiline"
+                  class="rmd-text-field-container rmd-text-field-container--outline rmd-text-field-container--hoverable rmd-text-field-container--label"
+                  style="flex-grow: 1;"
                 >
                   <label
-                    class="md-floating-label md-floating-label--floating md-text--secondary"
+                    class="rmd-label rmd-floating-label rmd-floating-label--active rmd-floating-label--inactive"
                     for="short-name"
                   >
                     First Name
                   </label>
-                  <div
-                    class="md-text-field-multiline-container md-text-field--floating-margin"
-                    style="height: 0px;"
-                  >
-                    <span
-                      aria-hidden="true"
-                    />
-                    <textarea
-                      aria-hidden="true"
-                      class="md-text-field md-text-field--multiline md-full-width md-text md-text-field--multiline-mask"
-                      readonly=""
-                      rows="1"
-                      tabindex="-1"
-                    >
-                      Testy
-                    </textarea>
-                    <textarea
-                      autocomplete="given-name"
-                      class="md-text-field md-text-field--multiline md-full-width md-text"
-                      id="short-name"
-                      name="shortName"
-                      rows="1"
-                      style="height: 0px;"
-                    >
-                      Testy
-                    </textarea>
-                  </div>
-                  <hr
-                    class="md-divider md-divider--text-field md-divider--expand-from-left"
-                  />
-                  <div
-                    class="md-text-field-message-container md-text-field-message-container--count-only md-full-width md-text--disabled"
-                  >
-                    <div
-                      aria-hidden="true"
-                      class="md-text-field-message md-text-field-message--inactive md-text-field-message--counter"
-                    >
-                      5 / 32
-                    </div>
-                  </div>
-                </div>
-                <div
-                  class="md-selection-control-container"
-                >
                   <input
-                    aria-hidden="true"
-                    class="md-selection-control-input"
-                    id="does-accept-terms"
-                    name="doesAcceptTerms"
-                    type="checkbox"
-                    value="true"
+                    autocomplete="given-name"
+                    class="rmd-text-field rmd-text-field--floating"
+                    id="short-name"
+                    maxlength="32"
+                    name="shortName"
+                    type="text"
+                    value="Testy"
                   />
-                  <label
-                    class="md-selection-control-label md-pointer--hover md-text"
-                    for="does-accept-terms"
-                  >
-                    <div
-                      aria-checked="true"
-                      aria-labelledby="does-accept-terms-label"
-                      aria-pressed="true"
-                      class="md-fake-btn md-pointer--hover md-fake-btn--no-outline md-selection-control-toggle md-btn md-btn--icon md-text--theme-secondary"
-                      role="checkbox"
-                      tabindex="0"
-                    >
-                      <div
-                        class="md-ink-container"
-                      />
-                      <i
-                        class="md-icon material-icons md-text--inherit"
-                      >
-                        check_box
-                      </i>
-                    </div>
-                    <span
-                      id="does-accept-terms-label"
-                    >
-                      <div
-                        class=""
-                      >
-                        I have read and agree to the
-                         
-                        <a
-                          class="text-link"
-                          href="https://docs.howdju.com/policies/user-agreement"
-                          rel="noreferrer"
-                          target="_blank"
-                        >
-                          User Agreement
-                        </a>
-                         
-                        and the
-                         
-                        <a
-                          class="text-link"
-                          href="https://docs.howdju.com/policies/privacy-policy"
-                          rel="noreferrer"
-                          target="_blank"
-                        >
-                          Privacy Policy
-                        </a>
-                        .
-                      </div>
-                    </span>
-                  </label>
-                </div>
-                <div
-                  class="md-selection-control-container"
-                >
-                  <input
-                    aria-hidden="true"
-                    class="md-selection-control-input"
-                    id="is-13-years-or-older"
-                    name="is13YearsOrOlder"
-                    type="checkbox"
-                    value="true"
-                  />
-                  <label
-                    class="md-selection-control-label md-pointer--hover md-text"
-                    for="is-13-years-or-older"
-                  >
-                    <div
-                      aria-checked="true"
-                      aria-labelledby="is-13-years-or-older-label"
-                      aria-pressed="true"
-                      class="md-fake-btn md-pointer--hover md-fake-btn--no-outline md-selection-control-toggle md-btn md-btn--icon md-text--theme-secondary"
-                      role="checkbox"
-                      tabindex="0"
-                    >
-                      <div
-                        class="md-ink-container"
-                      />
-                      <i
-                        class="md-icon material-icons md-text--inherit"
-                      >
-                        check_box
-                      </i>
-                    </div>
-                    <span
-                      id="is-13-years-or-older-label"
-                    >
-                      <div
-                        class=""
-                      >
-                        I am 13 years old or older.
-                      </div>
-                    </span>
-                  </label>
-                </div>
-                <div
-                  class="md-selection-control-container"
-                >
-                  <input
-                    aria-hidden="true"
-                    class="md-selection-control-input"
-                    id="has-majority-consent"
-                    name="hasMajorityConsent"
-                    type="checkbox"
-                    value="true"
-                  />
-                  <label
-                    class="md-selection-control-label md-pointer--hover md-text"
-                    for="has-majority-consent"
-                  >
-                    <div
-                      aria-checked="true"
-                      aria-labelledby="has-majority-consent-label"
-                      aria-pressed="true"
-                      class="md-fake-btn md-pointer--hover md-fake-btn--no-outline md-selection-control-toggle md-btn md-btn--icon md-text--theme-secondary"
-                      role="checkbox"
-                      tabindex="0"
-                    >
-                      <div
-                        class="md-ink-container"
-                      />
-                      <i
-                        class="md-icon material-icons md-text--inherit"
-                      >
-                        check_box
-                      </i>
-                    </div>
-                    <span
-                      id="has-majority-consent-label"
-                    >
-                      <div
-                        class=""
-                      >
-                        I am old enough in my local jurisdiction to enter into legal agreements and to consent to the processing of my personal data.
-                      </div>
-                    </span>
-                  </label>
-                </div>
-                <div
-                  class="md-selection-control-container"
-                >
-                  <input
-                    aria-hidden="true"
-                    class="md-selection-control-input"
-                    id="is-not-gdpr"
-                    name="isNotGdpr"
-                    type="checkbox"
-                    value="true"
-                  />
-                  <label
-                    class="md-selection-control-label md-pointer--hover md-text"
-                    for="is-not-gdpr"
-                  >
-                    <div
-                      aria-checked="true"
-                      aria-labelledby="is-not-gdpr-label"
-                      aria-pressed="true"
-                      class="md-fake-btn md-pointer--hover md-fake-btn--no-outline md-selection-control-toggle md-btn md-btn--icon md-text--theme-secondary"
-                      role="checkbox"
-                      tabindex="0"
-                    >
-                      <div
-                        class="md-ink-container"
-                      />
-                      <i
-                        class="md-icon material-icons md-text--inherit"
-                      >
-                        check_box
-                      </i>
-                    </div>
-                    <span
-                      id="is-not-gdpr-label"
-                    >
-                      <div
-                        class=""
-                      >
-                        I am not located in the European Union (EU), the European Economic Area (EEA), or in any other jurisdiction that is subject to the General Data Protection Regulation (GDPR). (See
-                         
-                        <a
-                          class="text-link"
-                          href="https://github.com/Howdju/howdju/issues/24"
-                          rel="noreferrer"
-                          target="_blank"
-                        >
-                          Github issue #24
-                        </a>
-                        .)
-                      </div>
-                    </span>
-                  </label>
                 </div>
               </div>
               <div
-                class="rmd-card__actions"
+                class="md-selection-control-container"
               >
-                <button
-                  class="rmd-button rmd-button--text rmd-button--text-primary"
-                  type="button"
+                <input
+                  aria-hidden="true"
+                  class="md-selection-control-input"
+                  id="does-accept-terms"
+                  name="doesAcceptTerms"
+                  type="checkbox"
+                  value="true"
+                />
+                <label
+                  class="md-selection-control-label md-pointer--hover md-text"
+                  for="does-accept-terms"
                 >
-                  Cancel
+                  <div
+                    aria-checked="true"
+                    aria-labelledby="does-accept-terms-label"
+                    aria-pressed="true"
+                    class="md-fake-btn md-pointer--hover md-fake-btn--no-outline md-selection-control-toggle md-btn md-btn--icon md-text--theme-secondary"
+                    role="checkbox"
+                    tabindex="0"
+                  >
+                    <div
+                      class="md-ink-container"
+                    />
+                    <i
+                      class="md-icon material-icons md-text--inherit"
+                    >
+                      check_box
+                    </i>
+                  </div>
                   <span
-                    class="rmd-ripple-container"
-                  />
-                </button>
-                <button
-                  class="rmd-button rmd-button--text rmd-button--contained rmd-button--primary"
-                  title="Submit"
-                  type="submit"
-                >
-                  Complete Registration
-                  <span
-                    class="rmd-ripple-container"
-                  />
-                </button>
+                    id="does-accept-terms-label"
+                  >
+                    <div
+                      class=""
+                    >
+                      I have read and agree to the
+                       
+                      <a
+                        class="text-link"
+                        href="https://docs.howdju.com/policies/user-agreement"
+                        rel="noreferrer"
+                        target="_blank"
+                      >
+                        User Agreement
+                      </a>
+                       
+                      and the
+                       
+                      <a
+                        class="text-link"
+                        href="https://docs.howdju.com/policies/privacy-policy"
+                        rel="noreferrer"
+                        target="_blank"
+                      >
+                        Privacy Policy
+                      </a>
+                      .
+                    </div>
+                  </span>
+                </label>
               </div>
-            </form>
-          </div>
+              <div
+                class="md-selection-control-container"
+              >
+                <input
+                  aria-hidden="true"
+                  class="md-selection-control-input"
+                  id="is-13-years-or-older"
+                  name="is13YearsOrOlder"
+                  type="checkbox"
+                  value="true"
+                />
+                <label
+                  class="md-selection-control-label md-pointer--hover md-text"
+                  for="is-13-years-or-older"
+                >
+                  <div
+                    aria-checked="true"
+                    aria-labelledby="is-13-years-or-older-label"
+                    aria-pressed="true"
+                    class="md-fake-btn md-pointer--hover md-fake-btn--no-outline md-selection-control-toggle md-btn md-btn--icon md-text--theme-secondary"
+                    role="checkbox"
+                    tabindex="0"
+                  >
+                    <div
+                      class="md-ink-container"
+                    />
+                    <i
+                      class="md-icon material-icons md-text--inherit"
+                    >
+                      check_box
+                    </i>
+                  </div>
+                  <span
+                    id="is-13-years-or-older-label"
+                  >
+                    <div
+                      class=""
+                    >
+                      I am 13 years old or older.
+                    </div>
+                  </span>
+                </label>
+              </div>
+              <div
+                class="md-selection-control-container"
+              >
+                <input
+                  aria-hidden="true"
+                  class="md-selection-control-input"
+                  id="has-majority-consent"
+                  name="hasMajorityConsent"
+                  type="checkbox"
+                  value="true"
+                />
+                <label
+                  class="md-selection-control-label md-pointer--hover md-text"
+                  for="has-majority-consent"
+                >
+                  <div
+                    aria-checked="true"
+                    aria-labelledby="has-majority-consent-label"
+                    aria-pressed="true"
+                    class="md-fake-btn md-pointer--hover md-fake-btn--no-outline md-selection-control-toggle md-btn md-btn--icon md-text--theme-secondary"
+                    role="checkbox"
+                    tabindex="0"
+                  >
+                    <div
+                      class="md-ink-container"
+                    />
+                    <i
+                      class="md-icon material-icons md-text--inherit"
+                    >
+                      check_box
+                    </i>
+                  </div>
+                  <span
+                    id="has-majority-consent-label"
+                  >
+                    <div
+                      class=""
+                    >
+                      I am old enough in my local jurisdiction to enter into legal agreements and to consent to the processing of my personal data.
+                    </div>
+                  </span>
+                </label>
+              </div>
+              <div
+                class="md-selection-control-container"
+              >
+                <input
+                  aria-hidden="true"
+                  class="md-selection-control-input"
+                  id="is-not-gdpr"
+                  name="isNotGdpr"
+                  type="checkbox"
+                  value="true"
+                />
+                <label
+                  class="md-selection-control-label md-pointer--hover md-text"
+                  for="is-not-gdpr"
+                >
+                  <div
+                    aria-checked="true"
+                    aria-labelledby="is-not-gdpr-label"
+                    aria-pressed="true"
+                    class="md-fake-btn md-pointer--hover md-fake-btn--no-outline md-selection-control-toggle md-btn md-btn--icon md-text--theme-secondary"
+                    role="checkbox"
+                    tabindex="0"
+                  >
+                    <div
+                      class="md-ink-container"
+                    />
+                    <i
+                      class="md-icon material-icons md-text--inherit"
+                    >
+                      check_box
+                    </i>
+                  </div>
+                  <span
+                    id="is-not-gdpr-label"
+                  >
+                    <div
+                      class=""
+                    >
+                      I am not located in the European Union (EU), the European Economic Area (EEA), or in any other jurisdiction that is subject to the General Data Protection Regulation (GDPR). (See
+                       
+                      <a
+                        class="text-link"
+                        href="https://github.com/Howdju/howdju/issues/24"
+                        rel="noreferrer"
+                        target="_blank"
+                      >
+                        Github issue #24
+                      </a>
+                      .)
+                    </div>
+                  </span>
+                </label>
+              </div>
+            </div>
+            <div
+              class="rmd-card__actions"
+            >
+              <button
+                class="rmd-button rmd-button--text rmd-button--text-primary"
+                type="button"
+              >
+                Cancel
+                <span
+                  class="rmd-ripple-container"
+                />
+              </button>
+              <button
+                class="rmd-button rmd-button--text rmd-button--contained rmd-button--primary"
+                title="Submit"
+                type="submit"
+              >
+                Complete Registration
+                <span
+                  class="rmd-ripple-container"
+                />
+              </button>
+            </div>
+          </form>
         </div>
       </div>
     </div>
@@ -529,33 +464,29 @@ exports[`RegistrationConfirmationPage shows error message for missing registrati
       class="md-grid"
     >
       <div
-        class="md-cell md-cell--12"
+        class="rmd-card rmd-card--shadowed md-cell md-cell--12"
       >
-        <div
-          class="rmd-card rmd-card--shadowed"
+        <header
+          class="rmd-card__header rmd-card__header--center"
         >
-          <header
-            class="rmd-card__header rmd-card__header--center"
+          <span
+            class="rmd-card__header-content"
           >
-            <span
-              class="rmd-card__header-content"
+            <h5
+              class="rmd-card__title"
             >
-              <h5
-                class="rmd-card__title"
-              >
-                Complete Registration
-              </h5>
-            </span>
-          </header>
-          <div
-            class="rmd-card__content rmd-card__content--padded rmd-card__content--extra-padding rmd-card__content--remove-margin rmd-card__content--secondary"
+              Complete Registration
+            </h5>
+          </span>
+        </header>
+        <div
+          class="rmd-card__content rmd-card__content--padded rmd-card__content--extra-padding rmd-card__content--remove-margin"
+        >
+          <span
+            class="error-message"
           >
-            <span
-              class="error-message"
-            >
-              Missing registration code
-            </span>
-          </div>
+            Missing registration code
+          </span>
         </div>
       </div>
     </div>
@@ -572,493 +503,428 @@ exports[`RegistrationConfirmationPage shows form 1`] = `
       class="md-grid"
     >
       <div
-        class="md-cell md-cell--12"
+        class="rmd-card rmd-card--shadowed md-cell md-cell--12"
       >
-        <div
-          class="rmd-card rmd-card--shadowed"
+        <header
+          class="rmd-card__header rmd-card__header--center"
         >
-          <header
-            class="rmd-card__header rmd-card__header--center"
+          <span
+            class="rmd-card__header-content"
           >
-            <span
-              class="rmd-card__header-content"
+            <h5
+              class="rmd-card__title"
             >
-              <h5
-                class="rmd-card__title"
-              >
-                Complete Registration
-              </h5>
-            </span>
-          </header>
+              Complete Registration
+            </h5>
+          </span>
+        </header>
+        <div
+          class="rmd-card__content rmd-card__content--padded rmd-card__content--extra-padding rmd-card__content--remove-margin"
+        >
           <div
-            class="rmd-card__content rmd-card__content--padded rmd-card__content--extra-padding rmd-card__content--remove-margin rmd-card__content--secondary"
+            class="rmd-card__content rmd-card__content--padded rmd-card__content--extra-padding rmd-card__content--remove-margin"
           >
+            Please enter the following to complete your registration
+          </div>
+          <form>
             <div
-              class="rmd-card__content rmd-card__content--padded rmd-card__content--extra-padding rmd-card__content--remove-margin rmd-card__content--secondary"
+              class="rmd-card__content rmd-card__content--padded rmd-card__content--extra-padding rmd-card__content--remove-margin"
             >
-              Please enter the following to complete your registration
-            </div>
-            <form>
+              <ul
+                class="error-message"
+              />
               <div
-                class="rmd-card__content rmd-card__content--padded rmd-card__content--extra-padding rmd-card__content--remove-margin rmd-card__content--secondary"
+                style="display: flex;"
               >
-                <ul
-                  class="error-message"
-                />
                 <div
-                  class="md-text-field-container md-full-width md-text-field-container--disabled md-text-field-container--multiline"
+                  class="rmd-text-field-container rmd-text-field-container--outline rmd-text-field-container--disabled rmd-text-field-container--label rmd-text-field-container--outline-left"
+                  style="flex-grow: 1;"
                 >
+                  <span
+                    class="rmd-text-field-addon rmd-text-field-addon--presentational"
+                  >
+                    <span
+                      class="material-symbols"
+                    >
+                      alternate_email
+                    </span>
+                  </span>
                   <label
-                    class="md-floating-label md-floating-label--floating md-text--disabled"
+                    class="rmd-label rmd-label--disabled rmd-floating-label rmd-floating-label--active"
                     for="email"
                   >
                     Email
                   </label>
-                  <div
-                    class="md-text-field-multiline-container md-text-field--floating-margin"
-                    style="height: 0px;"
-                  >
-                    <span
-                      aria-hidden="true"
-                    />
-                    <textarea
-                      aria-hidden="true"
-                      class="md-text-field md-text-field--multiline md-full-width md-text--disabled md-text-field--multiline-mask"
-                      readonly=""
-                      rows="1"
-                      tabindex="-1"
-                    >
-                      the-email@domain.com
-                    </textarea>
-                    <textarea
-                      autocomplete="email"
-                      class="md-text-field md-text-field--multiline md-full-width md-text--disabled"
-                      disabled=""
-                      id="email"
-                      rows="1"
-                      style="height: 0px;"
-                    >
-                      the-email@domain.com
-                    </textarea>
-                  </div>
-                  <hr
-                    class="md-divider md-divider--text-field md-divider--expand-from-left"
+                  <input
+                    autocomplete="email"
+                    class="rmd-text-field rmd-text-field--floating"
+                    disabled=""
+                    id="email"
+                    type="email"
+                    value="the-email@domain.com"
                   />
                 </div>
+              </div>
+              <div
+                style="display: flex;"
+              >
                 <div
-                  class="md-text-field-container md-full-width md-text-field-container--multiline"
+                  class="rmd-text-field-container rmd-text-field-container--outline rmd-text-field-container--hoverable rmd-text-field-container--label rmd-text-field-container--outline-left"
+                  style="flex-grow: 1;"
                 >
+                  <span
+                    class="rmd-text-field-addon rmd-text-field-addon--presentational"
+                  >
+                    <span
+                      class="material-symbols"
+                    >
+                      person
+                    </span>
+                  </span>
                   <label
-                    class="md-floating-label md-floating-label--inactive md-floating-label--inactive-sized md-text--secondary"
+                    class="rmd-label rmd-floating-label"
                     for="username"
                   >
-                    Username *
-                  </label>
-                  <div
-                    class="md-text-field-multiline-container md-text-field--floating-margin"
-                    style="height: 0px;"
-                  >
-                    <span
-                      aria-hidden="true"
-                    />
-                    <textarea
-                      aria-hidden="true"
-                      class="md-text-field md-text-field--multiline md-full-width md-text md-text-field--multiline-mask"
-                      readonly=""
-                      rows="1"
-                      tabindex="-1"
-                    />
-                    <textarea
-                      autocomplete="username"
-                      class="md-text-field md-text-field--multiline md-full-width md-text"
-                      id="username"
-                      minlength="3"
-                      name="username"
-                      required=""
-                      rows="1"
-                      style="height: 0px;"
-                    />
-                  </div>
-                  <hr
-                    class="md-divider md-divider--text-field md-divider--expand-from-left"
-                  />
-                  <div
-                    class="md-text-field-message-container md-text-field-message-container--count-only md-full-width md-text--disabled"
-                  >
-                    <div
-                      aria-hidden="true"
-                      class="md-text-field-message md-text-field-message--inactive md-text-field-message--counter"
-                    >
-                      0 / 64
-                    </div>
-                  </div>
-                </div>
-                <div
-                  class="md-text-field-container md-full-width md-text-field-container--input"
-                >
-                  <label
-                    class="md-floating-label md-floating-label--inactive md-floating-label--inactive-sized md-text--secondary"
-                    for="password"
-                  >
-                    Password *
+                    Username
                   </label>
                   <input
-                    autocomplete="new-password"
-                    class="md-text-field md-text-field--inline-indicator md-text-field--floating-margin md-full-width md-text"
-                    id="password"
-                    minlength="6"
-                    name="password"
+                    autocomplete="username"
+                    class="rmd-text-field rmd-text-field--floating"
+                    id="username"
+                    maxlength="64"
+                    minlength="3"
+                    name="username"
                     required=""
-                    type="password"
+                    type="text"
                     value=""
                   />
-                  <hr
-                    class="md-divider md-divider--text-field md-divider--expand-from-left"
-                  />
-                  <button
-                    class="md-text-field-inline-indicator md-password-btn md-pointer--hover md-text-field-inline-indicator--floating md-text--disabled"
-                    type="button"
-                  >
-                    <i
-                      class="md-icon material-icons"
-                    >
-                      remove_red_eye
-                    </i>
-                  </button>
-                  <div
-                    class="md-text-field-message-container md-text-field-message-container--count-only md-text-field-message-container--right-icon-offset md-full-width md-text--disabled"
-                  >
-                    <div
-                      aria-hidden="true"
-                      class="md-text-field-message md-text-field-message--inactive md-text-field-message--counter"
-                    >
-                      0 / 64
-                    </div>
-                  </div>
                 </div>
+              </div>
+              <div
+                class="rmd-text-field-container rmd-text-field-container--outline rmd-text-field-container--hoverable rmd-text-field-container--label rmd-text-field-container--outline-left rmd-text-field-container--outline-right rmd-password rmd-password--offset"
+              >
+                <span
+                  class="rmd-text-field-addon rmd-text-field-addon--presentational"
+                >
+                  <span
+                    class="material-symbols"
+                  >
+                    password
+                  </span>
+                </span>
+                <label
+                  class="rmd-label rmd-floating-label"
+                  for="password"
+                >
+                  Password
+                </label>
+                <input
+                  autocomplete="new-password"
+                  class="rmd-text-field rmd-text-field--floating rmd-password__input rmd-password__input--offset"
+                  id="password"
+                  maxlength="64"
+                  minlength="6"
+                  name="password"
+                  required=""
+                  type="password"
+                  value=""
+                />
+                <button
+                  aria-label="Show password"
+                  aria-pressed="false"
+                  class="rmd-button rmd-button--icon rmd-password__toggle"
+                  id="password-password-toggle"
+                  type="button"
+                >
+                  <i
+                    aria-hidden="true"
+                    class="rmd-icon rmd-icon--font material-icons"
+                  >
+                    remove_red_eye
+                  </i>
+                  <span
+                    class="rmd-ripple-container"
+                  />
+                </button>
+              </div>
+              <div
+                style="display: flex;"
+              >
                 <div
-                  class="md-text-field-container md-full-width md-text-field-container--multiline"
+                  class="rmd-text-field-container rmd-text-field-container--outline rmd-text-field-container--hoverable rmd-text-field-container--label"
+                  style="flex-grow: 1;"
                 >
                   <label
-                    class="md-floating-label md-floating-label--inactive md-floating-label--inactive-sized md-text--secondary"
+                    class="rmd-label rmd-floating-label"
                     for="long-name"
                   >
-                    Full Name *
+                    Full Name
                   </label>
-                  <div
-                    class="md-text-field-multiline-container md-text-field--floating-margin"
-                    style="height: 0px;"
-                  >
-                    <span
-                      aria-hidden="true"
-                    />
-                    <textarea
-                      aria-hidden="true"
-                      class="md-text-field md-text-field--multiline md-full-width md-text md-text-field--multiline-mask"
-                      readonly=""
-                      rows="1"
-                      tabindex="-1"
-                    />
-                    <textarea
-                      autocomplete="name"
-                      class="md-text-field md-text-field--multiline md-full-width md-text"
-                      id="long-name"
-                      name="longName"
-                      required=""
-                      rows="1"
-                      style="height: 0px;"
-                    />
-                  </div>
-                  <hr
-                    class="md-divider md-divider--text-field md-divider--expand-from-left"
+                  <input
+                    autocomplete="name"
+                    class="rmd-text-field rmd-text-field--floating"
+                    id="long-name"
+                    maxlength="64"
+                    name="longName"
+                    required=""
+                    type="text"
+                    value=""
                   />
-                  <div
-                    class="md-text-field-message-container md-text-field-message-container--count-only md-full-width md-text--disabled"
-                  >
-                    <div
-                      aria-hidden="true"
-                      class="md-text-field-message md-text-field-message--inactive md-text-field-message--counter"
-                    >
-                      0 / 64
-                    </div>
-                  </div>
                 </div>
+              </div>
+              <div
+                style="display: flex;"
+              >
                 <div
-                  class="md-text-field-container md-full-width md-text-field-container--multiline"
+                  class="rmd-text-field-container rmd-text-field-container--outline rmd-text-field-container--hoverable rmd-text-field-container--label"
+                  style="flex-grow: 1;"
                 >
                   <label
-                    class="md-floating-label md-floating-label--inactive md-floating-label--inactive-sized md-text--secondary"
+                    class="rmd-label rmd-floating-label"
                     for="short-name"
                   >
                     First Name
                   </label>
-                  <div
-                    class="md-text-field-multiline-container md-text-field--floating-margin"
-                    style="height: 0px;"
-                  >
-                    <span
-                      aria-hidden="true"
-                    />
-                    <textarea
-                      aria-hidden="true"
-                      class="md-text-field md-text-field--multiline md-full-width md-text md-text-field--multiline-mask"
-                      readonly=""
-                      rows="1"
-                      tabindex="-1"
-                    />
-                    <textarea
-                      autocomplete="given-name"
-                      class="md-text-field md-text-field--multiline md-full-width md-text"
-                      id="short-name"
-                      name="shortName"
-                      rows="1"
-                      style="height: 0px;"
-                    />
-                  </div>
-                  <hr
-                    class="md-divider md-divider--text-field md-divider--expand-from-left"
-                  />
-                  <div
-                    class="md-text-field-message-container md-text-field-message-container--count-only md-full-width md-text--disabled"
-                  >
-                    <div
-                      aria-hidden="true"
-                      class="md-text-field-message md-text-field-message--inactive md-text-field-message--counter"
-                    >
-                      0 / 32
-                    </div>
-                  </div>
-                </div>
-                <div
-                  class="md-selection-control-container"
-                >
                   <input
-                    aria-hidden="true"
-                    class="md-selection-control-input"
-                    id="does-accept-terms"
-                    name="doesAcceptTerms"
-                    type="checkbox"
-                    value="true"
+                    autocomplete="given-name"
+                    class="rmd-text-field rmd-text-field--floating"
+                    id="short-name"
+                    maxlength="32"
+                    name="shortName"
+                    type="text"
+                    value=""
                   />
-                  <label
-                    class="md-selection-control-label md-pointer--hover md-text"
-                    for="does-accept-terms"
-                  >
-                    <div
-                      aria-checked="false"
-                      aria-labelledby="does-accept-terms-label"
-                      aria-pressed="false"
-                      class="md-fake-btn md-pointer--hover md-fake-btn--no-outline md-selection-control-toggle md-btn md-btn--icon md-text--secondary"
-                      role="checkbox"
-                      tabindex="0"
-                    >
-                      <div
-                        class="md-ink-container"
-                      />
-                      <i
-                        class="md-icon material-icons md-text--inherit"
-                      >
-                        check_box_outline_blank
-                      </i>
-                    </div>
-                    <span
-                      id="does-accept-terms-label"
-                    >
-                      <div
-                        class=""
-                      >
-                        I have read and agree to the
-                         
-                        <a
-                          class="text-link"
-                          href="https://docs.howdju.com/policies/user-agreement"
-                          rel="noreferrer"
-                          target="_blank"
-                        >
-                          User Agreement
-                        </a>
-                         
-                        and the
-                         
-                        <a
-                          class="text-link"
-                          href="https://docs.howdju.com/policies/privacy-policy"
-                          rel="noreferrer"
-                          target="_blank"
-                        >
-                          Privacy Policy
-                        </a>
-                        .
-                      </div>
-                    </span>
-                  </label>
-                </div>
-                <div
-                  class="md-selection-control-container"
-                >
-                  <input
-                    aria-hidden="true"
-                    class="md-selection-control-input"
-                    id="is-13-years-or-older"
-                    name="is13YearsOrOlder"
-                    type="checkbox"
-                    value="true"
-                  />
-                  <label
-                    class="md-selection-control-label md-pointer--hover md-text"
-                    for="is-13-years-or-older"
-                  >
-                    <div
-                      aria-checked="false"
-                      aria-labelledby="is-13-years-or-older-label"
-                      aria-pressed="false"
-                      class="md-fake-btn md-pointer--hover md-fake-btn--no-outline md-selection-control-toggle md-btn md-btn--icon md-text--secondary"
-                      role="checkbox"
-                      tabindex="0"
-                    >
-                      <div
-                        class="md-ink-container"
-                      />
-                      <i
-                        class="md-icon material-icons md-text--inherit"
-                      >
-                        check_box_outline_blank
-                      </i>
-                    </div>
-                    <span
-                      id="is-13-years-or-older-label"
-                    >
-                      <div
-                        class=""
-                      >
-                        I am 13 years old or older.
-                      </div>
-                    </span>
-                  </label>
-                </div>
-                <div
-                  class="md-selection-control-container"
-                >
-                  <input
-                    aria-hidden="true"
-                    class="md-selection-control-input"
-                    id="has-majority-consent"
-                    name="hasMajorityConsent"
-                    type="checkbox"
-                    value="true"
-                  />
-                  <label
-                    class="md-selection-control-label md-pointer--hover md-text"
-                    for="has-majority-consent"
-                  >
-                    <div
-                      aria-checked="false"
-                      aria-labelledby="has-majority-consent-label"
-                      aria-pressed="false"
-                      class="md-fake-btn md-pointer--hover md-fake-btn--no-outline md-selection-control-toggle md-btn md-btn--icon md-text--secondary"
-                      role="checkbox"
-                      tabindex="0"
-                    >
-                      <div
-                        class="md-ink-container"
-                      />
-                      <i
-                        class="md-icon material-icons md-text--inherit"
-                      >
-                        check_box_outline_blank
-                      </i>
-                    </div>
-                    <span
-                      id="has-majority-consent-label"
-                    >
-                      <div
-                        class=""
-                      >
-                        I am old enough in my local jurisdiction to enter into legal agreements and to consent to the processing of my personal data.
-                      </div>
-                    </span>
-                  </label>
-                </div>
-                <div
-                  class="md-selection-control-container"
-                >
-                  <input
-                    aria-hidden="true"
-                    class="md-selection-control-input"
-                    id="is-not-gdpr"
-                    name="isNotGdpr"
-                    type="checkbox"
-                    value="true"
-                  />
-                  <label
-                    class="md-selection-control-label md-pointer--hover md-text"
-                    for="is-not-gdpr"
-                  >
-                    <div
-                      aria-checked="false"
-                      aria-labelledby="is-not-gdpr-label"
-                      aria-pressed="false"
-                      class="md-fake-btn md-pointer--hover md-fake-btn--no-outline md-selection-control-toggle md-btn md-btn--icon md-text--secondary"
-                      role="checkbox"
-                      tabindex="0"
-                    >
-                      <div
-                        class="md-ink-container"
-                      />
-                      <i
-                        class="md-icon material-icons md-text--inherit"
-                      >
-                        check_box_outline_blank
-                      </i>
-                    </div>
-                    <span
-                      id="is-not-gdpr-label"
-                    >
-                      <div
-                        class=""
-                      >
-                        I am not located in the European Union (EU), the European Economic Area (EEA), or in any other jurisdiction that is subject to the General Data Protection Regulation (GDPR). (See
-                         
-                        <a
-                          class="text-link"
-                          href="https://github.com/Howdju/howdju/issues/24"
-                          rel="noreferrer"
-                          target="_blank"
-                        >
-                          Github issue #24
-                        </a>
-                        .)
-                      </div>
-                    </span>
-                  </label>
                 </div>
               </div>
               <div
-                class="rmd-card__actions"
+                class="md-selection-control-container"
               >
-                <button
-                  class="rmd-button rmd-button--text rmd-button--text-primary"
-                  type="button"
+                <input
+                  aria-hidden="true"
+                  class="md-selection-control-input"
+                  id="does-accept-terms"
+                  name="doesAcceptTerms"
+                  type="checkbox"
+                  value="true"
+                />
+                <label
+                  class="md-selection-control-label md-pointer--hover md-text"
+                  for="does-accept-terms"
                 >
-                  Cancel
+                  <div
+                    aria-checked="false"
+                    aria-labelledby="does-accept-terms-label"
+                    aria-pressed="false"
+                    class="md-fake-btn md-pointer--hover md-fake-btn--no-outline md-selection-control-toggle md-btn md-btn--icon md-text--secondary"
+                    role="checkbox"
+                    tabindex="0"
+                  >
+                    <div
+                      class="md-ink-container"
+                    />
+                    <i
+                      class="md-icon material-icons md-text--inherit"
+                    >
+                      check_box_outline_blank
+                    </i>
+                  </div>
                   <span
-                    class="rmd-ripple-container"
-                  />
-                </button>
-                <button
-                  aria-disabled="true"
-                  class="rmd-button rmd-button--text rmd-button--contained rmd-button--disabled"
-                  title="Please complete the form to continue"
-                  type="submit"
-                >
-                  Complete Registration
-                  <span
-                    class="rmd-ripple-container"
-                  />
-                </button>
+                    id="does-accept-terms-label"
+                  >
+                    <div
+                      class=""
+                    >
+                      I have read and agree to the
+                       
+                      <a
+                        class="text-link"
+                        href="https://docs.howdju.com/policies/user-agreement"
+                        rel="noreferrer"
+                        target="_blank"
+                      >
+                        User Agreement
+                      </a>
+                       
+                      and the
+                       
+                      <a
+                        class="text-link"
+                        href="https://docs.howdju.com/policies/privacy-policy"
+                        rel="noreferrer"
+                        target="_blank"
+                      >
+                        Privacy Policy
+                      </a>
+                      .
+                    </div>
+                  </span>
+                </label>
               </div>
-            </form>
-          </div>
+              <div
+                class="md-selection-control-container"
+              >
+                <input
+                  aria-hidden="true"
+                  class="md-selection-control-input"
+                  id="is-13-years-or-older"
+                  name="is13YearsOrOlder"
+                  type="checkbox"
+                  value="true"
+                />
+                <label
+                  class="md-selection-control-label md-pointer--hover md-text"
+                  for="is-13-years-or-older"
+                >
+                  <div
+                    aria-checked="false"
+                    aria-labelledby="is-13-years-or-older-label"
+                    aria-pressed="false"
+                    class="md-fake-btn md-pointer--hover md-fake-btn--no-outline md-selection-control-toggle md-btn md-btn--icon md-text--secondary"
+                    role="checkbox"
+                    tabindex="0"
+                  >
+                    <div
+                      class="md-ink-container"
+                    />
+                    <i
+                      class="md-icon material-icons md-text--inherit"
+                    >
+                      check_box_outline_blank
+                    </i>
+                  </div>
+                  <span
+                    id="is-13-years-or-older-label"
+                  >
+                    <div
+                      class=""
+                    >
+                      I am 13 years old or older.
+                    </div>
+                  </span>
+                </label>
+              </div>
+              <div
+                class="md-selection-control-container"
+              >
+                <input
+                  aria-hidden="true"
+                  class="md-selection-control-input"
+                  id="has-majority-consent"
+                  name="hasMajorityConsent"
+                  type="checkbox"
+                  value="true"
+                />
+                <label
+                  class="md-selection-control-label md-pointer--hover md-text"
+                  for="has-majority-consent"
+                >
+                  <div
+                    aria-checked="false"
+                    aria-labelledby="has-majority-consent-label"
+                    aria-pressed="false"
+                    class="md-fake-btn md-pointer--hover md-fake-btn--no-outline md-selection-control-toggle md-btn md-btn--icon md-text--secondary"
+                    role="checkbox"
+                    tabindex="0"
+                  >
+                    <div
+                      class="md-ink-container"
+                    />
+                    <i
+                      class="md-icon material-icons md-text--inherit"
+                    >
+                      check_box_outline_blank
+                    </i>
+                  </div>
+                  <span
+                    id="has-majority-consent-label"
+                  >
+                    <div
+                      class=""
+                    >
+                      I am old enough in my local jurisdiction to enter into legal agreements and to consent to the processing of my personal data.
+                    </div>
+                  </span>
+                </label>
+              </div>
+              <div
+                class="md-selection-control-container"
+              >
+                <input
+                  aria-hidden="true"
+                  class="md-selection-control-input"
+                  id="is-not-gdpr"
+                  name="isNotGdpr"
+                  type="checkbox"
+                  value="true"
+                />
+                <label
+                  class="md-selection-control-label md-pointer--hover md-text"
+                  for="is-not-gdpr"
+                >
+                  <div
+                    aria-checked="false"
+                    aria-labelledby="is-not-gdpr-label"
+                    aria-pressed="false"
+                    class="md-fake-btn md-pointer--hover md-fake-btn--no-outline md-selection-control-toggle md-btn md-btn--icon md-text--secondary"
+                    role="checkbox"
+                    tabindex="0"
+                  >
+                    <div
+                      class="md-ink-container"
+                    />
+                    <i
+                      class="md-icon material-icons md-text--inherit"
+                    >
+                      check_box_outline_blank
+                    </i>
+                  </div>
+                  <span
+                    id="is-not-gdpr-label"
+                  >
+                    <div
+                      class=""
+                    >
+                      I am not located in the European Union (EU), the European Economic Area (EEA), or in any other jurisdiction that is subject to the General Data Protection Regulation (GDPR). (See
+                       
+                      <a
+                        class="text-link"
+                        href="https://github.com/Howdju/howdju/issues/24"
+                        rel="noreferrer"
+                        target="_blank"
+                      >
+                        Github issue #24
+                      </a>
+                      .)
+                    </div>
+                  </span>
+                </label>
+              </div>
+            </div>
+            <div
+              class="rmd-card__actions"
+            >
+              <button
+                class="rmd-button rmd-button--text rmd-button--text-primary"
+                type="button"
+              >
+                Cancel
+                <span
+                  class="rmd-ripple-container"
+                />
+              </button>
+              <button
+                aria-disabled="true"
+                class="rmd-button rmd-button--text rmd-button--contained rmd-button--disabled"
+                title="Please complete the form to continue"
+                type="submit"
+              >
+                Complete Registration
+                <span
+                  class="rmd-ripple-container"
+                />
+              </button>
+            </div>
+          </form>
         </div>
       </div>
     </div>
@@ -1075,46 +941,42 @@ exports[`RegistrationConfirmationPage shows success message upon confirmation. 1
       class="md-grid"
     >
       <div
-        class="md-cell md-cell--12"
+        class="rmd-card rmd-card--shadowed md-cell md-cell--12"
       >
-        <div
-          class="rmd-card rmd-card--shadowed"
+        <header
+          class="rmd-card__header rmd-card__header--center"
         >
-          <header
-            class="rmd-card__header rmd-card__header--center"
+          <span
+            class="rmd-card__header-content"
           >
-            <span
-              class="rmd-card__header-content"
+            <h5
+              class="rmd-card__title"
             >
-              <h5
-                class="rmd-card__title"
-              >
-                Complete Registration
-              </h5>
-            </span>
-          </header>
+              Complete Registration
+            </h5>
+          </span>
+        </header>
+        <div
+          class="rmd-card__content rmd-card__content--padded rmd-card__content--extra-padding rmd-card__content--remove-margin"
+        >
           <div
-            class="rmd-card__content rmd-card__content--padded rmd-card__content--extra-padding rmd-card__content--remove-margin rmd-card__content--secondary"
+            class="rmd-card__content rmd-card__content--padded rmd-card__content--extra-padding rmd-card__content--remove-margin"
           >
-            <div
-              class="rmd-card__content rmd-card__content--padded rmd-card__content--extra-padding rmd-card__content--remove-margin rmd-card__content--secondary"
+            You are now logged in.
+          </div>
+          <div
+            class="rmd-card__actions"
+          >
+            <button
+              class="rmd-button rmd-button--text rmd-button--contained rmd-button--primary"
+              href="/recent-activity"
+              type="button"
             >
-              You are now logged in.
-            </div>
-            <div
-              class="rmd-card__actions"
-            >
-              <button
-                class="rmd-button rmd-button--text rmd-button--contained rmd-button--primary"
-                href="/recent-activity"
-                type="button"
-              >
-                Go to recent activity
-                <span
-                  class="rmd-ripple-container"
-                />
-              </button>
-            </div>
+              Go to recent activity
+              <span
+                class="rmd-ripple-container"
+              />
+            </button>
           </div>
         </div>
       </div>

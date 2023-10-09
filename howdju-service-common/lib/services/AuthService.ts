@@ -6,7 +6,6 @@ import {
   Credentials,
   EntityId,
   EntityTypes,
-  Logger,
   UserRef,
   utcNow,
 } from "howdju-common";
@@ -25,7 +24,6 @@ import { randomBase64String } from "../crypto";
 export class AuthService {
   constructor(
     private config: ApiConfig,
-    private logger: Logger,
     private authDao: AuthDao,
     private usersDao: UsersDao
   ) {}
@@ -130,32 +128,29 @@ export class AuthService {
     );
   }
 
-  verifyPassword(credentials: Credentials) {
-    return this.authDao
-      .readUserHashForEmail(credentials.email, HashTypes.BCRYPT)
-      .then((userHash) => {
-        if (!userHash) {
-          throw new EntityNotFoundError(EntityTypes.PASSWORD_HASH);
-        }
-        this.logger.silly("Found user hash");
-        const { userId, hash } = userHash;
-        let verifyPromise;
-        try {
-          verifyPromise = bcrypt.compare(credentials.password, hash);
-          this.logger.silly("proceeding past verify call");
-        } catch (err) {
-          this.logger.error("failed verification", { err });
-          verifyPromise = false;
-        }
-        return Promise.all([verifyPromise, userId]);
-      })
-      .then(([isVerified, userId]) => {
-        if (!isVerified) {
-          throw new InvalidLoginError();
-        }
+  async verifyPassword(credentials: Credentials) {
+    const userHash = await this.authDao.readUserHashForEmail(
+      credentials.email,
+      HashTypes.BCRYPT
+    );
 
-        return userId;
-      });
+    if (!userHash) {
+      throw new EntityNotFoundError(EntityTypes.PASSWORD_HASH);
+    }
+
+    const { userId, hash } = userHash;
+    let isCorrectPassword = false;
+    try {
+      isCorrectPassword = await bcrypt.compare(credentials.password, hash);
+    } catch (err) {
+      isCorrectPassword = false;
+    }
+
+    if (!isCorrectPassword) {
+      throw new InvalidLoginError();
+    }
+
+    return userId;
   }
 
   async login(credentials: Credentials) {

@@ -1,6 +1,6 @@
 import React from "react";
 
-import SingleLineTextField from "./SingleLineTextField";
+import SingleLineTextArea from "@/components/text/SingleLineTextArea";
 import PropositionTextAutocomplete from "./PropositionTextAutocomplete";
 import { makeErrorPropCreator } from "./modelErrorMessages";
 import ErrorMessages from "./ErrorMessages";
@@ -47,7 +47,6 @@ export default function PropositionEditorFields(props: Props) {
     blurredFields
   );
 
-  const textErrorProps = errorProps((p) => p.text);
   const textProps = {
     id: combineIds(id, "text"),
     name: combineNames(name, textName),
@@ -59,7 +58,7 @@ export default function PropositionEditorFields(props: Props) {
     onSubmit,
     onPropertyChange,
     disabled,
-    ...textErrorProps,
+    messageProps: errorProps((p) => p.text),
   };
 
   const textInput =
@@ -70,7 +69,7 @@ export default function PropositionEditorFields(props: Props) {
         suggestionsKey={combineSuggestionsKeys(suggestionsKey, textName)}
       />
     ) : (
-      <SingleLineTextField {...rest} {...textProps} />
+      <SingleLineTextArea {...rest} {...textProps} />
     );
   return (
     <div>

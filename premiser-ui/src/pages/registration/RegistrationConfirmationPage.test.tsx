@@ -110,7 +110,7 @@ describe("RegistrationConfirmationPage", () => {
     await screen.findByLabelText(/username/i);
 
     await user.type(screen.getByLabelText(/username/i), username);
-    await user.type(screen.getByLabelText(/password/i), "password");
+    await user.type(screen.getByLabelText(/^password$/i), "password");
     await user.type(screen.getByLabelText(/full name/i), "Testius Maximus IV");
     await user.type(screen.getByLabelText(/first name/i), "Testy");
     await user.click(
@@ -183,7 +183,7 @@ describe("RegistrationConfirmationPage", () => {
     await screen.findByLabelText(/username/i);
 
     await user.type(screen.getByLabelText(/username/i), username);
-    await user.type(screen.getByLabelText(/password/i), "password");
+    await user.type(screen.getByLabelText(/^password$/i), "password");
     await user.type(screen.getByLabelText(/full name/i), "Testius Maximus IV");
     await user.type(screen.getByLabelText(/first name/i), "Testy");
     await user.click(

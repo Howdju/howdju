@@ -58,7 +58,6 @@ export function servicesInitializer(provider: AwsProvider) {
   const actionsService = new ActionsService(provider.actionsDao);
   const authService = new AuthService(
     provider.appConfig,
-    provider.logger,
     provider.authDao,
     provider.usersDao
   );

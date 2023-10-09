@@ -184,9 +184,9 @@ export const Persorg = Entity.extend({
   /** The official or primary website representing the persorg. */
   websiteUrl: urlString().optional(),
   /** The persorg's Twitter. */
-  twitterUrl: urlString({ domain: /twitter.com$/ }).optional(),
+  twitterUrl: urlString({ domain: /(^|\.)twitter.com$/ }).optional(),
   /** The persorg's Wikipedia URL. */
-  wikipediaUrl: urlString({ domain: /wikipedia.org$/ }).optional(),
+  wikipediaUrl: urlString({ domain: /(^|\.)wikipedia.org$/ }).optional(),
   created: momentObject,
   creatorUserId: z.string(),
 });
@@ -1678,7 +1678,8 @@ export type CreateRegistrationRequest = z.infer<
 export const CreateRegistrationRequestInput = CreateRegistrationRequest;
 export type CreateRegistrationRequestInput = CreateRegistrationRequest;
 
-export const Password = z.string().min(6).max(64);
+const passwordMaxLength = 64;
+export const Password = z.string().min(6).max(passwordMaxLength);
 export type Password = z.infer<typeof Password>;
 
 export const RegistrationConfirmation = z.object({
@@ -1729,9 +1730,9 @@ export type PasswordResetConfirmation = z.output<
 
 export const Credentials = z.object({
   email: User.shape.email,
-  password: Password,
+  password: z.string().max(passwordMaxLength),
 });
-export type Credentials = z.infer<typeof Credentials>;
+export type Credentials = z.output<typeof Credentials>;
 
 export const CreationInfo = z.object({
   creatorUserId: z.string(),

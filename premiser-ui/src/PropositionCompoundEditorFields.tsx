@@ -12,7 +12,7 @@ import {
 
 import { makeErrorPropCreator } from "./modelErrorMessages";
 import ErrorMessages from "./ErrorMessages";
-import SingleLineTextField from "./SingleLineTextField";
+import SingleLineTextArea from "@/components/text/SingleLineTextArea";
 import PropositionTextAutocomplete from "./PropositionTextAutocomplete";
 import { combineNames, combineIds, combineSuggestionsKeys } from "./viewModels";
 import { EntityEditorFieldsProps } from "./editors/withEditor";
@@ -128,7 +128,7 @@ export default function PropositionCompoundEditorFields(props: Props) {
           onBlur,
           onPropertyChange,
           onSubmit,
-          ...errorProps((pc) => pc.atoms[index].entity.text),
+          messageProps: errorProps((pc) => pc.atoms[index].entity.text),
         };
         const input =
           suggestionsKey && !disabled ? (
@@ -140,7 +140,7 @@ export default function PropositionCompoundEditorFields(props: Props) {
               )}
             />
           ) : (
-            <SingleLineTextField {...inputProps} />
+            <SingleLineTextArea {...inputProps} />
           );
         return (
           <div key={`atom ${atom.key}`}>

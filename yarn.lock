@@ -28566,7 +28566,6 @@ __metadata:
     use-debounce: ^9.0.4
     use-deep-compare-effect: ^1.8.1
     uuid: ^9.0.0
-    valid-url: ^1.0.9
     warnings-to-errors-webpack-plugin: ^2.3.0
     webpack: ^5.76.0
     webpack-bundle-analyzer: ^4.8.0
@@ -34515,13 +34514,6 @@ resolve@^2.0.0-next.3:
   dependencies:
     user-home: ^1.1.1
   checksum: 4ec2561efc3c4776bcb6eb2998465f0c85836083d17db6c7ecec83b223ab3efe2978cd8add905ac79de8f6179b25eb6620ed3cf154f4310c1cce62337fc0cc0e
-  languageName: node
-  linkType: hard
-
-"valid-url@npm:^1.0.9":
-  version: 1.0.9
-  resolution: "valid-url@npm:1.0.9"
-  checksum: 3ecb030559404441c2cf104cbabab8770efb0f36d117db03d1081052ef133015a68806148ce954bb4dd0b5c42c14b709a88783c93d66b0916cb67ba771c98702
   languageName: node
   linkType: hard
 

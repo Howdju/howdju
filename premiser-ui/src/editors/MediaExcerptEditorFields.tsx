@@ -12,7 +12,7 @@ import {
   EntityEditorFieldsProps,
 } from "@/editors/withEditor";
 import { makeErrorPropCreator } from "@/modelErrorMessages";
-import TextField from "@/TextField";
+import { TextArea } from "@/components/text/TextArea";
 import { EditorType } from "@/reducers/editors";
 import { editors } from "@/actions";
 import { EditorId } from "@/types";
@@ -77,8 +77,8 @@ export default function MediaExcerptEditorFields(props: Props) {
 
   return (
     <div className="media-excerpt-editor-fields">
-      <TextField
-        {...errorProps((me) => me.localRep.quotation)}
+      <TextArea
+        messageProps={errorProps((me) => me.localRep.quotation)}
         id={combineIds(id, "localRep.quotation")}
         name={combineNames(name, "localRep.quotation")}
         label="Quote"

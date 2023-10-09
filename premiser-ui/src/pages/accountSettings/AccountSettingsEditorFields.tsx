@@ -3,10 +3,10 @@ import React from "react";
 import { AccountSettings } from "howdju-common";
 
 import ErrorMessages from "@/ErrorMessages";
-import TextField from "@/TextField";
 import { combineIds } from "@/viewModels";
 import { EntityEditorFieldsProps } from "@/editors/withEditor";
 import { makeErrorPropCreator } from "@/modelErrorMessages";
+import { TextArea } from "@/components/text/TextArea";
 
 interface Props
   extends EntityEditorFieldsProps<"accountSettings", AccountSettings> {}
@@ -32,9 +32,8 @@ export default function AccountSettingsEditorFields({
   return (
     <>
       <ErrorMessages errors={errors?._errors} />
-      <TextField
+      <TextArea
         id={combineIds(id, paidContributionsDisclosureName)}
-        key="quoteText"
         name={paidContributionsDisclosureName}
         label="Paid contributions disclosure"
         rows={2}
@@ -46,7 +45,7 @@ export default function AccountSettingsEditorFields({
         value={accountSettings?.paidContributionsDisclosure}
         onPropertyChange={onPropertyChange}
         disabled={disabled}
-        {...errorProps((as) => as.paidContributionsDisclosure)}
+        messageProps={errorProps((as) => as.paidContributionsDisclosure)}
       />
       <em>
         For example: I receive compensation from Company A for my content

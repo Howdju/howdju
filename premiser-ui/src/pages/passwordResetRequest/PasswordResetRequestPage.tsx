@@ -69,14 +69,12 @@ export default function PasswordResetRequestPage() {
         <title>Request Password Reset — Howdju</title>
       </Helmet>
       <div className="md-grid">
-        <div className="md-cell md-cell--12">
-          <Card title="Request Password Reset">
-            <CardContent>
-              {errorMessage}
-              {submissionMessage ?? form}
-            </CardContent>
-          </Card>
-        </div>
+        <Card title="Request Password Reset" className="md-cell md-cell--12">
+          <CardContent>
+            {errorMessage}
+            {submissionMessage ?? form}
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

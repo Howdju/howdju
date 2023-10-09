@@ -18299,6 +18299,9 @@
     return url;
   }
   function normalizeUrl2(url, options) {
+    if (!isUrl(url)) {
+      throw new Error(`Invalid URL: ${url}`);
+    }
     const urlObj = new URL(url);
     return normalizeUrl(
       urlObj.toString(),
@@ -18306,6 +18309,7 @@
         {
           defaultProtocol: "https",
           stripWWW: false,
+          // TODO(#494) Does this mean we could have https://domain.com/path unequivalent to https://domain.com/path/?
           removeTrailingSlash: false,
           removeSingleSlash: false
         },
@@ -18324,7 +18328,14 @@
   });
 
   // ../howdju-common/lib/zodRefinements.ts
-  var import_moment3, import_isURL, urlRefinement, urlString, momentObject;
+  function isValidUrl(val) {
+    return (0, import_isURL.default)(val, {
+      protocols: ["http", "https"],
+      require_protocol: true,
+      require_tld
+    });
+  }
+  var import_moment3, import_isURL, require_tld, urlRefinement, urlString, momentObject;
   var init_zodRefinements = __esm({
     "../howdju-common/lib/zodRefinements.ts"() {
       "use strict";
@@ -18332,14 +18343,10 @@
       import_moment3 = __toESM(require_moment());
       import_isURL = __toESM(require_isURL());
       init_urls();
+      require_tld = false;
       urlRefinement = (options) => (val, ctx) => {
         const { domain: domainPattern } = options != null ? options : {};
-        const require_tld = false;
-        if (!(0, import_isURL.default)(val, {
-          protocols: ["http", "https"],
-          require_protocol: true,
-          require_tld
-        })) {
+        if (!isValidUrl(val)) {
           ctx.addIssue({
             code: mod.ZodIssueCode.custom,
             message: "Must be a valid URL",
@@ -18397,7 +18404,7 @@
       });
     }
   }
-  var import_lodash6, Entity, CreateModel, PersistedEntity, UserExternalIds, User, UserBlurb, Proposition, UpdatePropositionInput, UpdateProposition, Tag, CreateTag, CreateTagInput, tagVotePolarities, PropositionTagVote, PropositionTagVotePolarities, CreatePropositionTagVote, CreatePropositionTagVoteInput, CreatePropositionInput, CreateProposition, Persorg, CreatePersorg, CreatePersorgInput, UpdatePersorg, UpdatePersorgInput, sentenceTypes, baseStatement, Statement, SentenceTypes, CreateStatementInput, CreateStatement, Writ, CreateWrit, CreateWritInput, UpdateWrit, UpdateWritInput, DomAnchor, CreateDomAnchor, UrlTarget, Url, CreateUrl, CreateUrlInput, UrlLocator, WritQuote, PicRegion, VidSegment, AudSegment, sourceExcerptTypes, SourceExcerpt, SourceExcerptTypes, CreateUrlLocator, CreateUrlLocatorInput, Source, CreateSource, CreateSourceInput, UpdateSource, UpdateSourceInput, MediaExcerptCitation, CreateMediaExcerptCitation, CreateMediaExcerptCitationInput, MediaExcerptCitationIdentifier, MediaExcerptSpeakerIdentifier, MediaExcerptSpeaker, CreateMediaExcerptSpeaker, CreateMediaExcerptSpeakerInput, MediaExcerpt, Appearance, CreateAppearance, CreateAppearanceInput, AppearanceConfirmationPolarity, CreateAppearanceConfirmation, PropositionCompoundAtom, PropositionCompound, CreatePropositionCompoundAtomInput, UpdatePropositionCompoundAtomInput, CreatePropositionCompoundInput, CreatePropositionCompoundAtom, UpdatePropositionCompoundAtom, CreatePropositionCompound, UpdatePropositionCompoundInput, UpdatePropositionCompound, JustificationPolarity, JustificationPolarities, RelationPolarity2, JustificationRootPolarity, JustificationRootPolarities, JustificationBasisType, JustificationBasisTypes, justificationBaseShape, JustificationRootTargetType, JustificationRootTargetTypes, JustificationTargetType, Justification, JustificationTargetTypes, PropositionRef, StatementRef, JustificationRef, JustificationVoteRef, PropositionCompoundRef, SourceExcerptRef, WritQuoteRef, WritRef, PersorgRef, TagRef, TagVoteRef, UrlRef, UserRef, PropositionTagVoteRef, RegistrationRequestRef, PasswordResetRequestRef, AccountSettingsRef, ContentReportRef, UrlLocatorRef, MediaExcerptRef, SourceRef, CreateWritQuoteInput, CreateWritQuote, UpdateWritQuoteInput, UpdateWritQuote, CreateVidSegmentInput, CreateVidSegment, CreateAudSegmentInput, CreateAudSegment, UpdateVidSegmentInput, UpdateVidSegment, CreatePicRegionInput, CreatePicRegion, UpdatePicRegionInput, UpdatePicRegion, CreateSourceExcerptInput, CreateSourceExcerpt, CreateMediaExcerptBase, CreateMediaExcerpt, CreateMediaExcerptInput, UpdateMediaExcerpt, UpdateMediaExcerptInput, CreateUrlLocatorsInput, CreateMediaExcerptCitationsInput, CreateMediaExcerptSpeakersInput, createJustificationBaseShape, createJustificationInputBaseShape, CreateJustificationInput, CreateJustification, CreateCounterJustificationInput, CreateCounterJustification, justificationVotePolarities, JustificationVote, JustificationVotePolarities, CreateJustificationVote, DeleteJustificationVote, TaggableEntityType, TagVote, TagVotePolarities, CreateTagVote, EntityType, EntityTypes, ContentReportType, ContentReportTypes, ContentReport, CreateContentReport, CreateContentReportInput, CreateUser, AccountSettings, CreateAccountSettings, UpdateAccountSettings, CreateJustifiedSentenceInput, CreateJustifiedSentence, RegistrationRequest, CreateRegistrationRequest, CreateRegistrationRequestInput, Password, RegistrationConfirmation, CreateRegistrationConfirmation, CreateRegistrationConfirmationInput, PasswordResetRequest, CreatePasswordResetRequest, CreatePasswordResetRequestInput, PasswordResetConfirmation, Credentials, CreationInfo;
+  var import_lodash6, Entity, CreateModel, PersistedEntity, UserExternalIds, User, UserBlurb, Proposition, UpdatePropositionInput, UpdateProposition, Tag, CreateTag, CreateTagInput, tagVotePolarities, PropositionTagVote, PropositionTagVotePolarities, CreatePropositionTagVote, CreatePropositionTagVoteInput, CreatePropositionInput, CreateProposition, Persorg, CreatePersorg, CreatePersorgInput, UpdatePersorg, UpdatePersorgInput, sentenceTypes, baseStatement, Statement, SentenceTypes, CreateStatementInput, CreateStatement, Writ, CreateWrit, CreateWritInput, UpdateWrit, UpdateWritInput, DomAnchor, CreateDomAnchor, UrlTarget, Url, CreateUrl, CreateUrlInput, UrlLocator, WritQuote, PicRegion, VidSegment, AudSegment, sourceExcerptTypes, SourceExcerpt, SourceExcerptTypes, CreateUrlLocator, CreateUrlLocatorInput, Source, CreateSource, CreateSourceInput, UpdateSource, UpdateSourceInput, MediaExcerptCitation, CreateMediaExcerptCitation, CreateMediaExcerptCitationInput, MediaExcerptCitationIdentifier, MediaExcerptSpeakerIdentifier, MediaExcerptSpeaker, CreateMediaExcerptSpeaker, CreateMediaExcerptSpeakerInput, MediaExcerpt, Appearance, CreateAppearance, CreateAppearanceInput, AppearanceConfirmationPolarity, CreateAppearanceConfirmation, PropositionCompoundAtom, PropositionCompound, CreatePropositionCompoundAtomInput, UpdatePropositionCompoundAtomInput, CreatePropositionCompoundInput, CreatePropositionCompoundAtom, UpdatePropositionCompoundAtom, CreatePropositionCompound, UpdatePropositionCompoundInput, UpdatePropositionCompound, JustificationPolarity, JustificationPolarities, RelationPolarity2, JustificationRootPolarity, JustificationRootPolarities, JustificationBasisType, JustificationBasisTypes, justificationBaseShape, JustificationRootTargetType, JustificationRootTargetTypes, JustificationTargetType, Justification, JustificationTargetTypes, PropositionRef, StatementRef, JustificationRef, JustificationVoteRef, PropositionCompoundRef, SourceExcerptRef, WritQuoteRef, WritRef, PersorgRef, TagRef, TagVoteRef, UrlRef, UserRef, PropositionTagVoteRef, RegistrationRequestRef, PasswordResetRequestRef, AccountSettingsRef, ContentReportRef, UrlLocatorRef, MediaExcerptRef, SourceRef, CreateWritQuoteInput, CreateWritQuote, UpdateWritQuoteInput, UpdateWritQuote, CreateVidSegmentInput, CreateVidSegment, CreateAudSegmentInput, CreateAudSegment, UpdateVidSegmentInput, UpdateVidSegment, CreatePicRegionInput, CreatePicRegion, UpdatePicRegionInput, UpdatePicRegion, CreateSourceExcerptInput, CreateSourceExcerpt, CreateMediaExcerptBase, CreateMediaExcerpt, CreateMediaExcerptInput, UpdateMediaExcerpt, UpdateMediaExcerptInput, CreateUrlLocatorsInput, CreateMediaExcerptCitationsInput, CreateMediaExcerptSpeakersInput, createJustificationBaseShape, createJustificationInputBaseShape, CreateJustificationInput, CreateJustification, CreateCounterJustificationInput, CreateCounterJustification, justificationVotePolarities, JustificationVote, JustificationVotePolarities, CreateJustificationVote, DeleteJustificationVote, TaggableEntityType, TagVote, TagVotePolarities, CreateTagVote, EntityType, EntityTypes, ContentReportType, ContentReportTypes, ContentReport, CreateContentReport, CreateContentReportInput, CreateUser, AccountSettings, CreateAccountSettings, UpdateAccountSettings, CreateJustifiedSentenceInput, CreateJustifiedSentence, RegistrationRequest, CreateRegistrationRequest, CreateRegistrationRequestInput, passwordMaxLength, Password, RegistrationConfirmation, CreateRegistrationConfirmation, CreateRegistrationConfirmationInput, PasswordResetRequest, CreatePasswordResetRequest, CreatePasswordResetRequestInput, PasswordResetConfirmation, Credentials, CreationInfo;
   var init_zodSchemas = __esm({
     "../howdju-common/lib/zodSchemas.ts"() {
       "use strict";
@@ -18501,9 +18508,9 @@
         /** The official or primary website representing the persorg. */
         websiteUrl: urlString().optional(),
         /** The persorg's Twitter. */
-        twitterUrl: urlString({ domain: /twitter.com$/ }).optional(),
+        twitterUrl: urlString({ domain: /(^|\.)twitter.com$/ }).optional(),
         /** The persorg's Wikipedia URL. */
-        wikipediaUrl: urlString({ domain: /wikipedia.org$/ }).optional(),
+        wikipediaUrl: urlString({ domain: /(^|\.)wikipedia.org$/ }).optional(),
         created: momentObject,
         creatorUserId: mod.string()
       });
@@ -19344,7 +19351,8 @@
         email: true
       });
       CreateRegistrationRequestInput = CreateRegistrationRequest;
-      Password = mod.string().min(6).max(64);
+      passwordMaxLength = 64;
+      Password = mod.string().min(6).max(passwordMaxLength);
       RegistrationConfirmation = mod.object({
         registrationCode: mod.string().min(1).max(256),
         phoneNumber: User.shape.phoneNumber,
@@ -19377,7 +19385,7 @@
       });
       Credentials = mod.object({
         email: User.shape.email,
-        password: Password
+        password: mod.string().max(passwordMaxLength)
       });
       CreationInfo = mod.object({
         creatorUserId: mod.string(),
@@ -32354,6 +32362,7 @@
     isTruthy: () => isTruthy,
     isUrl: () => isUrl,
     isValidTrailTarget: () => isValidTrailTarget,
+    isValidUrl: () => isValidUrl,
     isWritQuoteBased: () => isWritQuoteBased,
     jsonPointerToObjectPath: () => jsonPointerToObjectPath,
     keysTo: () => keysTo,

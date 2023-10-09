@@ -39,8 +39,7 @@ describe("makeErrorPropCreator", () => {
     const fieldErrors = errorProps((pc) => pc.atoms[0].entity.text);
 
     expect(fieldErrors).toEqual({
-      error: true,
-      errorText: "String must contain at least 1 character(s)",
+      errorMessage: "String must contain at least 1 character(s)",
     });
   });
 });

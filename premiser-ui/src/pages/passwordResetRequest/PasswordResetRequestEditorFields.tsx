@@ -5,7 +5,7 @@ import { CreatePasswordResetRequestInput } from "howdju-common";
 import { makeErrorPropCreator } from "@/modelErrorMessages";
 import { combineIds, combineNames } from "@/viewModels";
 import { EntityEditorFieldsProps } from "@/editors/withEditor";
-import EmailTextField from "@/EmailTextField";
+import EmailField from "@/components/text/EmailTextField";
 
 interface Props
   extends EntityEditorFieldsProps<
@@ -39,11 +39,9 @@ export default function PasswordResetRequestEditorFields(props: Props) {
     blurredFields
   );
 
-  const emailErrorProps = errorProps((r) => r.email);
-
   const { email } = passwordResetRequest;
   return (
-    <EmailTextField
+    <EmailField
       id={combineIds(id, "email")}
       name={combineNames(name, "email")}
       value={email}
@@ -53,7 +51,7 @@ export default function PasswordResetRequestEditorFields(props: Props) {
       onPropertyChange={onPropertyChange}
       disabled={disabled}
       required
-      {...emailErrorProps}
+      messageProps={errorProps((r) => r.email)}
     />
   );
 }

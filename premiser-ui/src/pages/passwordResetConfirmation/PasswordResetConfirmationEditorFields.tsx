@@ -5,7 +5,7 @@ import { PasswordResetConfirmation } from "howdju-common";
 import { makeErrorPropCreator } from "@/modelErrorMessages";
 import { combineIds, combineNames } from "@/viewModels";
 import { EntityEditorFieldsProps } from "@/editors/withEditor";
-import PasswordTextField from "@/PasswordTextField";
+import PasswordField from "@/components/text/PasswordField";
 
 interface Props
   extends EntityEditorFieldsProps<
@@ -39,11 +39,9 @@ export default function PasswordResetConfirmationEditorFields(props: Props) {
     blurredFields
   );
 
-  const newPasswordErrorProps = errorProps((r) => r.newPassword);
-
   const { newPassword } = passwordResetConfirmation;
   return (
-    <PasswordTextField
+    <PasswordField
       id={combineIds(id, "newPassword")}
       name={combineNames(name, "newPassword")}
       label="New password"
@@ -59,7 +57,7 @@ export default function PasswordResetConfirmationEditorFields(props: Props) {
       onSubmit={onSubmit}
       disabled={disabled}
       required
-      {...newPasswordErrorProps}
+      messageProps={errorProps((r) => r.newPassword)}
     />
   );
 }

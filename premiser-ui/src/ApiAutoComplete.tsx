@@ -25,6 +25,8 @@ import { autocompletes } from "./actions";
 
 import "./ApiAutoComplete.scss";
 import { Keys } from "./keyCodes";
+import { FormMessage, FormMessageProps } from "./components/form/FormMessage";
+import { combineIds } from "./viewModels";
 
 export type FetchSuggestionsActionCreator = (
   value: string,
@@ -37,7 +39,7 @@ export type CancelSuggestionsActionCreator = (
 export interface Props<T>
   extends Omit<
     ComponentProps<typeof AutoComplete>,
-    "data" | "onBlur" | "onAutoComplete" | "maxLength"
+    "data" | "onBlur" | "onAutoComplete" | "maxLength" | "messageProps"
   > {
   id: ComponentId;
   name: string;
@@ -54,8 +56,6 @@ export interface Props<T>
   /** The property on the suggestions to use to display them. */
   labelKey: string;
   onBlur?: OnBlurCallback;
-  /** Error text to display, if any. */
-  errorText?: string;
   /** Controls to display to the right of the input. */
   rightControls?: ReactNode;
   onAutoComplete?: (suggestion: T) => void;
@@ -71,7 +71,7 @@ export interface Props<T>
    */
   maxRows?: number;
   maxLength?: number | null;
-  helpText?: ReactNode;
+  messageProps?: FormMessageProps;
 }
 
 export default function ApiAutoComplete<T>({
@@ -86,8 +86,6 @@ export default function ApiAutoComplete<T>({
   suggestionsKey,
   suggestionSchema,
   labelKey,
-  error,
-  errorText,
   rightControls,
   onAutoComplete,
   rows = 1,
@@ -95,7 +93,7 @@ export default function ApiAutoComplete<T>({
   maxLength,
   onKeyDown,
   value,
-  helpText,
+  messageProps,
   ...rest
 }: Props<T>) {
   const dispatch = useAppDispatch();
@@ -129,7 +127,7 @@ export default function ApiAutoComplete<T>({
   }
   function _onBlur(event: FocusEvent<HTMLTextAreaElement>) {
     if (onBlur) {
-      onBlur(event.target.name, event.target.value);
+      onBlur(event);
     }
   }
 
@@ -150,14 +148,6 @@ export default function ApiAutoComplete<T>({
       onAutoComplete(suggestion);
     }
   }
-
-  const messageProps =
-    error && errorText
-      ? {
-          error,
-          children: <span>{errorText}</span>,
-        }
-      : undefined;
 
   const submitInputRef = useRef<HTMLInputElement | null>(null);
   function _onKeyDown(event: KeyboardEvent<HTMLTextAreaElement>) {
@@ -188,14 +178,13 @@ export default function ApiAutoComplete<T>({
           onChange={onChange}
           onKeyDown={_onKeyDown}
           onAutoComplete={_onAutoComplete}
-          error={error}
+          error={!!messageProps?.errorMessage}
           style={{ flexGrow: 1 }}
           theme="underline"
           filter="none"
           rows={rows}
           maxRows={maxRows}
           maxLength={maxLength ?? undefined}
-          messageProps={messageProps}
         />
         {rightControls}
         <input
@@ -206,7 +195,14 @@ export default function ApiAutoComplete<T>({
           style={{ display: "none" }}
         />
       </div>
-      {helpText}
+      {messageProps && (
+        <FormMessage
+          id={combineIds(id, "message")}
+          {...messageProps}
+          length={value?.length}
+          maxLength={maxLength}
+        />
+      )}
     </>
   );
 }

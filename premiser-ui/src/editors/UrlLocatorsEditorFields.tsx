@@ -4,22 +4,22 @@ import { isEmpty } from "lodash";
 
 import {
   CreateUrlLocatorInput,
+  isUrl,
   makeCreateUrlLocatorInput,
   normalizeUrl,
 } from "howdju-common";
 
 import { CircularProgress } from "@/components/progress/CircularProgress";
 import { makeErrorPropCreator } from "@/modelErrorMessages";
-import SingleLineTextField from "@/SingleLineTextField";
 import { EditorFieldsDispatch, EntityEditorFieldsProps } from "./withEditor";
 import { combineIds, combineNames } from "@/viewModels";
 import { EditorType } from "@/reducers/editors";
 import { api, editors } from "@/actions";
-import { isValidUrl } from "@/util";
 import { useAppDispatch, useAppSelector } from "@/hooks";
 import IconButton from "@/components/button/IconButton";
 import { FontIcon } from "@react-md/icon";
 import TextButton from "@/components/button/TextButton";
+import UrlTextField from "@/components/text/UrlTextField";
 
 import "./UrlLocatorsEditorFields.scss";
 
@@ -88,7 +88,12 @@ export default function UrlLocatorsEditorFields({
     );
   }
 
-  function onBlurUrlLocatorUrl(name: string, value: string) {
+  function onBlurUrlLocatorUrl(event: React.FocusEvent<HTMLInputElement>) {
+    const name = event.target.name;
+    const value = event.target.value;
+    if (!isUrl(value)) {
+      return;
+    }
     if (!(name in normalUrlsByName)) {
       const normalUrl = normalizeUrl(value);
       setNormalUrlsByName({
@@ -108,7 +113,7 @@ export default function UrlLocatorsEditorFields({
       }
     }
     if (onBlur) {
-      onBlur(name, value);
+      onBlur(event);
     }
   }
 
@@ -121,7 +126,7 @@ export default function UrlLocatorsEditorFields({
   return (
     <div>
       {urlLocators.map(({ url, anchors }, index) => {
-        const normalizedUrl = isValidUrl(url.url)
+        const normalizedUrl = isUrl(url.url)
           ? normalizeUrl(url.url)
           : undefined;
         const urlName = combineNames(name, `[${index}].url.url`);
@@ -129,15 +134,14 @@ export default function UrlLocatorsEditorFields({
           urlStatesByName[urlName] || {};
         return (
           <div key={combineIds(id, `[${index}]`)}>
-            <SingleLineTextField
-              {...errorProps((ul) => ul[index].url.url)}
+            <UrlTextField
+              messageProps={errorProps((ul) => ul[index].url.url)}
               id={combineIds(id, `[${index}].url.url`)}
               name={urlName}
               aria-label="url"
-              type="url"
               label="URL"
               value={url.url}
-              rightIcon={
+              rightButtons={
                 <>
                   {onInferMediaExcerptInfo && (
                     <IconButton
@@ -161,7 +165,6 @@ export default function UrlLocatorsEditorFields({
                   </IconButton>
                 </>
               }
-              rightIconStateful={false}
               disabled={disabled || !isEmpty(anchors)}
               onBlur={onBlurUrlLocatorUrl}
               onPropertyChange={onPropertyChange}

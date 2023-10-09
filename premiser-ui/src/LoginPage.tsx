@@ -1,12 +1,11 @@
 import React, { Component, FormEvent } from "react";
-import cn from "classnames";
 import { goBack } from "connected-react-router";
-import { get, map } from "lodash";
+import { get } from "lodash";
 import { FocusContainer } from "react-md";
 import { connect, ConnectedProps } from "react-redux";
 import { Grid, GridCell } from "@react-md/utils";
 
-import { makeCredentials } from "howdju-common";
+import { Credentials, makeCredentials } from "howdju-common";
 
 import { CircularProgress } from "@/components/progress/CircularProgress";
 import { Card, CardContent, CardActions } from "@/components/card/Card";
@@ -17,19 +16,19 @@ import {
   ui,
 } from "./actions";
 import config from "./config";
-import EmailTextField from "./EmailTextField";
+import EmailField from "./components/text/EmailTextField";
 import Helmet from "./Helmet";
-import { toErrorText } from "./modelErrorMessages";
-import PasswordTextField from "./PasswordTextField";
-import paths from "./paths";
+import PasswordField from "./components/text/PasswordField";
 import { EditorTypes } from "./reducers/editors";
 import { selectAuthEmail } from "./selectors";
 import { RootState } from "./setupStore";
-import t from "./texts";
 import { PropertyChanges } from "./types";
 import CancelButton from "./editors/CancelButton";
 import SolidButton from "./components/button/SolidButton";
 import OutlineButton from "./components/button/OutlineButton";
+import ErrorMessages from "./ErrorMessages";
+import { makeErrorPropCreator } from "./modelErrorMessages";
+import paths from "./paths";
 
 interface OwnProps {
   authEmail: string | undefined;
@@ -55,7 +54,7 @@ class LoginPage extends Component<Props> {
     );
   };
 
-  onSubmit = (event: FormEvent<HTMLFormElement>) => {
+  onSubmit = (event: FormEvent<HTMLFormElement | HTMLInputElement>) => {
     event.preventDefault();
     this.props.editors.commitEdit(EditorTypes.LOGIN_CREDENTIALS, editorId);
   };
@@ -74,28 +73,11 @@ class LoginPage extends Component<Props> {
     const email = get(credentials, "email", "");
     const password = get(credentials, "password", "");
 
-    const errors = get(editorState, "errors");
-    const credentialsErrors = get(errors, "credentials");
-    const modelErrors = get(credentialsErrors, "modelErrors");
-
-    const emailInputProps =
-      errors && errors.hasErrors && errors.fieldErrors.email.length > 0
-        ? { error: true, errorText: toErrorText(errors.fieldErrors.email) }
-        : {};
-    const passwordInputProps =
-      errors && errors.hasErrors && errors.fieldErrors.password.length > 0
-        ? { error: true, errorText: toErrorText(errors.fieldErrors.password) }
-        : {};
-
-    const modelErrorMessages = modelErrors && modelErrors.length && (
-      <CardContent className={cn("error-message md-cell md-cell--12")}>
-        {/* This somewhat duplicates ErrorMessages; but the error codes for these credentials don't really seem to belong there */}
-        <ul className="error-message">
-          {map(modelErrors, (error) => <li key={error}>{t(error)}</li>) || (
-            <li>t(AN_UNEXPECTED_ERROR_OCCURRED)</li>
-          )}
-        </ul>
-      </CardContent>
+    const errorProps = makeErrorPropCreator<Credentials>(
+      this.props.editorState?.wasSubmitAttempted ?? false,
+      this.props.editorState?.errors,
+      this.props.editorState?.dirtyFields,
+      this.props.editorState?.blurredFields
     );
 
     return (
@@ -107,30 +89,36 @@ class LoginPage extends Component<Props> {
           <GridCell colSpan={12}>
             <Card style={{ width: "100%" }} title="Login" subtitle={subtitle}>
               <CardContent>
-                {modelErrorMessages}
+                <ErrorMessages
+                  errors={this.props.editorState?.errors?._errors}
+                />
                 <form onSubmit={this.onSubmit}>
                   <FocusContainer focusOnMount containFocus={false}>
-                    <EmailTextField
-                      {...emailInputProps}
+                    <EmailField
                       id="email"
                       name="email"
                       value={email}
-                      autocomplete="username"
+                      autoComplete="username"
                       required
                       onPropertyChange={this.onPropertyChange}
                       onSubmit={this.onSubmit}
                       disabled={isLoggingIn}
+                      messageProps={{
+                        ...errorProps((c) => c.email),
+                      }}
                     />
-                    <PasswordTextField
-                      {...passwordInputProps}
+                    <PasswordField
                       id="password"
                       name="password"
                       value={password}
-                      autocomplete="current-password"
+                      autoComplete="current-password"
                       required
                       onPropertyChange={this.onPropertyChange}
                       onSubmit={this.onSubmit}
                       disabled={isLoggingIn}
+                      messageProps={{
+                        ...errorProps((c) => c.password),
+                      }}
                     />
                   </FocusContainer>
 
@@ -176,7 +164,7 @@ class LoginPage extends Component<Props> {
                   // https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/rel/noopener
                   {...{ rel: "noopener" }}
                 >
-                  <EmailTextField id="mce-email" name="EMAIL" required />
+                  <EmailField id="mce-email" name="EMAIL" required />
                   <input
                     type="hidden"
                     name="b_ccf334287da1fbf7af0904629_f08c3a775d"
@@ -200,11 +188,7 @@ const editorId = "loginPageEditorId";
 
 const mapStateToProps = (state: RootState) => {
   const authEmail = selectAuthEmail(state);
-  const editorState = get(state, [
-    "editors",
-    EditorTypes.LOGIN_CREDENTIALS,
-    editorId,
-  ]);
+  const editorState = state.editors["LOGIN_CREDENTIALS"]?.[editorId];
   return {
     authEmail,
     editorState,

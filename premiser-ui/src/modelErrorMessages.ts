@@ -19,6 +19,7 @@ import {
 
 import { logger } from "./logger";
 import { BlurredFields, DirtyFields } from "./reducers/editors";
+import { FormMessageProps } from "./components/form/FormMessage";
 
 const modelErrorMessages: Record<
   | ModelErrorCode
@@ -121,14 +122,33 @@ export const errorFormatsToText = (errors: IssueFormat[]) =>
   capitalize(join(map(errors, errorFormatToString), ", "));
 
 /**
- * react-md uses these two props on its field intputs.
+ * A version of makeErrorPropCreator that returns props compatible with react-md@1's conventions.
  *
- * `error` indicates that the input should be rendered with error CSS classes applied for rendering
- * it with error coloring, and `errorText` will appear adjacent to the input.
- * */
-type ReactMdErrorProps = { error?: boolean; errorText?: string };
+ * TODO(17) delete after upgrading all components that use this to react-md@2.
+ */
+export function makeReactMd1ErrorPropCreator<T>(
+  wasSubmitAttempted: boolean,
+  errors: ModelErrors<T> | undefined,
+  dirtyFields: DirtyFields<T> | undefined,
+  blurredFields: BlurredFields<T> | undefined
+) {
+  const errorProps = makeErrorPropCreator(
+    wasSubmitAttempted,
+    errors,
+    dirtyFields,
+    blurredFields
+  );
+  return function makeReactMd1ErrorProps(fieldSelector: (entity: T) => any) {
+    const props = errorProps(fieldSelector);
+    return {
+      error: !!props.errorMessage,
+      errorText: props.errorMessage?.toString(),
+    };
+  };
+}
+
 /**
- * Creates a function that will create error props for react-md components.
+ * Creates a function that will create error message props for react-md components.
  *
  * Based upon the errors and field statuses (dirty or blurred), the returned function will generate
  * React component props for react-md components to display an error.
@@ -137,8 +157,7 @@ type ReactMdErrorProps = { error?: boolean; errorText?: string };
  *
  * ```
  * const errorProps = makeErrorPropCreator(errors, dirtyFields, blurredFields);
- * ...
- * const props = errorProps(model => model.field)
+ * return <Input {...rest} {...errorProps(model => model.fieldName)} />
  * ```
  *
  * Where `entity` is typed the same as the ModelErrors, DirtyFields, and BlurredFields.
@@ -152,7 +171,7 @@ export function makeErrorPropCreator<T>(
   return function makeErrorProps(
     // PartialDeep so that the callback handles missing dirty/blurred fields.
     fieldSelector: (entity: T) => any
-  ): ReactMdErrorProps {
+  ): Pick<FormMessageProps, "errorMessage"> {
     // The selector is safe to cast because ModelErrors, DirtyFields, and BlurredFields all share
     // the shape of T.
     const dirtySelector = propagateUndefined(fieldSelector) as (
@@ -181,7 +200,7 @@ export function makeErrorPropCreator<T>(
     if (wasSubmitAttempted || isDirty || isBlurred) {
       const fieldErrors = errorsSelector(errors)?._errors;
       if (fieldErrors?.length) {
-        return { error: true, errorText: errorFormatsToText(fieldErrors) };
+        return { errorMessage: errorFormatsToText(fieldErrors) };
       }
     }
     return {};

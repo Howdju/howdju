@@ -65,7 +65,7 @@
     }
   }
 
-  @media (max-width: $grid-desktop-breakpoint - 1) {
+  @media (max-width: ($grid-desktop-breakpoint - 1)) {
     .md-autocomplete-list {
       // Instead of displaying md-list-tiles at a constant height (which works for single line of text, which we are
       // removing below) unset the height and give them a margin

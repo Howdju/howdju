@@ -8,10 +8,13 @@ import {
 
 import CheckboxList from "../CheckboxList";
 import ErrorMessages from "../ErrorMessages";
-import TextField from "../TextField";
 import { combineIds, combineNames } from "../viewModels";
 import { EntityEditorFieldsProps } from "@/editors/withEditor";
-import { makeErrorPropCreator } from "@/modelErrorMessages";
+import {
+  makeErrorPropCreator,
+  makeReactMd1ErrorPropCreator,
+} from "@/modelErrorMessages";
+import { TextArea } from "@/components/text/TextArea";
 
 const reportTypeDescriptions = {
   [ContentReportTypes.HARASSMENT]: "Harassment",
@@ -50,6 +53,12 @@ export default function ContentReportEditorFields(
   } = props;
   const description = contentReport?.description;
   const types = contentReport?.types;
+  const reactMd1ErrorProps = makeReactMd1ErrorPropCreator(
+    wasSubmitAttempted,
+    errors,
+    dirtyFields,
+    blurredFields
+  );
   const errorProps = makeErrorPropCreator(
     wasSubmitAttempted,
     errors,
@@ -66,16 +75,16 @@ export default function ContentReportEditorFields(
         onPropertyChange={onPropertyChange}
         descriptionsByCode={reportTypeDescriptions}
         disabled={disabled}
-        {...errorProps((cr) => cr.types)}
+        {...reactMd1ErrorProps((cr) => cr.types)}
       />
-      <TextField
+      <TextArea
         id={combineIds(id, "description")}
         key="description"
         name={combineNames(name, "description")}
         label="Description"
         rows={2}
         maxRows={8}
-        {...errorProps((cr) => cr.description)}
+        messageProps={errorProps((cr) => cr.description)}
         maxLength={schemaSettings.reportContentDescriptionMaxLength}
         value={description}
         disabled={disabled}
