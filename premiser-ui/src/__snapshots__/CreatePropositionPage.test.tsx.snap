@@ -26,7 +26,7 @@ exports[`CreatePropositionPage (with fake timers) renders correctly with query p
             </span>
           </header>
           <div
-            class="rmd-card__content rmd-card__content--padded rmd-card__content--extra-padding rmd-card__content--remove-margin rmd-card__content--secondary"
+            class="rmd-card__content rmd-card__content--padded rmd-card__content--extra-padding rmd-card__content--remove-margin"
           >
             <button
               class="rmd-button rmd-button--text rmd-button--text-primary"
@@ -45,7 +45,7 @@ exports[`CreatePropositionPage (with fake timers) renders correctly with query p
             </button>
           </div>
           <div
-            class="rmd-card__content rmd-card__content--padded rmd-card__content--extra-padding rmd-card__content--remove-margin rmd-card__content--secondary"
+            class="rmd-card__content rmd-card__content--padded rmd-card__content--extra-padding rmd-card__content--remove-margin"
           >
             <div>
               <ul
@@ -185,7 +185,7 @@ exports[`CreatePropositionPage (with fake timers) renders correctly with query p
             </div>
           </div>
           <div
-            class="rmd-card__content rmd-card__content--padded rmd-card__content--extra-padding rmd-card__content--remove-margin rmd-card__content--secondary"
+            class="rmd-card__content rmd-card__content--padded rmd-card__content--extra-padding rmd-card__content--remove-margin"
           >
             <div
               class="md-selection-control-container md-switch-container"
@@ -240,7 +240,7 @@ exports[`CreatePropositionPage (with fake timers) renders correctly with query p
             </span>
           </header>
           <div
-            class="rmd-card__content rmd-card__content--padded rmd-card__content--extra-padding rmd-card__content--remove-margin rmd-card__content--secondary"
+            class="rmd-card__content rmd-card__content--padded rmd-card__content--extra-padding rmd-card__content--remove-margin"
           >
             <div>
               <div
@@ -551,48 +551,49 @@ exports[`CreatePropositionPage (with fake timers) renders correctly with query p
                   </div>
                 </div>
                 <div
-                  class="rmd-text-field-container rmd-text-field-container--outline rmd-text-field-container--hoverable rmd-text-field-container--label rmd-text-field-container--outline-left rmd-text-field-container--outline-right writ-quote-url-input"
+                  style="display: flex;"
                 >
-                  <span
-                    class="rmd-text-field-addon rmd-text-field-addon--presentational"
+                  <div
+                    class="rmd-text-field-container rmd-text-field-container--outline rmd-text-field-container--hoverable rmd-text-field-container--label rmd-text-field-container--outline-left writ-quote-url-input"
+                    style="flex-grow: 1;"
                   >
                     <span
-                      class="material-symbols"
+                      class="rmd-text-field-addon rmd-text-field-addon--presentational"
                     >
-                      link
-                    </span>
-                  </span>
-                  <label
-                    class="rmd-label rmd-floating-label rmd-floating-label--active rmd-floating-label--inactive"
-                    for="create-proposition-page--justification--basis-writ-quote--urls-0--url"
-                  >
-                    URL
-                  </label>
-                  <input
-                    aria-label="url"
-                    class="rmd-text-field rmd-text-field--floating"
-                    id="create-proposition-page--justification--basis-writ-quote--urls-0--url"
-                    name="justification.basis.writQuote.urls[0].url"
-                    type="url"
-                    value="https://www.info.com"
-                  />
-                  <span
-                    class="rmd-text-field-addon rmd-text-field-addon--presentational"
-                  >
-                    <button
-                      class="rmd-button rmd-button--icon rmd-button--text-primary"
-                      type="button"
-                    >
-                      <i
-                        class="md-icon material-icons"
-                      >
-                        delete
-                      </i>
                       <span
-                        class="rmd-ripple-container"
-                      />
-                    </button>
-                  </span>
+                        class="material-symbols"
+                      >
+                        link
+                      </span>
+                    </span>
+                    <label
+                      class="rmd-label rmd-floating-label rmd-floating-label--active rmd-floating-label--inactive"
+                      for="create-proposition-page--justification--basis-writ-quote--urls-0--url"
+                    >
+                      URL
+                    </label>
+                    <input
+                      aria-label="url"
+                      class="rmd-text-field rmd-text-field--floating"
+                      id="create-proposition-page--justification--basis-writ-quote--urls-0--url"
+                      name="justification.basis.writQuote.urls[0].url"
+                      type="url"
+                      value="https://www.info.com"
+                    />
+                  </div>
+                  <button
+                    class="rmd-button rmd-button--icon rmd-button--text-primary"
+                    type="button"
+                  >
+                    <i
+                      class="md-icon material-icons"
+                    >
+                      delete
+                    </i>
+                    <span
+                      class="rmd-ripple-container"
+                    />
+                  </button>
                 </div>
                 <button
                   class="rmd-button rmd-button--text rmd-button--text-primary add-button"

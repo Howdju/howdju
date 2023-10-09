@@ -1,6 +1,6 @@
 import moment from "moment";
 import { urlString } from "./zodRefinements";
-import { Justification } from "./zodSchemas";
+import { Justification, Persorg } from "./zodSchemas";
 
 describe("Justification schema", () => {
   test("recognizes valid proposition compound based justification", () => {
@@ -43,6 +43,33 @@ describe("Justification schema", () => {
     const result = Justification.parse(justification);
 
     expect(result).toEqual(justification);
+  });
+});
+
+describe("Persorg schema", () => {
+  test("rejects a twitter-like URL", () => {
+    expect(
+      Persorg.shape.twitterUrl.safeParse("https://faketwitter.com/")
+    ).toMatchObject({
+      success: false,
+    });
+    expect(
+      Persorg.shape.twitterUrl.safeParse("https://fake-twitter.com/")
+    ).toMatchObject({
+      success: false,
+    });
+  });
+  test("rejects a wikipedia-like URL", () => {
+    expect(
+      Persorg.shape.twitterUrl.safeParse("https://fakewikipedia.com/")
+    ).toMatchObject({
+      success: false,
+    });
+    expect(
+      Persorg.shape.twitterUrl.safeParse("https://fake-wikipedia.com/")
+    ).toMatchObject({
+      success: false,
+    });
   });
 });
 

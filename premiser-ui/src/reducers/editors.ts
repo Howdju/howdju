@@ -78,6 +78,7 @@ import {
   CreatePasswordResetRequestInput,
   CreateMediaExcerptCitationsInput,
   CreateMediaExcerptSpeakersInput,
+  Credentials,
 } from "howdju-common";
 
 import {
@@ -89,11 +90,6 @@ import {
   str,
 } from "@/actions";
 import { uiErrorTypes } from "@/uiErrors";
-import {
-  INVALID_LOGIN_CREDENTIALS,
-  UNABLE_TO_LOGIN,
-  USER_IS_INACTIVE_ERROR,
-} from "@/texts";
 import { logger } from "@/logger";
 import {
   EditorId,
@@ -758,18 +754,18 @@ const editorReducerByType: {
               case apiErrorCodes.INVALID_LOGIN_CREDENTIALS: {
                 return {
                   ...state,
-                  errors: {
-                    credentials: { modelErrors: [INVALID_LOGIN_CREDENTIALS] },
-                  },
+                  errors: makeModelErrors<Credentials>((c) =>
+                    c("Invalid login credentials")
+                  ),
                   isSaving: false,
                 };
               }
               case apiErrorCodes.USER_IS_INACTIVE_ERROR: {
                 return {
                   ...state,
-                  errors: {
-                    credentials: { modelErrors: [USER_IS_INACTIVE_ERROR] },
-                  },
+                  errors: makeModelErrors<Credentials>((c) =>
+                    c("User is inactive")
+                  ),
                   isSaving: false,
                 };
               }
@@ -782,7 +778,9 @@ const editorReducerByType: {
               default:
                 return {
                   ...state,
-                  errors: { credentials: { modelErrors: [UNABLE_TO_LOGIN] } },
+                  errors: makeModelErrors<Credentials>((c) =>
+                    c("User is inactive")
+                  ),
                   isSaving: false,
                 };
             }

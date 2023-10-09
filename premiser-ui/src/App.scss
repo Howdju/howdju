@@ -5,6 +5,8 @@
 @import "./grid";
 @import "./react-material-symbols";
 
+// TODO(#593) apply a dark theme https://v2.react-md.dev/guides/customizing-your-theme#conditional-dark-theme
+
 @include apply-react-md-grid;
 
 html {

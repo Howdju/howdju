@@ -68,14 +68,21 @@ export function normalizeUrl(url: string, options?: NormalizeUrlOptions) {
   }
   const urlObj = new URL(url);
   // According to https://en.wikipedia.org/wiki/URI_normalization#Normalization_process (linked from
-  // https://github.com/sindresorhus/normalize-url) a normalized URL's path should always have a
-  // trailing slash. But normalize-url offers no option to force a trailing slash.
+  // https://github.com/sindresorhus/normalize-url) adding a trailing slash to a non-empty path
+  // is a normalization that usually preserves semantics.
+  //
+  // Following that normalization results in normalized paths like https://domain.com/index.html/,
+  // which looks weird and I wonder if a server will always return the right page if there is
+  // a trailing slash after a path extension.
+  //
+  // normalize-url offers no option to force a trailing slash.
   return normalizeUrlNpm(
     urlObj.toString(),
     mergeCopy(
       {
         defaultProtocol: "https",
         stripWWW: false,
+        // TODO(#494) Does this mean we could have https://domain.com/path unequivalent to https://domain.com/path/?
         removeTrailingSlash: false,
         removeSingleSlash: false,
       },

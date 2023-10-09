@@ -1,11 +1,12 @@
 import React from "react";
-import { isArray } from "lodash";
 import {
   Card as ReactMdCard,
   CardProps as ReactMdCardProps,
   CardHeader,
   CardTitle,
   CardSubtitle,
+  CardContent as ReactMdCardContent,
+  CardContentProps,
 } from "@react-md/card";
 
 export {
@@ -13,7 +14,6 @@ export {
   CardTitle,
   CardSubtitle,
   CardActions,
-  CardContent,
 } from "@react-md/card";
 export type {
   CardHeaderProps,
@@ -30,20 +30,7 @@ export interface CardProps extends ReactMdCardProps {
 
 /** A Card providing shorthands for title and subtitle. */
 export function Card({ children, title, subtitle, ...rest }: CardProps) {
-  const newChildren = isArray(children) ? [...children] : [children];
-
   const headerContents = makeHeaderContents(title, subtitle);
-  if (title || subtitle) {
-    const headerChildren = [];
-    if (title) {
-      headerChildren.push();
-    }
-    if (subtitle) {
-      headerChildren.push(<CardSubtitle>{subtitle}</CardSubtitle>);
-    }
-    newChildren.unshift();
-  }
-
   return (
     <ReactMdCard {...rest}>
       {headerContents && <CardHeader>{headerContents}</CardHeader>}
@@ -68,4 +55,17 @@ function makeHeaderContents(title?: string, subtitle?: false | string) {
     return <CardSubtitle>{subtitle}</CardSubtitle>;
   }
   return undefined;
+}
+
+export function CardContent({
+  // The secondary color is a light gray, and we don't want that as the default card text color.
+  disableSecondaryColor = true,
+  ...rest
+}: CardContentProps) {
+  return (
+    <ReactMdCardContent
+      disableSecondaryColor={disableSecondaryColor}
+      {...rest}
+    />
+  );
 }

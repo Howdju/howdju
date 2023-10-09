@@ -7,7 +7,6 @@ import { CreateRegistrationConfirmationInput } from "howdju-common";
 import EmailField from "../../components/text/EmailTextField";
 import PasswordField from "../../components/text/PasswordField";
 import paths from "../../paths";
-import SingleLineTextArea from "@/components/text/SingleLineTextArea";
 import { EntityEditorFieldsProps } from "@/editors/withEditor";
 import {
   makeErrorPropCreator,
@@ -16,6 +15,8 @@ import {
 import ErrorMessages from "@/ErrorMessages";
 import { toCheckboxOnChangeCallback } from "@/util";
 import { toReactMdOnBlur } from "@/types";
+import { TextField } from "@/components/text/TextField";
+import { MaterialSymbol } from "react-material-symbols";
 
 interface Props
   extends EntityEditorFieldsProps<
@@ -60,7 +61,7 @@ export default function RegistrationConfirmationEditorFields({
     <>
       <ErrorMessages errors={errors?._errors} />
       <EmailField id="email" value={email} disabled />
-      <SingleLineTextArea
+      <TextField
         {...commonFieldsProps}
         id="username"
         name="username"
@@ -68,6 +69,7 @@ export default function RegistrationConfirmationEditorFields({
         label="Username"
         value={registrationConfirmation?.username}
         onPropertyChange={onPropertyChange}
+        leftChildren={<MaterialSymbol icon="person" />}
         minLength={
           CreateRegistrationConfirmationInput.shape.username.minLength ||
           undefined
@@ -97,7 +99,7 @@ export default function RegistrationConfirmationEditorFields({
         required
         messageProps={errorProps((rc) => rc.password)}
       />
-      <SingleLineTextArea
+      <TextField
         {...commonFieldsProps}
         id="long-name"
         name="longName"
@@ -112,7 +114,7 @@ export default function RegistrationConfirmationEditorFields({
         required
         messageProps={errorProps((rc) => rc.longName)}
       />
-      <SingleLineTextArea
+      <TextField
         {...commonFieldsProps}
         id="short-name"
         name="shortName"

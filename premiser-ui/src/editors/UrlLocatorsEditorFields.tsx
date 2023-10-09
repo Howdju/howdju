@@ -141,7 +141,7 @@ export default function UrlLocatorsEditorFields({
               aria-label="url"
               label="URL"
               value={url.url}
-              rightChildren={
+              rightButtons={
                 <>
                   {onInferMediaExcerptInfo && (
                     <IconButton

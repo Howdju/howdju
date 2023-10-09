@@ -10,7 +10,7 @@ import { toTextFieldOnChangeCallback } from "@/util";
 import { OnPropertyChangeCallback } from "@/types";
 
 export interface TextAreaProps
-  extends Omit<ReactMdTextAreaProps, "maxLength">,
+  extends Omit<ReactMdTextAreaProps, "maxLength" | "onChange">,
     RefAttributes<HTMLTextAreaElement> {
   onPropertyChange?: OnPropertyChangeCallback;
   maxLength?: number | null;
@@ -29,11 +29,11 @@ export function TextArea({
   return (
     <>
       <ReactMdTextArea
+        error={!!messageProps?.errorMessage}
         id={id}
+        maxLength={maxLength ?? undefined}
         onChange={onChange}
         value={value}
-        maxLength={maxLength ?? undefined}
-        error={!!messageProps?.errorMessage}
         {...rest}
       />
       {messageProps && (
@@ -41,7 +41,7 @@ export function TextArea({
           id={combineIds(id, "message")}
           {...messageProps}
           length={value?.length}
-          maxLength={maxLength ?? undefined}
+          maxLength={maxLength}
         />
       )}
     </>

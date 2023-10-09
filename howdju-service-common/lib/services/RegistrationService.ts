@@ -211,9 +211,10 @@ export class RegistrationService {
     duration: Duration
   ) {
     const { email } = registrationRequest;
-    const confirmationUrl = `${
-      this.config.uiAuthority
-    }${commonPaths.confirmRegistration()}?registrationCode=${registrationCode}`;
+    const confirmationUrlObj = new URL(this.config.uiAuthority);
+    confirmationUrlObj.pathname = commonPaths.confirmRegistration();
+    confirmationUrlObj.searchParams.set("registrationCode", registrationCode);
+    const confirmationUrl = confirmationUrlObj.toString();
     const durationText = duration.format(this.config.durationFormatTemplate, {
       trim: this.config.durationFormatTrim,
     });

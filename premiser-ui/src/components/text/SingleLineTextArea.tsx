@@ -11,10 +11,11 @@ import {
   OnBlurCallback,
   OnKeyDownCallback,
   OnPropertyChangeCallback,
+  PropertyChanges,
   toReactMdOnBlur,
 } from "@/types";
-import { toTextFieldOnChangeCallback } from "@/util";
 import { combineIds } from "@/viewModels";
+import { mapValues } from "lodash";
 
 export interface SingleLineTextAreaProps
   extends Omit<TextAreaProps, "onBlur" | "maxLength"> {
@@ -76,7 +77,12 @@ export default function SingleLineTextArea({
     }
   };
 
-  const _onChange = toTextFieldOnChangeCallback(onPropertyChange, toSingleLine);
+  function _onPropertyChange(change: PropertyChanges) {
+    if (!onPropertyChange) {
+      return;
+    }
+    onPropertyChange(mapValues(change, toSingleLine));
+  }
 
   // ``value` prop on `textarea` should not be null. Consider using an empty string to clear the component or `undefined` for uncontrolled components.`
   const textareaValue = isNull(value) ? "" : value;
@@ -93,7 +99,7 @@ export default function SingleLineTextArea({
         maxLength={maxLength ?? undefined}
         onBlur={toReactMdOnBlur(onBlur)}
         onKeyDown={_onKeyDown}
-        onChange={_onChange}
+        onPropertyChange={_onPropertyChange}
         ref={(ta) => {
           ref.current = ta;
         }}

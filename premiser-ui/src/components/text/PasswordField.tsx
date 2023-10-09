@@ -6,7 +6,7 @@ import { MaterialSymbol } from "react-material-symbols";
 import { toTextFieldOnChangeCallback } from "@/util";
 import { OnPropertyChangeCallback } from "@/types";
 
-interface PasswordFieldProps extends PasswordProps {
+interface PasswordFieldProps extends Omit<PasswordProps, "onChange"> {
   onPropertyChange?: OnPropertyChangeCallback;
   messageProps?: FormMessageProps;
 }

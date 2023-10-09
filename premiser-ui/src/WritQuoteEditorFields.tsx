@@ -133,7 +133,7 @@ const WritQuoteEditorFields = (props: Props) => {
               aria-label="url"
               label="URL"
               value={url.url}
-              rightChildren={
+              rightButtons={
                 <IconButton
                   onClick={() => onRemoveUrl(url, index, urls)}
                   disabled={disabled}

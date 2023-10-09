@@ -1,6 +1,6 @@
 import { z } from "zod";
 import moment from "moment";
-import isUrlLib from "validator/lib/isURL";
+import isUrl from "validator/lib/isURL";
 
 import { extractDomain } from "./urls";
 import { MomentConstructor } from "./moment";
@@ -12,8 +12,9 @@ type UrlOptions = {
 // Allow localhost while in development
 const require_tld = process.env.NODE_ENV !== "development";
 
-export function isHttpUrl(val: string) {
-  return isUrlLib(val, {
+/** Don't allow javascript: URLs to avoid XSS. */
+export function isValidUrl(val: string) {
+  return isUrl(val, {
     protocols: ["http", "https"],
     require_protocol: true,
     require_tld,
@@ -27,7 +28,7 @@ export function isHttpUrl(val: string) {
 const urlRefinement =
   (options: UrlOptions) => (val: string, ctx: z.RefinementCtx) => {
     const { domain: domainPattern } = options ?? {};
-    if (!isHttpUrl(val)) {
+    if (!isValidUrl(val)) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         message: "Must be a valid URL",

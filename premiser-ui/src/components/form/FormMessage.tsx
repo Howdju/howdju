@@ -5,9 +5,9 @@ import {
 } from "@react-md/form";
 
 /**
- * The props required by users of the input using the FormComponent.
+ * The props required by users of the input containing the FormComponent.
  *
- * The inputs using this component must provide the ID, probably derived from the
+ * The inputs containing this component must provide the ID, probably derived from the
  * input's own ID (so as not to burden users of the input into providing both IDs.)
  *
  * Omit maxLength because both TextField/TextArea and FormMessage accept it, but
@@ -26,7 +26,7 @@ export interface FullFormMessageProps
   maxLength?: number | null;
 }
 
-/** Shows help text and messages for a form input. */
+/** Shows help and error messages for a form input. */
 export function FormMessage({
   maxLength,
   errorMessage,
