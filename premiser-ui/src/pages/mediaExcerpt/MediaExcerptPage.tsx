@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { RouteComponentProps } from "react-router";
-import { Divider, DropdownMenu, ListItem, MenuButton } from "react-md";
+import { DropdownMenu, ListItem, MenuButton } from "react-md";
 import { MaterialSymbol } from "react-material-symbols";
 import { Link } from "react-router-dom";
 import { push } from "connected-react-router";
@@ -12,6 +12,7 @@ import {
   makeCreateUrlLocatorInput,
 } from "howdju-common";
 
+import { MenuDivider } from "@/components/menu/MenuDivider";
 import { CircularProgress } from "@/components/progress/CircularProgress";
 import { useAppDispatch, useAppEntitySelector, useAppSelector } from "@/hooks";
 import { api } from "@/apiActions";
@@ -171,7 +172,7 @@ export default function MediaExcerptPage(props: Props) {
           component={Link}
           to={paths.createAppearance(mediaExcerptId)}
         />,
-        <Divider key="divider-edit" />,
+        <MenuDivider key="divider-edit" />,
         <ListItem
           primaryText="Add URLs…"
           key="add-urls"
@@ -208,7 +209,7 @@ export default function MediaExcerptPage(props: Props) {
           leftIcon={<MaterialSymbol icon="voice_over_off" />}
           onClick={() => setIsDeleteSpeakersDialogVisible(true)}
         />,
-        <Divider key="divider-delete" />,
+        <MenuDivider key="divider-delete" />,
         <ListItem
           primaryText="Delete"
           key="delete"

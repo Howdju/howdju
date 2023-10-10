@@ -17,14 +17,17 @@ export interface TextAreaProps
   messageProps?: FormMessageProps;
 }
 
-export function TextArea({
-  id,
-  value,
-  onPropertyChange,
-  maxLength,
-  messageProps,
-  ...rest
-}: TextAreaProps) {
+function TextAreaComponent(
+  {
+    id,
+    value,
+    onPropertyChange,
+    maxLength,
+    messageProps,
+    ...rest
+  }: TextAreaProps,
+  ref: React.Ref<HTMLTextAreaElement>
+) {
   const onChange = toTextFieldOnChangeCallback(onPropertyChange);
   return (
     <>
@@ -34,6 +37,7 @@ export function TextArea({
         maxLength={maxLength ?? undefined}
         onChange={onChange}
         value={value}
+        ref={ref}
         {...rest}
       />
       {messageProps && (
@@ -47,3 +51,6 @@ export function TextArea({
     </>
   );
 }
+export const TextArea = React.forwardRef<HTMLTextAreaElement, TextAreaProps>(
+  TextAreaComponent
+);

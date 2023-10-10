@@ -1,5 +1,5 @@
 import React, { ChangeEvent } from "react";
-import { Divider, Subheader } from "react-md";
+import { Subheader } from "react-md";
 
 import {
   isWritQuoteBased,
@@ -12,6 +12,7 @@ import {
   isOnlyRef,
 } from "howdju-common";
 
+import { HorizontalRule } from "@/components/layout/HorizontalRule";
 import { CircularProgress } from "@/components/progress/CircularProgress";
 import t, {
   JUSTIFICATION_POLARITY_NEGATIVE,
@@ -206,7 +207,7 @@ export default function JustificationEditorFields(props: Props) {
         disabled={disabled}
         {...reactMd1ErrorProps((i) => i.polarity)}
       />
-      <Divider />
+      <HorizontalRule />
       {doShowTypeSelection && (
         <>
           <Subheader primary primaryText="Type" component="div" />
@@ -226,7 +227,7 @@ export default function JustificationEditorFields(props: Props) {
         </>
       )}
 
-      <Divider />
+      <HorizontalRule />
       {editorFields}
     </div>
   );

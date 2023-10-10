@@ -5,7 +5,7 @@ import map from "lodash/map";
 import moment from "moment";
 import React, { useState } from "react";
 import FlipMove from "react-flip-move";
-import { Divider, DropdownMenu, ListItem, MenuButton } from "react-md";
+import { DropdownMenu, ListItem, MenuButton } from "react-md";
 import { connect, ConnectedProps } from "react-redux";
 import { Link } from "react-router-dom";
 
@@ -21,6 +21,7 @@ import {
   newExhaustedEnumError,
 } from "howdju-common";
 
+import { MenuDivider } from "@/components/menu/MenuDivider";
 import { Card, CardContent } from "@/components/card/Card";
 import CounterJustificationEditor from "@/editors/CounterJustificationEditor";
 import { api, editors } from "./actions";
@@ -220,7 +221,7 @@ function JustificationBranch({
           component={Link}
           to={paths.justification(justification)}
         />,
-        <Divider key="divider" />,
+        <MenuDivider key="divider" />,
         <ListItem
           primaryText="Edit"
           key="edit"

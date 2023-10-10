@@ -1,18 +1,13 @@
 import React, { useEffect } from "react";
 import { toString } from "lodash";
 import { denormalize } from "normalizr";
-import {
-  Divider,
-  DropdownMenu,
-  FontIcon,
-  ListItem,
-  MenuButton,
-} from "react-md";
+import { DropdownMenu, FontIcon, ListItem, MenuButton } from "react-md";
 import { RouteComponentProps } from "react-router";
 import { push } from "connected-react-router";
 
 import { EntityId, MediaExcerptOut, StatementOut } from "howdju-common";
 
+import { MenuDivider } from "@/components/menu/MenuDivider";
 import { CircularProgress } from "@/components/progress/CircularProgress";
 import Helmet from "../../Helmet";
 import { api, editors, flows } from "../../actions";
@@ -127,7 +122,7 @@ export default function PersorgPage(props: Props) {
           leftIcon={<FontIcon>edit</FontIcon>}
           onClick={editPersorg}
         />,
-        <Divider key="divider" />,
+        <MenuDivider key="divider" />,
         <ListItem
           primaryText="Delete"
           key="delete"
