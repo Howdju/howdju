@@ -12,7 +12,7 @@ import {
   isOnlyRef,
 } from "howdju-common";
 
-import { Divider } from "@/components/menu/Divider";
+import { HorizontalRule } from "@/components/layout/HoriztonalRule";
 import { CircularProgress } from "@/components/progress/CircularProgress";
 import t, {
   JUSTIFICATION_POLARITY_NEGATIVE,
@@ -207,7 +207,7 @@ export default function JustificationEditorFields(props: Props) {
         disabled={disabled}
         {...reactMd1ErrorProps((i) => i.polarity)}
       />
-      <Divider />
+      <HorizontalRule />
       {doShowTypeSelection && (
         <>
           <Subheader primary primaryText="Type" component="div" />
@@ -227,7 +227,7 @@ export default function JustificationEditorFields(props: Props) {
         </>
       )}
 
-      <Divider />
+      <HorizontalRule />
       {editorFields}
     </div>
   );
