@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
-import { FontIcon } from "react-md";
+import { FontIcon } from "@react-md/icon";
 import cloneDeep from "lodash/cloneDeep";
 import moment from "moment";
 

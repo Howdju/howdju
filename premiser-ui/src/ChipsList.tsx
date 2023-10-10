@@ -1,8 +1,9 @@
+import React from "react";
 import cn from "classnames";
 import includes from "lodash/includes";
 import map from "lodash/map";
-import React from "react";
-import { Chip, Avatar, FontIcon, ChipProps } from "react-md";
+import { Chip, Avatar, ChipProps } from "react-md";
+import { FontIcon } from "@react-md/icon";
 
 import { Keys } from "./keyCodes";
 

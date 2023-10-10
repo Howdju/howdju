@@ -1,5 +1,6 @@
 import React, { Component, UIEvent } from "react";
-import { FontIcon, ListItem } from "react-md";
+import { ListItem } from "react-md";
+import { FontIcon } from "@react-md/icon";
 import { connect, ConnectedProps } from "react-redux";
 import isEmpty from "lodash/isEmpty";
 import isEqual from "lodash/isEqual";

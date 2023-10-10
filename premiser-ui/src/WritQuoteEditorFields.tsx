@@ -1,5 +1,5 @@
 import React from "react";
-import { FontIcon } from "react-md";
+import { FontIcon } from "@react-md/icon";
 
 import {
   UpdateWritQuoteInput,

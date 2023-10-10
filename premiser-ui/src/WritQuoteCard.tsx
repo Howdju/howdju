@@ -1,5 +1,6 @@
 import React, { Component } from "react";
-import { DropdownMenu, FontIcon, ListItem, MenuButton } from "react-md";
+import { DropdownMenu, ListItem, MenuButton } from "react-md";
+import { FontIcon } from "@react-md/icon";
 import cn from "classnames";
 
 import { newUnimplementedError, WritQuoteOut } from "howdju-common";

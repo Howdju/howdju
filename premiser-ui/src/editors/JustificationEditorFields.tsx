@@ -1,5 +1,5 @@
 import React, { ChangeEvent } from "react";
-import { Subheader } from "react-md";
+import { Text } from "@react-md/typography";
 
 import {
   isWritQuoteBased,
@@ -31,9 +31,9 @@ import {
 } from "@/editors/withEditor";
 import { makeReactMd1ErrorPropCreator } from "@/modelErrorMessages";
 import { logger } from "@/logger";
+import MediaExcerptEditorFields from "./MediaExcerptEditorFields";
 
 import "./JustificationEditorFields.scss";
-import MediaExcerptEditorFields from "./MediaExcerptEditorFields";
 
 const polarityName = "polarity";
 const propositionCompoundName = "basis.propositionCompound";
@@ -210,7 +210,7 @@ export default function JustificationEditorFields(props: Props) {
       <HorizontalRule />
       {doShowTypeSelection && (
         <>
-          <Subheader primary primaryText="Type" component="div" />
+          <Text type="subtitle-1">Type</Text>
           <SelectionControlGroup
             inline
             id={combineIds(id, basisTypeName)}
