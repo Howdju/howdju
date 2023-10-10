@@ -1,7 +1,6 @@
 import React, { ChangeEvent, ChangeEventHandler } from "react";
 import { get, isArray } from "lodash";
 import queryString from "query-string";
-import { Divider } from "react-md";
 import { Location } from "history";
 
 import {
@@ -11,6 +10,7 @@ import {
   CreatePropositionTagVoteInput,
 } from "howdju-common";
 
+import { Divider } from "@/components/menu/Divider";
 import config from "./config";
 import { OnPropertyChangeCallback } from "./types";
 import { newInvalidUrlError } from "./uiErrors";

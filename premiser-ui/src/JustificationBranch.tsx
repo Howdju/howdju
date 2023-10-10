@@ -5,7 +5,7 @@ import map from "lodash/map";
 import moment from "moment";
 import React, { useState } from "react";
 import FlipMove from "react-flip-move";
-import { Divider, DropdownMenu, ListItem, MenuButton } from "react-md";
+import { DropdownMenu, ListItem, MenuButton } from "react-md";
 import { connect, ConnectedProps } from "react-redux";
 import { Link } from "react-router-dom";
 
@@ -21,6 +21,7 @@ import {
   newExhaustedEnumError,
 } from "howdju-common";
 
+import { Divider } from "@/components/menu/Divider";
 import { Card, CardContent } from "@/components/card/Card";
 import CounterJustificationEditor from "@/editors/CounterJustificationEditor";
 import { api, editors } from "./actions";

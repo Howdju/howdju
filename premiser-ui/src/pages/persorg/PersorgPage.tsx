@@ -1,18 +1,13 @@
 import React, { useEffect } from "react";
 import { toString } from "lodash";
 import { denormalize } from "normalizr";
-import {
-  Divider,
-  DropdownMenu,
-  FontIcon,
-  ListItem,
-  MenuButton,
-} from "react-md";
+import { DropdownMenu, FontIcon, ListItem, MenuButton } from "react-md";
 import { RouteComponentProps } from "react-router";
 import { push } from "connected-react-router";
 
 import { EntityId, MediaExcerptOut, StatementOut } from "howdju-common";
 
+import { Divider } from "@/components/menu/Divider";
 import { CircularProgress } from "@/components/progress/CircularProgress";
 import Helmet from "../../Helmet";
 import { api, editors, flows } from "../../actions";

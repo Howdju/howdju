@@ -100,7 +100,7 @@ export default function SingleLineTextArea({
         onBlur={toReactMdOnBlur(onBlur)}
         onKeyDown={_onKeyDown}
         onPropertyChange={_onPropertyChange}
-        ref={(ta) => {
+        ref={(ta: HTMLTextAreaElement) => {
           ref.current = ta;
         }}
         error={!!messageProps?.errorMessage}

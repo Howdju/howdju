@@ -335,7 +335,8 @@ exports[`CreatePropositionPage (with fake timers) renders correctly with query p
                 </fieldset>
               </div>
               <hr
-                class="md-divider"
+                class="rmd-divider"
+                role="separator"
               />
               <div
                 class="md-subheader md-text--theme-primary"
@@ -439,7 +440,8 @@ exports[`CreatePropositionPage (with fake timers) renders correctly with query p
                 </fieldset>
               </div>
               <hr
-                class="md-divider"
+                class="rmd-divider"
+                role="separator"
               />
               <div
                 class="writ-quote-editor-fields"
