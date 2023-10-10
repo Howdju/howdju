@@ -6649,7 +6649,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-md/divider@npm:^2.9.1":
+"@react-md/divider@npm:^2, @react-md/divider@npm:^2.9.1":
   version: 2.9.1
   resolution: "@react-md/divider@npm:2.9.1"
   dependencies:
@@ -28459,6 +28459,7 @@ __metadata:
     "@react-md/button": ^2
     "@react-md/card": 2
     "@react-md/dialog": ^2
+    "@react-md/divider": ^2
     "@react-md/icon": ^2
     "@react-md/layout": ^2
     "@react-md/menu": ^2

@@ -122,6 +122,7 @@
     "@react-md/button": "^2",
     "@react-md/card": "2",
     "@react-md/dialog": "^2",
+    "@react-md/divider": "^2",
     "@react-md/icon": "^2",
     "@react-md/layout": "^2",
     "@react-md/menu": "^2",
