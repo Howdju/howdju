@@ -12,7 +12,7 @@ import {
   makeCreateUrlLocatorInput,
 } from "howdju-common";
 
-import { Divider } from "@/components/menu/Divider";
+import { MenuDivider } from "@/components/menu/MenuDivider";
 import { CircularProgress } from "@/components/progress/CircularProgress";
 import { useAppDispatch, useAppEntitySelector, useAppSelector } from "@/hooks";
 import { api } from "@/apiActions";
@@ -172,7 +172,7 @@ export default function MediaExcerptPage(props: Props) {
           component={Link}
           to={paths.createAppearance(mediaExcerptId)}
         />,
-        <Divider key="divider-edit" />,
+        <MenuDivider key="divider-edit" />,
         <ListItem
           primaryText="Add URLs…"
           key="add-urls"
@@ -209,7 +209,7 @@ export default function MediaExcerptPage(props: Props) {
           leftIcon={<MaterialSymbol icon="voice_over_off" />}
           onClick={() => setIsDeleteSpeakersDialogVisible(true)}
         />,
-        <Divider key="divider-delete" />,
+        <MenuDivider key="divider-delete" />,
         <ListItem
           primaryText="Delete"
           key="delete"

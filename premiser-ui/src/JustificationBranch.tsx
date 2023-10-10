@@ -21,7 +21,7 @@ import {
   newExhaustedEnumError,
 } from "howdju-common";
 
-import { Divider } from "@/components/menu/Divider";
+import { MenuDivider } from "@/components/menu/MenuDivider";
 import { Card, CardContent } from "@/components/card/Card";
 import CounterJustificationEditor from "@/editors/CounterJustificationEditor";
 import { api, editors } from "./actions";
@@ -221,7 +221,7 @@ function JustificationBranch({
           component={Link}
           to={paths.justification(justification)}
         />,
-        <Divider key="divider" />,
+        <MenuDivider key="divider" />,
         <ListItem
           primaryText="Edit"
           key="edit"

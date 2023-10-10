@@ -12,7 +12,7 @@ import {
   isOnlyRef,
 } from "howdju-common";
 
-import { HorizontalRule } from "@/components/layout/HoriztonalRule";
+import { HorizontalRule } from "@/components/layout/HorizontalRule";
 import { CircularProgress } from "@/components/progress/CircularProgress";
 import t, {
   JUSTIFICATION_POLARITY_NEGATIVE,

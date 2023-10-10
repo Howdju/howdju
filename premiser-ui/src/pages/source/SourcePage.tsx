@@ -6,7 +6,7 @@ import { push } from "connected-react-router";
 
 import { EntityId, logger } from "howdju-common";
 
-import { Divider } from "@/components/menu/Divider";
+import { MenuDivider } from "@/components/menu/MenuDivider";
 import { CircularProgress } from "@/components/progress/CircularProgress";
 import Helmet from "../../Helmet";
 import { api, editors, flows } from "../../actions";
@@ -111,7 +111,7 @@ export default function SourcePage(props: Props) {
           leftIcon={<FontIcon>edit</FontIcon>}
           onClick={editSource}
         />,
-        <Divider key="divider" />,
+        <MenuDivider key="divider" />,
         <ListItem
           primaryText="Delete"
           key="delete"

@@ -10,7 +10,7 @@ import {
   CreatePropositionTagVoteInput,
 } from "howdju-common";
 
-import { Divider } from "@/components/menu/Divider";
+import { MenuDivider } from "@/components/menu/MenuDivider";
 import config from "./config";
 import { OnPropertyChangeCallback } from "./types";
 import { newInvalidUrlError } from "./uiErrors";
@@ -99,7 +99,9 @@ export function divideMenuItems(...componentGroups: JSX.Element[][]) {
       // Assume that the keys are unique, so that we can build a unique key off of the previous component
       const lastComponentKey =
         dividedComponents[dividedComponents.length - 1].key;
-      dividedComponents.push(<Divider key={`${lastComponentKey}-divider`} />);
+      dividedComponents.push(
+        <MenuDivider key={`${lastComponentKey}-divider`} />
+      );
     }
   }
   return dividedComponents;
