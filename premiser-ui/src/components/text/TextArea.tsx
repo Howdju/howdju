@@ -41,12 +41,7 @@ function TextAreaComponent(
         {...rest}
       />
       {messageProps && (
-        <FormMessage
-          id={combineIds(id, "message")}
-          {...messageProps}
-          length={value?.length}
-          maxLength={maxLength}
-        />
+        <FormMessage id={combineIds(id, "message")} {...messageProps} />
       )}
     </>
   );

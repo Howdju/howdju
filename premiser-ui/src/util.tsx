@@ -116,6 +116,7 @@ export const toOnChangeCallback = (
   };
 };
 
+// TODO(#17) remove
 export const toCheckboxOnChangeCallback = (
   onPropertyChange: OnPropertyChangeCallback
 ): ((checked: boolean, event: Event) => void) => {
@@ -125,6 +126,17 @@ export const toCheckboxOnChangeCallback = (
     onPropertyChange({ [name]: checked });
   };
 };
+
+export function toInputOnChangeCallback(
+  onPropertyChange?: OnPropertyChangeCallback
+): ChangeEventHandler<any> {
+  return function onChange(event: ChangeEvent<any>) {
+    if (!onPropertyChange) {
+      return;
+    }
+    onPropertyChange({ [event.target.name]: event.target.value });
+  };
+}
 
 export function toTextFieldOnChangeCallback(
   onPropertyChange?: OnPropertyChangeCallback,

@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, FocusEvent } from "react";
 import { useSelector } from "react-redux";
 import { AnyAction } from "@reduxjs/toolkit";
 import get from "lodash/get";
@@ -44,6 +44,7 @@ import {
   OnKeyDownCallback,
   OnPropertyChangeCallback,
   OnValidityChangeCallback,
+  PropertyChanges,
   SuggestionsKey,
 } from "@/types";
 import {
@@ -230,11 +231,11 @@ export default function withEditor<
 
     const dispatch = useAppDispatch();
 
-    const onPropertyChange = (properties: { [key: string]: string }) => {
-      dispatch(editors.propertyChange(editorType, editorId, properties));
+    const onPropertyChange = (changes: PropertyChanges) => {
+      dispatch(editors.propertyChange(editorType, editorId, changes));
     };
-    const onBlur = (name: string) => {
-      dispatch(editors.blurField(editorType, editorId, name));
+    const onBlur = (event: FocusEvent<HTMLInputElement>) => {
+      dispatch(editors.blurField(editorType, editorId, event.target.name));
     };
 
     const { errors, isValidRequest } =

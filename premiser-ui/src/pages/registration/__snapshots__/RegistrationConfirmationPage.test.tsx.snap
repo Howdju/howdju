@@ -117,12 +117,6 @@ exports[`RegistrationConfirmationPage shows error message for duplicate username
                 >
                   The username is already in use: the_username
                 </p>
-                <span
-                  class="rmd-form-message__counter"
-                  id="username--message-counter"
-                >
-                  12 / 64
-                </span>
               </div>
               <div
                 class="rmd-text-field-container rmd-text-field-container--outline rmd-text-field-container--hoverable rmd-text-field-container--label rmd-text-field-container--outline-left rmd-text-field-container--outline-right rmd-password rmd-password--offset"
@@ -221,39 +215,37 @@ exports[`RegistrationConfirmationPage shows error message for duplicate username
                 </div>
               </div>
               <div
-                class="md-selection-control-container"
+                class="howdju-checkbox"
               >
-                <input
-                  aria-hidden="true"
-                  class="md-selection-control-input"
-                  id="does-accept-terms"
-                  name="doesAcceptTerms"
-                  type="checkbox"
-                  value="true"
-                />
-                <label
-                  class="md-selection-control-label md-pointer--hover md-text"
-                  for="does-accept-terms"
+                <div
+                  class="rmd-toggle-container"
                 >
-                  <div
-                    aria-checked="true"
-                    aria-labelledby="does-accept-terms-label"
-                    aria-pressed="true"
-                    class="md-fake-btn md-pointer--hover md-fake-btn--no-outline md-selection-control-toggle md-btn md-btn--icon md-text--theme-secondary"
-                    role="checkbox"
-                    tabindex="0"
-                  >
-                    <div
-                      class="md-ink-container"
-                    />
-                    <i
-                      class="md-icon material-icons md-text--inherit"
-                    >
-                      check_box
-                    </i>
-                  </div>
                   <span
-                    id="does-accept-terms-label"
+                    class="rmd-toggle"
+                  >
+                    <input
+                      class="rmd-toggle__input"
+                      id="does-accept-terms"
+                      name="doesAcceptTerms"
+                      type="checkbox"
+                    />
+                    <span
+                      class="rmd-toggle__icon rmd-toggle__icon--overlay"
+                    >
+                      <i
+                        aria-hidden="true"
+                        class="rmd-icon rmd-icon--font material-icons"
+                      >
+                        check_box
+                      </i>
+                    </span>
+                    <span
+                      class="rmd-ripple-container"
+                    />
+                  </span>
+                  <label
+                    class="rmd-label"
+                    for="does-accept-terms"
                   >
                     <div
                       class=""
@@ -281,129 +273,123 @@ exports[`RegistrationConfirmationPage shows error message for duplicate username
                       </a>
                       .
                     </div>
-                  </span>
-                </label>
+                  </label>
+                </div>
               </div>
               <div
-                class="md-selection-control-container"
+                class="howdju-checkbox"
               >
-                <input
-                  aria-hidden="true"
-                  class="md-selection-control-input"
-                  id="is-13-years-or-older"
-                  name="is13YearsOrOlder"
-                  type="checkbox"
-                  value="true"
-                />
-                <label
-                  class="md-selection-control-label md-pointer--hover md-text"
-                  for="is-13-years-or-older"
+                <div
+                  class="rmd-toggle-container"
                 >
-                  <div
-                    aria-checked="true"
-                    aria-labelledby="is-13-years-or-older-label"
-                    aria-pressed="true"
-                    class="md-fake-btn md-pointer--hover md-fake-btn--no-outline md-selection-control-toggle md-btn md-btn--icon md-text--theme-secondary"
-                    role="checkbox"
-                    tabindex="0"
-                  >
-                    <div
-                      class="md-ink-container"
-                    />
-                    <i
-                      class="md-icon material-icons md-text--inherit"
-                    >
-                      check_box
-                    </i>
-                  </div>
                   <span
-                    id="is-13-years-or-older-label"
+                    class="rmd-toggle"
+                  >
+                    <input
+                      class="rmd-toggle__input"
+                      id="is-13-years-or-older"
+                      name="is13YearsOrOlder"
+                      type="checkbox"
+                    />
+                    <span
+                      class="rmd-toggle__icon rmd-toggle__icon--overlay"
+                    >
+                      <i
+                        aria-hidden="true"
+                        class="rmd-icon rmd-icon--font material-icons"
+                      >
+                        check_box
+                      </i>
+                    </span>
+                    <span
+                      class="rmd-ripple-container"
+                    />
+                  </span>
+                  <label
+                    class="rmd-label"
+                    for="is-13-years-or-older"
                   >
                     <div
                       class=""
                     >
                       I am 13 years old or older.
                     </div>
-                  </span>
-                </label>
+                  </label>
+                </div>
               </div>
               <div
-                class="md-selection-control-container"
+                class="howdju-checkbox"
               >
-                <input
-                  aria-hidden="true"
-                  class="md-selection-control-input"
-                  id="has-majority-consent"
-                  name="hasMajorityConsent"
-                  type="checkbox"
-                  value="true"
-                />
-                <label
-                  class="md-selection-control-label md-pointer--hover md-text"
-                  for="has-majority-consent"
+                <div
+                  class="rmd-toggle-container"
                 >
-                  <div
-                    aria-checked="true"
-                    aria-labelledby="has-majority-consent-label"
-                    aria-pressed="true"
-                    class="md-fake-btn md-pointer--hover md-fake-btn--no-outline md-selection-control-toggle md-btn md-btn--icon md-text--theme-secondary"
-                    role="checkbox"
-                    tabindex="0"
-                  >
-                    <div
-                      class="md-ink-container"
-                    />
-                    <i
-                      class="md-icon material-icons md-text--inherit"
-                    >
-                      check_box
-                    </i>
-                  </div>
                   <span
-                    id="has-majority-consent-label"
+                    class="rmd-toggle"
+                  >
+                    <input
+                      class="rmd-toggle__input"
+                      id="has-majority-consent"
+                      name="hasMajorityConsent"
+                      type="checkbox"
+                    />
+                    <span
+                      class="rmd-toggle__icon rmd-toggle__icon--overlay"
+                    >
+                      <i
+                        aria-hidden="true"
+                        class="rmd-icon rmd-icon--font material-icons"
+                      >
+                        check_box
+                      </i>
+                    </span>
+                    <span
+                      class="rmd-ripple-container"
+                    />
+                  </span>
+                  <label
+                    class="rmd-label"
+                    for="has-majority-consent"
                   >
                     <div
                       class=""
                     >
                       I am old enough in my local jurisdiction to enter into legal agreements and to consent to the processing of my personal data.
                     </div>
-                  </span>
-                </label>
+                  </label>
+                </div>
               </div>
               <div
-                class="md-selection-control-container"
+                class="howdju-checkbox"
               >
-                <input
-                  aria-hidden="true"
-                  class="md-selection-control-input"
-                  id="is-not-gdpr"
-                  name="isNotGdpr"
-                  type="checkbox"
-                  value="true"
-                />
-                <label
-                  class="md-selection-control-label md-pointer--hover md-text"
-                  for="is-not-gdpr"
+                <div
+                  class="rmd-toggle-container"
                 >
-                  <div
-                    aria-checked="true"
-                    aria-labelledby="is-not-gdpr-label"
-                    aria-pressed="true"
-                    class="md-fake-btn md-pointer--hover md-fake-btn--no-outline md-selection-control-toggle md-btn md-btn--icon md-text--theme-secondary"
-                    role="checkbox"
-                    tabindex="0"
-                  >
-                    <div
-                      class="md-ink-container"
-                    />
-                    <i
-                      class="md-icon material-icons md-text--inherit"
-                    >
-                      check_box
-                    </i>
-                  </div>
                   <span
-                    id="is-not-gdpr-label"
+                    class="rmd-toggle"
+                  >
+                    <input
+                      class="rmd-toggle__input"
+                      id="is-not-gdpr"
+                      name="isNotGdpr"
+                      type="checkbox"
+                    />
+                    <span
+                      class="rmd-toggle__icon rmd-toggle__icon--overlay"
+                    >
+                      <i
+                        aria-hidden="true"
+                        class="rmd-icon rmd-icon--font material-icons"
+                      >
+                        check_box
+                      </i>
+                    </span>
+                    <span
+                      class="rmd-ripple-container"
+                    />
+                  </span>
+                  <label
+                    class="rmd-label"
+                    for="is-not-gdpr"
                   >
                     <div
                       class=""
@@ -420,8 +406,8 @@ exports[`RegistrationConfirmationPage shows error message for duplicate username
                       </a>
                       .)
                     </div>
-                  </span>
-                </label>
+                  </label>
+                </div>
               </div>
             </div>
             <div
@@ -697,39 +683,37 @@ exports[`RegistrationConfirmationPage shows form 1`] = `
                 </div>
               </div>
               <div
-                class="md-selection-control-container"
+                class="howdju-checkbox"
               >
-                <input
-                  aria-hidden="true"
-                  class="md-selection-control-input"
-                  id="does-accept-terms"
-                  name="doesAcceptTerms"
-                  type="checkbox"
-                  value="true"
-                />
-                <label
-                  class="md-selection-control-label md-pointer--hover md-text"
-                  for="does-accept-terms"
+                <div
+                  class="rmd-toggle-container"
                 >
-                  <div
-                    aria-checked="false"
-                    aria-labelledby="does-accept-terms-label"
-                    aria-pressed="false"
-                    class="md-fake-btn md-pointer--hover md-fake-btn--no-outline md-selection-control-toggle md-btn md-btn--icon md-text--secondary"
-                    role="checkbox"
-                    tabindex="0"
-                  >
-                    <div
-                      class="md-ink-container"
-                    />
-                    <i
-                      class="md-icon material-icons md-text--inherit"
-                    >
-                      check_box_outline_blank
-                    </i>
-                  </div>
                   <span
-                    id="does-accept-terms-label"
+                    class="rmd-toggle"
+                  >
+                    <input
+                      class="rmd-toggle__input"
+                      id="does-accept-terms"
+                      name="doesAcceptTerms"
+                      type="checkbox"
+                    />
+                    <span
+                      class="rmd-toggle__icon rmd-toggle__icon--overlay"
+                    >
+                      <i
+                        aria-hidden="true"
+                        class="rmd-icon rmd-icon--font material-icons"
+                      >
+                        check_box
+                      </i>
+                    </span>
+                    <span
+                      class="rmd-ripple-container"
+                    />
+                  </span>
+                  <label
+                    class="rmd-label"
+                    for="does-accept-terms"
                   >
                     <div
                       class=""
@@ -757,129 +741,123 @@ exports[`RegistrationConfirmationPage shows form 1`] = `
                       </a>
                       .
                     </div>
-                  </span>
-                </label>
+                  </label>
+                </div>
               </div>
               <div
-                class="md-selection-control-container"
+                class="howdju-checkbox"
               >
-                <input
-                  aria-hidden="true"
-                  class="md-selection-control-input"
-                  id="is-13-years-or-older"
-                  name="is13YearsOrOlder"
-                  type="checkbox"
-                  value="true"
-                />
-                <label
-                  class="md-selection-control-label md-pointer--hover md-text"
-                  for="is-13-years-or-older"
+                <div
+                  class="rmd-toggle-container"
                 >
-                  <div
-                    aria-checked="false"
-                    aria-labelledby="is-13-years-or-older-label"
-                    aria-pressed="false"
-                    class="md-fake-btn md-pointer--hover md-fake-btn--no-outline md-selection-control-toggle md-btn md-btn--icon md-text--secondary"
-                    role="checkbox"
-                    tabindex="0"
-                  >
-                    <div
-                      class="md-ink-container"
-                    />
-                    <i
-                      class="md-icon material-icons md-text--inherit"
-                    >
-                      check_box_outline_blank
-                    </i>
-                  </div>
                   <span
-                    id="is-13-years-or-older-label"
+                    class="rmd-toggle"
+                  >
+                    <input
+                      class="rmd-toggle__input"
+                      id="is-13-years-or-older"
+                      name="is13YearsOrOlder"
+                      type="checkbox"
+                    />
+                    <span
+                      class="rmd-toggle__icon rmd-toggle__icon--overlay"
+                    >
+                      <i
+                        aria-hidden="true"
+                        class="rmd-icon rmd-icon--font material-icons"
+                      >
+                        check_box
+                      </i>
+                    </span>
+                    <span
+                      class="rmd-ripple-container"
+                    />
+                  </span>
+                  <label
+                    class="rmd-label"
+                    for="is-13-years-or-older"
                   >
                     <div
                       class=""
                     >
                       I am 13 years old or older.
                     </div>
-                  </span>
-                </label>
+                  </label>
+                </div>
               </div>
               <div
-                class="md-selection-control-container"
+                class="howdju-checkbox"
               >
-                <input
-                  aria-hidden="true"
-                  class="md-selection-control-input"
-                  id="has-majority-consent"
-                  name="hasMajorityConsent"
-                  type="checkbox"
-                  value="true"
-                />
-                <label
-                  class="md-selection-control-label md-pointer--hover md-text"
-                  for="has-majority-consent"
+                <div
+                  class="rmd-toggle-container"
                 >
-                  <div
-                    aria-checked="false"
-                    aria-labelledby="has-majority-consent-label"
-                    aria-pressed="false"
-                    class="md-fake-btn md-pointer--hover md-fake-btn--no-outline md-selection-control-toggle md-btn md-btn--icon md-text--secondary"
-                    role="checkbox"
-                    tabindex="0"
-                  >
-                    <div
-                      class="md-ink-container"
-                    />
-                    <i
-                      class="md-icon material-icons md-text--inherit"
-                    >
-                      check_box_outline_blank
-                    </i>
-                  </div>
                   <span
-                    id="has-majority-consent-label"
+                    class="rmd-toggle"
+                  >
+                    <input
+                      class="rmd-toggle__input"
+                      id="has-majority-consent"
+                      name="hasMajorityConsent"
+                      type="checkbox"
+                    />
+                    <span
+                      class="rmd-toggle__icon rmd-toggle__icon--overlay"
+                    >
+                      <i
+                        aria-hidden="true"
+                        class="rmd-icon rmd-icon--font material-icons"
+                      >
+                        check_box
+                      </i>
+                    </span>
+                    <span
+                      class="rmd-ripple-container"
+                    />
+                  </span>
+                  <label
+                    class="rmd-label"
+                    for="has-majority-consent"
                   >
                     <div
                       class=""
                     >
                       I am old enough in my local jurisdiction to enter into legal agreements and to consent to the processing of my personal data.
                     </div>
-                  </span>
-                </label>
+                  </label>
+                </div>
               </div>
               <div
-                class="md-selection-control-container"
+                class="howdju-checkbox"
               >
-                <input
-                  aria-hidden="true"
-                  class="md-selection-control-input"
-                  id="is-not-gdpr"
-                  name="isNotGdpr"
-                  type="checkbox"
-                  value="true"
-                />
-                <label
-                  class="md-selection-control-label md-pointer--hover md-text"
-                  for="is-not-gdpr"
+                <div
+                  class="rmd-toggle-container"
                 >
-                  <div
-                    aria-checked="false"
-                    aria-labelledby="is-not-gdpr-label"
-                    aria-pressed="false"
-                    class="md-fake-btn md-pointer--hover md-fake-btn--no-outline md-selection-control-toggle md-btn md-btn--icon md-text--secondary"
-                    role="checkbox"
-                    tabindex="0"
-                  >
-                    <div
-                      class="md-ink-container"
-                    />
-                    <i
-                      class="md-icon material-icons md-text--inherit"
-                    >
-                      check_box_outline_blank
-                    </i>
-                  </div>
                   <span
-                    id="is-not-gdpr-label"
+                    class="rmd-toggle"
+                  >
+                    <input
+                      class="rmd-toggle__input"
+                      id="is-not-gdpr"
+                      name="isNotGdpr"
+                      type="checkbox"
+                    />
+                    <span
+                      class="rmd-toggle__icon rmd-toggle__icon--overlay"
+                    >
+                      <i
+                        aria-hidden="true"
+                        class="rmd-icon rmd-icon--font material-icons"
+                      >
+                        check_box
+                      </i>
+                    </span>
+                    <span
+                      class="rmd-ripple-container"
+                    />
+                  </span>
+                  <label
+                    class="rmd-label"
+                    for="is-not-gdpr"
                   >
                     <div
                       class=""
@@ -896,8 +874,8 @@ exports[`RegistrationConfirmationPage shows form 1`] = `
                       </a>
                       .)
                     </div>
-                  </span>
-                </label>
+                  </label>
+                </div>
               </div>
             </div>
             <div

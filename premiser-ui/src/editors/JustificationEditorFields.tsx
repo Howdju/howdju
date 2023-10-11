@@ -1,11 +1,9 @@
-import React, { ChangeEvent } from "react";
+import React from "react";
 import { Text } from "@react-md/typography";
 
 import {
   isWritQuoteBased,
   isPropositionCompoundBased,
-  JustificationPolarities,
-  JustificationBasisTypes,
   CreateJustificationInput,
   isRef,
   isMediaExcerptBased,
@@ -14,22 +12,16 @@ import {
 
 import { HorizontalRule } from "@/components/layout/HorizontalRule";
 import { CircularProgress } from "@/components/progress/CircularProgress";
-import t, {
-  JUSTIFICATION_POLARITY_NEGATIVE,
-  JUSTIFICATION_POLARITY_POSITIVE,
-} from "@/texts";
 import WritQuoteEditorFields from "@/WritQuoteEditorFields";
 import PropositionCompoundEditorFields from "@/PropositionCompoundEditorFields";
-import SelectionControlGroup from "@/SelectionControlGroup";
+import { RadioGroup } from "@/components/input/RadioGroup";
 import { combineNames, combineIds, combineSuggestionsKeys } from "@/viewModels";
-
 import { OnKeyDownCallback } from "@/types";
-import { toOnChangeCallback } from "@/util";
 import {
   EditorFieldsDispatch,
   EntityEditorFieldsProps,
 } from "@/editors/withEditor";
-import { makeReactMd1ErrorPropCreator } from "@/modelErrorMessages";
+import { makeErrorPropCreator } from "@/modelErrorMessages";
 import { logger } from "@/logger";
 import MediaExcerptEditorFields from "./MediaExcerptEditorFields";
 
@@ -41,21 +33,19 @@ const mediaExcerptName = "basis.mediaExcerpt";
 const writQuoteName = "basis.writQuote";
 const polarityControls = [
   {
-    value: JustificationPolarities.POSITIVE,
-    label: t(JUSTIFICATION_POLARITY_POSITIVE),
-    title: "Support the truth of the proposition",
+    value: "POSITIVE",
+    label: <div title="Support the truth of the proposition">Positive</div>,
   },
   {
-    value: JustificationPolarities.NEGATIVE,
-    label: t(JUSTIFICATION_POLARITY_NEGATIVE),
-    title: "Oppose the truth of the proposition",
+    value: "NEGATIVE",
+    label: <div title="Oppose the truth of the proposition">Negative</div>,
   },
 ];
 const basisTypeControls = [
   {
-    value: JustificationBasisTypes.PROPOSITION_COMPOUND,
+    value: "PROPOSITION_COMPOUND",
     label: (
-      <div title="An argument based on an ordered list of propositions">
+      <div title="Proposition Compound: an argument based on an ordered list of propositions">
         Proposition(s)
       </div>
     ),
@@ -63,7 +53,7 @@ const basisTypeControls = [
   {
     value: "MEDIA_EXCERPT",
     label: (
-      <div title="Evidence based on an excerpt of an external media source">
+      <div title="Media Excerpt: evidence based on an excerpt of an external media source">
         Media Excerpt
       </div>
     ),
@@ -94,8 +84,6 @@ export default function JustificationEditorFields(props: Props) {
     onKeyDown,
     onSubmit,
   } = props;
-
-  const onChange = toOnChangeCallback(onPropertyChange);
 
   const basisPropositionCompound = justification.basis.propositionCompound;
   const basisMediaExcerpt = justification.basis.mediaExcerpt;
@@ -185,7 +173,7 @@ export default function JustificationEditorFields(props: Props) {
   const basisTypeName = "basis.type";
   const basisType = justification?.basis.type;
 
-  const reactMd1ErrorProps = makeReactMd1ErrorPropCreator(
+  const errorProps = makeErrorPropCreator(
     wasSubmitAttempted,
     errors,
     dirtyFields,
@@ -194,35 +182,29 @@ export default function JustificationEditorFields(props: Props) {
 
   return (
     <div>
-      <SelectionControlGroup
+      <RadioGroup
         inline
         id={combineIds(id, polarityName)}
         name={combineNames(name, polarityName)}
-        type="radio"
         value={polarity}
-        onChange={(value, event) =>
-          onChange(value, event as unknown as ChangeEvent<HTMLInputElement>)
-        }
-        controls={polarityControls}
+        onPropertyChange={onPropertyChange}
+        radios={polarityControls}
         disabled={disabled}
-        {...reactMd1ErrorProps((i) => i.polarity)}
+        {...errorProps((i) => i.polarity)}
       />
       <HorizontalRule />
       {doShowTypeSelection && (
         <>
           <Text type="subtitle-1">Type</Text>
-          <SelectionControlGroup
+          <RadioGroup
             inline
             id={combineIds(id, basisTypeName)}
             name={combineNames(name, basisTypeName)}
-            type="radio"
             value={basisType}
-            onChange={(value, event) =>
-              onChange(value, event as unknown as ChangeEvent<HTMLInputElement>)
-            }
-            controls={basisTypeControls}
+            onPropertyChange={onPropertyChange}
+            radios={basisTypeControls}
             disabled={disabled}
-            {...reactMd1ErrorProps((i) => i.basis.type)}
+            {...errorProps((i) => i.basis.type)}
           />
         </>
       )}

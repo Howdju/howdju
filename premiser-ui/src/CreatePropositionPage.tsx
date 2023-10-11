@@ -1,7 +1,6 @@
 import React, { FormEvent } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import { goBack } from "connected-react-router";
-import { Switch } from "react-md";
 import { FontIcon } from "@react-md/icon";
 import cn from "classnames";
 import get from "lodash/get";
@@ -9,6 +8,7 @@ import map from "lodash/map";
 import { isArray, keys, toString } from "lodash";
 import queryString from "query-string";
 
+import { Switch } from "@/components/input/Switch";
 import { CircularProgress } from "@/components/progress/CircularProgress";
 import {
   Card,
@@ -228,12 +228,10 @@ export default function CreatePropositionPage({ mode, location }: Props) {
   function onPropertyChange(properties: PropertyChanges) {
     dispatch(editors.propertyChange(editorType, editorId, properties));
   }
-  function onDoCreateJustificationSwitchChange(checked: boolean) {
-    dispatch(
-      editors.propertyChange(editorType, editorId, {
-        [doCreateJustificationName]: checked,
-      })
-    );
+  function onDoCreateJustificationSwitchPropertyChange(
+    changes: PropertyChanges
+  ) {
+    dispatch(editors.propertyChange(editorType, editorId, changes));
   }
   function onTagProposition(tag: Tag) {
     dispatch(editors.tagProposition(editorType, editorId, tag));
@@ -424,7 +422,7 @@ export default function CreatePropositionPage({ mode, location }: Props) {
                   name={doCreateJustificationName}
                   label={t(ADD_JUSTIFICATION_TO_CREATE_PROPOSITION)}
                   checked={doCreateJustification}
-                  onChange={onDoCreateJustificationSwitchChange}
+                  onPropertyChange={onDoCreateJustificationSwitchPropertyChange}
                   disabled={isSaving}
                 />
               </CardContent>

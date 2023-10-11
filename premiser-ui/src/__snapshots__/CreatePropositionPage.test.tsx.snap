@@ -189,42 +189,29 @@ exports[`CreatePropositionPage (with fake timers) renders correctly with query p
             class="rmd-card__content rmd-card__content--padded rmd-card__content--extra-padding rmd-card__content--remove-margin"
           >
             <div
-              class="md-selection-control-container md-switch-container"
+              class="rmd-toggle-container rmd-switch-container"
             >
-              <input
-                aria-hidden="true"
-                checked=""
-                class="md-selection-control-input"
-                id="create-proposition-page--do-create-justification"
-                name="doCreateJustification"
-                type="checkbox"
-                value=""
-              />
+              <span
+                class="rmd-switch"
+              >
+                <input
+                  checked=""
+                  class="rmd-switch__input"
+                  id="create-proposition-page--do-create-justification"
+                  name="doCreateJustification"
+                  type="checkbox"
+                />
+                <label
+                  aria-hidden="true"
+                  class="rmd-switch__ball"
+                  for="create-proposition-page--do-create-justification"
+                />
+              </span>
               <label
-                class="md-selection-control-label md-pointer--hover md-text"
+                class="rmd-label rmd-icon--after"
                 for="create-proposition-page--do-create-justification"
               >
-                <div
-                  class="md-switch-track md-pointer--hover md-switch-track--on"
-                >
-                  <div
-                    aria-checked="true"
-                    aria-labelledby="create-proposition-page--do-create-justification-label"
-                    aria-pressed="false"
-                    class="md-fake-btn md-pointer--hover md-fake-btn--no-outline md-switch-thumb md-switch-thumb--on"
-                    role="checkbox"
-                    tabindex="0"
-                  >
-                    <div
-                      class="md-ink-container md-ink-container--2x"
-                    />
-                  </div>
-                </div>
-                <span
-                  id="create-proposition-page--do-create-justification-label"
-                >
-                  Create justification
-                </span>
+                Create justification
               </label>
             </div>
           </div>
@@ -245,95 +232,85 @@ exports[`CreatePropositionPage (with fake timers) renders correctly with query p
           >
             <div>
               <div
-                class=""
+                class="radio-group"
               >
-                <fieldset
-                  class="md-selection-control-group"
+                <div
+                  class="rmd-toggle-container rmd-toggle-container--inline"
                 >
-                  <div
-                    class="md-selection-control-container md-selection-control-container--inline"
-                    title="Support the truth of the proposition"
+                  <span
+                    class="rmd-toggle"
                   >
                     <input
-                      aria-hidden="true"
                       checked=""
-                      class="md-selection-control-input"
-                      id="create-proposition-page--justification--polarity0"
+                      class="rmd-toggle__input"
+                      id="create-proposition-page--justification--polarity--positive"
                       name="justification.polarity"
                       type="radio"
                       value="POSITIVE"
                     />
-                    <label
-                      class="md-selection-control-label md-pointer--hover md-text"
-                      for="create-proposition-page--justification--polarity0"
+                    <span
+                      class="rmd-toggle__icon rmd-toggle__icon--circle rmd-toggle__icon--overlay"
                     >
-                      <div
-                        aria-checked="true"
-                        aria-describedby="create-proposition-page--justification--polarity-group-label"
-                        aria-labelledby="create-proposition-page--justification--polarity0-label"
-                        aria-pressed="false"
-                        class="md-fake-btn md-pointer--hover md-fake-btn--no-outline md-selection-control-toggle md-btn md-btn--icon md-text--theme-secondary"
-                        role="radio"
-                        tabindex="0"
+                      <i
+                        aria-hidden="true"
+                        class="rmd-icon rmd-icon--font material-icons"
                       >
-                        <div
-                          class="md-ink-container"
-                        />
-                        <i
-                          class="md-icon material-icons md-text--inherit"
-                        >
-                          radio_button_checked
-                        </i>
-                      </div>
-                      <span
-                        id="create-proposition-page--justification--polarity0-label"
-                      >
-                        Supporting
-                      </span>
-                    </label>
-                  </div>
-                  <div
-                    class="md-selection-control-container md-selection-control-container--inline"
-                    title="Oppose the truth of the proposition"
+                        radio_button_checked
+                      </i>
+                    </span>
+                    <span
+                      class="rmd-ripple-container"
+                    />
+                  </span>
+                  <label
+                    class="rmd-label"
+                    for="create-proposition-page--justification--polarity--positive"
+                  >
+                    <div
+                      title="Support the truth of the proposition"
+                    >
+                      Positive
+                    </div>
+                  </label>
+                </div>
+                <div
+                  class="rmd-toggle-container rmd-toggle-container--inline"
+                >
+                  <span
+                    class="rmd-toggle"
                   >
                     <input
-                      aria-hidden="true"
-                      class="md-selection-control-input"
-                      id="create-proposition-page--justification--polarity1"
+                      class="rmd-toggle__input"
+                      id="create-proposition-page--justification--polarity--negative"
                       name="justification.polarity"
                       type="radio"
                       value="NEGATIVE"
                     />
-                    <label
-                      class="md-selection-control-label md-pointer--hover md-text"
-                      for="create-proposition-page--justification--polarity1"
+                    <span
+                      class="rmd-toggle__icon rmd-toggle__icon--circle rmd-toggle__icon--overlay"
                     >
-                      <div
-                        aria-checked="false"
-                        aria-describedby="create-proposition-page--justification--polarity-group-label"
-                        aria-labelledby="create-proposition-page--justification--polarity1-label"
-                        aria-pressed="false"
-                        class="md-fake-btn md-pointer--hover md-fake-btn--no-outline md-selection-control-toggle md-btn md-btn--icon md-text--secondary"
-                        role="radio"
-                        tabindex="-1"
+                      <i
+                        aria-hidden="true"
+                        class="rmd-icon rmd-icon--font material-icons"
                       >
-                        <div
-                          class="md-ink-container"
-                        />
-                        <i
-                          class="md-icon material-icons md-text--inherit"
-                        >
-                          radio_button_unchecked
-                        </i>
-                      </div>
-                      <span
-                        id="create-proposition-page--justification--polarity1-label"
-                      >
-                        Opposing
-                      </span>
-                    </label>
-                  </div>
-                </fieldset>
+                        radio_button_checked
+                      </i>
+                    </span>
+                    <span
+                      class="rmd-ripple-container"
+                    />
+                  </span>
+                  <label
+                    class="rmd-label"
+                    for="create-proposition-page--justification--polarity--negative"
+                  >
+                    <div
+                      title="Oppose the truth of the proposition"
+                    >
+                      Negative
+                    </div>
+                  </label>
+                </div>
               </div>
               <hr
                 class="rmd-divider"
@@ -345,100 +322,84 @@ exports[`CreatePropositionPage (with fake timers) renders correctly with query p
                 Type
               </h6>
               <div
-                class=""
+                class="radio-group"
               >
-                <fieldset
-                  class="md-selection-control-group"
+                <div
+                  class="rmd-toggle-container rmd-toggle-container--inline"
                 >
-                  <div
-                    class="md-selection-control-container md-selection-control-container--inline"
+                  <span
+                    class="rmd-toggle"
                   >
                     <input
-                      aria-hidden="true"
-                      class="md-selection-control-input"
-                      id="create-proposition-page--justification--basis-type0"
+                      class="rmd-toggle__input"
+                      id="create-proposition-page--justification--basis-type--proposition-compound"
                       name="justification.basis.type"
                       type="radio"
                       value="PROPOSITION_COMPOUND"
                     />
-                    <label
-                      class="md-selection-control-label md-pointer--hover md-text"
-                      for="create-proposition-page--justification--basis-type0"
+                    <span
+                      class="rmd-toggle__icon rmd-toggle__icon--circle rmd-toggle__icon--overlay"
                     >
-                      <div
-                        aria-checked="false"
-                        aria-describedby="create-proposition-page--justification--basis-type-group-label"
-                        aria-labelledby="create-proposition-page--justification--basis-type0-label"
-                        aria-pressed="false"
-                        class="md-fake-btn md-pointer--hover md-fake-btn--no-outline md-selection-control-toggle md-btn md-btn--icon md-text--secondary"
-                        role="radio"
-                        tabindex="0"
+                      <i
+                        aria-hidden="true"
+                        class="rmd-icon rmd-icon--font material-icons"
                       >
-                        <div
-                          class="md-ink-container"
-                        />
-                        <i
-                          class="md-icon material-icons md-text--inherit"
-                        >
-                          radio_button_unchecked
-                        </i>
-                      </div>
-                      <span
-                        id="create-proposition-page--justification--basis-type0-label"
-                      >
-                        <div
-                          title="An argument based on an ordered list of propositions"
-                        >
-                          Proposition(s)
-                        </div>
-                      </span>
-                    </label>
-                  </div>
-                  <div
-                    class="md-selection-control-container md-selection-control-container--inline"
+                        radio_button_checked
+                      </i>
+                    </span>
+                    <span
+                      class="rmd-ripple-container"
+                    />
+                  </span>
+                  <label
+                    class="rmd-label"
+                    for="create-proposition-page--justification--basis-type--proposition-compound"
+                  >
+                    <div
+                      title="Proposition Compound: an argument based on an ordered list of propositions"
+                    >
+                      Proposition(s)
+                    </div>
+                  </label>
+                </div>
+                <div
+                  class="rmd-toggle-container rmd-toggle-container--inline"
+                >
+                  <span
+                    class="rmd-toggle"
                   >
                     <input
-                      aria-hidden="true"
-                      class="md-selection-control-input"
-                      id="create-proposition-page--justification--basis-type1"
+                      class="rmd-toggle__input"
+                      id="create-proposition-page--justification--basis-type--media-excerpt"
                       name="justification.basis.type"
                       type="radio"
                       value="MEDIA_EXCERPT"
                     />
-                    <label
-                      class="md-selection-control-label md-pointer--hover md-text"
-                      for="create-proposition-page--justification--basis-type1"
+                    <span
+                      class="rmd-toggle__icon rmd-toggle__icon--circle rmd-toggle__icon--overlay"
                     >
-                      <div
-                        aria-checked="false"
-                        aria-describedby="create-proposition-page--justification--basis-type-group-label"
-                        aria-labelledby="create-proposition-page--justification--basis-type1-label"
-                        aria-pressed="false"
-                        class="md-fake-btn md-pointer--hover md-fake-btn--no-outline md-selection-control-toggle md-btn md-btn--icon md-text--secondary"
-                        role="radio"
-                        tabindex="-1"
+                      <i
+                        aria-hidden="true"
+                        class="rmd-icon rmd-icon--font material-icons"
                       >
-                        <div
-                          class="md-ink-container"
-                        />
-                        <i
-                          class="md-icon material-icons md-text--inherit"
-                        >
-                          radio_button_unchecked
-                        </i>
-                      </div>
-                      <span
-                        id="create-proposition-page--justification--basis-type1-label"
-                      >
-                        <div
-                          title="Evidence based on an excerpt of an external media source"
-                        >
-                          Media Excerpt
-                        </div>
-                      </span>
-                    </label>
-                  </div>
-                </fieldset>
+                        radio_button_checked
+                      </i>
+                    </span>
+                    <span
+                      class="rmd-ripple-container"
+                    />
+                  </span>
+                  <label
+                    class="rmd-label"
+                    for="create-proposition-page--justification--basis-type--media-excerpt"
+                  >
+                    <div
+                      title="Media Excerpt: evidence based on an excerpt of an external media source"
+                    >
+                      Media Excerpt
+                    </div>
+                  </label>
+                </div>
               </div>
               <hr
                 class="rmd-divider"

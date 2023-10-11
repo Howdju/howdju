@@ -1611,20 +1611,16 @@ export const CreateUser = User.omit({
   externalIds: true,
 }).extend({
   doesAcceptTerms: z.literal(true, {
-    required_error: "Must accept the terms.",
-    invalid_type_error: "Must accept the terms.",
+    errorMap: () => ({ message: "Must accept the terms." }),
   }),
   is13YearsOrOlder: z.literal(true, {
-    required_error: "Must be 13 years or older.",
-    invalid_type_error: "Must be 13 years or older.",
+    errorMap: () => ({ message: "Must be 13 years or older." }),
   }),
   hasMajorityConsent: z.literal(true, {
-    required_error: "Must have adult consent.",
-    invalid_type_error: "Must have adult consent.",
+    errorMap: () => ({ message: "Must have adult consent." }),
   }),
   isNotGdpr: z.literal(true, {
-    required_error: "Must not be subject to the GDPR.",
-    invalid_type_error: "Must not be subject to the GDPR.",
+    errorMap: () => ({ message: "Must not be subject to the GDPR." }),
   }),
 });
 export type CreateUser = z.infer<typeof CreateUser>;

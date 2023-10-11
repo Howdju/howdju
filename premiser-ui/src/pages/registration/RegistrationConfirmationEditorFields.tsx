@@ -1,22 +1,17 @@
 import React from "react";
-import { Checkbox } from "react-md";
 import cn from "classnames";
+import { MaterialSymbol } from "react-material-symbols";
 
 import { CreateRegistrationConfirmationInput } from "howdju-common";
 
-import EmailField from "../../components/text/EmailTextField";
-import PasswordField from "../../components/text/PasswordField";
-import paths from "../../paths";
+import EmailField from "@/components/text/EmailTextField";
+import PasswordField from "@/components/text/PasswordField";
+import paths from "@/paths";
 import { EntityEditorFieldsProps } from "@/editors/withEditor";
-import {
-  makeErrorPropCreator,
-  makeReactMd1ErrorPropCreator,
-} from "@/modelErrorMessages";
+import { makeErrorPropCreator } from "@/modelErrorMessages";
 import ErrorMessages from "@/ErrorMessages";
-import { toCheckboxOnChangeCallback } from "@/util";
-import { toReactMdOnBlur } from "@/types";
+import { Checkbox } from "@/components/input/Checkbox";
 import { TextField } from "@/components/text/TextField";
-import { MaterialSymbol } from "react-material-symbols";
 
 interface Props
   extends EntityEditorFieldsProps<
@@ -43,14 +38,7 @@ export default function RegistrationConfirmationEditorFields({
     onSubmit,
     disabled,
   };
-  const onCheckboxChange = toCheckboxOnChangeCallback(onPropertyChange);
   const errorProps = makeErrorPropCreator(
-    wasSubmitAttempted,
-    errors,
-    dirtyFields,
-    blurredFields
-  );
-  const reactMd1ErrorProps = makeReactMd1ErrorPropCreator(
     wasSubmitAttempted,
     errors,
     dirtyFields,
@@ -130,12 +118,11 @@ export default function RegistrationConfirmationEditorFields({
       />
       <Checkbox
         {...commonFieldsProps}
-        onBlur={toReactMdOnBlur(onBlur)}
+        onBlur={onBlur}
         id="does-accept-terms"
         name="doesAcceptTerms"
         checked={registrationConfirmation?.doesAcceptTerms}
-        value="true"
-        onChange={onCheckboxChange}
+        onPropertyChange={onPropertyChange}
         label={
           <div
             className={cn({
@@ -164,16 +151,15 @@ export default function RegistrationConfirmationEditorFields({
             .
           </div>
         }
-        {...reactMd1ErrorProps((rc) => rc.doesAcceptTerms)}
+        messageProps={errorProps((rc) => rc.doesAcceptTerms)}
       />
       <Checkbox
         {...commonFieldsProps}
-        onBlur={toReactMdOnBlur(onBlur)}
+        onBlur={onBlur}
         id="is-13-years-or-older"
         name="is13YearsOrOlder"
         checked={registrationConfirmation?.is13YearsOrOlder}
-        value="true"
-        onChange={onCheckboxChange}
+        onPropertyChange={onPropertyChange}
         label={
           <div
             className={cn({
@@ -184,16 +170,15 @@ export default function RegistrationConfirmationEditorFields({
             I am 13 years old or older.
           </div>
         }
-        {...reactMd1ErrorProps((rc) => rc.is13YearsOrOlder)}
+        messageProps={errorProps((rc) => rc.is13YearsOrOlder)}
       />
       <Checkbox
         {...commonFieldsProps}
-        onBlur={toReactMdOnBlur(onBlur)}
+        onBlur={onBlur}
         id="has-majority-consent"
         name="hasMajorityConsent"
         checked={registrationConfirmation?.hasMajorityConsent}
-        value="true"
-        onChange={onCheckboxChange}
+        onPropertyChange={onPropertyChange}
         label={
           // TODO(17) allow helpText to have an error state (don't forget other .errorMessage in
           // this component.)
@@ -207,16 +192,15 @@ export default function RegistrationConfirmationEditorFields({
             agreements and to consent to the processing of my personal data.
           </div>
         }
-        {...reactMd1ErrorProps((rc) => rc.hasMajorityConsent)}
+        messageProps={errorProps((rc) => rc.hasMajorityConsent)}
       />
       <Checkbox
         {...commonFieldsProps}
-        onBlur={toReactMdOnBlur(onBlur)}
+        onBlur={onBlur}
         id="is-not-gdpr"
         name="isNotGdpr"
         checked={registrationConfirmation?.isNotGdpr}
-        value="true"
-        onChange={onCheckboxChange}
+        onPropertyChange={onPropertyChange}
         label={
           <div
             className={cn({
@@ -237,7 +221,7 @@ export default function RegistrationConfirmationEditorFields({
             .)
           </div>
         }
-        {...reactMd1ErrorProps((rc) => rc.isNotGdpr)}
+        messageProps={errorProps((rc) => rc.isNotGdpr)}
       />
     </>
   );

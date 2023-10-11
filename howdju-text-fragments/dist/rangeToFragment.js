@@ -19307,20 +19307,16 @@
         externalIds: true
       }).extend({
         doesAcceptTerms: mod.literal(true, {
-          required_error: "Must accept the terms.",
-          invalid_type_error: "Must accept the terms."
+          errorMap: () => ({ message: "Must accept the terms." })
         }),
         is13YearsOrOlder: mod.literal(true, {
-          required_error: "Must be 13 years or older.",
-          invalid_type_error: "Must be 13 years or older."
+          errorMap: () => ({ message: "Must be 13 years or older." })
         }),
         hasMajorityConsent: mod.literal(true, {
-          required_error: "Must have adult consent.",
-          invalid_type_error: "Must have adult consent."
+          errorMap: () => ({ message: "Must have adult consent." })
         }),
         isNotGdpr: mod.literal(true, {
-          required_error: "Must not be subject to the GDPR.",
-          invalid_type_error: "Must not be subject to the GDPR."
+          errorMap: () => ({ message: "Must not be subject to the GDPR." })
         })
       });
       AccountSettings = Entity.extend({

@@ -6,7 +6,7 @@ import {
   schemaSettings,
 } from "howdju-common";
 
-import CheckboxList from "../CheckboxList";
+import CheckboxList from "@/components/input/CheckboxList";
 import ErrorMessages from "../ErrorMessages";
 import { combineIds, combineNames } from "../viewModels";
 import { EntityEditorFieldsProps } from "@/editors/withEditor";

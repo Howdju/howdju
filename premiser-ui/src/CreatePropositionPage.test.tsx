@@ -27,7 +27,6 @@ import {
   ariaVisibleOne,
   clickEnabledButton,
   getElementByQuerySelector,
-  getTextContent,
   makeRouteComponentProps,
   progressToBeGone,
   renderWithProviders,
@@ -347,11 +346,7 @@ describe("CreatePropositionPage", () => {
           getElementByQuerySelector('textarea[name="proposition.text"]'),
           proposition.text
         );
-        const mediaExcerptRadio = getElementMatching(
-          'input[name="justification.basis.type"]',
-          (el) => /media excerpt/i.test(getTextContent(el.parentElement))
-        );
-        await user.click(mediaExcerptRadio);
+        await user.click(screen.getByRole("radio", { name: /media excerpt/i }));
         await user.type(
           document.querySelectorAll(".media-excerpt-editor-fields textarea")[0],
           quotation
@@ -517,13 +512,3 @@ describe("CreatePropositionPage", () => {
     });
   });
 });
-
-function getElementMatching(selector: string, test: (el: Element) => boolean) {
-  const el = Array.from(document.querySelectorAll(selector)).find(test);
-  if (!el) {
-    throw new Error(
-      `No element matching ${selector} and passing ${test} found.`
-    );
-  }
-  return el;
-}
