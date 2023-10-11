@@ -30,6 +30,7 @@ export default function withEntityCard<
     suggestionsKey?: SuggestionsKey;
     menu?: ReactNode;
     className?: string;
+    style?: React.CSSProperties;
     contextTrailItems?: ContextTrailItem[];
   } & { [key in EntityPropName]: Entity } & Omit<
       ComponentProps,
@@ -44,6 +45,7 @@ export default function withEntityCard<
         menu,
         suggestionsKey,
         className,
+        style,
         contextTrailItems,
         ...rest
       } = this.props;
@@ -58,7 +60,7 @@ export default function withEntityCard<
         ...rest,
       } as unknown as ComponentProps;
       return (
-        <Card className={cn("entity-card", className)}>
+        <Card className={cn("entity-card", className)} style={style}>
           <CardContent className="entity-card-contents">
             <EntityViewerComponent {...entityProps} />
           </CardContent>

@@ -125,6 +125,7 @@
     "@react-md/divider": "^2",
     "@react-md/icon": "^2",
     "@react-md/layout": "^2",
+    "@react-md/list": "^2",
     "@react-md/menu": "^2",
     "@react-md/progress": "^2",
     "@react-md/states": "^2",

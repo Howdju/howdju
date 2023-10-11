@@ -1,10 +1,10 @@
 import React, { Component } from "react";
-import { DropdownMenu, ListItem, MenuButton } from "react-md";
 import { FontIcon } from "@react-md/icon";
 import cn from "classnames";
 
 import { newUnimplementedError, WritQuoteOut } from "howdju-common";
 
+import { DropdownMenu, MenuItem } from "@/components/menu/Menu";
 import { Card, CardContent } from "@/components/card/Card";
 import WritQuoteEntityViewer from "./WritQuoteEntityViewer";
 import { combineIds } from "./viewModels";
@@ -32,20 +32,20 @@ export default class WritQuoteCard extends Component<WritQuoteCardProps> {
     } = this.props;
 
     const menuItems = [
-      <ListItem
+      <MenuItem
         primaryText="Create appearance"
         key="createAppearance"
-        leftIcon={<FontIcon>add</FontIcon>}
+        leftAddon={<FontIcon>add</FontIcon>}
         onClick={() => {
           throw newUnimplementedError(
             "Creating an appearance based on a WritQuote is not yet supported."
           );
         }}
       />,
-      <ListItem
+      <MenuItem
         primaryText="Create justification"
         key="createJustification"
-        leftIcon={<FontIcon>add</FontIcon>}
+        leftAddon={<FontIcon>add</FontIcon>}
         onClick={() => {
           throw newUnimplementedError(
             "Creating an appearance based on a WritQuote is not yet supported."
@@ -53,19 +53,15 @@ export default class WritQuoteCard extends Component<WritQuoteCardProps> {
         }}
       />,
     ];
-    // TODO(17): pass props directly after upgrading react-md to a version with correct types
-    const menuClassNameProps = {
-      menuClassName: "context-menu",
-    } as any;
-    const menuButton = (
-      <MenuButton
-        icon
+
+    const menu = (
+      <DropdownMenu
+        buttonType="icon"
         id={combineIds(id, "menu")}
         className={cn({ hidden: doHideControls })}
-        {...menuClassNameProps}
-        children={"more_vert"}
-        position={DropdownMenu.Positions.TOP_RIGHT}
-        menuItems={menuItems}
+        menuClassName="context-menu"
+        children={<FontIcon>more_vert</FontIcon>}
+        items={menuItems}
       />
     );
     return (
@@ -76,7 +72,7 @@ export default class WritQuoteCard extends Component<WritQuoteCardProps> {
             id={id}
             writQuote={writQuote}
             showUrls={showUrls}
-            menu={menuButton}
+            menu={menu}
             showStatusText={true}
           />
         </CardContent>

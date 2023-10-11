@@ -6798,7 +6798,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-md/list@npm:^2.9.1":
+"@react-md/list@npm:^2, @react-md/list@npm:^2.9.1":
   version: 2.9.1
   resolution: "@react-md/list@npm:2.9.1"
   dependencies:
@@ -28462,6 +28462,7 @@ __metadata:
     "@react-md/divider": ^2
     "@react-md/icon": ^2
     "@react-md/layout": ^2
+    "@react-md/list": ^2
     "@react-md/menu": ^2
     "@react-md/progress": ^2
     "@react-md/states": ^2

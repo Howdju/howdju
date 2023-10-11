@@ -13,13 +13,15 @@ $md-typography-extended: false;
 @import "~@react-md/card/dist/mixins";
 @import "~@react-md/dialog/dist/mixins";
 @import "~@react-md/divider/dist/mixins";
+@import "~@react-md/form/dist/mixins";
 @import "~@react-md/icon/dist/mixins";
+@import "~@react-md/list/dist/mixins";
+@import "~@react-md/menu/dist/mixins";
 @import "~@react-md/progress/dist/mixins";
 @import "~@react-md/states/dist/mixins";
 @import "~@react-md/theme/dist/mixins";
 @import "~@react-md/typography/dist/mixins";
 @import "~@react-md/utils/dist/mixins";
-@import "~@react-md/form/dist/mixins";
 @include react-md-utils;
 
 @import "./react-md-fixes";
