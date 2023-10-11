@@ -34,7 +34,8 @@ exports[`CreatePropositionPage (with fake timers) renders correctly with query p
               type="button"
             >
               <i
-                class="md-icon material-icons rmd-icon--before"
+                aria-hidden="true"
+                class="rmd-icon rmd-icon--font material-icons rmd-icon--before"
               >
                 person_add
               </i>
@@ -338,11 +339,11 @@ exports[`CreatePropositionPage (with fake timers) renders correctly with query p
                 class="rmd-divider"
                 role="separator"
               />
-              <div
-                class="md-subheader md-text--theme-primary"
+              <h6
+                class="rmd-typography rmd-typography--subtitle-1"
               >
                 Type
-              </div>
+              </h6>
               <div
                 class=""
               >
@@ -588,7 +589,8 @@ exports[`CreatePropositionPage (with fake timers) renders correctly with query p
                     type="button"
                   >
                     <i
-                      class="md-icon material-icons"
+                      aria-hidden="true"
+                      class="rmd-icon rmd-icon--font material-icons"
                     >
                       delete
                     </i>
@@ -602,7 +604,8 @@ exports[`CreatePropositionPage (with fake timers) renders correctly with query p
                   type="button"
                 >
                   <i
-                    class="md-icon material-icons rmd-icon--before"
+                    aria-hidden="true"
+                    class="rmd-icon rmd-icon--font material-icons rmd-icon--before"
                   >
                     add
                   </i>

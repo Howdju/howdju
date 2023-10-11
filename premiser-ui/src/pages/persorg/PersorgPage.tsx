@@ -1,7 +1,8 @@
 import React, { useEffect } from "react";
 import { toString } from "lodash";
 import { denormalize } from "normalizr";
-import { DropdownMenu, FontIcon, ListItem, MenuButton } from "react-md";
+import { DropdownMenu, ListItem, MenuButton } from "react-md";
+import { FontIcon } from "@react-md/icon";
 import { RouteComponentProps } from "react-router";
 import { push } from "connected-react-router";
 

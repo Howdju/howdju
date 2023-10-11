@@ -1,7 +1,8 @@
 import React, { FormEvent } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import { goBack } from "connected-react-router";
-import { FontIcon, Switch } from "react-md";
+import { Switch } from "react-md";
+import { FontIcon } from "@react-md/icon";
 import cn from "classnames";
 import get from "lodash/get";
 import map from "lodash/map";

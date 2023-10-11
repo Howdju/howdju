@@ -1,6 +1,6 @@
 import React from "react";
 import { AnyAction } from "@reduxjs/toolkit";
-import { FontIcon } from "react-md";
+import { FontIcon } from "@react-md/icon";
 import get from "lodash/get";
 
 import {

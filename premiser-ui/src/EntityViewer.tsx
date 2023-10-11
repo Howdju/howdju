@@ -1,6 +1,6 @@
 import React, { ComponentType, ReactNode } from "react";
 import { Link } from "react-router-dom";
-import { FontIcon } from "react-md";
+import { FontIcon } from "@react-md/icon";
 import cn from "classnames";
 import { isString } from "lodash";
 

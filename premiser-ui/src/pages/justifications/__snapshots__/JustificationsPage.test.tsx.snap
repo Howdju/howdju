@@ -35,7 +35,8 @@ exports[`JustificationsPage Shows a justified proposition 1`] = `
                       href="/p/1/the-proposition-text"
                     >
                       <i
-                        class="md-icon material-icons"
+                        aria-hidden="true"
+                        class="rmd-icon rmd-icon--font material-icons"
                         role="presentation"
                         title="Proposition"
                       >
@@ -232,7 +233,8 @@ exports[`JustificationsPage can add a compound-based justification 1`] = `
                       href="/p/1/the-proposition-text"
                     >
                       <i
-                        class="md-icon material-icons"
+                        aria-hidden="true"
+                        class="rmd-icon rmd-icon--font material-icons"
                         role="presentation"
                         title="Proposition"
                       >
@@ -404,7 +406,8 @@ exports[`JustificationsPage can add a compound-based justification 1`] = `
                             href="/p/911/the-proposition-text-1"
                           >
                             <i
-                              class="md-icon material-icons"
+                              aria-hidden="true"
+                              class="rmd-icon rmd-icon--font material-icons"
                               role="presentation"
                               title="Proposition"
                             >
@@ -514,7 +517,8 @@ exports[`JustificationsPage can add a compound-based justification 1`] = `
                             href="/p/912/the-proposition-text-2"
                           >
                             <i
-                              class="md-icon material-icons"
+                              aria-hidden="true"
+                              class="rmd-icon rmd-icon--font material-icons"
                               role="presentation"
                               title="Proposition"
                             >
