@@ -1,14 +1,17 @@
 import React, { useEffect } from "react";
 import { toString } from "lodash";
 import { denormalize } from "normalizr";
-import { DropdownMenu, ListItem, MenuButton } from "react-md";
 import { FontIcon } from "@react-md/icon";
 import { RouteComponentProps } from "react-router";
 import { push } from "connected-react-router";
 
 import { EntityId, MediaExcerptOut, StatementOut } from "howdju-common";
 
-import { MenuDivider } from "@/components/menu/MenuDivider";
+import {
+  DropdownMenu,
+  MenuItem,
+  MenuItemSeparator,
+} from "@/components/menu/Menu";
 import { CircularProgress } from "@/components/progress/CircularProgress";
 import Helmet from "../../Helmet";
 import { api, editors, flows } from "../../actions";
@@ -107,27 +110,24 @@ export default function PersorgPage(props: Props) {
     />
   ));
 
-  // TODO(17): pass props directly after upgrading react-md to a version with correct types
-  const menuClassNameProps = { menuClassName: "context-menu" } as any;
   const menu = (
-    <MenuButton
-      icon
+    <DropdownMenu
+      buttonType="icon"
       id={combineIds(id, "menu")}
-      {...menuClassNameProps}
-      children={"more_vert"}
-      position={DropdownMenu.Positions.TOP_RIGHT}
-      menuItems={[
-        <ListItem
+      menuClassName="context-menu"
+      children={<FontIcon>more_vert</FontIcon>}
+      items={[
+        <MenuItem
           primaryText="Edit"
           key="edit"
-          leftIcon={<FontIcon>edit</FontIcon>}
+          leftAddon={<FontIcon>edit</FontIcon>}
           onClick={editPersorg}
         />,
-        <MenuDivider key="divider" />,
-        <ListItem
+        <MenuItemSeparator key="divider" />,
+        <MenuItem
           primaryText="Delete"
           key="delete"
-          leftIcon={<FontIcon>delete</FontIcon>}
+          leftAddon={<FontIcon>delete</FontIcon>}
           onClick={deletePersorg}
         />,
       ]}

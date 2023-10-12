@@ -1,13 +1,13 @@
 import React, { useEffect } from "react";
 import { toString } from "lodash";
-import { DropdownMenu, ListItem, MenuButton } from "react-md";
 import { FontIcon } from "@react-md/icon";
 import { RouteComponentProps } from "react-router";
 import { push } from "connected-react-router";
 
 import { EntityId, logger } from "howdju-common";
 
-import { MenuDivider } from "@/components/menu/MenuDivider";
+import { DropdownMenu, MenuItem } from "@/components/menu/Menu";
+import { MenuItemSeparator } from "@/components/menu/Menu";
 import { CircularProgress } from "@/components/progress/CircularProgress";
 import Helmet from "../../Helmet";
 import { api, editors, flows } from "../../actions";
@@ -99,24 +99,23 @@ export default function SourcePage(props: Props) {
   // TODO(17): pass props directly after upgrading react-md to a version with correct types
   const menuClassNameProps = { menuClassName: "context-menu" } as any;
   const menu = (
-    <MenuButton
+    <DropdownMenu
       icon
       id={combineIds(id, "menu")}
       {...menuClassNameProps}
       children={"more_vert"}
-      position={DropdownMenu.Positions.TOP_RIGHT}
       menuItems={[
-        <ListItem
+        <MenuItem
           primaryText="Edit"
           key="edit"
-          leftIcon={<FontIcon>edit</FontIcon>}
+          leftAddon={<FontIcon>edit</FontIcon>}
           onClick={editSource}
         />,
-        <MenuDivider key="divider" />,
-        <ListItem
+        <MenuItemSeparator key="divider" />,
+        <MenuItem
           primaryText="Delete"
           key="delete"
-          leftIcon={<FontIcon>delete</FontIcon>}
+          leftAddon={<FontIcon>delete</FontIcon>}
           onClick={deleteSource}
         />,
       ]}

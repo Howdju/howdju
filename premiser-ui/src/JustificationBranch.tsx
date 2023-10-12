@@ -5,7 +5,6 @@ import map from "lodash/map";
 import moment from "moment";
 import React, { useState } from "react";
 import FlipMove from "react-flip-move";
-import { DropdownMenu, ListItem, MenuButton } from "react-md";
 import { connect, ConnectedProps } from "react-redux";
 import { Link } from "react-router-dom";
 
@@ -21,7 +20,12 @@ import {
   newExhaustedEnumError,
 } from "howdju-common";
 
-import { MenuDivider } from "@/components/menu/MenuDivider";
+import {
+  DropdownMenu,
+  MenuItem,
+  MenuItemLink,
+  MenuItemSeparator,
+} from "@/components/menu/Menu";
 import { Card, CardContent } from "@/components/card/Card";
 import CounterJustificationEditor from "@/editors/CounterJustificationEditor";
 import { api, editors } from "./actions";
@@ -177,62 +181,57 @@ function JustificationBranch({
 
   const doHideControls = !isOver;
 
-  // TODO(17): pass props directly after upgrading react-md to a version with correct types
-  const menuClassNameProps = {
-    menuClassName: "context-menu justification-context-menu",
-  } as any;
   const menu = (
-    <MenuButton
-      icon
+    <DropdownMenu
+      buttonType="icon"
       id={`justification-${justification.id}-context-menu`}
       className={cn({ hidden: doHideControls })}
-      {...menuClassNameProps}
-      children={"more_vert"}
-      position={DropdownMenu.Positions.TOP_RIGHT}
+      menuClassName="context-menu justification-context-menu"
+      children={<FontIcon>more_vert</FontIcon>}
       title="Justification actions"
-      menuItems={[
-        <ListItem
+      items={[
+        <MenuItem
           primaryText="Counter"
           key="counter"
-          leftIcon={<FontIcon>reply</FontIcon>}
+          leftAddon={<FontIcon>reply</FontIcon>}
           onClick={onEditNewCounterJustification}
         />,
-        <ListItem
+        <MenuItemLink
           primaryText="Use"
           key="use"
           title="Justify another proposition with this basis"
-          leftIcon={<FontIcon>call_made</FontIcon>}
+          leftAddon={<FontIcon>call_made</FontIcon>}
           component={Link}
           to={createJustificationPath()}
         />,
-        <ListItem
+        <MenuItemLink
           primaryText="See usages"
           key="usages"
           title="See justifications using this basis"
-          leftIcon={<FontIcon>call_merge</FontIcon>}
+          leftAddon={<FontIcon>call_merge</FontIcon>}
           component={Link}
           to={seeUsagesPath()}
         />,
-        <ListItem
+        <MenuItemLink
           primaryText="Link"
           key="link"
           title="A link to this justification"
-          leftIcon={<FontIcon>link</FontIcon>}
+          leftAddon={<FontIcon>link</FontIcon>}
           component={Link}
           to={paths.justification(justification)}
         />,
-        <MenuDivider key="divider" />,
-        <ListItem
+        <MenuItemSeparator key="divider" />,
+        <MenuItem
           primaryText="Edit"
           key="edit"
-          leftIcon={<FontIcon>create</FontIcon>}
+          leftAddon={<FontIcon>create</FontIcon>}
           className={cn({ hidden: !_isWritQuoteBased })}
           onClick={onEditBasis}
         />,
-        <ListItem
+        <MenuItem
           primaryText="Delete"
           key="delete"
-          leftIcon={<FontIcon>delete</FontIcon>}
+          leftAddon={<FontIcon>delete</FontIcon>}
           onClick={deleteClick}
         />,
       ]}

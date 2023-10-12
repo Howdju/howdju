@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { RouteComponentProps } from "react-router";
-import { DropdownMenu, ListItem, MenuButton } from "react-md";
 import { MaterialSymbol } from "react-material-symbols";
 import { Link } from "react-router-dom";
 import { push } from "connected-react-router";
@@ -12,7 +11,12 @@ import {
   makeCreateUrlLocatorInput,
 } from "howdju-common";
 
-import { MenuDivider } from "@/components/menu/MenuDivider";
+import {
+  DropdownMenu,
+  MenuItem,
+  MenuItemLink,
+  MenuItemSeparator,
+} from "@/components/menu/Menu";
 import { CircularProgress } from "@/components/progress/CircularProgress";
 import { useAppDispatch, useAppEntitySelector, useAppSelector } from "@/hooks";
 import { api } from "@/apiActions";
@@ -38,6 +42,7 @@ import {
   DialogContent,
   DialogFooter,
 } from "@/components/dialog/Dialog";
+import { FontIcon } from "@react-md/icon";
 
 interface MatchParams {
   mediaExcerptId: EntityId;
@@ -147,73 +152,70 @@ export default function MediaExcerptPage(props: Props) {
     isAddSpeakersDialogVisible,
   } = useAppSelector((state) => state.mediaExcerptPage);
 
-  // TODO(17): pass props directly after upgrading react-md to a version with correct types
-  const menuClassNameProps = { menuClassName: "context-menu" } as any;
   const menu = (
-    <MenuButton
-      icon
+    <DropdownMenu
+      buttonType="icon"
       id={combineIds(id, "menu")}
-      {...menuClassNameProps}
-      children={"more_vert"}
-      position={DropdownMenu.Positions.TOP_RIGHT}
-      menuItems={[
-        <ListItem
+      menuClassName="context-menu"
+      children={<FontIcon>more_vert</FontIcon>}
+      items={[
+        <MenuItemLink
           primaryText="Use in Justification…"
           key="use-in-justification"
           title="Create a new justification based on this media excerpt."
-          leftIcon={<MaterialSymbol icon="vertical_align_top" />}
+          leftAddon={<MaterialSymbol icon="vertical_align_top" />}
           component={Link}
           to={paths.createJustification("MEDIA_EXCERPT", mediaExcerptId)}
         />,
-        <ListItem
+        <MenuItemLink
           primaryText="Use in Appearance…"
           key="use-in-appearance"
-          leftIcon={<MaterialSymbol icon="add_location" />}
+          leftAddon={<MaterialSymbol icon="add_location" />}
           component={Link}
           to={paths.createAppearance(mediaExcerptId)}
         />,
-        <MenuDivider key="divider-edit" />,
-        <ListItem
+        <MenuItemSeparator key="divider-edit" />,
+        <MenuItem
           primaryText="Add URLs…"
           key="add-urls"
-          leftIcon={<MaterialSymbol icon="add_link" />}
+          leftAddon={<MaterialSymbol icon="add_link" />}
           onClick={onAddUrlLocatorsClick}
         />,
-        <ListItem
+        <MenuItem
           primaryText="Add Citations…"
           key="add-citations"
-          leftIcon={<MaterialSymbol icon="auto_stories" />}
+          leftAddon={<MaterialSymbol icon="auto_stories" />}
           onClick={onAddCitationsClick}
         />,
-        <ListItem
+        <MenuItem
           primaryText="Add Speakers…"
           key="add-speakers"
-          leftIcon={<MaterialSymbol icon="record_voice_over" />}
+          leftAddon={<MaterialSymbol icon="record_voice_over" />}
           onClick={onAddSpeakersClick}
         />,
-        <ListItem
+        <MenuItem
           primaryText="Delete URLs…"
           key="delete-urls"
-          leftIcon={<MaterialSymbol icon="link_off" />}
+          leftAddon={<MaterialSymbol icon="link_off" />}
           onClick={() => setIsDeleteUrlLocatorsDialogVisible(true)}
         />,
-        <ListItem
+        <MenuItem
           primaryText="Delete Citations…"
           key="delete-citations"
-          leftIcon={<MaterialSymbol icon="auto_stories" />}
+          leftAddon={<MaterialSymbol icon="auto_stories" />}
           onClick={() => setIsDeleteCitationsDialogVisible(true)}
         />,
-        <ListItem
+        <MenuItem
           primaryText="Delete Speakers…"
           key="delete-speakers"
-          leftIcon={<MaterialSymbol icon="voice_over_off" />}
+          leftAddon={<MaterialSymbol icon="voice_over_off" />}
           onClick={() => setIsDeleteSpeakersDialogVisible(true)}
         />,
-        <MenuDivider key="divider-delete" />,
-        <ListItem
+        <MenuItemSeparator key="divider-delete" />,
+        <MenuItem
           primaryText="Delete"
           key="delete"
-          leftIcon={<MaterialSymbol icon="delete" />}
+          leftAddon={<MaterialSymbol icon="delete" />}
           onClick={deleteMediaExcerpt}
         />,
       ]}

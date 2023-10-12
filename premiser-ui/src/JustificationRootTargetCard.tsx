@@ -2,7 +2,6 @@ import React from "react";
 import cn from "classnames";
 import concat from "lodash/concat";
 import some from "lodash/some";
-import { DropdownMenu, ListItem, MenuButton } from "react-md";
 import { FontIcon } from "@react-md/icon";
 import { Link } from "react-router-dom";
 import { connect, ConnectedProps } from "react-redux";
@@ -26,6 +25,7 @@ import {
   toUpdatePropositionInput,
 } from "howdju-client-common";
 
+import { DropdownMenu, MenuItem, MenuItemLink } from "@/components/menu/Menu";
 import { Card, CardContent } from "@/components/card/Card";
 import JustificationRootTargetViewer, {
   RootTargetProps,
@@ -94,10 +94,10 @@ class JustificationRootTargetCard extends React.Component<Props> {
     const doHideControls = !isOver;
 
     const baseEditMenuItems = [
-      <ListItem
+      <MenuItem
         primaryText="Delete"
         key="delete"
-        leftIcon={<FontIcon>delete</FontIcon>}
+        leftAddon={<FontIcon>delete</FontIcon>}
         onClick={this.deleteRootTarget}
       />,
     ];
@@ -107,10 +107,10 @@ class JustificationRootTargetCard extends React.Component<Props> {
     const entityMenuItems = concat(extraMenuItems, typeEntityMenuItems);
     const editMenuItems = concat(typeEditMenuItems, baseEditMenuItems);
     const reportMenuItems = [
-      <ListItem
+      <MenuItem
         primaryText="Report"
         key="report"
-        leftIcon={<FontIcon>flag</FontIcon>}
+        leftAddon={<FontIcon>flag</FontIcon>}
         onClick={this.showReportContentDialog}
       />,
     ];
@@ -121,19 +121,14 @@ class JustificationRootTargetCard extends React.Component<Props> {
       reportMenuItems
     );
 
-    // TODO(17): pass props directly after upgrading react-md to a version with correct types
-    const menuClassNameProps = {
-      menuClassName: "context-menu context-menu--proposition",
-    } as any;
     const menu = (
-      <MenuButton
-        icon
+      <DropdownMenu
+        buttonType="icon"
         id={combineIds(id, "menu")}
         className={cn({ hidden: doHideControls })}
-        {...menuClassNameProps}
-        children={"more_vert"}
-        position={DropdownMenu.Positions.TOP_RIGHT}
-        menuItems={menuItems}
+        menuClassName="context-menu context-menu--proposition"
+        children={<FontIcon>more_vert</FontIcon>}
+        items={menuItems}
         title="Actions"
       />
     );
@@ -226,48 +221,36 @@ class JustificationRootTargetCard extends React.Component<Props> {
       case JustificationRootTargetTypes.PROPOSITION: {
         return {
           entity: [
-            <ListItem
+            <MenuItemLink
               primaryText="Use"
               key="use"
               title="Justify another proposition with this one"
-              leftIcon={<FontIcon>call_made</FontIcon>}
+              leftAddon={<FontIcon>call_made</FontIcon>}
               component={Link}
               to={this.createJustificationPath(rootTargetId)}
             />,
-            <ListItem
+            <MenuItemLink
               primaryText="See usages"
               key="usages"
               title={`See usages of this proposition`}
-              leftIcon={<FontIcon>call_merge</FontIcon>}
+              leftAddon={<FontIcon>call_merge</FontIcon>}
               component={Link}
               to={paths.propositionUsages(rootTargetId)}
             />,
           ],
           edit: [
-            <ListItem
+            <MenuItem
               primaryText="Edit"
               key="edit"
-              leftIcon={<FontIcon>edit</FontIcon>}
+              leftAddon={<FontIcon>edit</FontIcon>}
               onClick={this.editRootTarget}
             />,
           ],
         };
       }
-      // case JustificationRootTargetTypes.STATEMENT: {
-      //   // Statements are not directly editable currently.  One must edit their persorgs/propositions
-      //   const statementId = get(rootTarget, 'id')
-      //   insertAt(divider, 0,
-      //     <ListItem
-      //       primaryText="See usages"
-      //       key="usages"
-      //       title={`See usages of this statement`}
-      //       leftIcon={<FontIcon>call_merge</FontIcon>}
-      //       component={Link}
-      //       to={paths.statementUsages(statementId)}
-      //     />
-      //   )
-      //   break
-      // }
+      // Statements are not directly editable. To change their contents, one must edit their
+      // persorgs/propositions. To change the relation, one must create a new statement.
+      case JustificationRootTargetTypes.STATEMENT:
       default:
         return { entity: [], edit: [] };
     }

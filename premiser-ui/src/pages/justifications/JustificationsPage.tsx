@@ -1,5 +1,4 @@
 import React, { Component, UIEvent } from "react";
-import { ListItem } from "react-md";
 import { FontIcon } from "@react-md/icon";
 import { connect, ConnectedProps } from "react-redux";
 import isEmpty from "lodash/isEmpty";
@@ -54,6 +53,7 @@ import { PrimaryContextTrail } from "@/components/contextTrail/PrimaryContextTra
 import FocusValidatingContextTrail from "@/components/contextTrail/FocusValidatingContextTrail";
 import { RootTargetProps } from "@/JustificationRootTargetViewer";
 import TextButton from "@/components/button/TextButton";
+import { MenuItem } from "@/components/menu/Menu";
 
 const justificationsPageId = "justifications-page";
 
@@ -151,10 +151,10 @@ class JustificationsPage extends Component<Props> {
     const hasJustifications = !isEmpty(sortedJustifications);
 
     const rootTargetExtraMenuItems = [
-      <ListItem
+      <MenuItem
         primaryText="Add justification"
         key="addJustification"
-        leftIcon={<FontIcon>add</FontIcon>}
+        leftAddon={<FontIcon>add</FontIcon>}
         onClick={this.showNewJustificationDialog}
       />,
     ];

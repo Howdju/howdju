@@ -1,11 +1,11 @@
 import React, { useContext, useEffect } from "react";
-import { ListItem, MenuButton, DropdownMenu } from "react-md";
 import { RouteComponentProps } from "react-router";
 import { MaterialSymbol } from "react-material-symbols";
 import { Link } from "react-router-dom";
 
 import { EntityId } from "howdju-common";
 
+import { DropdownMenu, MenuItem, MenuItemLink } from "@/components/menu/Menu";
 import { CircularProgress } from "@/components/progress/CircularProgress";
 import { api } from "@/apiActions";
 import { useAppDispatch, useAppEntitySelector } from "@/hooks";
@@ -15,6 +15,7 @@ import HowdjuHelmet from "@/Helmet";
 import paths from "@/paths";
 import FocusValidatingContextTrail from "@/components/contextTrail/FocusValidatingContextTrail";
 import { PrimaryContextTrail } from "@/components/contextTrail/PrimaryContextTrailProvider";
+import { FontIcon } from "@react-md/icon";
 
 interface MatchParams {
   appearanceId: EntityId;
@@ -53,21 +54,18 @@ export default function AppearancePage(props: Props) {
   const appearance = useAppEntitySelector(appearanceId, appearanceSchema);
   const title = `Appearance ${appearanceId}`;
 
-  // TODO(17): pass props directly after upgrading react-md to a version with correct types
-  const menuClassNameProps = { menuClassName: "context-menu" } as any;
   const menu = appearance ? (
-    <MenuButton
-      icon
+    <DropdownMenu
+      buttonType="icon"
       id="appearance-page-menu"
-      {...menuClassNameProps}
-      children={"more_vert"}
-      position={DropdownMenu.Positions.TOP_RIGHT}
-      menuItems={[
-        <ListItem
+      menuClassName="context-menu"
+      children={<FontIcon>more_vert</FontIcon>}
+      items={[
+        <MenuItemLink
           primaryText="User&rsquo;s fact-check"
           key="user-fact-check"
           title="See all this user&rsquo;s appearances in the same Source and URL."
-          leftIcon={<MaterialSymbol icon="how_to_reg" />}
+          leftAddon={<MaterialSymbol icon="how_to_reg" />}
           component={Link}
           to={paths.factCheck(
             [appearance.creator.id],
@@ -76,36 +74,36 @@ export default function AppearancePage(props: Props) {
           )}
         />,
         appearance.confirmationStatus === "CONFIRMED" ? (
-          <ListItem
+          <MenuItem
             primaryText="Unconfirm this appearance"
             key="unconfirm-appearance"
             title="Remove your confirmation that the entity appears at this media excerpt."
-            leftIcon={<MaterialSymbol icon="unpublished" />}
+            leftAddon={<MaterialSymbol icon="unpublished" />}
             onClick={() => dispatch(api.unconfirmAppearance(appearanceId))}
           />
         ) : (
-          <ListItem
+          <MenuItem
             primaryText="Confirm this appearance"
             key="confirm-appearance"
             title="Confirm that the entity appears at this media excerpt."
-            leftIcon={<MaterialSymbol icon="check_circle" />}
+            leftAddon={<MaterialSymbol icon="check_circle" />}
             onClick={() => dispatch(api.confirmAppearance(appearanceId))}
           />
         ),
         appearance.confirmationStatus === "DISCONFIRMED" ? (
-          <ListItem
+          <MenuItem
             primaryText="Undisconfirm this appearance"
             key="undisconfirm-appearance"
             title="Remove your assertion that the entity does NOT appear at this media excerpt."
-            leftIcon={<MaterialSymbol icon="do_not_disturb_off" />}
+            leftAddon={<MaterialSymbol icon="do_not_disturb_off" />}
             onClick={() => dispatch(api.undisconfirmAppearance(appearanceId))}
           />
         ) : (
-          <ListItem
+          <MenuItem
             primaryText="Disconfirm this appearance"
             key="disconfirm-appearance"
             title="Assert that the entity does NOT appear at this media excerpt."
-            leftIcon={<MaterialSymbol icon="do_not_disturb_on" />}
+            leftAddon={<MaterialSymbol icon="do_not_disturb_on" />}
             onClick={() => dispatch(api.disconfirmAppearance(appearanceId))}
           />
         ),
@@ -131,6 +129,7 @@ export default function AppearancePage(props: Props) {
           appearance={appearance}
           contextTrailItems={contextTrailItems}
           menu={menu}
+          style={{ width: "100%" }}
         />
       ) : (
         <CircularProgress id="appearance-page--progress" />
