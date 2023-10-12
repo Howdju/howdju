@@ -1,7 +1,6 @@
-import React, { FormEvent } from "react";
+import React, { FocusEvent, FormEvent } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import { goBack } from "connected-react-router";
-import { Switch } from "react-md";
 import { FontIcon } from "@react-md/icon";
 import cn from "classnames";
 import get from "lodash/get";
@@ -9,6 +8,7 @@ import map from "lodash/map";
 import { isArray, keys, toString } from "lodash";
 import queryString from "query-string";
 
+import { Switch } from "@/components/input/Switch";
 import { CircularProgress } from "@/components/progress/CircularProgress";
 import {
   Card,
@@ -228,13 +228,6 @@ export default function CreatePropositionPage({ mode, location }: Props) {
   function onPropertyChange(properties: PropertyChanges) {
     dispatch(editors.propertyChange(editorType, editorId, properties));
   }
-  function onDoCreateJustificationSwitchChange(checked: boolean) {
-    dispatch(
-      editors.propertyChange(editorType, editorId, {
-        [doCreateJustificationName]: checked,
-      })
-    );
-  }
   function onTagProposition(tag: Tag) {
     dispatch(editors.tagProposition(editorType, editorId, tag));
   }
@@ -267,6 +260,10 @@ export default function CreatePropositionPage({ mode, location }: Props) {
     }
 
     dispatch(flows.commitEditThenView(editorType, editorId));
+  }
+
+  function onBlur(event: FocusEvent<any>) {
+    dispatch(editors.blurField(editorType, editorId, event.target.name));
   }
 
   const editorState = useAppSelector(
@@ -378,6 +375,7 @@ export default function CreatePropositionPage({ mode, location }: Props) {
                               wasSubmitAttempted={wasSubmitAttempted}
                               blurredFields={blurredFields?.speakers?.[index]}
                               dirtyFields={dirtyFields?.speakers?.[index]}
+                              onBlur={onBlur}
                               onSubmit={onSubmit}
                               editorDispatch={editorDispatch}
                             />
@@ -402,6 +400,7 @@ export default function CreatePropositionPage({ mode, location }: Props) {
                 errors={errors.proposition}
                 disabled={isSaving}
                 onSubmit={onSubmit}
+                onBlur={onBlur}
                 wasSubmitAttempted={wasSubmitAttempted}
                 dirtyFields={dirtyFields?.proposition}
                 blurredFields={blurredFields?.proposition}
@@ -424,7 +423,7 @@ export default function CreatePropositionPage({ mode, location }: Props) {
                   name={doCreateJustificationName}
                   label={t(ADD_JUSTIFICATION_TO_CREATE_PROPOSITION)}
                   checked={doCreateJustification}
-                  onChange={onDoCreateJustificationSwitchChange}
+                  onPropertyChange={onPropertyChange}
                   disabled={isSaving}
                 />
               </CardContent>
@@ -457,6 +456,7 @@ export default function CreatePropositionPage({ mode, location }: Props) {
                 dirtyFields={dirtyFields?.justification}
                 editorDispatch={editorDispatch}
                 wasSubmitAttempted={wasSubmitAttempted}
+                onBlur={onBlur}
                 onSubmit={onSubmit}
               />
             </CardContent>

@@ -54,12 +54,6 @@ exports[`withEditor Exemplary component (RegistrationRequestEditor) submitting i
         >
           Invalid email
         </p>
-        <span
-          class="rmd-form-message__counter"
-          id="email--message-counter"
-        >
-          0 / 512
-        </span>
       </div>
     </div>
     <div

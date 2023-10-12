@@ -213,7 +213,7 @@ git fetch origin master:master
 # git rebase --onto master parentCommitExclusive branchName
 git rebase --onto master <previousFeatureBranch> <currentFeatureBranch>
 
-git push -f
+git push --force-with-lease
 ```
 
 #### Editing a PR that you are also working on top of
@@ -222,25 +222,24 @@ In order to respond to PR comments with edits for a PR you are working on top of
 interactive rebase.
 
 ```bash
-git rebase -i HEAD~n
+git rebase -i --update-refs HEAD~n
 
 # Make changes
 
 # Either amend the commit
-git commit -s --amend --no-edit
+git commit --amend --no-edit
 # or add new commits
 git commit -s
 
-# Update the PR branch to be the new commit
-git branch -f <branch-name> HEAD
-
-# Update the PR branch
-git push -f
-
 git rebase --continue
+
+# Finally update the PR branch (repeat for any intermediate branches rebased by --update-refs)
+git push --force-with-lease
 ```
 
 where `HEAD~n` corresponds to the parent of the the commit you want to amend.
+
+The option `--update-refs` will update branches to intermediate commits.
 
 #### Culprit finding
 

@@ -1,5 +1,4 @@
 import React, { FormEventHandler, useState } from "react";
-import { Switch } from "react-md";
 
 import {
   CreatePersorgInput,
@@ -8,13 +7,13 @@ import {
   UpdatePersorgInput,
 } from "howdju-common";
 
+import { Switch } from "@/components/input/Switch";
 import PersorgNameAutocomplete from "./PersorgNameAutocomplete";
 import ErrorMessages from "./ErrorMessages";
 import { makeErrorPropCreator } from "./modelErrorMessages";
 import SingleLineTextArea from "@/components/text/SingleLineTextArea";
 import { combineIds, combineNames, combineSuggestionsKeys } from "./viewModels";
 import UrlTextField from "./components/text/UrlTextField";
-import { toCheckboxOnChangeCallback } from "./util";
 import { ComponentId } from "./types";
 import {
   EditorFieldsDispatch,
@@ -49,6 +48,7 @@ export default function PersorgEditorFields(props: Props) {
     disabled,
     onPropertyChange,
     errors,
+    onBlur,
     onSubmit,
     onPersorgNameAutocomplete,
     wasSubmitAttempted,
@@ -60,8 +60,6 @@ export default function PersorgEditorFields(props: Props) {
   } = props;
 
   const [showUrls, setShowUrls] = useState(false);
-
-  const onChange = toCheckboxOnChangeCallback(onPropertyChange);
 
   const onNameAutocomplete = (persorg: PersorgOut) => {
     if (onPersorgNameAutocomplete) {
@@ -88,6 +86,7 @@ export default function PersorgEditorFields(props: Props) {
     value: persorg?.name ?? "",
     required: true,
     onSubmit,
+    onBlur,
     onPropertyChange,
     disabled: disabled,
     messageProps: errorProps((p) => p.name),
@@ -114,7 +113,7 @@ export default function PersorgEditorFields(props: Props) {
         checked={persorg?.isOrganization ?? false}
         label="Is Organization?"
         disabled={disabled}
-        onChange={onChange}
+        onPropertyChange={onPropertyChange}
       />
       {persorg && !persorg.isOrganization && (
         <SingleLineTextArea
@@ -124,6 +123,7 @@ export default function PersorgEditorFields(props: Props) {
           value={persorg?.knownFor ?? ""}
           disabled={disabled}
           onPropertyChange={onPropertyChange}
+          onBlur={onBlur}
           onSubmit={onSubmit}
           messageProps={{
             helpMessage:

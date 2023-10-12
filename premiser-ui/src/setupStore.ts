@@ -70,6 +70,7 @@ export const setupStore = (
             "payload.itemFactory",
             // TODO(472) remove once we remove error-logging Saga.
             "errors.loggedErrors",
+            /payload\.apiAction\.payload\.normalizationSchema\.*/,
             /payload\.meta\.normalizationSchema\.[^.]+/,
             "payload.mediaExcerpt.created",
             /payload\.mediaExcerpt\.locators\.urlLocators\.\d+\.created/,

@@ -1,11 +1,11 @@
-import React, { MouseEvent, useState } from "react";
-import { FocusContainer, SelectField } from "react-md";
+import React, { ChangeEvent, MouseEvent, useState } from "react";
+import { FocusContainer } from "react-md";
+import { NativeSelect } from "@react-md/form";
 
 import { Card, CardActions, CardContent } from "@/components/card/Card";
 import SingleLineTextArea from "@/components/text/SingleLineTextArea";
 import * as sentry from "./sentry";
 import { PropertyChanges } from "./types";
-import { ListValue } from "react-md/lib/SelectFields/SelectField";
 import { toString } from "lodash";
 import { SeverityLevel } from "@sentry/browser";
 import OutlineButton from "./components/button/OutlineButton";
@@ -47,8 +47,8 @@ export default function TestErrorPage() {
     setState((state) => ({ ...state, message }));
   }
 
-  function onLevelChange(value: ListValue) {
-    const level = toString(value) as SeverityLevel;
+  function onLevelChange(event: ChangeEvent<HTMLSelectElement>) {
+    const level = toString(event.target.value) as SeverityLevel;
     setState((state) => ({ ...state, level }));
   }
 
@@ -74,12 +74,16 @@ export default function TestErrorPage() {
             required
             onPropertyChange={onMessageChange}
           />
-          <SelectField
+          <NativeSelect
             id="level"
             label="Level"
             value={level}
             onChange={onLevelChange}
-            menuItems={LEVELS}
+            children={LEVELS.map((level) => (
+              <option key={level.value} value={level.value}>
+                {level.label}
+              </option>
+            ))}
           />
         </CardContent>
         <CardActions>

@@ -3,16 +3,16 @@ import map from "lodash/map";
 import forEach from "lodash/forEach";
 import cn from "classnames";
 
-import Checkbox from "./Checkbox";
-import { combineIds } from "./viewModels";
-
-import "./CheckboxList.scss";
+import { Checkbox } from "./Checkbox";
+import { combineIds } from "@/viewModels";
 import {
   ComponentId,
   ComponentName,
   OnPropertyChangeCallback,
   PropertyChanges,
-} from "./types";
+} from "@/types";
+
+import "./CheckboxList.scss";
 
 interface CheckboxListProps {
   id: ComponentId;
@@ -26,6 +26,7 @@ interface CheckboxListProps {
 }
 
 /** Renders checkboxes and returns values as an array of selected items. */
+// TODO(#17) why not a multi-Select?
 export default function CheckboxList({
   id,
   name,
