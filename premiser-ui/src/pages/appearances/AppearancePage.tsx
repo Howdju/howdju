@@ -16,6 +16,8 @@ import paths from "@/paths";
 import FocusValidatingContextTrail from "@/components/contextTrail/FocusValidatingContextTrail";
 import { PrimaryContextTrail } from "@/components/contextTrail/PrimaryContextTrailProvider";
 import { FontIcon } from "@react-md/icon";
+import { flows } from "@/actions";
+import app from "@/app/appSlice";
 
 interface MatchParams {
   appearanceId: EntityId;
@@ -79,7 +81,14 @@ export default function AppearancePage(props: Props) {
             key="unconfirm-appearance"
             title="Remove your confirmation that the entity appears at this media excerpt."
             leftAddon={<MaterialSymbol icon="unpublished" />}
-            onClick={() => dispatch(api.unconfirmAppearance(appearanceId))}
+            onClick={() =>
+              dispatch(
+                flows.apiActionOnSuccess(
+                  api.unconfirmAppearance(appearanceId),
+                  app.addToast("Unconfirmed the appearance.")
+                )
+              )
+            }
           />
         ) : (
           <MenuItem
@@ -87,7 +96,14 @@ export default function AppearancePage(props: Props) {
             key="confirm-appearance"
             title="Confirm that the entity appears at this media excerpt."
             leftAddon={<MaterialSymbol icon="check_circle" />}
-            onClick={() => dispatch(api.confirmAppearance(appearanceId))}
+            onClick={() =>
+              dispatch(
+                flows.apiActionOnSuccess(
+                  api.confirmAppearance(appearanceId),
+                  app.addToast("Confirmed the appearance.")
+                )
+              )
+            }
           />
         ),
         appearance.confirmationStatus === "DISCONFIRMED" ? (
@@ -96,7 +112,14 @@ export default function AppearancePage(props: Props) {
             key="undisconfirm-appearance"
             title="Remove your assertion that the entity does NOT appear at this media excerpt."
             leftAddon={<MaterialSymbol icon="do_not_disturb_off" />}
-            onClick={() => dispatch(api.undisconfirmAppearance(appearanceId))}
+            onClick={() =>
+              dispatch(
+                flows.apiActionOnSuccess(
+                  api.undisconfirmAppearance(appearanceId),
+                  app.addToast("Undisconfirmed the appearance.")
+                )
+              )
+            }
           />
         ) : (
           <MenuItem
@@ -104,7 +127,14 @@ export default function AppearancePage(props: Props) {
             key="disconfirm-appearance"
             title="Assert that the entity does NOT appear at this media excerpt."
             leftAddon={<MaterialSymbol icon="do_not_disturb_on" />}
-            onClick={() => dispatch(api.disconfirmAppearance(appearanceId))}
+            onClick={() =>
+              dispatch(
+                flows.apiActionOnSuccess(
+                  api.disconfirmAppearance(appearanceId),
+                  app.addToast("Disconfirmed the appearance.")
+                )
+              )
+            }
           />
         ),
       ]}

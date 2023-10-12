@@ -19135,7 +19135,7 @@
             CreatePropositionCompoundInput,
             PropositionCompoundRef
           ]),
-          mediaExcerpt: MediaExcerptRef,
+          mediaExcerpt: mod.union([CreateMediaExcerptInput, MediaExcerptRef]),
           sourceExcerpt: mod.union([CreateSourceExcerptInput, SourceExcerptRef]),
           writQuote: mod.union([CreateWritQuoteInput, WritQuoteRef]),
           justificationBasisCompound: Entity.optional()

@@ -12,7 +12,6 @@ import {
 import { CircularProgress } from "@/components/progress/CircularProgress";
 import { makeErrorPropCreator } from "@/modelErrorMessages";
 import { EditorFieldsDispatch, EntityEditorFieldsProps } from "./withEditor";
-import { combineIds, combineNames } from "@/viewModels";
 import { EditorType } from "@/reducers/editors";
 import { api, editors } from "@/actions";
 import { useAppDispatch, useAppSelector } from "@/hooks";
@@ -89,6 +88,9 @@ export default function UrlLocatorsEditorFields({
   }
 
   function onBlurUrlLocatorUrl(event: React.FocusEvent<HTMLInputElement>) {
+    if (onBlur) {
+      onBlur(event);
+    }
     const name = event.target.name;
     const value = event.target.value;
     if (!isUrl(value)) {
@@ -112,9 +114,6 @@ export default function UrlLocatorsEditorFields({
         });
       }
     }
-    if (onBlur) {
-      onBlur(event);
-    }
   }
 
   const errorProps = makeErrorPropCreator(
@@ -129,14 +128,13 @@ export default function UrlLocatorsEditorFields({
         const normalizedUrl = isUrl(url.url)
           ? normalizeUrl(url.url)
           : undefined;
-        const urlName = combineNames(name, `[${index}].url.url`);
+        const urlName = `${name}[${index}].url.url`;
         const { isFetchingCanonicalUrl, canonicalUrl } =
           urlStatesByName[urlName] || {};
         return (
-          <div key={combineIds(id, `[${index}]`)}>
+          <div key={`${id}[${index}]`}>
             <UrlTextField
-              messageProps={errorProps((ul) => ul[index].url.url)}
-              id={combineIds(id, `[${index}].url.url`)}
+              id={`${id}[${index}].url.url`}
               name={urlName}
               aria-label="url"
               label="URL"
@@ -169,6 +167,7 @@ export default function UrlLocatorsEditorFields({
               onBlur={onBlurUrlLocatorUrl}
               onPropertyChange={onPropertyChange}
               onSubmit={onSubmit}
+              messageProps={errorProps((ul) => ul[index].url.url)}
             />
             {normalizedUrl && normalizedUrl !== url.url && (
               <div className="url-status">

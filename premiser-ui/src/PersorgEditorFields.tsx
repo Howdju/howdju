@@ -48,6 +48,7 @@ export default function PersorgEditorFields(props: Props) {
     disabled,
     onPropertyChange,
     errors,
+    onBlur,
     onSubmit,
     onPersorgNameAutocomplete,
     wasSubmitAttempted,
@@ -85,6 +86,7 @@ export default function PersorgEditorFields(props: Props) {
     value: persorg?.name ?? "",
     required: true,
     onSubmit,
+    onBlur,
     onPropertyChange,
     disabled: disabled,
     messageProps: errorProps((p) => p.name),
@@ -121,6 +123,7 @@ export default function PersorgEditorFields(props: Props) {
           value={persorg?.knownFor ?? ""}
           disabled={disabled}
           onPropertyChange={onPropertyChange}
+          onBlur={onBlur}
           onSubmit={onSubmit}
           messageProps={{
             helpMessage:

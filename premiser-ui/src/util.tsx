@@ -127,14 +127,14 @@ export const toCheckboxOnChangeCallback = (
   };
 };
 
-export function toInputOnChangeCallback(
+export function toToggleOnChangeCallback(
   onPropertyChange?: OnPropertyChangeCallback
 ): ChangeEventHandler<any> {
-  return function onChange(event: ChangeEvent<any>) {
+  return function onChange(event: ChangeEvent<HTMLInputElement>) {
     if (!onPropertyChange) {
       return;
     }
-    onPropertyChange({ [event.target.name]: event.target.value });
+    onPropertyChange({ [event.target.name]: event.target.checked });
   };
 }
 

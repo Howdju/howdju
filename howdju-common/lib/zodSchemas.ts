@@ -1333,7 +1333,7 @@ const createJustificationInputBaseShape = {
       CreatePropositionCompoundInput,
       PropositionCompoundRef,
     ]),
-    mediaExcerpt: MediaExcerptRef,
+    mediaExcerpt: z.union([CreateMediaExcerptInput, MediaExcerptRef]),
     sourceExcerpt: z.union([CreateSourceExcerptInput, SourceExcerptRef]),
     writQuote: z.union([CreateWritQuoteInput, WritQuoteRef]),
     justificationBasisCompound: Entity.optional(),

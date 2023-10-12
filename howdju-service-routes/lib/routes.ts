@@ -1307,7 +1307,7 @@ export const serviceRoutes = {
           body: {
             appearance: {
               id: appearanceId,
-              confirmationStatus: undefined,
+              confirmationStatus: null,
             },
           },
         };

@@ -10,7 +10,6 @@ import {
 import { toCreatePersorgInput } from "howdju-client-common";
 
 import { EntityEditorFieldsProps } from "./withEditor";
-import { combineIds, combineNames, combineSuggestionsKeys } from "@/viewModels";
 import EntityViewer from "@/EntityViewer";
 import PersorgEditorFields from "@/PersorgEditorFields";
 import { EditorType } from "@/reducers/editors";
@@ -109,23 +108,20 @@ export function MediaExcerptSpeakersEditorFields({
             }
             entity={
               <PersorgEditorFields
-                id={combineIds(id, `[${index}].persorg`)}
-                key={combineIds(id, `[${index}].persorg`)}
+                id={`${id}[${index}].persorg`}
+                key={`${id}[${index}].persorg`}
                 persorg={persorg}
-                suggestionsKey={combineSuggestionsKeys(
-                  suggestionsKey,
-                  `[${index}].persorg`
-                )}
-                name={combineNames(name, `[${index}].persorg`)}
+                suggestionsKey={`${suggestionsKey}[${index}].persorg`}
+                name={`${name}[${index}].persorg`}
                 disabled={disabled}
                 onPersorgNameAutocomplete={(persorg: PersorgOut) =>
                   onPersorgAutocomplete(persorg, index)
                 }
                 onPropertyChange={onPropertyChange}
-                errors={errors?.[index]}
+                errors={errors?.[index]?.persorg}
                 wasSubmitAttempted={wasSubmitAttempted}
-                blurredFields={blurredFields?.[index]}
-                dirtyFields={dirtyFields?.[index]}
+                blurredFields={blurredFields?.[index]?.persorg}
+                dirtyFields={dirtyFields?.[index]?.persorg}
                 onSubmit={onSubmit}
                 onBlur={onBlur}
                 editorDispatch={editorDispatch}

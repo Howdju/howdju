@@ -78,7 +78,6 @@ export default function MediaExcerptEditorFields(props: Props) {
   return (
     <div className="media-excerpt-editor-fields">
       <TextArea
-        messageProps={errorProps((me) => me.localRep.quotation)}
         id={combineIds(id, "localRep.quotation")}
         name={combineNames(name, "localRep.quotation")}
         label="Quote"
@@ -86,9 +85,11 @@ export default function MediaExcerptEditorFields(props: Props) {
         maxRows={8}
         maxLength={MediaExcerpt.shape.localRep.shape.quotation.maxLength}
         value={mediaExcerpt?.localRep?.quotation}
-        onBlur={onBlur}
-        onPropertyChange={onPropertyChange}
         disabled={disabled}
+        onPropertyChange={onPropertyChange}
+        onBlur={onBlur}
+        onSubmit={onSubmit}
+        messageProps={errorProps((me) => me.localRep.quotation)}
       />
 
       {mediaExcerpt.locators && (
@@ -108,6 +109,8 @@ export default function MediaExcerptEditorFields(props: Props) {
             onPropertyChange={onPropertyChange}
             wasSubmitAttempted={wasSubmitAttempted}
             onInferMediaExcerptInfo={onInferMediaExcerptInfo}
+            onBlur={onBlur}
+            onSubmit={onSubmit}
           />
         </fieldset>
       )}
@@ -127,6 +130,7 @@ export default function MediaExcerptEditorFields(props: Props) {
             suggestionsKey={suggestionsKey}
             onPropertyChange={onPropertyChange}
             wasSubmitAttempted={wasSubmitAttempted}
+            onBlur={onBlur}
             onSubmit={onSubmit}
           />
         </fieldset>
@@ -147,6 +151,7 @@ export default function MediaExcerptEditorFields(props: Props) {
             suggestionsKey={suggestionsKey}
             onPropertyChange={onPropertyChange}
             wasSubmitAttempted={wasSubmitAttempted}
+            onBlur={onBlur}
             onSubmit={onSubmit}
           />
         </fieldset>
