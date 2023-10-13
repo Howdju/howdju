@@ -69,6 +69,8 @@ export default function MainSearchPage() {
       >
         {tags.length > 0 && (
           <TagsViewer
+            id="main-search-tags-viewer"
+            mode="view"
             tags={tags}
             canHide={false}
             votable={false}

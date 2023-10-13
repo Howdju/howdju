@@ -217,6 +217,7 @@ export function getTextContent(element: Element | null) {
 export function getElementByQuerySelector(selector: string) {
   const element = document.querySelector(selector);
   if (!element) {
+    screen.debug(document, Number.MAX_SAFE_INTEGER);
     throw new Error(`No element found for selector: ${selector}`);
   }
   return element;

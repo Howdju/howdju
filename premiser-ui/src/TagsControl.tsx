@@ -1,4 +1,4 @@
-import React, { KeyboardEvent, useState } from "react";
+import React, { KeyboardEvent, MouseEvent, useState } from "react";
 import { find, includes } from "lodash";
 import { FontIcon } from "@react-md/icon";
 
@@ -61,29 +61,28 @@ export interface TagsControlProps {
   autocompleteDebounceMs?: number;
 }
 
-export default function TagsControl(props: TagsControlProps) {
-  const {
-    tags,
-    votes,
-    recommendedTags,
-    commitChipKeys = [keys.COMMA, keys.ENTER],
-    id,
-    suggestionsKey,
-    votePolarity = {
-      POSITIVE: "POSITIVE",
-      NEGATIVE: "NEGATIVE",
-    },
-    inputCollapsable,
-    mode,
-    onAddTag,
-    onTagVote,
-    onTagAntivote,
-    onTagUnvote,
-    addTitle = "Add tag",
-    autocompleteDebounceMs,
-    ...rest
-  } = props;
-
+export default function TagsControl({
+  id,
+  tags,
+  votes,
+  recommendedTags,
+  commitChipKeys = [keys.COMMA, keys.ENTER],
+  suggestionsKey,
+  votePolarity = {
+    POSITIVE: "POSITIVE",
+    NEGATIVE: "NEGATIVE",
+  },
+  inputCollapsable,
+  mode,
+  onClickTag: propsOnClickTag,
+  onAddTag,
+  onTagVote,
+  onTagAntivote,
+  onTagUnvote,
+  addTitle = "Add tag",
+  autocompleteDebounceMs,
+  ...rest
+}: TagsControlProps) {
   const [tagName, setTagName] = useState("");
   const [isInputCollapsed, setIsInputCollapsed] = useState(true);
 
@@ -126,13 +125,20 @@ export default function TagsControl(props: TagsControlProps) {
     }
   }
 
-  function onClickTag(tag: TagOutOrInput) {
-    if (props.onClickTag) {
-      props.onClickTag(tag);
+  function onClickTag(tag: TagOutOrInput, _index: number, event: MouseEvent) {
+    if (event.isDefaultPrevented()) {
+      return;
+    }
+    if (propsOnClickTag) {
+      propsOnClickTag(tag);
     }
   }
 
-  function onClickTagVote(tag: TagOutOrInput) {
+  function onClickTagVote(
+    tag: TagOutOrInput,
+    _index: number,
+    event: MouseEvent
+  ) {
     const vote = find(votes, (vote) => tagEqual(vote.tag, tag));
 
     if (vote?.polarity === votePolarity.POSITIVE) {
@@ -140,9 +146,14 @@ export default function TagsControl(props: TagsControlProps) {
     } else if (onTagVote) {
       onTagVote(tag);
     }
+    event.preventDefault();
   }
 
-  function onClickTagAntivote(tag: TagOutOrInput) {
+  function onClickTagAntivote(
+    tag: TagOutOrInput,
+    _index: number,
+    event: MouseEvent
+  ) {
     const vote = find(votes, (vote) => tagEqual(vote.tag, tag));
     if (vote?.polarity === votePolarity.POSITIVE) {
       onTagUnvote(tag);
@@ -151,6 +162,7 @@ export default function TagsControl(props: TagsControlProps) {
       //  by the system; the system can't recommend tags for targets/tags that don't exist.
       onTagAntivote(tag);
     }
+    event.preventDefault();
   }
 
   function addTag(tagName: string) {
@@ -212,6 +224,7 @@ export default function TagsControl(props: TagsControlProps) {
 
   return (
     <TagsViewer
+      id={id}
       removable={true}
       {...rest}
       tags={tags}

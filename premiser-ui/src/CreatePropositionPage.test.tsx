@@ -199,11 +199,16 @@ describe("CreatePropositionPage", () => {
       );
 
       const tagName = "TestTag";
-      await user.type(screen.getByLabelText(/tag/i), tagName);
-      await user.type(screen.getByLabelText(/tag/i), "{Enter}");
+      const tagInput = screen.getByLabelText(/tag/i);
+      await user.type(tagInput, tagName);
+      await user.type(tagInput, "{Enter}");
 
       // Act
-      await user.click(document.querySelector(".remove-chip-icon") as Element);
+      await user.click(
+        screen.getByRole("button", {
+          name: new RegExp(`remove tag ${tagName}`, "i"),
+        })
+      );
 
       // Assert
       jest.runAllTimers();
@@ -234,12 +239,6 @@ describe("CreatePropositionPage", () => {
         />,
         { history }
       );
-
-      //
-
-      const tagName = "TestTag";
-      await user.type(screen.getByLabelText(/tag/i), tagName);
-      await user.type(screen.getByLabelText(/tag/i), "{Enter}");
 
       // Act
       await user.click(screen.getByRole("button", { name: /create/i }));

@@ -18,11 +18,7 @@ import { tagEqual, Tag, TagVote } from "howdju-common";
 
 import { ChipsList } from "@/components/chip/ChipsList";
 import { Chip } from "./components/chip/Chip";
-import {
-  ListClickCallback,
-  ListEventCallback,
-  ListKeyDownCallback,
-} from "./types";
+import { ComponentId, ListClickCallback, ListKeyDownCallback } from "./types";
 import TextButton from "@/components/button/TextButton";
 
 import "./TagsViewer.scss";
@@ -35,10 +31,13 @@ import "./TagsViewer.scss";
  *
  * `vote` is for adding tags to an existing entity, where a vote for or against
  * the tag applying to the entity makes sense.
+ *
+ * `view` is only for viewing tags. They cannot be added or voted on.s
  */
-export type TagViewerMode = "add" | "vote";
+export type TagViewerMode = "view" | "add" | "vote";
 
-interface Props {
+export interface TagsViwerProps {
+  id: ComponentId;
   tags: Tag[];
   recommendedTags?: Tag[];
   votable?: boolean;
@@ -58,13 +57,14 @@ interface Props {
   /** Callback for when a user clicks a tag's vote icon. */
   onClickTagVote?: ListClickCallback<Tag>;
   /** Callback for when a user clicks a tag's anti-vote icon. */
-  onClickTagAntivote?: ListEventCallback<Tag>;
+  onClickTagAntivote?: ListClickCallback<Tag>;
   /** Whether the viewer supports hiding tags. */
   canHide?: boolean;
 }
 
 /** Displays a list of tags as chips. */
 export default function TagsViewer({
+  id,
   tags,
   votes = [],
   recommendedTags,
@@ -76,7 +76,7 @@ export default function TagsViewer({
   onClickTagAntivote,
   canHide = true,
   mode,
-}: Props) {
+}: TagsViwerProps) {
   const [doShowAllTags, setDoShowAllTags] = useState(false);
 
   const voteByTagName = zipObject(
@@ -159,6 +159,7 @@ export default function TagsViewer({
         leftIcon={
           mode === "vote" && (
             <Avatar
+              aria-label={`Vote for tag ${tag.name}`}
               onClick={(e) => onClickTagVote && onClickTagVote(tag, i, e)}
             >
               <MaterialSymbol icon="thumb_up" className="flipped-icon" />
@@ -168,21 +169,23 @@ export default function TagsViewer({
         rightIcon={
           mode === "vote" ? (
             <Avatar
+              aria-label={`Vote against tag ${tag.name}`}
               onClick={(e) =>
                 onClickTagAntivote && onClickTagAntivote(tag, i, e)
               }
             >
               <MaterialSymbol icon="thumb_down" className="flipped-icon" />
             </Avatar>
-          ) : (
-            <FontIcon
+          ) : mode === "add" ? (
+            <Avatar
+              aria-label={`Remove tag ${tag.name}`}
               onClick={(e) =>
                 onClickTagAntivote && onClickTagAntivote(tag, i, e)
               }
             >
-              close
-            </FontIcon>
-          )
+              <FontIcon>close</FontIcon>
+            </Avatar>
+          ) : null
         }
       >
         {tag.name}
@@ -192,5 +195,7 @@ export default function TagsViewer({
 
   const extraChipListChildren = concat(hideControls, extraChildren);
 
-  return <ChipsList chips={chips} extraChildren={extraChipListChildren} />;
+  return (
+    <ChipsList id={id} chips={chips} extraChildren={extraChipListChildren} />
+  );
 }

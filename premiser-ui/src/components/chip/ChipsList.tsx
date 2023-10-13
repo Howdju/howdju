@@ -4,8 +4,10 @@ import cn from "classnames";
 import { ChipProps } from "./Chip";
 
 import "./ChipsList.scss";
+import { ComponentId } from "@/types";
 
-interface Props {
+export interface ChipsListProps {
+  id: ComponentId;
   chips: ReactElement<ChipProps & { key: string }>[];
   /** Optional extra children that will be inserted at the end of the list as flex siblings of the chips. */
   extraChildren: JSX.Element[];
@@ -14,7 +16,7 @@ interface Props {
 }
 
 /** Displays a list of chips in a flex box */
-export function ChipsList(props: Props) {
+export function ChipsList(props: ChipsListProps) {
   const { chips, extraChildren, className, ...rest } = props;
 
   return (

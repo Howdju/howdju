@@ -421,6 +421,27 @@ const slice = createSlice({
         action.payload.propositionTagVote.id
       );
     });
+    builder.addCase(api.unTagProposition.response, (state, action) => {
+      if (action.error) {
+        return;
+      }
+      const prevTagVote = action.meta.requestMeta.prevPropositionTagVote;
+      const proposition = state.propositions[prevTagVote.proposition.id];
+      if (proposition.tags) {
+        const tagId = prevTagVote.tag.id;
+        const tagIndex = proposition.tags.indexOf(tagId);
+        if (tagIndex > -1) {
+          proposition.tags.splice(tagIndex, 1);
+        }
+      }
+      if (proposition.propositionTagVotes) {
+        const voteId = prevTagVote.id;
+        const voteIndex = proposition.propositionTagVotes.indexOf(voteId);
+        if (voteIndex > -1) {
+          proposition.propositionTagVotes.splice(voteIndex, 1);
+        }
+      }
+    });
     // TODO addase for api.untagProposition
     builder.addMatcher(
       matchActions(api.verifyJustification, api.disverifyJustification),
