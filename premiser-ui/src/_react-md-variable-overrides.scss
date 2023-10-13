@@ -1,5 +1,6 @@
 /** Variables overrides for react-md@1 */
 
+@import "@/flatui-colors";
 @import "./colors";
 
 $md-primary-color: $primary-color;
@@ -7,6 +8,7 @@ $md-secondary-color: $secondary-color;
 $md-text-field-error-color: $error-color;
 $md-font-family: "Lato", sans-serif;
 $md-theme-light: false;
+$rmd-chip-outline-background-color: $clouds;
 
 $md-toolbar-prominent-height: 105px;
 // The docs say that $md-toolbar-prominent-height overrides these.  But in my experience it does not.

@@ -1,7 +1,5 @@
-import React, { useState } from "react";
-import find from "lodash/find";
-import get from "lodash/get";
-import includes from "lodash/includes";
+import React, { KeyboardEvent, useState } from "react";
+import { find, includes } from "lodash";
 import { FontIcon } from "@react-md/icon";
 
 import {
@@ -9,7 +7,6 @@ import {
   cleanWhitespace,
   tagEqual,
   TagVote,
-  logger,
   TagOut,
   CreateTagInput,
 } from "howdju-common";
@@ -17,8 +14,8 @@ import {
 import IconButton from "./components/button/IconButton";
 import { combineIds } from "./viewModels";
 import TagNameAutocomplete from "./TagNameAutocomplete";
-import TagsViewer from "./TagsViewer";
-import { Keys } from "./keyCodes";
+import TagsViewer, { TagViewerMode } from "./TagsViewer";
+import { isDeleteKey, keys } from "./keyCodes";
 import {
   ComponentId,
   OnKeyDownCallback,
@@ -28,14 +25,15 @@ import {
 
 import "./TagsControl.scss";
 
-export type OnClickTagCallback = (tag: CreateTagInput | TagOut) => void;
-export type OnTagCallback = (tag: CreateTagInput | TagOut) => void;
-export type OnUntagCallback = (tag: CreateTagInput | TagOut) => void;
-export type OnAntitagCallback = (tag: CreateTagInput | TagOut) => void;
+export type TagOutOrInput = CreateTagInput | TagOut;
+export type OnClickTagCallback = (tag: TagOutOrInput) => void;
+export type OnTagCallback = (tag: TagOutOrInput) => void;
+export type OnAntitagCallback = (tag: TagOutOrInput) => void;
+export type OnUntagCallback = (tag: TagOutOrInput) => void;
 
-export interface Props {
+export interface TagsControlProps {
   id: ComponentId;
-  tags: (CreateTagInput | TagOut)[];
+  tags: TagOutOrInput[];
   votes: TagVote[];
   recommendedTags?: TagOut[];
   commitChipKeys?: string[];
@@ -44,34 +42,31 @@ export interface Props {
     POSITIVE: string;
     NEGATIVE: string;
   };
+  mode: TagViewerMode;
+  /** Callback for when the user has added a tag using the text input. */
+  onAddTag?: OnTagCallback;
+  /** Callback for when the user has clicked the tag content. */
   onClickTag?: OnClickTagCallback;
-  /**
-   * Callback to respond to when a user has tagged something.
-   *
-   * The callback may want to add the tag to an editor or make an API call to add the tag.
-   */
-  onTag: OnTagCallback;
+  /** Callback for when a user has clicked the tag button. */
+  onTagVote?: OnTagCallback;
+  /** Callback for when a user has clicked to vote against a tag. */
+  onTagAntivote?: OnAntitagCallback;
   /** Callback to respond when a user has removed an existing tag. */
-  onUnTag: OnUntagCallback;
-  /**
-   * Callback to respond to when a user has anti-tagged something.
-   *
-   * An anti tag is a vote against the tag applying to the target.
-   */
-  onAntiTag?: OnAntitagCallback;
+  onTagUnvote: OnUntagCallback;
   /** Enable collapsing the tag name input */
   inputCollapsable?: boolean;
+  /** The title of the button to show the input to add a tag. */
   addTitle?: string;
   /** The autocomplete suggestion fetch debounce milliseconds. */
   autocompleteDebounceMs?: number;
 }
 
-export default function TagsControl(props: Props) {
+export default function TagsControl(props: TagsControlProps) {
   const {
     tags,
     votes,
     recommendedTags,
-    commitChipKeys = [Keys.COMMA, Keys.ENTER],
+    commitChipKeys = [keys.COMMA, keys.ENTER],
     id,
     suggestionsKey,
     votePolarity = {
@@ -79,10 +74,11 @@ export default function TagsControl(props: Props) {
       NEGATIVE: "NEGATIVE",
     },
     inputCollapsable,
-    // ignore
-    onTag,
-    onUnTag,
-    onAntiTag,
+    mode,
+    onAddTag,
+    onTagVote,
+    onTagAntivote,
+    onTagUnvote,
     addTitle = "Add tag",
     autocompleteDebounceMs,
     ...rest
@@ -110,63 +106,64 @@ export default function TagsControl(props: Props) {
   };
 
   const onTagNameAutocomplete = (tag: TagOut) => {
-    onTag(tag);
+    if (onAddTag) {
+      onAddTag(tag);
+    }
     setTagName("");
   };
 
-  const onClickTag = (tagName: string) => {
+  function onKeyDownTag(
+    tag: TagOutOrInput,
+    _index: number,
+    event: KeyboardEvent
+  ) {
+    if (event.isDefaultPrevented()) {
+      return;
+    }
+    if (isDeleteKey(event.key)) {
+      event.preventDefault();
+      onTagUnvote(tag);
+    }
+  }
+
+  function onClickTag(tag: TagOutOrInput) {
     if (props.onClickTag) {
-      const tag = find(tags, (tag) => tag.name === tagName);
-      if (!tag) {
-        logger.error(`onClickTag: no tag wiyh name ${tagName}`);
-        return;
-      }
       props.onClickTag(tag);
     }
-  };
+  }
 
-  const onClickAvatar = (tagName: string) => {
-    const tag = find(tags, (tag) => tag.name === tagName);
-    if (!tag) {
-      logger.error(`onClickAvatar: no tag wiyh name ${tagName}`);
-      return;
-    }
+  function onClickTagVote(tag: TagOutOrInput) {
     const vote = find(votes, (vote) => tagEqual(vote.tag, tag));
 
-    const polarity = get(vote, "polarity");
-    if (polarity === votePolarity.POSITIVE) {
-      onUnTag(tag);
-    } else {
-      onTag(tag);
+    if (vote?.polarity === votePolarity.POSITIVE) {
+      onTagUnvote(tag);
+    } else if (onTagVote) {
+      onTagVote(tag);
     }
-  };
+  }
 
-  const onRemoveTag = (tagName: string) => {
-    const tag = find(tags, (tag) => tag.name === tagName);
-    if (!tag) {
-      logger.error(`onRemoveTag: no tag with name ${tagName}`);
-      return;
-    }
-
+  function onClickTagAntivote(tag: TagOutOrInput) {
     const vote = find(votes, (vote) => tagEqual(vote.tag, tag));
-    const polarity = get(vote, "polarity");
-    if (polarity === votePolarity.POSITIVE) {
-      onUnTag(tag);
-    } else if (onAntiTag && tag.id) {
+    if (vote?.polarity === votePolarity.POSITIVE) {
+      onTagUnvote(tag);
+    } else if (onTagAntivote && tag.id) {
       // Only anti-tag existing tags on existing targets (the point of anti-tagging is to vote against tags recommended
       //  by the system; the system can't recommend tags for targets/tags that don't exist.
-      onAntiTag(tag);
+      onTagAntivote(tag);
     }
-  };
+  }
 
-  const addTag = (tagName: string) => {
+  function addTag(tagName: string) {
+    if (!onAddTag) {
+      return;
+    }
     const cleanTagName = cleanWhitespace(tagName);
     if (!cleanTagName) {
       return;
     }
     const tag = makeCreateTagInput({ name: cleanTagName });
-    onTag(tag);
-  };
+    onAddTag(tag);
+  }
 
   const closeInput = () => {
     if (tagName) {
@@ -213,8 +210,6 @@ export default function TagsControl(props: Props) {
     );
   }
 
-  const removeIconName = onAntiTag ? "thumb_down" : "clear";
-
   return (
     <TagsViewer
       removable={true}
@@ -224,10 +219,11 @@ export default function TagsControl(props: Props) {
       recommendedTags={recommendedTags}
       votePolarity={votePolarity}
       extraChildren={extraChildren}
+      onKeyDownTag={onKeyDownTag}
       onClickTag={onClickTag}
-      onClickAvatar={onClickAvatar}
-      onRemoveTag={onRemoveTag}
-      removeIconName={removeIconName}
+      onClickTagVote={onClickTagVote}
+      onClickTagAntivote={onClickTagAntivote}
+      mode={mode}
     />
   );
 }

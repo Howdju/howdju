@@ -1,6 +1,6 @@
-import React, { UIEvent, useEffect } from "react";
+import React, { useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { find, map } from "lodash";
+import { map } from "lodash";
 import FlipMove from "react-flip-move";
 import { useLocation } from "react-router";
 
@@ -9,6 +9,7 @@ import {
   PersorgOut,
   PropositionOut,
   SourceOut,
+  TagOut,
 } from "howdju-common";
 
 import { CircularProgress } from "@/components/progress/CircularProgress";
@@ -18,12 +19,12 @@ import { smallCellClasses } from "../../CellList";
 import { api, goto } from "../../actions";
 import { mainSearchResultSchema } from "../../normalizationSchemas";
 import config from "../../config";
-import { logger } from "../../logger";
 import TagsViewer from "../../TagsViewer";
 import { useAppEntitySelector, useAppSelector } from "@/hooks";
 import SourceEntityCard from "@/components/sources/SourceEntityCard";
 import MediaExcerptCard from "@/components/mediaExcerpts/MediaExcerptCard";
 import PersorgEntityCard from "@/PersorgEntityCard";
+import { TagOutOrInput } from "@/TagsControl";
 
 export default function MainSearchPage() {
   const location = useLocation();
@@ -42,13 +43,11 @@ export default function MainSearchPage() {
   const { mediaExcerpts, persorgs, propositions, sources, tags } =
     useAppEntitySelector(normalizedResult, mainSearchResultSchema);
 
-  const goToTag = (tagName: string, _index: number, _event: UIEvent) => {
-    const tag = find(tags, (t) => t.name === tagName);
-    if (!tag) {
-      logger.warn(`Missing tag for ${tagName}`);
+  const goToTag = (tag: TagOutOrInput) => {
+    if (!tag.id) {
       return;
     }
-    dispatch(goto.tag(tag));
+    dispatch(goto.tag(tag as TagOut));
   };
 
   const loading = (

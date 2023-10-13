@@ -408,11 +408,12 @@ export default function CreatePropositionPage({ mode, location }: Props) {
               />
               <TagsControl
                 id={combineIds(id, tagsName)}
+                mode="add"
                 tags={propositionTags ?? []}
                 votes={tagVotes}
                 suggestionsKey={combineSuggestionsKeys(id, tagsName)}
-                onTag={onTagProposition}
-                onUnTag={onUnTagProposition}
+                onAddTag={onTagProposition}
+                onTagUnvote={onUnTagProposition}
               />
             </CardContent>
 

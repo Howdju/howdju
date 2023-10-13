@@ -224,6 +224,7 @@ export default class LandingPage extends Component {
           <div className="banner-content">
             <PropositionCard
               id={combineIds(id, "proposition-example", "proposition")}
+              style={{ width: "100%" }}
               proposition={rootProposition}
               showStatusText={false}
             />
@@ -243,6 +244,7 @@ export default class LandingPage extends Component {
                 "justified-proposition-example",
                 "proposition"
               )}
+              style={{ width: "100%" }}
               proposition={rootProposition}
               showStatusText={false}
             />
@@ -269,6 +271,7 @@ export default class LandingPage extends Component {
                 "opposing-justification-example",
                 "proposition"
               )}
+              style={{ width: "100%" }}
               proposition={rootProposition}
               showStatusText={false}
             />
@@ -322,6 +325,7 @@ export default class LandingPage extends Component {
                 "counter-justification-example",
                 "proposition"
               )}
+              style={{ width: "100%" }}
               proposition={rootProposition}
               showStatusText={false}
             />

@@ -6,7 +6,7 @@ import isNull from "lodash/isNull";
 import { toSingleLine } from "howdju-common";
 
 import { FormMessage, FormMessageProps } from "@/components/form/FormMessage";
-import { Keys } from "@/keyCodes";
+import { keys } from "@/keyCodes";
 import {
   OnBlurCallback,
   OnKeyDownCallback,
@@ -70,7 +70,7 @@ export default function SingleLineTextArea({
         return;
       }
     }
-    if (event.key === Keys.ENTER) {
+    if (event.key === keys.ENTER) {
       // No line breaks in single-line text fields
       event.preventDefault();
       ref.current?.form?.requestSubmit();

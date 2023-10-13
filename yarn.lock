@@ -6563,7 +6563,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-md/avatar@npm:^2.9.1":
+"@react-md/avatar@npm:^2, @react-md/avatar@npm:^2.9.1":
   version: 2.9.1
   resolution: "@react-md/avatar@npm:2.9.1"
   dependencies:
@@ -6622,6 +6622,27 @@ __metadata:
     prop-types:
       optional: true
   checksum: 78ab76107a49aada779f3a4e16f4d6a89e68d764d2d85be99f4e937565812f71c4fbdd852a1b919d992995ee46551b14b24d356a61677d8c633b1359e33fe7fe
+  languageName: node
+  linkType: hard
+
+"@react-md/chip@npm:^2":
+  version: 2.9.1
+  resolution: "@react-md/chip@npm:2.9.1"
+  dependencies:
+    "@react-md/elevation": ^2.9.1
+    "@react-md/icon": ^2.9.1
+    "@react-md/states": ^2.9.1
+    "@react-md/theme": ^2.9.1
+    "@react-md/typography": ^2.9.1
+    "@react-md/utils": ^2.9.1
+    classnames: ^2.3.1
+    prop-types: ">= 15.6"
+  peerDependencies:
+    react: ">= 16.8"
+  dependenciesMeta:
+    prop-types:
+      optional: true
+  checksum: 61e4202b52bb4e5bb5491873bc3f31d51ad550b3d8a98c7a50ebbdc7582c8a8335517ed7225ed6a921d74f10679475f0f8afbb80b2b81da14ed15d8bf65c0439
   languageName: node
   linkType: hard
 
@@ -28456,8 +28477,10 @@ __metadata:
     "@babel/runtime-corejs3": ^7.22.6
     "@grrr/cookie-consent": ^1.0.4
     "@react-md/autocomplete": "Howdju/react-md#workspace=@react-md/autocomplete&commit=739fcf8b359727d958d6befe46014fe8b3dfe11c"
+    "@react-md/avatar": ^2
     "@react-md/button": ^2
     "@react-md/card": 2
+    "@react-md/chip": ^2
     "@react-md/dialog": ^2
     "@react-md/divider": ^2
     "@react-md/icon": ^2

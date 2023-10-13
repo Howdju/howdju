@@ -9,8 +9,10 @@ $md-typography-extended: false;
 @import "./react-md-variable-overrides";
 @import "./react-md-everything";
 
+@import "~@react-md/avatar/dist/mixins";
 @import "~@react-md/button/dist/mixins";
 @import "~@react-md/card/dist/mixins";
+@import "~@react-md/chip/dist/mixins";
 @import "~@react-md/dialog/dist/mixins";
 @import "~@react-md/divider/dist/mixins";
 @import "~@react-md/form/dist/mixins";

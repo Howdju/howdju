@@ -1,4 +1,4 @@
-import React from "react";
+import React, { CSSProperties } from "react";
 import cn from "classnames";
 
 import {
@@ -18,6 +18,7 @@ interface Props {
   contextTrailItems?: ContextTrailItem[];
   showStatusText?: boolean;
   className?: string;
+  style?: CSSProperties;
 }
 
 export default function PropositionCompoundCard({

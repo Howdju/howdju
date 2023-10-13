@@ -1,10 +1,28 @@
-@import "./colors";
+@import "@/flatui-colors";
+@import "@/colors";
+@import "@/util";
 
-.md-chip.has-vote .md-avatar {
+.rmd-chip.has-vote .rmd-avatar.rmd-icon--before {
   color: $clouds;
   background-color: $agree-color;
 }
-.md-chip.has-anti-vote .remove-chip-icon.md-icon {
-  color: $disagree-color;
-  //background-color: $disagree-color;
+.rmd-chip.has-anti-vote .rmd-avatar.rmd-icon--after {
+  color: $clouds;
+  background-color: $disagree-color;
+}
+
+.rmd-chip__content {
+  margin-left: 5px;
+  margin-right: 5px;
+}
+
+.rmd-chip {
+  .rmd-avatar {
+    color: $asbestos;
+    background-color: $clouds;
+  }
+  .flipped-icon {
+    font-size: 18px;
+    @include flip-icon-horizontal;
+  }
 }

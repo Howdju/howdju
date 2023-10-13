@@ -35,6 +35,7 @@ import {
   writSchema,
   mediaExcerptCitationKey,
   mediaExcerptSpeakerKey,
+  propositionTagVoteSchema,
 } from "@/normalizationSchemas";
 import { MergeDeep } from "type-fest";
 
@@ -121,6 +122,7 @@ export const initialState = {
   propositionCompoundAtoms: {} as SchemaEntityState<
     typeof propositionCompoundAtomSchema
   >,
+  propositionTagVotes: {} as SchemaEntityState<typeof propositionTagVoteSchema>,
   sources: {} as SchemaEntityState<typeof sourceSchema>,
   statements: {} as SchemaEntityState<typeof statementSchema>,
   tags: {} as SchemaEntityState<typeof tagSchema>,
@@ -402,6 +404,24 @@ const slice = createSlice({
         }
       }
     });
+    builder.addCase(api.tagProposition.response, (state, action) => {
+      if (action.error) {
+        return;
+      }
+      const proposition =
+        state.propositions[action.payload.propositionTagVote.proposition.id];
+      if (!proposition.tags) {
+        proposition.tags = [];
+      }
+      proposition.tags.push(action.payload.propositionTagVote.tag.id);
+      if (!proposition.propositionTagVotes) {
+        proposition.propositionTagVotes = [];
+      }
+      proposition.propositionTagVotes.push(
+        action.payload.propositionTagVote.id
+      );
+    });
+    // TODO addase for api.untagProposition
     builder.addMatcher(
       matchActions(api.verifyJustification, api.disverifyJustification),
       (state, action) => {

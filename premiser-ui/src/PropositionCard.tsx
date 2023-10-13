@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, CSSProperties } from "react";
 import cn from "classnames";
 
 import { ContextTrailItem, PropositionOut } from "howdju-common";
@@ -13,6 +13,7 @@ interface Props {
   showStatusText?: boolean;
   className?: string;
   contextTrailItems?: ContextTrailItem[];
+  style?: CSSProperties;
 }
 
 // TODO(221) convert to functional component
