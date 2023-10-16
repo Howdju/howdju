@@ -19,14 +19,14 @@ import {
   OnPropertyChangeCallback,
   PropertyChanges,
   SuggestionsKey,
-} from "./types";
-import { useAppDispatch, useAppSelector } from "./hooks";
-import { autocompletes } from "./actions";
+} from "@/types";
+import { useAppDispatch, useAppSelector } from "@/hooks";
+import { autocompletes } from "@/actions";
+import { keys } from "@/keyCodes";
+import { FormMessage, FormMessageProps } from "@/components/form/FormMessage";
+import { combineIds } from "@/viewModels";
 
 import "./ApiAutoComplete.scss";
-import { keys } from "./keyCodes";
-import { FormMessage, FormMessageProps } from "./components/form/FormMessage";
-import { combineIds } from "./viewModels";
 
 export type FetchSuggestionsActionCreator = (
   value: string,

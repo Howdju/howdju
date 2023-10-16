@@ -19,12 +19,12 @@ import { smallCellClasses } from "../../CellList";
 import { api, goto } from "../../actions";
 import { mainSearchResultSchema } from "../../normalizationSchemas";
 import config from "../../config";
-import TagsViewer from "../../TagsViewer";
+import TagsViewer from "@/components/tags/TagsViewer";
 import { useAppEntitySelector, useAppSelector } from "@/hooks";
 import SourceEntityCard from "@/components/sources/SourceEntityCard";
 import MediaExcerptCard from "@/components/mediaExcerpts/MediaExcerptCard";
 import PersorgEntityCard from "@/PersorgEntityCard";
-import { TagOutOrInput } from "@/TagsControl";
+import { TagOutOrInput } from "@/components/tags/TagsControl";
 
 export default function MainSearchPage() {
   const location = useLocation();

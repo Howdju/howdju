@@ -7,7 +7,7 @@ import { sourceSchema } from "../../normalizationSchemas";
 import { cancelSourceDescriptionSuggestions } from "../../apiActions";
 import ApiAutoComplete, {
   Props as ApiAutocompleteProps,
-} from "../../ApiAutoComplete";
+} from "@/components/autocomplete/ApiAutoComplete";
 
 interface Props
   extends Omit<

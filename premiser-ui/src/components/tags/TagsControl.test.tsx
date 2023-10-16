@@ -1,12 +1,7 @@
 import React from "react";
 import { fireEvent, screen } from "@testing-library/react";
-import TagsControl from "./TagsControl";
-import {
-  renderWithProviders,
-  setupUserEvent,
-  withFakeTimers,
-  withMockServer,
-} from "./testUtils";
+import { rest } from "msw";
+
 import {
   brandedParse,
   CreatePropositionInput,
@@ -16,7 +11,14 @@ import {
   TagVote,
 } from "howdju-common";
 import { InferResponseBody, serviceRoutes } from "howdju-service-routes";
-import { rest } from "msw";
+
+import TagsControl from "./TagsControl";
+import {
+  renderWithProviders,
+  setupUserEvent,
+  withFakeTimers,
+  withMockServer,
+} from "@/testUtils";
 
 withFakeTimers();
 const server = withMockServer();

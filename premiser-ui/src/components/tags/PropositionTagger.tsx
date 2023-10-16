@@ -9,12 +9,12 @@ import {
   TagOut,
 } from "howdju-common";
 
-import { combineIds, combineSuggestionsKeys } from "./viewModels";
-import { api, goto } from "./actions";
+import { combineIds, combineSuggestionsKeys } from "@/viewModels";
+import { api, goto } from "@/actions";
 import TagsControl, { TagOutOrInput } from "./TagsControl";
-import { useAppDispatch } from "./hooks";
-import { ComponentId, SuggestionsKey } from "./types";
-import { toCompatibleTagVotes } from "./util";
+import { useAppDispatch } from "@/hooks";
+import { ComponentId, SuggestionsKey } from "@/types";
+import { toCompatibleTagVotes } from "@/util";
 
 interface Props {
   id: ComponentId;

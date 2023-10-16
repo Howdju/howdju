@@ -55,7 +55,7 @@ import {
 import JustificationEditorFields from "@/editors/JustificationEditorFields";
 import PropositionEditorFields from "./PropositionEditorFields";
 import { EditorState, EditorTypes } from "./reducers/editors";
-import TagsControl from "./TagsControl";
+import TagsControl from "@/components/tags/TagsControl";
 import { logger } from "./logger";
 import PersorgEditorFields from "./PersorgEditorFields";
 import EntityViewer from "./EntityViewer";

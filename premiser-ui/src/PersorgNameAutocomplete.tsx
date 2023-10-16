@@ -6,7 +6,7 @@ import { persorgSchema } from "./normalizationSchemas";
 import { api, cancelPersorgNameSuggestions } from "./apiActions";
 import ApiAutoComplete, {
   Props as ApiAutoCompleteProps,
-} from "./ApiAutoComplete";
+} from "./components/autocomplete/ApiAutoComplete";
 
 interface Props
   extends Omit<

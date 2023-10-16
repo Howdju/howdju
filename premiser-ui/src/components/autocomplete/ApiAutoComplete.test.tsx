@@ -1,13 +1,13 @@
 import React from "react";
 import { screen } from "@testing-library/react";
+import { schema } from "normalizr";
 
 import ApiAutoComplete from "./ApiAutoComplete";
 import {
   renderWithProviders,
   setupUserEvent,
   withFakeTimers,
-} from "./testUtils";
-import { schema } from "normalizr";
+} from "@/testUtils";
 
 withFakeTimers();
 

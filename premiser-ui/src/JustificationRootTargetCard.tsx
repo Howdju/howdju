@@ -30,10 +30,10 @@ import { Card, CardContent } from "@/components/card/Card";
 import JustificationRootTargetViewer, {
   RootTargetProps,
 } from "./JustificationRootTargetViewer";
-import PropositionTagger from "./PropositionTagger";
+import PropositionTagger from "./components/tags/PropositionTagger";
 import { EditorTypes } from "./reducers/editors";
 import paths from "./paths";
-import Tagger from "./Tagger";
+import Tagger from "@/components/tags/Tagger";
 import { combineIds, combineSuggestionsKeys } from "./viewModels";
 import {
   api,

@@ -38,7 +38,6 @@ import {
   propositionTagVoteSchema,
 } from "@/normalizationSchemas";
 import { MergeDeep } from "type-fest";
-import { denormalizedEntity } from "@/selectors";
 
 type ModelKey = string;
 /**

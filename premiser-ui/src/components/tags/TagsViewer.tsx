@@ -17,8 +17,8 @@ import { MaterialSymbol } from "react-material-symbols";
 import { tagEqual, Tag, TagVote } from "howdju-common";
 
 import { ChipsList } from "@/components/chip/ChipsList";
-import { Chip } from "./components/chip/Chip";
-import { ComponentId, ListClickCallback, ListKeyDownCallback } from "./types";
+import { Chip } from "@/components/chip/Chip";
+import { ComponentId, ListClickCallback, ListKeyDownCallback } from "@/types";
 import TextButton from "@/components/button/TextButton";
 
 import "./TagsViewer.scss";

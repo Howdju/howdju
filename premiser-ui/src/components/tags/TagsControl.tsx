@@ -11,17 +11,17 @@ import {
   CreateTagInput,
 } from "howdju-common";
 
-import IconButton from "./components/button/IconButton";
-import { combineIds } from "./viewModels";
-import TagNameAutocomplete from "./TagNameAutocomplete";
+import IconButton from "@/components/button/IconButton";
+import { combineIds } from "@/viewModels";
+import TagNameAutocomplete from "@/TagNameAutocomplete";
 import TagsViewer, { TagViewerMode } from "./TagsViewer";
-import { isDeleteKey, keys } from "./keyCodes";
+import { isDeleteKey, keys } from "@/keyCodes";
 import {
   ComponentId,
   OnKeyDownCallback,
   OnPropertyChangeCallback,
   SuggestionsKey,
-} from "./types";
+} from "@/types";
 
 import "./TagsControl.scss";
 

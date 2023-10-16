@@ -10,7 +10,7 @@ import {
 } from "./types";
 import { api } from "./actions";
 import { cancelWritTitleSuggestions } from "./apiActions";
-import ApiAutoComplete from "./ApiAutoComplete";
+import ApiAutoComplete from "@/components/autocomplete/ApiAutoComplete";
 
 interface Props {
   id: ComponentId;
