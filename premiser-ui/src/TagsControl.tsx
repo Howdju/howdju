@@ -57,6 +57,8 @@ export interface TagsControlProps {
   inputCollapsable?: boolean;
   /** The title of the button to show the input to add a tag. */
   addTitle?: string;
+  /** Whether to autofocus the tag text input when it appears. */
+  autoFocus?: boolean;
   /** The autocomplete suggestion fetch debounce milliseconds. */
   autocompleteDebounceMs?: number;
 }
@@ -81,6 +83,7 @@ export default function TagsControl({
   onTagUnvote,
   addTitle = "Add tag",
   autocompleteDebounceMs,
+  autoFocus,
   ...rest
 }: TagsControlProps) {
   const [tagName, setTagName] = useState("");
@@ -90,11 +93,19 @@ export default function TagsControl({
     if (event.isDefaultPrevented()) {
       return;
     }
-    if (includes(commitChipKeys, event.key) && tagName) {
-      event.preventDefault();
-      addTag(tagName);
-      setTagName("");
+    if (includes([keys.ESCAPE], event.key)) {
       if (inputCollapsable) {
+        setIsInputCollapsed(true);
+      }
+      return;
+    }
+    if (includes(commitChipKeys, event.key)) {
+      event.preventDefault();
+      // If there's a non-empty tag nam, add it.
+      if (tagName) {
+        addTag(tagName);
+        setTagName("");
+      } else if (inputCollapsable) {
         setIsInputCollapsed(true);
       }
     }
@@ -194,6 +205,7 @@ export default function TagsControl({
         key={tagNameAutocompleteId}
         name="tagName"
         value={tagName}
+        autoFocus={autoFocus}
         className="tag-name-autocomplete"
         suggestionsKey={suggestionsKey}
         onAutoComplete={onTagNameAutocomplete}

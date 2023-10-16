@@ -188,6 +188,7 @@ class JustificationRootTargetCard extends React.Component<Props> {
                       suggestionsKey,
                       "proposition-tagger"
                     )}
+                    autoFocus={true}
                   />
                 )}
             </CardContent>

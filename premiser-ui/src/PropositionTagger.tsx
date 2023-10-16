@@ -23,6 +23,8 @@ interface Props {
   recommendedTags?: TagOut[];
   suggestionsKey: SuggestionsKey;
   propositionId: EntityId;
+  /** Whether to autofocus the tag text input when it appears. */
+  autoFocus?: boolean;
 }
 
 // TODO replace with Tagger.
@@ -34,6 +36,7 @@ const PropositionTagger: React.FC<Props> = (props: Props) => {
     recommendedTags,
     suggestionsKey,
     propositionId,
+    autoFocus,
     ...rest
   } = props;
 
@@ -84,6 +87,7 @@ const PropositionTagger: React.FC<Props> = (props: Props) => {
       onTagAntivote={onTagAntivote}
       onClickTag={onClickTag}
       inputCollapsable={true}
+      autoFocus={autoFocus}
     />
   );
 };
