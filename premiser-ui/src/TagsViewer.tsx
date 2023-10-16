@@ -105,7 +105,7 @@ export default function TagsViewer({
           key="dont-show-all-button"
           onClick={() => setDoShowAllTags(false)}
         >
-          Don&rquo;t show all
+          Show fewer
         </TextButton>
       );
     } else {

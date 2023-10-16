@@ -155,7 +155,7 @@ export default function TagsControl({
     event: MouseEvent
   ) {
     const vote = find(votes, (vote) => tagEqual(vote.tag, tag));
-    if (vote?.polarity === votePolarity.POSITIVE) {
+    if (vote?.polarity === votePolarity.NEGATIVE) {
       onTagUnvote(tag);
     } else if (onTagAntivote && tag.id) {
       // Only anti-tag existing tags on existing targets (the point of anti-tagging is to vote against tags recommended

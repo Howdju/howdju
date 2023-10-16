@@ -38,6 +38,7 @@ import {
   propositionTagVoteSchema,
 } from "@/normalizationSchemas";
 import { MergeDeep } from "type-fest";
+import { denormalizedEntity } from "@/selectors";
 
 type ModelKey = string;
 /**
@@ -408,18 +409,38 @@ const slice = createSlice({
       if (action.error) {
         return;
       }
-      const proposition =
-        state.propositions[action.payload.propositionTagVote.proposition.id];
+      const tagVote = action.payload.propositionTagVote;
+      const proposition = state.propositions[tagVote.proposition.id];
       if (!proposition.tags) {
         proposition.tags = [];
       }
-      proposition.tags.push(action.payload.propositionTagVote.tag.id);
+      // Add the tag to the proposition
+      proposition.tags = union(proposition.tags, [tagVote.tag.id]);
       if (!proposition.propositionTagVotes) {
         proposition.propositionTagVotes = [];
       }
-      proposition.propositionTagVotes.push(
-        action.payload.propositionTagVote.id
+      // Remove iconsistent votes
+      proposition.propositionTagVotes = proposition.propositionTagVotes.filter(
+        (v) => state.propositionTagVotes[v].tag !== tagVote.tag.id
       );
+      // Add the vote
+      proposition.propositionTagVotes.push(tagVote.id);
+    });
+    builder.addCase(api.antiTagProposition.response, (state, action) => {
+      if (action.error) {
+        return;
+      }
+      const tagVote = action.payload.propositionTagVote;
+      const proposition = state.propositions[tagVote.proposition.id];
+      if (!proposition.propositionTagVotes) {
+        proposition.propositionTagVotes = [];
+      }
+      // Remove iconsistent votes
+      proposition.propositionTagVotes = proposition.propositionTagVotes.filter(
+        (v) => state.propositionTagVotes[v].tag !== tagVote.tag.id
+      );
+      // Add the vote
+      proposition.propositionTagVotes.push(tagVote.id);
     });
     builder.addCase(api.unTagProposition.response, (state, action) => {
       if (action.error) {
@@ -427,13 +448,6 @@ const slice = createSlice({
       }
       const prevTagVote = action.meta.requestMeta.prevPropositionTagVote;
       const proposition = state.propositions[prevTagVote.proposition.id];
-      if (proposition.tags) {
-        const tagId = prevTagVote.tag.id;
-        const tagIndex = proposition.tags.indexOf(tagId);
-        if (tagIndex > -1) {
-          proposition.tags.splice(tagIndex, 1);
-        }
-      }
       if (proposition.propositionTagVotes) {
         const voteId = prevTagVote.id;
         const voteIndex = proposition.propositionTagVotes.indexOf(voteId);
