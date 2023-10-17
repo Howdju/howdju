@@ -145,13 +145,19 @@ export default function TagsViewer({
     const vote = voteByTagName[tag.name];
     const polarity = get(vote, "polarity");
     const isVoted = polarity && polarity === votePolarity.POSITIVE;
-    const isAntiVoted = polarity && polarity === votePolarity.NEGATIVE;
+    const isAntivoted = polarity && polarity === votePolarity.NEGATIVE;
+    const voteLabel = isVoted
+      ? `Remove vote for tag ${tag.name}`
+      : `Vote for tag ${tag.name}`;
+    const antivoteLabel = isAntivoted
+      ? `Remove vote against tag ${tag.name}`
+      : `Vote against tag ${tag.name}`;
     return (
       <Chip
         key={tag.name}
         className={cn({
           "has-vote": isVoted,
-          "has-anti-vote": isAntiVoted,
+          "has-antivote": isAntivoted,
         })}
         theme="outline"
         onKeyDown={(e) => onKeyDownTag && onKeyDownTag(tag, i, e)}
@@ -159,7 +165,8 @@ export default function TagsViewer({
         leftIcon={
           mode === "vote" && (
             <Avatar
-              aria-label={`Vote for tag ${tag.name}`}
+              aria-label={voteLabel}
+              title={voteLabel}
               onClick={(e) => onClickTagVote && onClickTagVote(tag, i, e)}
             >
               <MaterialSymbol icon="thumb_up" className="flipped-icon" />
@@ -169,7 +176,8 @@ export default function TagsViewer({
         rightIcon={
           mode === "vote" ? (
             <Avatar
-              aria-label={`Vote against tag ${tag.name}`}
+              aria-label={antivoteLabel}
+              title={antivoteLabel}
               onClick={(e) =>
                 onClickTagAntivote && onClickTagAntivote(tag, i, e)
               }

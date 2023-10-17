@@ -119,6 +119,7 @@ exports[`CreatePropositionPage (with fake timers) renders correctly with query p
             </div>
             <div
               class="chips-list"
+              id="create-proposition-page--tags"
             >
               <div
                 style="display: flex; align-items: center;"

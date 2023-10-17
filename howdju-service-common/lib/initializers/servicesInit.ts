@@ -90,6 +90,7 @@ export function servicesInitializer(provider: AwsProvider) {
   );
   const tagsService = new TagsService(provider.logger, provider.tagsDao);
   const propositionTagVotesService = new PropositionTagVotesService(
+    provider.logger,
     authService,
     tagsService,
     provider.propositionTagVotesDao

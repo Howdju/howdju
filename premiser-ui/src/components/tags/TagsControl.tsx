@@ -166,7 +166,11 @@ export default function TagsControl({
     event: MouseEvent
   ) {
     const vote = find(votes, (vote) => tagEqual(vote.tag, tag));
-    if (vote?.polarity === votePolarity.NEGATIVE) {
+    // When the mode is add, the user can only and add remove tags, and so an antivote
+    // is an untag.
+    // If the existing vote polarity is negative, then clicking the antivote undoes the
+    // vote.
+    if (mode === "add" || vote?.polarity === votePolarity.NEGATIVE) {
       onTagUnvote(tag);
     } else if (onTagAntivote && tag.id) {
       // Only anti-tag existing tags on existing targets (the point of anti-tagging is to vote against tags recommended

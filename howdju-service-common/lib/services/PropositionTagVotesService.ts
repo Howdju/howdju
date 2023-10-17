@@ -6,6 +6,8 @@ import {
   utcNow,
   CreateTag,
   PropositionTagVotePolarity,
+  Logger,
+  PropositionTagVoteOut,
 } from "howdju-common";
 
 import {
@@ -17,6 +19,7 @@ import {
 
 export class PropositionTagVotesService {
   constructor(
+    private readonly logger: Logger,
     private readonly authService: AuthService,
     private readonly tagsService: TagsService,
     private readonly propositionTagVotesDao: PropositionTagVotesDao
@@ -41,22 +44,49 @@ export class PropositionTagVotesService {
       createTag,
       now
     );
-    const overlappingVote =
-      await this.propositionTagVotesDao.readPropositionTagVote(
+    const overlappingVotes =
+      await this.propositionTagVotesDao.readPropositionTagVotes(
         userId,
         propositionId,
         tag.id
       );
-    if (overlappingVote) {
+    const redundantVotes: PropositionTagVoteOut[] = [];
+    const inconsistentVotes: PropositionTagVoteOut[] = [];
+    for (const overlappingVote of overlappingVotes) {
       if (overlappingVote.polarity === polarity) {
-        return { ...overlappingVote, tag };
+        redundantVotes.push(overlappingVote);
       } else {
-        await this.propositionTagVotesDao.deletePropositionTagVote(
-          userId,
-          overlappingVote.id,
-          now
+        inconsistentVotes.push(overlappingVote);
+      }
+    }
+    if (inconsistentVotes.length) {
+      await Promise.all(
+        inconsistentVotes.map((vote) =>
+          this.propositionTagVotesDao.deletePropositionTagVote(
+            userId,
+            vote.id,
+            now
+          )
+        )
+      );
+    }
+    if (redundantVotes.length) {
+      const [redundantVote, ...extraRedundantVotes] = redundantVotes;
+      if (extraRedundantVotes.length) {
+        this.logger.error(
+          `More than one redundant vote for proposition ${propositionId} and tag ${tag.id}`
         );
       }
+      await Promise.all(
+        extraRedundantVotes.map((vote) =>
+          this.propositionTagVotesDao.deletePropositionTagVote(
+            userId,
+            vote.id,
+            now
+          )
+        )
+      );
+      return { ...redundantVote, tag };
     }
     const propostionTagVote =
       await this.propositionTagVotesDao.createPropositionTagVote(

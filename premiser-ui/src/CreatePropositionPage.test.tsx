@@ -205,7 +205,7 @@ describe("CreatePropositionPage", () => {
 
       // Act
       await user.click(
-        screen.getByRole("button", {
+        screen.getByRole("generic", {
           name: new RegExp(`remove tag ${tagName}`, "i"),
         })
       );
