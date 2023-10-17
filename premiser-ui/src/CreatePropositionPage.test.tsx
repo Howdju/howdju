@@ -205,6 +205,9 @@ describe("CreatePropositionPage", () => {
 
       // Act
       await user.click(
+        // react-md renders chips as a a button, and we cant' have a button within a button
+        // (violates DOM rules) so we must use a `generic` to get the most specific element
+        // described by this phrase (the 'anti-tag' icon.)
         screen.getByRole("generic", {
           name: new RegExp(`remove tag ${tagName}`, "i"),
         })

@@ -1301,7 +1301,6 @@ export const api = {
           },
 
           normalizationSchema: {
-            proposition: propositionSchema,
             propositionTagVote: propositionTagVoteSchema,
           },
         },

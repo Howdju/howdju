@@ -27,7 +27,7 @@ interface Props {
   autoFocus?: boolean;
 }
 
-// TODO replace with Tagger.
+// TODO(#112) replace with Tagger.
 const PropositionTagger: React.FC<Props> = (props: Props) => {
   const {
     id,
