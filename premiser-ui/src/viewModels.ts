@@ -114,15 +114,16 @@ export function sourceExcerptSourceDescription(sourceExcerpt: SourceExcerpt) {
   }
 }
 
-export function combineIds(...ids: ComponentId[]) {
+export function combineIds(...ids: (ComponentId | number)[]) {
   const idDelimiter = "--";
+  let idStrings = map(ids, (id) => `${id}`);
   // Ids aren't always passed by the parent, so filter out the initial falsey ones
-  ids = dropWhile(ids, isFalsey);
+  idStrings = dropWhile(idStrings, isFalsey);
   // if ids are internally using the delimiter, split them up by it
-  ids = flatMap(ids, (id) => split(id, idDelimiter));
+  idStrings = flatMap(idStrings, (id) => split(`${id}`, idDelimiter));
   // ensure the resulting tokens are kebab-cased
-  ids = map(ids, kebabCase);
-  return join(ids, idDelimiter);
+  idStrings = idStrings.map(kebabCase);
+  return join(idStrings, idDelimiter);
 }
 
 /** Create a default editor ID. */

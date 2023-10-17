@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, CSSProperties } from "react";
 import { Props as ReactMdProps } from "react-md/lib";
 import cn from "classnames";
 
@@ -21,6 +21,7 @@ interface Props {
   doShowTargets?: boolean;
   onExpandCounterAncestors?: ReactMdProps["onClick"];
   onClickWritQuoteUrl?: OnClickJustificationWritQuoteUrl;
+  style?: CSSProperties;
 }
 
 // TODO(221) convert to functional component

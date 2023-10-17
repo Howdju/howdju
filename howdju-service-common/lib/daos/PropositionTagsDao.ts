@@ -107,7 +107,8 @@ export class PropositionTagsDao {
         with
           proposition_scores as (
             select
-              proposition_id, score
+                proposition_id
+              , score
             from proposition_tag_scores
               where
                     tag_id = $1
@@ -143,7 +144,7 @@ export class PropositionTagsDao {
       "readTaggedPropositionsByVotePolarityAsUser",
       `
         select
-            p.proposition_id,
+            p.proposition_id
           , v.polarity
           , v.proposition_tag_vote_id
         from

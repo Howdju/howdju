@@ -15,7 +15,7 @@ import {
 } from "./types";
 import ApiAutoComplete, {
   Props as ApiAutoCompleteProps,
-} from "./ApiAutoComplete";
+} from "@/components/autocomplete/ApiAutoComplete";
 
 interface Props
   extends Omit<

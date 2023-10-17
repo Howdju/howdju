@@ -2,7 +2,6 @@ import React from "react";
 import find from "lodash/find";
 
 import {
-  CreateTagInput,
   EntityId,
   PropositionTagVoteOut,
   Tag,
@@ -10,12 +9,12 @@ import {
   TagOut,
 } from "howdju-common";
 
-import { combineIds, combineSuggestionsKeys } from "./viewModels";
-import { api, goto } from "./actions";
-import TagsControl from "./TagsControl";
-import { useAppDispatch } from "./hooks";
-import { ComponentId, SuggestionsKey } from "./types";
-import { toCompatibleTagVotes } from "./util";
+import { combineIds, combineSuggestionsKeys } from "@/viewModels";
+import { api, goto } from "@/actions";
+import TagsControl, { TagOutOrInput } from "./TagsControl";
+import { useAppDispatch } from "@/hooks";
+import { ComponentId, SuggestionsKey } from "@/types";
+import { toCompatibleTagVotes } from "@/util";
 
 interface Props {
   id: ComponentId;
@@ -24,8 +23,11 @@ interface Props {
   recommendedTags?: TagOut[];
   suggestionsKey: SuggestionsKey;
   propositionId: EntityId;
+  /** Whether to autofocus the tag text input when it appears. */
+  autoFocus?: boolean;
 }
 
+// TODO(#112) replace with Tagger.
 const PropositionTagger: React.FC<Props> = (props: Props) => {
   const {
     id,
@@ -34,29 +36,30 @@ const PropositionTagger: React.FC<Props> = (props: Props) => {
     recommendedTags,
     suggestionsKey,
     propositionId,
+    autoFocus,
     ...rest
   } = props;
 
   const dispatch = useAppDispatch();
 
-  const onClickTag = (tag: CreateTagInput | TagOut) => {
+  const onClickTag = (tag: TagOutOrInput) => {
     if (!tag.id) {
       return;
     }
     dispatch(goto.tag(tag as TagOut));
   };
 
-  const onTag = (tag: Tag) => {
+  const onTagVote = (tag: Tag) => {
     const propositionTagVote = find(votes, (vote) => tagEqual(vote.tag, tag));
     dispatch(api.tagProposition(propositionId, tag, propositionTagVote));
   };
 
-  const onAntiTag = (tag: Tag) => {
+  const onTagAntivote = (tag: Tag) => {
     const propositionTagVote = find(votes, (vote) => tagEqual(vote.tag, tag));
     dispatch(api.antiTagProposition(propositionId, tag, propositionTagVote));
   };
 
-  const onUnTag = (tag: Tag) => {
+  const onTagUnvote = (tag: Tag) => {
     const propositionTagVote = find(votes, (vote) => tagEqual(vote.tag, tag));
     // We can only delete a vote whose ID we have.  We can get here if the user quickly tags and
     // untags
@@ -73,15 +76,18 @@ const PropositionTagger: React.FC<Props> = (props: Props) => {
     <TagsControl
       {...rest}
       id={combineIds(id, "tags")}
+      mode="vote"
       tags={tags}
       votes={compatibleVotes}
       recommendedTags={recommendedTags}
       suggestionsKey={combineSuggestionsKeys(suggestionsKey, "tagName")}
-      onTag={onTag}
-      onUnTag={onUnTag}
-      onAntiTag={onAntiTag}
+      onAddTag={onTagVote}
+      onTagVote={onTagVote}
+      onTagUnvote={onTagUnvote}
+      onTagAntivote={onTagAntivote}
       onClickTag={onClickTag}
       inputCollapsable={true}
+      autoFocus={autoFocus}
     />
   );
 };

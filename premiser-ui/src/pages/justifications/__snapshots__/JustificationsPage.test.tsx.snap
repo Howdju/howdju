@@ -134,6 +134,7 @@ exports[`JustificationsPage Shows a justified proposition 1`] = `
                 </div>
                 <div
                   class="chips-list"
+                  id="justifications-page--root-target--proposition-tagger--tags"
                 >
                   <button
                     class="rmd-button rmd-button--icon rmd-button--text-primary"
@@ -327,6 +328,7 @@ exports[`JustificationsPage can add a compound-based justification 1`] = `
                 </div>
                 <div
                   class="chips-list"
+                  id="justifications-page--root-target--proposition-tagger--tags"
                 >
                   <button
                     class="rmd-button rmd-button--icon rmd-button--text-primary"

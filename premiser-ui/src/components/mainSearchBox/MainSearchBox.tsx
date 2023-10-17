@@ -11,7 +11,7 @@ import { api, cancelMainSearchSuggestions } from "../../apiActions";
 import { goto } from "../../actions";
 import mainSearch from "./mainSearchBoxSlice";
 import { PropertyChanges } from "@/types";
-import ApiAutoComplete from "@/ApiAutoComplete";
+import ApiAutoComplete from "@/components/autocomplete/ApiAutoComplete";
 import {
   Dialog,
   DialogContent,

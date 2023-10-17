@@ -53,14 +53,12 @@ export class PropositionTagVotesDao {
     return toPropositionTagVote(row);
   }
 
-  async readPropositionTagVote(
+  async readPropositionTagVotes(
     userId: EntityId,
     propositionId: EntityId,
     tagId: EntityId
   ) {
-    const {
-      rows: [row],
-    } = await this.database.query<PropositionTagVoteRow>(
+    const { rows } = await this.database.query<PropositionTagVoteRow>(
       "readPropositionTagVote",
       `select *
         from proposition_tag_votes
@@ -72,10 +70,7 @@ export class PropositionTagVotesDao {
       `,
       [userId, propositionId, tagId]
     );
-    if (!row) {
-      return undefined;
-    }
-    return toPropositionTagVote(row);
+    return rows.map(toPropositionTagVote);
   }
 
   async readUserVotesForPropositionIds(

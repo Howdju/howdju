@@ -2,7 +2,6 @@ import React from "react";
 import find from "lodash/find";
 
 import {
-  CreateTagInput,
   Tag,
   tagEqual,
   TaggableEntityType,
@@ -11,11 +10,11 @@ import {
   TagVoteRef,
 } from "howdju-common";
 
-import { combineIds, combineSuggestionsKeys } from "./viewModels";
-import { api, goto } from "./actions";
-import TagsControl from "./TagsControl";
-import { useAppDispatch } from "./hooks";
-import { ComponentId, SuggestionsKey } from "./types";
+import { combineIds, combineSuggestionsKeys } from "@/viewModels";
+import { api, goto } from "@/actions";
+import TagsControl, { TagOutOrInput } from "./TagsControl";
+import { useAppDispatch } from "@/hooks";
+import { ComponentId, SuggestionsKey } from "@/types";
 
 interface Props {
   target: TaggedEntityOut;
@@ -35,7 +34,7 @@ const Tagger: React.FC<Props> = (props: Props) => {
 
   const dispatch = useAppDispatch();
 
-  const onClickTag = (tag: CreateTagInput | TagOut) => {
+  const onClickTag = (tag: TagOutOrInput) => {
     if (!tag.id) {
       return;
     }
@@ -46,17 +45,17 @@ const Tagger: React.FC<Props> = (props: Props) => {
     return find(tagVotes, (vote) => tagEqual(vote.tag, tag));
   };
 
-  const onTag = (tag: Tag) => {
+  const onTagVote = (tag: Tag) => {
     const tagVote = findTagVote(tag);
     dispatch(api.createTag(targetType, targetId, tag, tagVote));
   };
 
-  const onAntiTag = (tag: Tag) => {
+  const onTagAntivote = (tag: Tag) => {
     const tagVote = findTagVote(tag);
     dispatch(api.createAntiTag(targetType, targetId, tag, tagVote));
   };
 
-  const onUnTag = (tag: Tag) => {
+  const onTagUnvote = (tag: Tag) => {
     const tagVote = findTagVote(tag);
     // We can only delete a vote whose ID we have.  We might be untagging a vote lacking an ID if the user quickly tags/untags
     if (tagVote?.id) {
@@ -68,13 +67,15 @@ const Tagger: React.FC<Props> = (props: Props) => {
     <TagsControl
       {...rest}
       id={combineIds(id, "tags")}
+      mode="vote"
       tags={tags ?? []}
       votes={tagVotes ?? []}
       recommendedTags={recommendedTags}
       suggestionsKey={combineSuggestionsKeys(suggestionsKey, "tagName")}
-      onTag={onTag}
-      onUnTag={onUnTag}
-      onAntiTag={onAntiTag}
+      onAddTag={onTagVote}
+      onTagVote={onTagVote}
+      onTagUnvote={onTagUnvote}
+      onTagAntivote={onTagAntivote}
       onClickTag={onClickTag}
       inputCollapsable={true}
     />

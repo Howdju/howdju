@@ -199,11 +199,19 @@ describe("CreatePropositionPage", () => {
       );
 
       const tagName = "TestTag";
-      await user.type(screen.getByLabelText(/tag/i), tagName);
-      await user.type(screen.getByLabelText(/tag/i), "{Enter}");
+      const tagInput = screen.getByLabelText(/tag/i);
+      await user.type(tagInput, tagName);
+      await user.type(tagInput, "{Enter}");
 
       // Act
-      await user.click(document.querySelector(".remove-chip-icon") as Element);
+      await user.click(
+        // react-md renders chips as a a button, and we cant' have a button within a button
+        // (violates DOM rules) so we must use a `generic` to get the most specific element
+        // described by this phrase (the 'anti-tag' icon.)
+        screen.getByRole("generic", {
+          name: new RegExp(`remove tag ${tagName}`, "i"),
+        })
+      );
 
       // Assert
       jest.runAllTimers();
@@ -234,12 +242,6 @@ describe("CreatePropositionPage", () => {
         />,
         { history }
       );
-
-      //
-
-      const tagName = "TestTag";
-      await user.type(screen.getByLabelText(/tag/i), tagName);
-      await user.type(screen.getByLabelText(/tag/i), "{Enter}");
 
       // Act
       await user.click(screen.getByRole("button", { name: /create/i }));

@@ -1295,11 +1295,14 @@ export const api = {
       };
       return {
         config: {
+          pathParams: { propositionId, tagId: tag.id },
           body: {
             propositionTagVote,
           },
 
-          normalizationSchema: { propositionTagVote: propositionTagVoteSchema },
+          normalizationSchema: {
+            propositionTagVote: propositionTagVoteSchema,
+          },
         },
         meta: { propositionTagVote, prevPropositionTagVote },
       };

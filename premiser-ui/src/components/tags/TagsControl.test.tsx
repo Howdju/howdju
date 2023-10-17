@@ -1,12 +1,7 @@
 import React from "react";
 import { fireEvent, screen } from "@testing-library/react";
-import TagsControl from "./TagsControl";
-import {
-  renderWithProviders,
-  setupUserEvent,
-  withFakeTimers,
-  withMockServer,
-} from "./testUtils";
+import { rest } from "msw";
+
 import {
   brandedParse,
   CreatePropositionInput,
@@ -16,7 +11,14 @@ import {
   TagVote,
 } from "howdju-common";
 import { InferResponseBody, serviceRoutes } from "howdju-service-routes";
-import { rest } from "msw";
+
+import TagsControl from "./TagsControl";
+import {
+  renderWithProviders,
+  setupUserEvent,
+  withFakeTimers,
+  withMockServer,
+} from "@/testUtils";
 
 withFakeTimers();
 const server = withMockServer();
@@ -24,18 +26,19 @@ const server = withMockServer();
 describe("TagsControl", () => {
   test("pressing enter with non-empty tag name adds tag and doesn't submit enclosing form", async () => {
     const onSubmit = jest.fn((e) => e.preventDefault());
-    const onTag = jest.fn();
-    const onUnTag = jest.fn();
+    const onAddTag = jest.fn();
+    const onTagUnvote = jest.fn();
 
     renderWithProviders(
       <form onSubmit={onSubmit}>
         <TagsControl
           id="test-tags-control"
+          mode="vote"
           tags={[]}
           votes={[]}
           suggestionsKey="test-suggestions-key"
-          onTag={onTag}
-          onUnTag={onUnTag}
+          onAddTag={onAddTag}
+          onTagUnvote={onTagUnvote}
         />
       </form>
     );
@@ -49,22 +52,23 @@ describe("TagsControl", () => {
 
     // Assert
     expect(onSubmit).not.toHaveBeenCalled();
-    expect(onTag).toHaveBeenCalledOnceWith({ name: tagName });
-    expect(onUnTag).not.toHaveBeenCalled();
+    expect(onAddTag).toHaveBeenCalledOnceWith({ name: tagName });
+    expect(onTagUnvote).not.toHaveBeenCalled();
   });
 
   test("pressing enter with empty tag name collapses input", async () => {
-    const onTag = jest.fn();
-    const onUnTag = jest.fn();
+    const onTagVote = jest.fn();
+    const onTagUnvote = jest.fn();
 
     renderWithProviders(
       <TagsControl
         id="test-tags-control"
+        mode="vote"
         tags={[]}
         votes={[]}
         suggestionsKey="test-suggestions-key"
-        onTag={onTag}
-        onUnTag={onUnTag}
+        onTagVote={onTagVote}
+        onTagUnvote={onTagUnvote}
         inputCollapsable={true}
       />
     );
@@ -81,9 +85,10 @@ describe("TagsControl", () => {
     ).not.toBeInTheDocument();
   });
 
-  test("downvoting tag calls untag", async () => {
-    const onTag = jest.fn();
-    const onUnTag = jest.fn();
+  test("antivoting a voted tag calls antitag", async () => {
+    const onTagVote = jest.fn();
+    const onTagUnvote = jest.fn();
+    const onTagAntivote = jest.fn();
 
     const target: CreatePropositionInput = { text: "A modest proposal" };
     const tag: TagOut = brandedParse(TagRef, {
@@ -99,26 +104,34 @@ describe("TagsControl", () => {
     renderWithProviders(
       <TagsControl
         id="test-tags-control"
+        mode="vote"
         tags={[tag]}
         votes={[vote]}
         suggestionsKey="test-suggestions-key"
-        onTag={onTag}
-        onUnTag={onUnTag}
+        onTagVote={onTagVote}
+        onTagUnvote={onTagUnvote}
+        onTagAntivote={onTagAntivote}
       />
     );
     const user = setupUserEvent();
 
     // Act
-    await user.click(document.querySelector(".remove-chip-icon") as Element);
+    await user.click(
+      screen.getByLabelText(`Vote against tag ${tag.name}`) as Element
+    );
 
     // Assert
-    expect(onUnTag).toHaveBeenCalled();
+    expect(onTagAntivote).toHaveBeenCalled();
+    // The client does not undo the vote, so the API and reducers must remove any votes inconsistent
+    // with the new antivote.
+    expect(onTagUnvote).not.toHaveBeenCalled();
   });
 
   test("autocompleting with partial input tags only the autocompleted tag.", async () => {
     const user = setupUserEvent();
-    const onTag = jest.fn();
-    const onUnTag = jest.fn();
+    const onTagVote = jest.fn();
+    const onAddTag = jest.fn();
+    const onTagUnvote = jest.fn();
 
     server.use(
       rest.get(`http://localhost/search-tags`, (_req, res, ctx) => {
@@ -135,11 +148,13 @@ describe("TagsControl", () => {
     renderWithProviders(
       <TagsControl
         id="test-tags-control"
+        mode="vote"
         tags={[]}
         votes={[]}
         suggestionsKey="test-suggestions-key"
-        onTag={onTag}
-        onUnTag={onUnTag}
+        onTagVote={onTagVote}
+        onAddTag={onAddTag}
+        onTagUnvote={onTagUnvote}
         autocompleteDebounceMs={0}
       />
     );
@@ -156,7 +171,8 @@ describe("TagsControl", () => {
 
     // Ensure we didn't tag both "Poli" (the text entry) and "Politics" (the first tag, selected
     // using down-arrow.)
-    expect(onTag).toHaveBeenCalledOnceWith({ id: "1", name: "Politics" });
+    expect(onAddTag).toHaveBeenCalledOnceWith({ id: "1", name: "Politics" });
+    expect(onTagVote).not.toHaveBeenCalled();
   });
   test.todo("initially shows tags with votes");
   test.todo("initially hides tags lacking votes");

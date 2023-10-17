@@ -19,14 +19,14 @@ import {
   OnPropertyChangeCallback,
   PropertyChanges,
   SuggestionsKey,
-} from "./types";
-import { useAppDispatch, useAppSelector } from "./hooks";
-import { autocompletes } from "./actions";
+} from "@/types";
+import { useAppDispatch, useAppSelector } from "@/hooks";
+import { autocompletes } from "@/actions";
+import { keys } from "@/keyCodes";
+import { FormMessage, FormMessageProps } from "@/components/form/FormMessage";
+import { combineIds } from "@/viewModels";
 
 import "./ApiAutoComplete.scss";
-import { Keys } from "./keyCodes";
-import { FormMessage, FormMessageProps } from "./components/form/FormMessage";
-import { combineIds } from "./viewModels";
 
 export type FetchSuggestionsActionCreator = (
   value: string,
@@ -154,7 +154,7 @@ export default function ApiAutoComplete<T>({
     if (onKeyDown) {
       onKeyDown(event);
     }
-    if (!event.isDefaultPrevented() && singleLine && event.key === Keys.ENTER) {
+    if (!event.isDefaultPrevented() && singleLine && event.key === keys.ENTER) {
       // Since the ApiAutoComplete input is a textarea which lacks the 'enter submits form'
       // behavior, simulate it with a submit input.
       submitInputRef.current?.click();

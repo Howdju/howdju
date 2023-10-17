@@ -21,7 +21,7 @@ import {
   PropositionCompoundAtomView,
   PropositionCompoundView,
   PropositionOut,
-  PropositionTagVote,
+  PropositionTagVoteOut,
   SourceExcerptParaphrase,
   SourceOut,
   StatementOut,
@@ -44,12 +44,10 @@ export const usersSchema = new schema.Array(userSchema);
 export const tagSchema = new schema.Entity<TagOut>("tags");
 export const tagsSchema = new schema.Array(tagSchema);
 
-export const propositionTagVoteSchema = new schema.Entity<PropositionTagVote>(
-  "propositionTagVotes",
-  {
+export const propositionTagVoteSchema =
+  new schema.Entity<PropositionTagVoteOut>("propositionTagVotes", {
     tag: tagSchema,
-  }
-);
+  });
 const propositionTagVotesSchema = new schema.Array(propositionTagVoteSchema);
 
 export const tagVoteSchema = new schema.Entity<TagVote>("tagVotes", {

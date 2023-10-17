@@ -100,6 +100,7 @@ function propositionToCard(
     return (
       <PropositionCompoundCard
         id={cardId}
+        style={{ width: "100%" }}
         propositionCompound={prevTrailItem.connectingEntity.basis.entity}
         highlightedProposition={proposition}
         contextTrailItems={trailItems}
@@ -110,6 +111,7 @@ function propositionToCard(
   return (
     <PropositionCard
       id={cardId}
+      style={{ width: "100%" }}
       proposition={proposition}
       contextTrailItems={trailItems}
       showStatusText={false}
@@ -126,6 +128,7 @@ function statementToCard(
   return (
     <StatementCard
       id={cardId}
+      style={{ width: "100%" }}
       statement={statement}
       contextTrailItems={trailItems}
       showStatusText={false}
@@ -141,6 +144,7 @@ function appearanceToCard(
   return (
     <AppearanceCard
       id={combineIds(id, "appearance", appearance.id)}
+      style={{ width: "100%" }}
       appearance={appearance}
       contextTrailItems={trailItems}
       mode="CONTEXT_TRAIL"
@@ -157,6 +161,7 @@ function justificationToCard(
   return (
     <JustificationCard
       id={cardId}
+      style={{ width: "100%" }}
       justification={justification}
       doShowControls={false}
       doShowTargets={false}

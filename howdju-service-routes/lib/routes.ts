@@ -1567,7 +1567,11 @@ export const serviceRoutes = {
             authToken,
             createPropositionTagVote
           );
-        return { body: { propositionTagVote } };
+        return {
+          body: {
+            propositionTagVote,
+          },
+        };
       }
     ),
   },
