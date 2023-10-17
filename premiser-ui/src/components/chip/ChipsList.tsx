@@ -21,7 +21,6 @@ export function ChipsList(props: ChipsListProps) {
 
   return (
     <div {...rest} className={cn(className, "chips-list")}>
-      {/* TODO need to propagate index to callbacks? Need to get id for key? */}
       {chips}
       {extraChildren}
     </div>

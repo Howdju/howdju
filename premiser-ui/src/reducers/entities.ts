@@ -455,7 +455,6 @@ const slice = createSlice({
         }
       }
     });
-    // TODO addase for api.untagProposition
     builder.addMatcher(
       matchActions(api.verifyJustification, api.disverifyJustification),
       (state, action) => {
