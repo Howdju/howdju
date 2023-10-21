@@ -462,7 +462,7 @@ const slice = createSlice({
         const vote = action.meta.justificationVote;
         const { justificationId } = vote;
         const justification = state.justifications[justificationId];
-        justification.vote = { ...vote, justification };
+        justification.vote = vote;
       }
     );
     builder.addMatcher(
