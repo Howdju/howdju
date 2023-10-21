@@ -1,12 +1,13 @@
 import React, { UIEvent, useEffect } from "react";
 import { map, isEmpty } from "lodash";
 import { RouteComponentProps } from "react-router";
+import { Grid, GridCell } from "@react-md/utils";
 
 import { EntityId } from "howdju-common";
 
+import config from "@/config";
 import { CircularProgress } from "@/components/progress/CircularProgress";
 import { api } from "../../actions";
-import CellList from "../../CellList";
 import {
   justificationsSchema,
   statementsSchema,
@@ -18,14 +19,18 @@ import StatementCard from "../../StatementCard";
 import { combineIds } from "../../viewModels";
 import FlipMove from "react-flip-move";
 import JustificationCard from "../../JustificationCard";
-import config from "../../config";
 import { useAppDispatch, useAppEntitySelector, useAppSelector } from "@/hooks";
 import ErrorPage from "@/ErrorPage";
-import FlipMoveWrapper from "@/FlipMoveWrapper";
 import AppearanceCard from "../appearances/AppearanceCard";
 import PropositionCompoundCard from "@/PropositionCompoundCard";
 import PropositionCard from "@/PropositionCard";
 import FetchMoreButton from "@/components/button/FetchMoreButton";
+import SingleColumnGrid from "@/components/layout/SingleColumnGrid";
+import {
+  appearanceCardColSpans,
+  justificationCardColSpans,
+  propositionCardColSpans,
+} from "@/components/listEntities/ListEntitiesWidget";
 
 const pageId = "proposition-usages-page";
 const fetchCount = 20;
@@ -120,147 +125,110 @@ function ValidPropositionUsagesPage({ propositionId }: ValidProps) {
   );
 
   return (
-    <div className="md-grid">
-      <h1 className="md-cell md-cell--12">Proposition Usages</h1>
+    <div>
+      <h1>Proposition Usages</h1>
       {proposition && (
-        <PropositionCard
-          id={combineIds(pageId, "proposition")}
-          proposition={proposition}
-        />
+        <SingleColumnGrid>
+          <PropositionCard
+            id={combineIds(pageId, "proposition")}
+            proposition={proposition}
+          />
+        </SingleColumnGrid>
       )}
 
-      <h2 className="md-cell md-cell--12">Direct Statements</h2>
-      <CellList className="md-cell md-cell--12 center-text">
+      <h2>Direct Statements</h2>
+      <Grid clone={true} columns={2}>
         {map(directStatements, (s) => {
           const id = combineIds(pageId, "statement", s.id);
-          return (
-            <StatementCard
-              className="md-cell md-cell--12"
-              id={id}
-              key={id}
-              statement={s}
-            />
-          );
+          return <StatementCard id={id} key={id} statement={s} />;
         })}
-      </CellList>
+      </Grid>
       {!isFetchingDirect && !hasDirectStatements && (
-        <div className="md-cell md-cell--12 text-center">
-          No direct statements
-        </div>
+        <div>No direct statements</div>
       )}
       {isFetchingDirect && (
-        <div className="md-cell md-cell--12 cell--centered-contents">
+        <div>
           <CircularProgress id={`$justificationsSearchPage-Progress`} />
         </div>
       )}
 
-      <h2 className="md-cell md-cell--12">Indirect Statements</h2>
-      <CellList className="md-cell md-cell--12 center-text">
+      <h2>Indirect Statements</h2>
+      <Grid clone={true} columns={2}>
         {map(indirectStatements, (s) => {
           const id = combineIds(pageId, "statement", s.id);
-          return (
-            <StatementCard
-              className="md-cell md-cell--12"
-              id={id}
-              key={id}
-              statement={s}
-            />
-          );
+          return <StatementCard id={id} key={id} statement={s} />;
         })}
-      </CellList>
+      </Grid>
       {!isFetchingIndirect && !hasIndirectStatements && (
-        <div className="md-cell md-cell--12 text-center">
-          No indirect statements
-        </div>
+        <div>No indirect statements</div>
       )}
       {isFetchingIndirect && (
-        <div className="md-cell md-cell--12 cell--centered-contents">
+        <div>
           <CircularProgress id={`$justificationsSearchPage-Progress`} />
         </div>
       )}
 
-      <h2 className="md-cell md-cell--12">Justifications</h2>
-      <FlipMove
-        {...config.ui.flipMove}
-        className="md-cell md-cell--12 center-text"
-      >
-        {map(justifications, (j) => {
-          const id = `justification-card-${j.id}`;
-          return (
-            <FlipMoveWrapper key={id}>
-              <JustificationCard
-                className="md-cell md-cell--12"
-                id={id}
-                justification={j}
-              />
-            </FlipMoveWrapper>
-          );
-        })}
-      </FlipMove>
+      <h2>Justifications</h2>
+      <Grid cloneStyles={true}>
+        <FlipMove {...config.ui.flipMove}>
+          {map(justifications, (j) => {
+            const id = `justification-card-${j.id}`;
+            return (
+              <GridCell key={id} {...justificationCardColSpans}>
+                <JustificationCard id={id} justification={j} />
+              </GridCell>
+            );
+          })}
+        </FlipMove>
+      </Grid>
       {!isFetchingJustifications && !hasJustifications && (
-        <div className="md-cell md-cell--12 text-center">No justifications</div>
+        <div>No justifications</div>
       )}
       {isFetchingJustifications && (
-        <div className="md-cell md-cell--12 cell--centered-contents">
+        <div>
           <CircularProgress id={`$justificationsSearchPage-Progress`} />
         </div>
       )}
-      <div className="md-cell md-cell--12 cell--centered-contents">
-        {fetchMoreJustificationsButton}
-      </div>
+      <div>{fetchMoreJustificationsButton}</div>
 
-      <h2 className="md-cell md-cell--12">Appearances</h2>
-      <FlipMove
-        {...config.ui.flipMove}
-        className="md-cell md-cell--12 center-text"
-      >
-        {map(appearances, (a) => {
-          const id = `appearance-card-${a.id}`;
-          return (
-            <FlipMoveWrapper key={id}>
-              <AppearanceCard
-                className="md-cell md-cell--12"
-                id={id}
-                appearance={a}
-              />
-            </FlipMoveWrapper>
-          );
-        })}
-      </FlipMove>
-      {!isFetchingAppearances && !hasAppearances && (
-        <div className="md-cell md-cell--12 text-center">No Appearances</div>
-      )}
+      <h2>Appearances</h2>
+      <Grid cloneStyles={true}>
+        <FlipMove {...config.ui.flipMove}>
+          {map(appearances, (a) => {
+            const id = `appearance-card-${a.id}`;
+            return (
+              <GridCell key={id} {...appearanceCardColSpans}>
+                <AppearanceCard id={id} appearance={a} />
+              </GridCell>
+            );
+          })}
+        </FlipMove>
+      </Grid>
+      {!isFetchingAppearances && !hasAppearances && <div>No Appearances</div>}
       {isFetchingAppearances && (
-        <div className="md-cell md-cell--12 cell--centered-contents">
+        <div>
           <CircularProgress id={`appearances-progress`} />
         </div>
       )}
 
-      <h2 className="md-cell md-cell--12">PropositionCompounds</h2>
-      <FlipMove
-        {...config.ui.flipMove}
-        className="md-cell md-cell--12 center-text"
-      >
-        {map(propositionCompounds, (pc) => {
-          const id = `proposition-compound-card-${pc.id}`;
-          return (
-            <FlipMoveWrapper key={id}>
-              <PropositionCompoundCard
-                className="md-cell md-cell--12"
-                id={id}
-                propositionCompound={pc}
-              />
-            </FlipMoveWrapper>
-          );
-        })}
-      </FlipMove>
+      <h2>PropositionCompounds</h2>
+      <Grid cloneStyles={true}>
+        <FlipMove {...config.ui.flipMove}>
+          {map(propositionCompounds, (pc) => {
+            const id = `proposition-compound-card-${pc.id}`;
+            return (
+              <GridCell key={id} {...propositionCardColSpans}>
+                <PropositionCompoundCard id={id} propositionCompound={pc} />
+              </GridCell>
+            );
+          })}
+        </FlipMove>
+      </Grid>
       {!isFetchingPropositionCompounds && !hasPropositionCompounds && (
-        <div className="md-cell md-cell--12 text-center">
-          No PropositionCompounds
-        </div>
+        <div>No PropositionCompounds</div>
       )}
       {isFetchingPropositionCompounds && (
-        <div className="md-cell md-cell--12 cell--centered-contents">
+        <div>
           <CircularProgress id={`proposition-compounds-progress`} />
         </div>
       )}

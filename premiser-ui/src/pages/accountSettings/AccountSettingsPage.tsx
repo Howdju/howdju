@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 
 import { Card, CardActions, CardContent } from "@/components/card/Card";
-import Helmet from "../../Helmet";
+import Helmet from "@/Helmet";
 import EditableAccountSettings from "./EditableAccountSettings";
 import { defaultEditorState, EditorTypes } from "../../reducers/editors";
 import { combineIds } from "../../viewModels";
@@ -12,6 +12,8 @@ import { showPrivacyConsentDialog } from "../../cookieConsent";
 import { useAppDispatch, useAppSelector } from "@/hooks";
 import { logger } from "@/logger";
 import OutlineButton from "@/components/button/OutlineButton";
+import { Page } from "@/components/layout/Page";
+import SingleColumnGrid from "@/components/layout/SingleColumnGrid";
 
 const baseId = "accountSettingsPage";
 const accountSettingsId = combineIds(baseId, "accountSettings");
@@ -50,16 +52,13 @@ export default function AccountSettingsPage() {
   };
 
   return (
-    <div className="md-grid">
-      <div className="md-cell md-cell--12">
-        <Helmet>
-          <title>Settings — Howdju</title>
-        </Helmet>
-
-        <h1>Settings</h1>
-
+    <Page>
+      <Helmet>
+        <title>Settings — Howdju</title>
+      </Helmet>
+      <h1>Settings</h1>
+      <SingleColumnGrid>
         <Card
-          className="md-cell--12"
           title="Profile"
           subtitle="Your profile is the part of your account settings that are visible to other users"
         >
@@ -68,7 +67,6 @@ export default function AccountSettingsPage() {
               id={accountSettingsId}
               name="accountSettings"
               editorId={accountSettingsEditorId}
-              className="md-cell md-cell--12"
               accountSettings={accountSettings}
               suggestionsKey="accountSettings"
             />
@@ -85,16 +83,14 @@ export default function AccountSettingsPage() {
             )}
           </CardActions>
         </Card>
-      </div>
-      <div className="md-cell md-cell--12">
-        <Card className="md-cell--12" title="Privacy settings">
+        <Card title="Privacy settings">
           <CardContent>
             <OutlineButton onClick={showPrivacyConsentDialog}>
               Show privacy consent dialog
             </OutlineButton>
           </CardContent>
         </Card>
-      </div>
-    </div>
+      </SingleColumnGrid>
+    </Page>
   );
 }

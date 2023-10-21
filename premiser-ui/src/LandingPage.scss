@@ -1,4 +1,4 @@
-@import "~react-md/src/scss/grids";
+@import "~@react-md/utils/dist/_variables";
 @import "./flatui-colors";
 @import "./tree";
 
@@ -118,13 +118,13 @@ $banner-padding: 3em;
     background-color: lighten($peter-river, 43%);
   }
 
-  @media (max-width: $md-grid-tablet-breakpoint - 1) {
+  @media (max-width: $rmd-utils-tablet-max-width) {
     > p,
     ul,
     .banner-content {
       width: 100%;
-      padding-left: $md-grid-phone-gutter;
-      padding-right: $md-grid-phone-gutter;
+      padding-left: $rmd-grid-gutter-var;
+      padding-right: $rmd-grid-gutter-var;
     }
     ul.blocks {
       width: 100%;
@@ -132,7 +132,7 @@ $banner-padding: 3em;
     }
   }
 
-  @media (min-width: $md-grid-tablet-breakpoint) and (max-width: $md-grid-desktop-breakpoint - 1) {
+  @media (min-width: $rmd-utils-desktop-min-width) and (max-width: $rmd-utils-large-desktop-min-width) {
     > p,
     .banner-content {
       width: 75%;
@@ -142,7 +142,7 @@ $banner-padding: 3em;
     }
   }
 
-  @media (min-width: $md-grid-desktop-breakpoint) {
+  @media (min-width: $rmd-utils-large-desktop-min-width) {
     > p,
     .banner-content {
       width: 50%;

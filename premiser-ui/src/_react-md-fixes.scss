@@ -8,54 +8,9 @@
 }
 
 @mixin react-md-fixes($grid-desktop-breakpoint, $grid-phone-gutter) {
-  .md-dialog {
-    // React-MD doesn't implement scrolling of md-dialog-content. This means that if a dialog is too
-    // large for the viewport, it is cutoff and the user can't access controls below the fold. So add scroll to the whole dialog.
-    overflow: auto;
-  }
-
-  .md-overlay--wide-dialog > .md-dialog {
-    // Evoke react-md .md-dialog's max-width;
-    width: 100%;
-    height: 100%;
-  }
-
-  .md-dialog-footer--card > .md-btn {
-    margin-left: 0.25em;
-    margin-right: 0.25em;
-  }
-
-  .md-dialog-footer--card {
-    // Buttons are right-justified
-    // (Matches .md-dialog-footer)
-    justify-content: flex-end;
-  }
-
   .md-tooltip {
     font-size: large;
     padding: 25px;
-  }
-
-  html,
-  body {
-    &.md-no-scroll {
-      // This is to counteract something weird that React-MD does when showing a dialog:
-      // it adds a class .md-no-scroll to the HTML, with position: fixed, which causes
-      // the content to scrunch up to the left.  It appears React-MD does this for something
-      // related to accessibility, so watch out for how this might affect mobile or alternative
-      // devices...
-
-      // Let's try and take this out for now...since it seems dangerous to override the library's decision
-      //position: static;
-    }
-  }
-
-  // In some cases where we need to use two adjacent md-grids but want them to appear like one, remove the interior padding
-  .md-grid--top {
-    padding-bottom: 0;
-  }
-  .md-grid--bottom {
-    padding-top: 0;
   }
 
   #header {

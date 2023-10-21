@@ -7,10 +7,11 @@ exports[`CreatePropositionPage (with fake timers) renders correctly with query p
   >
     <form>
       <div
-        class="md-grid"
+        class="rmd-grid"
+        style="--rmd-grid-cols: 1;"
       >
         <div
-          class="rmd-card rmd-card--shadowed md-cell md-cell--12"
+          class="rmd-card rmd-card--shadowed rmd-grid__cell"
         >
           <header
             class="rmd-card__header rmd-card__header--center"

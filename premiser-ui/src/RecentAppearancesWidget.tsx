@@ -2,8 +2,9 @@ import React, { HTMLAttributes } from "react";
 
 import { AppearanceOut } from "howdju-common";
 
-import { largeCellClasses } from "./CellList";
-import ListEntitiesWidget from "./components/listEntities/ListEntitiesWidget";
+import ListEntitiesWidget, {
+  appearanceCardColSpans,
+} from "./components/listEntities/ListEntitiesWidget";
 import { api } from "./actions";
 import { appearancesSchema } from "./normalizationSchemas";
 import AppearanceCard from "./pages/appearances/AppearanceCard";
@@ -19,18 +20,10 @@ export default function RecentAppearancesWidget({
   widgetId,
   ...rest
 }: Props) {
-  const toCard = (appearance: AppearanceOut) => {
+  function toCard(appearance: AppearanceOut) {
     const cardId = `${id}-appearance-${appearance.id}`;
-    return (
-      <AppearanceCard
-        id={cardId}
-        key={cardId}
-        appearance={appearance}
-        className={largeCellClasses}
-      />
-    );
-  };
-
+    return <AppearanceCard id={cardId} key={cardId} appearance={appearance} />;
+  }
   return (
     <ListEntitiesWidget
       {...rest}
@@ -38,7 +31,7 @@ export default function RecentAppearancesWidget({
       widgetId={widgetId}
       entitiesWidgetStateKey="recentAppearances"
       fetchEntities={api.fetchRecentAppearances}
-      cellClasses={largeCellClasses}
+      cardColSpans={appearanceCardColSpans}
       entityToCard={toCard}
       entitiesSchema={appearancesSchema}
       emptyEntitiesMessage="No recent appearances"

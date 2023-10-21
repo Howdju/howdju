@@ -1,13 +1,44 @@
-import React, { MouseEvent, useEffect } from "react";
+import React, { MouseEvent, ReactElement, useEffect } from "react";
 import { ActionCreator } from "@reduxjs/toolkit";
-import concat from "lodash/concat";
-import map from "lodash/map";
-import { denormalize, Schema } from "normalizr";
+import { schema } from "normalizr";
+import { Grid, GridCell } from "@react-md/utils";
 
-import CellList, { smallCellClasses } from "../../CellList";
 import { useAppDispatch, useAppSelector } from "../../hooks";
 import FetchMoreButton from "../button/FetchMoreButton";
 import FetchButton from "../button/FetchButton";
+import { denormalizedEntity } from "@/selectors";
+
+/** Corresponds to GridCSSProperties */
+export interface FormFactorGridCellProps {
+  colSpan: number;
+}
+/** Corresponds to GridCellProps. */
+export interface GridCellProps {
+  phone: FormFactorGridCellProps;
+  tablet: FormFactorGridCellProps;
+  desktop: FormFactorGridCellProps;
+  largeDesktop: FormFactorGridCellProps;
+}
+
+export const largeCardColSpans: GridCellProps = {
+  phone: { colSpan: 4 },
+  tablet: { colSpan: 8 },
+  desktop: { colSpan: 6 },
+  largeDesktop: { colSpan: 6 },
+};
+export const smallCardColSpans: GridCellProps = {
+  phone: { colSpan: 4 },
+  tablet: { colSpan: 4 },
+  desktop: { colSpan: 3 },
+  largeDesktop: { colSpan: 3 },
+};
+
+export const persorgCardColSpans = smallCardColSpans;
+export const sourceCardColSpans = smallCardColSpans;
+export const propositionCardColSpans = smallCardColSpans;
+export const appearanceCardColSpans = largeCardColSpans;
+export const justificationCardColSpans = largeCardColSpans;
+export const mediaExcerptCardColSpans = largeCardColSpans;
 
 type ListEntitiesWidgetProps = {
   id: string;
@@ -16,11 +47,11 @@ type ListEntitiesWidgetProps = {
   fetchEntities: ActionCreator<any>;
   initialFetchCount?: number;
   fetchCount?: number;
-  entityToCard: (...args: any[]) => any;
-  entitiesSchema: Schema<any>;
+  entityToCard: (entity: any) => ReactElement;
+  entitiesSchema: schema.Array<any>;
   emptyEntitiesMessage: string;
   loadErrorMessage: string;
-  cellClasses?: string;
+  cardColSpans: GridCellProps;
 };
 
 export default function ListEntitiesWidget({
@@ -29,11 +60,10 @@ export default function ListEntitiesWidget({
   // This way the fetchMoreButton takes up the last column
   initialFetchCount = 7,
   fetchCount = 8,
-  cellClasses = smallCellClasses,
+  cardColSpans,
   id,
   emptyEntitiesMessage,
   loadErrorMessage,
-  // ignore
   entitiesWidgetStateKey,
   entityToCard,
   entitiesSchema,
@@ -51,12 +81,12 @@ export default function ListEntitiesWidget({
     const listEntitiesState = state.widgets.listEntities[widgetId] as
       | Record<string, any>
       | undefined;
-    return denormalize(
+    return denormalizedEntity(
+      state,
       listEntitiesState?.[entitiesWidgetStateKey],
-      entitiesSchema,
-      state.entities
+      entitiesSchema
     );
-  });
+  }) as any[] | undefined;
 
   const fetchMore = (event: MouseEvent) => {
     event.preventDefault();
@@ -65,43 +95,54 @@ export default function ListEntitiesWidget({
   };
 
   const hasEntities = !!entities?.length;
-  const cards = () => map(entities, entityToCard);
   const fetchMoreButtonCell = (
-    <div className={cellClasses} key="fetch-more-button">
-      <FetchMoreButton
-        id={`${id}-fetch-more-button`}
-        onClick={fetchMore}
-        disabled={isFetching}
-        isFetching={isFetching}
-      />
-    </div>
+    <FetchMoreButton
+      id={`${id}-fetch-more-button`}
+      onClick={fetchMore}
+      disabled={isFetching}
+      isFetching={isFetching}
+    />
   );
   const retryButtonCell = (
-    <div className={cellClasses} key="retry-button">
-      <FetchButton
-        id={`${id}-retry-button`}
-        disabled={isFetching}
-        isFetching={isFetching}
-        onClick={fetchMore}
-      >
-        Retry
-      </FetchButton>
-    </div>
+    <FetchButton
+      id={`${id}-retry-button`}
+      disabled={isFetching}
+      isFetching={isFetching}
+      onClick={fetchMore}
+    >
+      Retry
+    </FetchButton>
   );
   return (
-    <CellList id={id} {...rest}>
-      {hasEntities && concat(cards(), fetchMoreButtonCell)}
+    <Grid id={id} {...rest}>
+      {entities?.map((e) => {
+        const card = entityToCard(e);
+        return (
+          <GridCell clone={true} key={card.key} {...cardColSpans}>
+            {card}
+          </GridCell>
+        );
+      })}
+      {hasEntities && (
+        <GridCell key="fetch-more-button" {...cardColSpans}>
+          {fetchMoreButtonCell}
+        </GridCell>
+      )}
       {!hasEntities && !isFetching && (
-        <div key="empty-entities-placeholder" className="md-cell md-cell--12">
+        <GridCell key="empty-entities-placeholder" {...cardColSpans}>
           {emptyEntitiesMessage}
-        </div>
+        </GridCell>
       )}
       {didError && (
-        <span key="error-message" className="error-message">
+        <GridCell key="error-message" className="error-message">
           {loadErrorMessage}
-        </span>
+        </GridCell>
       )}
-      {didError && !hasEntities && retryButtonCell}
-    </CellList>
+      {didError && !hasEntities && (
+        <GridCell key="retry-button" {...cardColSpans}>
+          {retryButtonCell}
+        </GridCell>
+      )}
+    </Grid>
   );
 }

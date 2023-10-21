@@ -33,7 +33,7 @@ export default function AppearanceEditorFields({
 
   return (
     <div>
-      <fieldset className="md-cell md-cell--12">
+      <fieldset>
         <legend>Proposition</legend>
         <PropositionEditorFields
           id={combineIds(id, "proposition")}
@@ -52,7 +52,7 @@ export default function AppearanceEditorFields({
       <MediaExcerptCard
         id={combineIds(id, "media-excerpt-card")}
         mediaExcerpt={mediaExcerpt}
-        className="md-cell md-cell--12"
+        style={{ width: "100%" }}
       />
     </div>
   );

@@ -16,10 +16,6 @@ $slide-size: $md-btn-icon-size;
   }
 }
 
-.counter-justifications {
-  width: 100%;
-}
-
 .justification-tree {
   .actions {
     // Hide the actions as they slide off-screen; else they create horizontal scroll bars
@@ -77,7 +73,7 @@ $slide-size: $md-btn-icon-size;
       // Override App.scss .md-dialog-footer--card
       justify-content: flex-start;
 
-      .md-icon {
+      .rmd-icon {
         // When positivey, the icons make more sense flipped
         @include flip-icon-horizontal;
       }

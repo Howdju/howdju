@@ -4,6 +4,7 @@ import { Card, CardContent } from "@/components/card/Card";
 import SolidButton from "@/components/button/SolidButton";
 import Helmet from "./Helmet";
 import { showPrivacyConsentDialog } from "./cookieConsent";
+import SingleColumnGrid from "./components/layout/SingleColumnGrid";
 
 /**
  * A page where a user an access their privacy settings. Provided so that there is a URL to navigate directly to
@@ -16,18 +17,19 @@ export default class PrivacySettingsPage extends Component {
 
   render() {
     return (
-      <div className="md-grid">
+      <div>
         <Helmet>
           <title>Privacy Settings — Howdju</title>
         </Helmet>
-        <Card className="md-cell--12">
-          <CardContent>
-            <h1 className="md-cell md-cell--12">Privacy Settings</h1>
-            <SolidButton onClick={showPrivacyConsentDialog}>
-              Show privacy consent dialog
-            </SolidButton>
-          </CardContent>
-        </Card>
+        <SingleColumnGrid>
+          <Card title="Privacy settings">
+            <CardContent>
+              <SolidButton onClick={showPrivacyConsentDialog}>
+                Show privacy consent dialog
+              </SolidButton>
+            </CardContent>
+          </Card>
+        </SingleColumnGrid>
       </div>
     );
   }

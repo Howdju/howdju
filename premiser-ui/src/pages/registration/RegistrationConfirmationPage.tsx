@@ -26,6 +26,7 @@ import {
 import { useAppDispatch, useAppSelector } from "@/hooks";
 import RegistrationConfirmationEditor from "./RegistrationConfirmationEditor";
 import SolidButton from "@/components/button/SolidButton";
+import SingleColumnGrid from "@/components/layout/SingleColumnGrid";
 
 const editorId = "registration-confirmation-page";
 const editorType = EditorTypes.REGISTRATION_CONFIRMATION;
@@ -154,15 +155,11 @@ const makePage = (subtitle: string | undefined, cardContents: JSX.Element) => (
     <Helmet>
       <title>Complete Registration — Howdju</title>
     </Helmet>
-    <div className="md-grid">
-      <Card
-        title="Complete Registration"
-        subtitle={subtitle}
-        className="md-cell md-cell--12"
-      >
+    <SingleColumnGrid>
+      <Card title="Complete Registration" subtitle={subtitle}>
         <CardContent>{cardContents}</CardContent>
       </Card>
-    </div>
+    </SingleColumnGrid>
   </div>
 );
 

@@ -23,7 +23,7 @@ interface Props {
   focusEntityType: FocusEntityType;
   focusEntityId: EntityId;
   id: ComponentId;
-  className: string;
+  className?: string;
 }
 /**
  * A ContextTrail wrapper that validates that some focus entity matches the context trail.

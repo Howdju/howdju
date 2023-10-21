@@ -6,10 +6,11 @@ exports[`RegistrationConfirmationPage shows error message for duplicate username
     id="register-page"
   >
     <div
-      class="md-grid"
+      class="rmd-grid"
+      style="--rmd-grid-cols: 1;"
     >
       <div
-        class="rmd-card rmd-card--shadowed md-cell md-cell--12"
+        class="rmd-card rmd-card--shadowed rmd-grid__cell"
       >
         <header
           class="rmd-card__header rmd-card__header--center"
@@ -447,10 +448,11 @@ exports[`RegistrationConfirmationPage shows error message for missing registrati
     id="register-page"
   >
     <div
-      class="md-grid"
+      class="rmd-grid"
+      style="--rmd-grid-cols: 1;"
     >
       <div
-        class="rmd-card rmd-card--shadowed md-cell md-cell--12"
+        class="rmd-card rmd-card--shadowed rmd-grid__cell"
       >
         <header
           class="rmd-card__header rmd-card__header--center"
@@ -486,10 +488,11 @@ exports[`RegistrationConfirmationPage shows form 1`] = `
     id="register-page"
   >
     <div
-      class="md-grid"
+      class="rmd-grid"
+      style="--rmd-grid-cols: 1;"
     >
       <div
-        class="rmd-card rmd-card--shadowed md-cell md-cell--12"
+        class="rmd-card rmd-card--shadowed rmd-grid__cell"
       >
         <header
           class="rmd-card__header rmd-card__header--center"
@@ -916,10 +919,11 @@ exports[`RegistrationConfirmationPage shows success message upon confirmation. 1
     id="register-page"
   >
     <div
-      class="md-grid"
+      class="rmd-grid"
+      style="--rmd-grid-cols: 1;"
     >
       <div
-        class="rmd-card rmd-card--shadowed md-cell md-cell--12"
+        class="rmd-card rmd-card--shadowed rmd-grid__cell"
       >
         <header
           class="rmd-card__header rmd-card__header--center"

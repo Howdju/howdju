@@ -142,16 +142,15 @@ export default function AppearancePage(props: Props) {
   ) : undefined;
 
   return (
-    <div className="md-grid">
+    <div>
       <HowdjuHelmet>
         <title>{title} — Howdju</title>
       </HowdjuHelmet>
-      <h1 className="md-cell md-cell--12">{title}</h1>
+      <h1>{title}</h1>
       <FocusValidatingContextTrail
         id="appearance-page-context-trail"
         focusEntityType="APPEARANCE"
         focusEntityId={appearanceId}
-        className="md-cell md-cell--12"
       />
       {appearance ? (
         <AppearanceCard
@@ -159,7 +158,6 @@ export default function AppearancePage(props: Props) {
           appearance={appearance}
           contextTrailItems={contextTrailItems}
           menu={menu}
-          style={{ width: "100%" }}
         />
       ) : (
         <CircularProgress id="appearance-page--progress" />

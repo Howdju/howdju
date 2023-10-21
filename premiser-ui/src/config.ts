@@ -1,11 +1,5 @@
 /* globals process */
-/*
- $md-grid-tablet-breakpoint: 600px !default;
- $md-grid-desktop-breakpoint: 840px !default;
 
- Technique to read CSS values directly from style sheets:
- https://stackoverflow.com/a/27527462/39396
- */
 const config = {
   apiRoot: process.env.API_ROOT,
   apiTimeoutMs: 10_000,
@@ -38,6 +32,7 @@ const config = {
   },
   sentryShowReportDialogThrottleMs: 5000,
   ui: {
+    // react-md's desktop breakpoint is 840px
     narrowBreakpoint: 840,
     shortTextLength: 256,
     flipMove: {

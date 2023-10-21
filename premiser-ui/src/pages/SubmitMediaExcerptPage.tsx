@@ -11,6 +11,7 @@ import { isArray } from "lodash";
 import HowdjuHelmet from "@/Helmet";
 import ErrorMessages from "@/ErrorMessages";
 import MediaExcerptEditor from "@/editors/MediaExcerptEditor";
+import SingleColumnGrid from "@/components/layout/SingleColumnGrid";
 
 const id = "submit-media-excerpt";
 export const editorType = "MEDIA_EXCERPT";
@@ -40,19 +41,20 @@ export default function SubmitMediaExcerptPage() {
   }
 
   return (
-    <div className="md-grid">
+    <div>
       <HowdjuHelmet>
         <title>Submit Media Excerpt — Howdju</title>
       </HowdjuHelmet>
-      <h1 className="md-cell--12">Create Media Excerpt</h1>
+      <h1>Create Media Excerpt</h1>
       <ErrorMessages errors={errors} />
-      <MediaExcerptEditor
-        id={id}
-        editorId={editorId}
-        className="md-cell--12"
-        commitBehavior={"CommitThenView"}
-        submitButtonText="Create"
-      />
+      <SingleColumnGrid>
+        <MediaExcerptEditor
+          id={id}
+          editorId={editorId}
+          commitBehavior={"CommitThenView"}
+          submitButtonText="Create"
+        />
+      </SingleColumnGrid>
     </div>
   );
 }

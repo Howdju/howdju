@@ -3,6 +3,7 @@ import { RouteComponentProps } from "react-router";
 import { MaterialSymbol } from "react-material-symbols";
 import { Link } from "react-router-dom";
 import { push } from "connected-react-router";
+import { FontIcon } from "@react-md/icon";
 
 import {
   EntityId,
@@ -42,7 +43,7 @@ import {
   DialogContent,
   DialogFooter,
 } from "@/components/dialog/Dialog";
-import { FontIcon } from "@react-md/icon";
+import SingleColumnGrid from "@/components/layout/SingleColumnGrid";
 
 interface MatchParams {
   mediaExcerptId: EntityId;
@@ -231,17 +232,18 @@ export default function MediaExcerptPage(props: Props) {
     return <div id={id}>Media Excerpt not found.</div>;
   }
   return (
-    <div id={id} className="md-grid">
+    <div id={id}>
       <HowdjuHelmet>
         <title>{title} — Howdju</title>
       </HowdjuHelmet>
-      <h1 className="md-cell md-cell--12">{title}</h1>
-      <MediaExcerptCard
-        id={combineIds(id, "media-excerpt-card")}
-        mediaExcerpt={mediaExcerpt}
-        menu={menu}
-        className="md-cell md-cell--12"
-      />
+      <h1>{title}</h1>
+      <SingleColumnGrid>
+        <MediaExcerptCard
+          id={combineIds(id, "media-excerpt-card")}
+          mediaExcerpt={mediaExcerpt}
+          menu={menu}
+        />
+      </SingleColumnGrid>
       <MediaExcerptUsages mediaExcerptId={mediaExcerptId} />
       <Dialog
         id={combineIds(id, "add-url-locators-dialog")}

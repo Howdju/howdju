@@ -15,6 +15,7 @@ import passwordResetRequestPage, {
 import { combineIds } from "@/viewModels";
 import ErrorMessages from "@/ErrorMessages";
 import SolidButton from "@/components/button/SolidButton";
+import SingleColumnGrid from "@/components/layout/SingleColumnGrid";
 
 const id = "password-reset-request-page";
 
@@ -68,14 +69,15 @@ export default function PasswordResetRequestPage() {
       <Helmet>
         <title>Request Password Reset — Howdju</title>
       </Helmet>
-      <div className="md-grid">
-        <Card title="Request Password Reset" className="md-cell md-cell--12">
+      <h1>Request Password Reset</h1>
+      <SingleColumnGrid>
+        <Card title="Request Password Reset">
           <CardContent>
             {errorMessage}
             {submissionMessage ?? form}
           </CardContent>
         </Card>
-      </div>
+      </SingleColumnGrid>
     </div>
   );
 }

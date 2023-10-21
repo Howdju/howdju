@@ -15,7 +15,7 @@ import "./WritQuoteCard.scss";
 interface WritQuoteCardProps {
   id: ComponentId;
   writQuote: WritQuoteOut;
-  className: string;
+  className?: string;
   showUrls?: boolean;
   doHideControls?: boolean;
 }

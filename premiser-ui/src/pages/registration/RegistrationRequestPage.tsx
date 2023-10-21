@@ -16,6 +16,7 @@ import { EditorState, EditorTypes } from "../../reducers/editors";
 import { useAppDispatch, useAppSelector } from "@/hooks";
 import RegistrationRequestEditor from "./RegistrationRequestEditor";
 import SolidButton from "@/components/button/SolidButton";
+import SingleColumnGrid from "@/components/layout/SingleColumnGrid";
 
 const editorId = "registration-request-page";
 const editorType = EditorTypes.REGISTRATION_REQUEST;
@@ -83,13 +84,11 @@ export default function RegistrationRequestPage() {
       <Helmet>
         <title>Request Registration — Howdju</title>
       </Helmet>
-      <div className="md-grid">
-        <div className="md-cell md-cell--12">
-          <Card title="Request Registration" style={{ width: "100%" }}>
-            {isSubmitted ? submissionMessage : form}
-          </Card>
-        </div>
-      </div>
+      <SingleColumnGrid>
+        <Card title="Request Registration">
+          {isSubmitted ? submissionMessage : form}
+        </Card>
+      </SingleColumnGrid>
     </div>
   );
 }

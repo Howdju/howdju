@@ -3,6 +3,7 @@ import React, { Component, ReactNode } from "react";
 interface Props {
   /** A unique key for each child of FlipMove. */
   key: string;
+  className?: string;
   /** The children to wrap. */
   children: ReactNode;
 }
@@ -10,7 +11,7 @@ interface Props {
 /**
  * A class-based component to wrap functional component children of FlipMove.
  *
- * TODO(221) revisit whether we need this if we replace/upgrade react-flip-move.
+ * TODO(#221) revisit whether we need this if we replace/upgrade react-flip-move.
  *
  * Prevents this error:
  *
@@ -24,7 +25,11 @@ interface Props {
  */
 export default class FlipMoveWrapper extends Component<Props> {
   render() {
-    const { key, children } = this.props;
-    return <div key={key}>{children}</div>;
+    const { key, children, ...rest } = this.props;
+    return (
+      <div key={key} {...rest}>
+        {children}
+      </div>
+    );
   }
 }

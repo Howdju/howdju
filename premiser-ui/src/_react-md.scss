@@ -26,5 +26,6 @@ $md-typography-extended: false;
 @import "~@react-md/utils/dist/mixins";
 @include react-md-utils;
 
+@import "~@react-md/utils/dist/_variables";
 @import "./react-md-fixes";
-@include react-md-fixes($md-grid-desktop-breakpoint, $md-grid-phone-gutter);
+@include react-md-fixes($rmd-utils-desktop-min-width, $rmd-grid-gutter-var);

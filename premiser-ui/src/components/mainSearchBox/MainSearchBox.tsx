@@ -61,7 +61,7 @@ export default function MainSearchBox() {
   return (
     <form
       id="main-search-box-form"
-      className="main-search-box-form md-cell--12 md-cell--top"
+      className="main-search-box-form"
       onSubmit={onSubmit}
     >
       <ApiAutoComplete

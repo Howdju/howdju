@@ -4,6 +4,7 @@ import { denormalize } from "normalizr";
 import { FontIcon } from "@react-md/icon";
 import { RouteComponentProps } from "react-router";
 import { push } from "connected-react-router";
+import { Grid } from "@react-md/utils";
 
 import { EntityId, MediaExcerptOut, StatementOut } from "howdju-common";
 
@@ -15,7 +16,6 @@ import {
 import { CircularProgress } from "@/components/progress/CircularProgress";
 import Helmet from "../../Helmet";
 import { api, editors, flows } from "../../actions";
-import CellList, { largeCellClasses } from "../../CellList";
 import * as characters from "../../characters";
 import {
   mediaExcerptsSchema,
@@ -96,7 +96,6 @@ export default function PersorgPage(props: Props) {
   const statementCards = statements.map((statement, index) => (
     <StatementCard
       id={combineIds(id, "statements", toString(index))}
-      className={largeCellClasses}
       key={index}
       statement={statement}
     />
@@ -104,7 +103,6 @@ export default function PersorgPage(props: Props) {
   const mediaExcerptCards = mediaExcerpts.map((mediaExcerpt, index) => (
     <MediaExcerptCard
       id={combineIds(id, "media-excerpts", toString(index))}
-      className={largeCellClasses}
       key={index}
       mediaExcerpt={mediaExcerpt}
     />
@@ -135,13 +133,13 @@ export default function PersorgPage(props: Props) {
   );
 
   return (
-    <div id={id} className="md-grid">
+    <div>
       <Helmet>
         <title>{title} — Howdju</title>
       </Helmet>
-      <h1 className="md-cell md-cell--12">{title}</h1>
+      <h1>{title}</h1>
       {isFetchingPersorg && (
-        <div className="md-cell md-cell--12 cell--centered-contents">
+        <div>
           <CircularProgress id="persorg-page--persorg--progress" />
         </div>
       )}
@@ -150,42 +148,39 @@ export default function PersorgPage(props: Props) {
         <PersorgEntityCard
           id={combineIds(id, "persorg")}
           editorId={combineIds(editorId, "persorg")}
-          className="md-cell md-cell--12"
           persorg={persorg}
           menu={menu}
           suggestionsKey={combineSuggestionsKeys(id, "persorg")}
         />
       )}
 
-      <h2 className="md-cell md-cell--12">Statements</h2>
+      <h2>Statements</h2>
       {isFetchingStatements && (
-        <div className="md-cell md-cell--12 cell--centered-contents">
-          <CircularProgress id="persorg-page--statements--progress" />
-        </div>
+        <CircularProgress id="persorg-page--statements--progress" />
       )}
       {!isFetchingStatements && statementCards.length === 0 && (
-        <div className="md-cell md-cell--12">
+        <div>
           <p>None.</p>
         </div>
       )}
-      <CellList className="md-grid md-cell md-cell--12 md-grid--card-list--tablet">
+      <Grid columns={2} clone={true}>
         {statementCards}
-      </CellList>
+      </Grid>
 
-      <h2 className="md-cell md-cell--12">Media excerpts</h2>
+      <h2>Media excerpts</h2>
       {isFetchingMediaExcerpts && (
-        <div className="md-cell md-cell--12 cell--centered-contents">
+        <div>
           <CircularProgress id="tagged-propositions-page--progress" />
         </div>
       )}
       {!isFetchingMediaExcerpts && mediaExcerptCards.length === 0 && (
-        <div className="md-cell md-cell--12">
+        <div>
           <p>None.</p>
         </div>
       )}
-      <CellList className="md-grid md-cell md-cell--12 md-grid--card-list--tablet">
+      <Grid columns={2} clone={true}>
         {mediaExcerptCards}
-      </CellList>
+      </Grid>
     </div>
   );
 }

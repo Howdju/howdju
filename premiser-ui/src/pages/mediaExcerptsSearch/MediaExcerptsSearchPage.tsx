@@ -3,6 +3,7 @@ import { useLocation } from "react-router";
 import FlipMove from "react-flip-move";
 import { isArray, mapValues, pick, map, isEmpty } from "lodash";
 import queryString from "query-string";
+import { Grid, GridCell } from "@react-md/utils";
 
 import {
   MediaExcerptSearchFilter,
@@ -13,7 +14,6 @@ import { CircularProgress } from "@/components/progress/CircularProgress";
 import { api } from "../../actions";
 import config from "../../config";
 import { useAppDispatch, useAppSelector, useAppEntitySelector } from "@/hooks";
-import FlipMoveWrapper from "@/FlipMoveWrapper";
 import MediaExcerptCard from "@/components/mediaExcerpts/MediaExcerptCard";
 import { mediaExcerptsSchema } from "@/normalizationSchemas";
 import FetchMoreButton from "@/components/button/FetchMoreButton";
@@ -53,7 +53,7 @@ export default function MediaExcerptsSearchPage() {
 
   const filters = extractFilters(location.search);
   const filtersList = isEmpty(filters) ? null : (
-    <ul className="md-cell md-cell--12">
+    <ul>
       {map(filters, (val, key) => (
         <li key={key}>
           <strong>{key}</strong>: {val}
@@ -63,44 +63,35 @@ export default function MediaExcerptsSearchPage() {
   );
 
   return (
-    <div className="md-grid">
-      <h1 className="md-cell md-cell--12">MediaExcerpts</h1>
+    <div>
+      <h1>MediaExcerpts</h1>
 
       {filtersList && (
         <>
-          <h2 className="md-cell md-cell--12">Filters</h2>
+          <h2>Filters</h2>
           {filtersList}
         </>
       )}
 
-      <FlipMove
-        {...config.ui.flipMove}
-        className="md-cell md-cell--12 center-text"
-      >
-        {map(mediaExcerpts, (me) => {
-          const id = `mediaExcerpt-card-${me.id}`;
-          return (
-            <FlipMoveWrapper key={id}>
-              <MediaExcerptCard
-                className="md-cell md-cell--12"
-                id={id}
-                mediaExcerpt={me}
-              />
-            </FlipMoveWrapper>
-          );
-        })}
-      </FlipMove>
-      {!isFetching && !hasMediaExcerpts && (
-        <div className="md-cell md-cell--12 text-center">No media excerpts</div>
-      )}
+      <Grid cloneStyles={true}>
+        <FlipMove {...config.ui.flipMove}>
+          {map(mediaExcerpts, (me) => {
+            const id = `mediaExcerpt-card-${me.id}`;
+            return (
+              <GridCell clone={true}>
+                <MediaExcerptCard id={id} mediaExcerpt={me} key={id} />
+              </GridCell>
+            );
+          })}
+        </FlipMove>
+      </Grid>
+      {!isFetching && !hasMediaExcerpts && <div>No media excerpts</div>}
       {isFetching && (
-        <div className="md-cell md-cell--12 cell--centered-contents">
+        <div>
           <CircularProgress id={`$mediaExcerptsSearchPage-Progress`} />
         </div>
       )}
-      <div className="md-cell md-cell--12 cell--centered-contents">
-        {fetchMoreButton}
-      </div>
+      <div>{fetchMoreButton}</div>
     </div>
   );
 }

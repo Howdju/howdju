@@ -1,9 +1,9 @@
 import React, { MouseEvent, useEffect } from "react";
 import { useLocation } from "react-router";
-import FlipMove from "react-flip-move";
 import isEmpty from "lodash/isEmpty";
 import map from "lodash/map";
 import { denormalize } from "normalizr";
+import { Grid, GridCell } from "@react-md/utils";
 
 import { JustificationView } from "howdju-common";
 
@@ -11,12 +11,11 @@ import { CircularProgress } from "@/components/progress/CircularProgress";
 import { api } from "../../actions";
 import JustificationCard from "../../JustificationCard";
 import { justificationsSchema } from "../../normalizationSchemas";
-import config from "../../config";
 import { makeExtensionHighlightOnClickWritQuoteUrlCallback } from "../../extensionCallbacks";
 import { useAppDispatch, useAppSelector } from "@/hooks";
 import { extractFilters, extractIncludeUrls } from "./queryStringExtraction";
-import FlipMoveWrapper from "@/FlipMoveWrapper";
 import FetchMoreButton from "@/components/button/FetchMoreButton";
+import { largeCardColSpans } from "@/components/listEntities/ListEntitiesWidget";
 
 const fetchCount = 20;
 
@@ -69,7 +68,7 @@ export default function JustificationsSearchPage() {
 
   const filters = extractFilters(location.search);
   const filtersList = isEmpty(filters) ? null : (
-    <ul className="md-cell md-cell--12">
+    <ul>
       {map(filters, (val, key) => (
         <li key={key}>
           <strong>{key}</strong>: {val}
@@ -79,46 +78,37 @@ export default function JustificationsSearchPage() {
   );
 
   return (
-    <div className="md-grid">
-      <h1 className="md-cell md-cell--12">Justifications</h1>
+    <div>
+      <h1>Justifications</h1>
 
       {filtersList && (
         <>
-          <h2 className="md-cell md-cell--12">Filters</h2>
+          <h2>Filters</h2>
           {filtersList}
         </>
       )}
 
-      <FlipMove
-        {...config.ui.flipMove}
-        className="md-cell md-cell--12 center-text"
-      >
+      <Grid>
         {map(justifications, (j) => {
           const id = `justification-card-${j.id}`;
+          // TODO(#221) add FLIP
           return (
-            <FlipMoveWrapper key={id}>
+            <GridCell key={id} {...largeCardColSpans} clone={true}>
               <JustificationCard
-                className="md-cell md-cell--12"
                 id={id}
                 justification={j}
                 showBasisUrls={true}
                 onClickWritQuoteUrl={onClickWritQuoteUrl}
               />
-            </FlipMoveWrapper>
+            </GridCell>
           );
         })}
-      </FlipMove>
-      {!isFetching && !hasJustifications && (
-        <div className="md-cell md-cell--12 text-center">No justifications</div>
-      )}
+      </Grid>
+      {!isFetching && !hasJustifications && <div>No justifications</div>}
       {isFetching && (
-        <div className="md-cell md-cell--12 cell--centered-contents">
-          <CircularProgress id={`$justificationsSearchPage-Progress`} />
-        </div>
+        <CircularProgress id={`$justificationsSearchPage-Progress`} />
       )}
-      <div className="md-cell md-cell--12 cell--centered-contents">
-        {fetchMoreButton}
-      </div>
+      {fetchMoreButton}
     </div>
   );
 }

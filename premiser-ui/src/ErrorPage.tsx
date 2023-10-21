@@ -1,4 +1,5 @@
 import React from "react";
+import SingleColumnGrid from "./components/layout/SingleColumnGrid";
 
 interface Props {
   message: string;
@@ -6,8 +7,8 @@ interface Props {
 
 export default function ErrorPage({ message }: Props) {
   return (
-    <div className="md-grid">
-      <div className="md-cell md-cell--12 text-center">{message}</div>
+    <div>
+      <SingleColumnGrid>{message}</SingleColumnGrid>
     </div>
   );
 }

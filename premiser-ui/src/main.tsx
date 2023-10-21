@@ -36,7 +36,6 @@ const overrides = {
 
 render(
   <Provider store={store}>
-    {/* TODO(17) form inputs don't appear to pick this up. */}
     <FormThemeProvider theme="underline">
       <Configuration {...overrides}>
         <App />

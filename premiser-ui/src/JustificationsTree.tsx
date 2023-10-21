@@ -1,9 +1,8 @@
-import React, { ComponentType, ReactEventHandler } from "react";
+import React, { ReactEventHandler } from "react";
 import FlipMove from "react-flip-move";
 import get from "lodash/get";
 import groupBy from "lodash/groupBy";
 import map from "lodash/map";
-import cn from "classnames";
 
 import {
   ContextTrailItem,
@@ -22,6 +21,7 @@ import FlipMoveWrapper from "./FlipMoveWrapper";
 
 import "./JustificationsTree.scss";
 import TextButton from "./components/button/TextButton";
+import { Grid, GridCell } from "@react-md/utils";
 
 interface Props {
   id: ComponentId;
@@ -36,7 +36,6 @@ interface Props {
   showBasisUrls: boolean;
   contextTrailItems: ContextTrailItem[];
   onClickWritQuoteUrl: OnClickJustificationWritQuoteUrl;
-  wrapperComponent?: ComponentType<{ className: string }> | string;
   showNewPositiveJustificationDialog: ReactEventHandler;
   showNewNegativeJustificationDialog: ReactEventHandler;
 }
@@ -51,8 +50,6 @@ export default function JustificationsTree({
   justifications,
   isCondensed = false,
   isUnCondensed = false,
-  wrapperComponent: WrapperComponent = "div",
-  className,
   showNewPositiveJustificationDialog,
   showNewNegativeJustificationDialog,
 }: Props) {
@@ -98,29 +95,20 @@ export default function JustificationsTree({
 
   const isWindowNarrow = useAppSelector(selectIsWindowNarrow);
 
-  /*
-     When there are both positive and negative justifications, don't add any margin, but split them into two columns
-
-     When there are only positive or only negative justifications, add a margin to the top-left justifications to show
-     spatially whether they are positive or negative.
-     */
   let branchesCells = null;
   if (isWindowNarrow || isCondensed || (!hasBothSides && !isUnCondensed)) {
-    const treesClass =
-      "proposition-justifications-justification-trees--combined";
     branchesCells = (
-      <FlipMove
-        {...config.ui.flipMove}
-        key={treesClass}
-        className={`md-cell md-cell--12 ${treesClass}`}
-      >
-        {hasJustifications && (
-          <h2 className="md-cell md-cell--12" key="justifications-header">
-            Justifications
-          </h2>
-        )}
-        {map(justifications, toBranch)}
-      </FlipMove>
+      <GridCell clone={true} colSpan={12}>
+        <FlipMove
+          {...config.ui.flipMove}
+          className="proposition-justifications-justification-trees--combined"
+        >
+          {hasJustifications && (
+            <h2 key="justifications-header">Justifications</h2>
+          )}
+          {map(justifications, toBranch)}
+        </FlipMove>
+      </GridCell>
     );
   } else {
     const positiveTreeClass =
@@ -128,76 +116,50 @@ export default function JustificationsTree({
     const negativeTreeClass =
       "proposition-justifications-justification-trees--negative";
     branchesCells = [
-      <FlipMove
-        {...config.ui.flipMove}
+      <GridCell
+        clone={true}
         key={positiveTreeClass}
-        className={`md-cell md-cell--6 md-cell--8-tablet md-cell--4-phone ${positiveTreeClass}`}
+        largeDesktop={{ colSpan: 6 }}
+        desktop={{ colSpan: 6 }}
+        tablet={{ colSpan: 8 }}
+        phone={{ colSpan: 4 }}
       >
-        {hasJustifications && (
-          <h2
-            className="md-cell md-cell--12"
-            key="supporting-justifications-header"
-          >
-            Supporting Justifications
-          </h2>
-        )}
-        {hasJustifications &&
-          !hasPositiveJustifications && [
-            <div
-              className="md-cell md-cell--12 cell--centered-contents"
-              key="justification-propositions-page-no-positive-justifications-message"
-            >
+        <FlipMove {...config.ui.flipMove} className={positiveTreeClass}>
+          {hasJustifications && <h2>Supporting Justifications</h2>}
+          {hasJustifications && !hasPositiveJustifications && (
+            <>
               <div>None</div>
-            </div>,
-            <div
-              className="md-cell md-cell--12 cell--centered-contents"
-              key="justification-propositions-page-no-positive-justifications-add-justification-button"
-            >
               <TextButton onClick={showNewPositiveJustificationDialog}>
                 {t(ADD_JUSTIFICATION_CALL_TO_ACTION)}
               </TextButton>
-            </div>,
-          ]}
-        {map(positiveJustifications, toBranch)}
-      </FlipMove>,
-      <FlipMove
-        {...config.ui.flipMove}
+            </>
+          )}
+          {map(positiveJustifications, toBranch)}
+        </FlipMove>
+      </GridCell>,
+      <GridCell
+        clone={true}
         key={negativeTreeClass}
-        className={`md-cell md-cell--6 md-cell--8-tablet md-cell--4-phone ${negativeTreeClass}`}
+        largeDesktop={{ colSpan: 6 }}
+        desktop={{ colSpan: 6 }}
+        tablet={{ colSpan: 8 }}
+        phone={{ colSpan: 4 }}
       >
-        {hasJustifications && (
-          <h2
-            className="md-cell md-cell--12"
-            key="opposting-justifications-header"
-          >
-            Opposing Justifications
-          </h2>
-        )}
-        {hasJustifications &&
-          !hasNegativeJustifications && [
-            <div
-              className="md-cell md-cell--12 cell--centered-contents"
-              key="justification-propositions-page-no-negative-justifications-message"
-            >
-              None
-            </div>,
-            <div
-              className="md-cell md-cell--12 cell--centered-contents"
-              key="justification-propositions-page-no-negative-justifications-add-justification-button"
-            >
+        <FlipMove {...config.ui.flipMove} className={negativeTreeClass}>
+          {hasJustifications && <h2>Opposing Justifications</h2>}
+          {hasJustifications && !hasNegativeJustifications && (
+            <>
+              <div>None</div>
               <TextButton onClick={showNewNegativeJustificationDialog}>
                 {t(ADD_JUSTIFICATION_CALL_TO_ACTION)}
               </TextButton>
-            </div>,
-          ]}
-        {map(negativeJustifications, toBranch)}
-      </FlipMove>,
+            </>
+          )}
+          {map(negativeJustifications, toBranch)}
+        </FlipMove>
+      </GridCell>,
     ];
   }
 
-  return (
-    <WrapperComponent className={cn(className, "md-grid")}>
-      {branchesCells}
-    </WrapperComponent>
-  );
+  return <Grid>{branchesCells}</Grid>;
 }

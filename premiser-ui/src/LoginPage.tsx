@@ -81,106 +81,99 @@ class LoginPage extends Component<Props> {
     );
 
     return (
-      <div id="login-page">
+      <Grid id="login-page">
         <Helmet>
           <title>Login — Howdju</title>
         </Helmet>
-        <Grid>
-          <GridCell colSpan={12}>
-            <Card style={{ width: "100%" }} title="Login" subtitle={subtitle}>
-              <CardContent>
-                <ErrorMessages
-                  errors={this.props.editorState?.errors?._errors}
-                />
-                <form onSubmit={this.onSubmit}>
-                  <FocusContainer focusOnMount containFocus={false}>
-                    <EmailField
-                      id="email"
-                      name="email"
-                      value={email}
-                      autoComplete="username"
-                      required
-                      onPropertyChange={this.onPropertyChange}
-                      onSubmit={this.onSubmit}
-                      disabled={isLoggingIn}
-                      messageProps={{
-                        ...errorProps((c) => c.email),
-                      }}
-                    />
-                    <PasswordField
-                      id="password"
-                      name="password"
-                      value={password}
-                      autoComplete="current-password"
-                      required
-                      onPropertyChange={this.onPropertyChange}
-                      onSubmit={this.onSubmit}
-                      disabled={isLoggingIn}
-                      messageProps={{
-                        ...errorProps((c) => c.password),
-                      }}
-                    />
-                  </FocusContainer>
-
-                  <CardActions>
-                    {isLoggingIn && (
-                      <CircularProgress key="progress" id="progress" />
-                    )}
-                    <CancelButton
-                      disabled={isLoggingIn}
-                      onClick={this.onCancel}
-                    >
-                      Cancel
-                    </CancelButton>
-                    <SolidButton type="submit" disabled={isLoggingIn}>
-                      Login
-                    </SolidButton>
-                  </CardActions>
-                  {config.isRegistrationEnabled && (
-                    <CardActions align="start">
-                      <OutlineButton href={paths.requestRegistration()}>
-                        register
-                      </OutlineButton>
-                      <OutlineButton href={paths.requestPasswordReset()}>
-                        reset password
-                      </OutlineButton>
-                    </CardActions>
-                  )}
-                </form>
-              </CardContent>
-            </Card>
-          </GridCell>
-          <GridCell colSpan={12}>
-            <Card style={{ width: "100%" }}>
-              <CardContent>
-                Howdju 2.0 is currently in private gamma. Enter your email to
-                sign up for updates:
-              </CardContent>
-              <CardContent>
-                <form
-                  action="//howdju.us16.list-manage.com/subscribe/post?u=ccf334287da1fbf7af0904629&amp;id=f08c3a775d"
-                  method="post"
-                  target="_blank"
-                  // https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/rel/noopener
-                  {...{ rel: "noopener" }}
-                >
-                  <EmailField id="mce-email" name="EMAIL" required />
-                  <input
-                    type="hidden"
-                    name="b_ccf334287da1fbf7af0904629_f08c3a775d"
-                    tabIndex={-1}
+        <GridCell colSpan={12} clone={true}>
+          <Card title="Login" subtitle={subtitle}>
+            <CardContent>
+              <ErrorMessages errors={this.props.editorState?.errors?._errors} />
+              <form onSubmit={this.onSubmit}>
+                <FocusContainer focusOnMount containFocus={false}>
+                  <EmailField
+                    id="email"
+                    name="email"
+                    value={email}
+                    autoComplete="username"
+                    required
+                    onPropertyChange={this.onPropertyChange}
+                    onSubmit={this.onSubmit}
+                    disabled={isLoggingIn}
+                    messageProps={{
+                      ...errorProps((c) => c.email),
+                    }}
                   />
-                  <CardActions>
-                    <SolidButton type="submit" name="subscribe">
-                      Subscribe
-                    </SolidButton>
+                  <PasswordField
+                    id="password"
+                    name="password"
+                    value={password}
+                    autoComplete="current-password"
+                    required
+                    onPropertyChange={this.onPropertyChange}
+                    onSubmit={this.onSubmit}
+                    disabled={isLoggingIn}
+                    messageProps={{
+                      ...errorProps((c) => c.password),
+                    }}
+                  />
+                </FocusContainer>
+
+                <CardActions>
+                  {isLoggingIn && (
+                    <CircularProgress key="progress" id="progress" />
+                  )}
+                  <CancelButton disabled={isLoggingIn} onClick={this.onCancel}>
+                    Cancel
+                  </CancelButton>
+                  <SolidButton type="submit" disabled={isLoggingIn}>
+                    Login
+                  </SolidButton>
+                </CardActions>
+                {config.isRegistrationEnabled && (
+                  <CardActions align="start">
+                    <OutlineButton href={paths.requestRegistration()}>
+                      register
+                    </OutlineButton>
+                    <OutlineButton href={paths.requestPasswordReset()}>
+                      reset password
+                    </OutlineButton>
                   </CardActions>
-                </form>
-              </CardContent>
-            </Card>
-          </GridCell>
-        </Grid>
-      </div>
+                )}
+              </form>
+            </CardContent>
+          </Card>
+        </GridCell>
+        <GridCell colSpan={12} clone={true}>
+          <Card>
+            <CardContent>
+              Howdju 2.0 is currently in private gamma. Enter your email to sign
+              up for updates:
+            </CardContent>
+            <CardContent>
+              <form
+                action="//howdju.us16.list-manage.com/subscribe/post?u=ccf334287da1fbf7af0904629&amp;id=f08c3a775d"
+                method="post"
+                target="_blank"
+                // https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/rel/noopener
+                {...{ rel: "noopener" }}
+              >
+                <EmailField id="mce-email" name="EMAIL" required />
+                <input
+                  type="hidden"
+                  name="b_ccf334287da1fbf7af0904629_f08c3a775d"
+                  tabIndex={-1}
+                />
+                <CardActions>
+                  <SolidButton type="submit" name="subscribe">
+                    Subscribe
+                  </SolidButton>
+                </CardActions>
+              </form>
+            </CardContent>
+          </Card>
+        </GridCell>
+      </Grid>
     );
   }
 }

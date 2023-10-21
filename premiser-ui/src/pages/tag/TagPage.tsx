@@ -12,6 +12,7 @@ import { EntityId } from "howdju-common";
 import { RouteComponentProps } from "react-router";
 import { useAppDispatch, useAppSelector } from "@/hooks";
 import { CircularProgress } from "@/components/progress/CircularProgress";
+import { Grid } from "@react-md/utils";
 
 interface MatchParams {
   tagId: EntityId;
@@ -41,31 +42,22 @@ export default function TagPage(props: Props) {
   const title = `Propositions tagged with ${characters.leftDoubleQuote}${tagName}${characters.rightDoubleQuote}`;
 
   return (
-    <div id="tag-page" className="md-grid">
+    <div id="tag-page">
       <Helmet>
         <title>{title} — Howdju</title>
       </Helmet>
-      <div className="md-cell--12">
-        <h1>{title}</h1>
-      </div>
-      {map(propositions, (proposition) => {
-        const id = `proposition-card-${proposition.id}`;
-        return (
-          <PropositionCard
-            proposition={proposition}
-            id={id}
-            key={id}
-            className="md-cell--12"
-          />
-        );
-      })}
+      <h1>{title}</h1>
+      <Grid clone={true} columns={4} phoneColumns={2}>
+        {map(propositions, (proposition) => {
+          const id = `proposition-card-${proposition.id}`;
+          return <PropositionCard proposition={proposition} id={id} key={id} />;
+        })}
+      </Grid>
       {!isFetching && propositions.length < 1 && (
-        <div className="md-cell--12">No tagged propositions</div>
+        <div>No tagged propositions</div>
       )}
       {isFetching && (
-        <div className="md-cell md-cell--12 cell--centered-contents">
-          <CircularProgress id="tagged-propositions-page--progress" />
-        </div>
+        <CircularProgress id="tagged-propositions-page--progress" />
       )}
     </div>
   );
