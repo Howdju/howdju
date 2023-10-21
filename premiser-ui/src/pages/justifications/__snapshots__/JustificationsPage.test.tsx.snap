@@ -5,188 +5,175 @@ exports[`JustificationsPage Shows a justified proposition 1`] = `
   <div
     id="justifications-page"
   >
+    <div />
     <div
-      class="md-grid md-grid--top"
+      class=""
     >
-      <div />
       <div
-        class="md-cell md-cell--12"
+        class="root-target-background"
       >
         <div
-          class=""
+          class="rmd-card rmd-card--shadowed root-target-card"
+          style="width: 100%;"
         >
           <div
-            class="root-target-background"
+            class="rmd-card__content rmd-card__content--padded rmd-card__content--extra-padding rmd-card__content--remove-margin root-target-card-contents"
           >
             <div
-              class="rmd-card rmd-card--shadowed root-target-card"
-              style="width: 100%;"
+              class="entity-viewer"
             >
               <div
-                class="rmd-card__content rmd-card__content--padded rmd-card__content--extra-padding rmd-card__content--remove-margin root-target-card-contents"
+                class="entity-viewer--header"
+              >
+                <a
+                  href="/p/1/the-proposition-text"
+                >
+                  <i
+                    aria-hidden="true"
+                    class="rmd-icon rmd-icon--font material-icons"
+                    role="presentation"
+                    title="Proposition"
+                  >
+                    short_text
+                  </i>
+                </a>
+              </div>
+              <div
+                class="entity-viewer--entity"
               >
                 <div
-                  class="entity-viewer"
+                  class="proposition-viewer"
+                  id="justifications-page--root-target--proposition-entity-viewer"
                 >
                   <div
-                    class="entity-viewer--header"
-                  >
-                    <a
-                      href="/p/1/the-proposition-text"
-                    >
-                      <i
-                        aria-hidden="true"
-                        class="rmd-icon rmd-icon--font material-icons"
-                        role="presentation"
-                        title="Proposition"
-                      >
-                        short_text
-                      </i>
-                    </a>
-                  </div>
-                  <div
-                    class="entity-viewer--entity"
+                    class="proposition-viewer"
                   >
                     <div
-                      class="proposition-viewer"
-                      id="justifications-page--root-target--proposition-entity-viewer"
+                      class="proposition-text"
                     >
-                      <div
-                        class="proposition-viewer"
+                      <a
+                        href="/p/1/the-proposition-text"
                       >
-                        <div
-                          class="proposition-text"
+                        the-proposition-text
+                      </a>
+                    </div>
+                    <div
+                      class="relation-counts"
+                    >
+                       
+                      <a
+                        href="/propositions/1/usages"
+                        title="used in 0 justifications"
+                      >
+                        <span
+                          class="material-symbols"
+                          style="font-variation-settings: "opsz" 12; font-size: 12px;"
                         >
-                          <a
-                            href="/p/1/the-proposition-text"
-                          >
-                            the-proposition-text
-                          </a>
-                        </div>
-                        <div
-                          class="relation-counts"
+                          merge_type
+                        </span>
+                        0
+                      </a>
+                       
+                      <span
+                        class="entity-status-text"
+                      >
+                        <a
+                          class="clickable"
+                          title="0 appearances"
                         >
-                           
-                          <a
-                            href="/propositions/1/usages"
-                            title="used in 0 justifications"
-                          >
-                            <span
-                              class="material-symbols"
-                              style="font-variation-settings: "opsz" 12; font-size: 12px;"
-                            >
-                              merge_type
-                            </span>
-                            0
-                          </a>
-                           
                           <span
-                            class="entity-status-text"
+                            class="material-symbols"
+                            style="font-variation-settings: "opsz" 12; font-size: 12px;"
                           >
-                            <a
-                              class="clickable"
-                              title="0 appearances"
-                            >
-                              <span
-                                class="material-symbols"
-                                style="font-variation-settings: "opsz" 12; font-size: 12px;"
-                              >
-                                pin_drop
-                              </span>
-                              0
-                            </a>
+                            pin_drop
                           </span>
-                        </div>
-                        <div>
-                          <span
-                            class="entity-status-text"
-                          >
-                            created
-                            
-                             
-                            <span
-                              title="12 Jan 2023 4:23:12 PM +00:00"
-                            >
-                              8 hours ago
-                            </span>
-                          </span>
-                        </div>
-                      </div>
+                          0
+                        </a>
+                      </span>
+                    </div>
+                    <div>
+                      <span
+                        class="entity-status-text"
+                      >
+                        created
+                        
+                         
+                        <span
+                          title="12 Jan 2023 4:23:12 PM +00:00"
+                        >
+                          8 hours ago
+                        </span>
+                      </span>
                     </div>
                   </div>
-                  <button
-                    aria-haspopup="menu"
-                    class="rmd-button rmd-button--icon rmd-menu-button hidden"
-                    id="justifications-page--root-target--menu"
-                    title="Actions"
-                    type="button"
-                  >
-                    <i
-                      aria-hidden="true"
-                      class="rmd-icon rmd-icon--font material-icons"
-                    >
-                      more_vert
-                    </i>
-                    <span
-                      class="rmd-ripple-container"
-                    />
-                  </button>
-                </div>
-                <div
-                  class="chips-list"
-                  id="justifications-page--root-target--proposition-tagger--tags"
-                >
-                  <button
-                    class="rmd-button rmd-button--icon rmd-button--text-primary"
-                    title="Add tag"
-                    type="button"
-                  >
-                    <i
-                      aria-hidden="true"
-                      class="rmd-icon rmd-icon--font material-icons"
-                    >
-                      add
-                    </i>
-                    <span
-                      class="rmd-ripple-container"
-                    />
-                  </button>
                 </div>
               </div>
+              <button
+                aria-haspopup="menu"
+                class="rmd-button rmd-button--icon rmd-menu-button hidden"
+                id="justifications-page--root-target--menu"
+                title="Actions"
+                type="button"
+              >
+                <i
+                  aria-hidden="true"
+                  class="rmd-icon rmd-icon--font material-icons"
+                >
+                  more_vert
+                </i>
+                <span
+                  class="rmd-ripple-container"
+                />
+              </button>
+            </div>
+            <div
+              class="chips-list"
+              id="justifications-page--root-target--proposition-tagger--tags"
+            >
+              <div
+                style="position: relative;"
+              />
+              <button
+                class="rmd-button rmd-button--icon rmd-button--text-primary"
+                title="Add tag"
+                type="button"
+              >
+                <i
+                  aria-hidden="true"
+                  class="rmd-icon rmd-icon--font material-icons"
+                >
+                  add
+                </i>
+                <span
+                  class="rmd-ripple-container"
+                />
+              </button>
             </div>
           </div>
         </div>
       </div>
-      <div
-        class="md-cell md-cell--12 cell--centered-contents"
-      >
-        <div>
-          No justifications.
-        </div>
-      </div>
-      <div
-        class="md-cell md-cell--12 cell--centered-contents"
-      >
-        <button
-          class="rmd-button rmd-button--text rmd-button--text-primary"
-          type="button"
-        >
-          Add one now
-          <span
-            class="rmd-ripple-container"
-          />
-        </button>
-      </div>
     </div>
+    <div>
+      No justifications.
+    </div>
+    <button
+      class="rmd-button rmd-button--text rmd-button--text-primary"
+      type="button"
+    >
+      Add one now
+      <span
+        class="rmd-ripple-container"
+      />
+    </button>
     <div
-      class="md-grid--bottom md-grid"
+      class="rmd-grid"
     >
       <div
-        class="md-cell md-cell--6 md-cell--8-tablet md-cell--4-phone proposition-justifications-justification-trees--positive"
+        class="rmd-grid__cell rmd-grid__cell--6 proposition-justifications-justification-trees--positive"
         style="position: relative;"
       />
       <div
-        class="md-cell md-cell--6 md-cell--8-tablet md-cell--4-phone proposition-justifications-justification-trees--negative"
+        class="rmd-grid__cell rmd-grid__cell--6 proposition-justifications-justification-trees--negative"
         style="position: relative;"
       />
     </div>
@@ -199,181 +186,171 @@ exports[`JustificationsPage can add a compound-based justification 1`] = `
   <div
     id="justifications-page"
   >
+    <div />
     <div
-      class="md-grid md-grid--top"
+      class=""
     >
-      <div />
       <div
-        class="md-cell md-cell--12"
+        class="root-target-background"
       >
         <div
-          class=""
+          class="rmd-card rmd-card--shadowed root-target-card"
+          style="width: 100%;"
         >
           <div
-            class="root-target-background"
+            class="rmd-card__content rmd-card__content--padded rmd-card__content--extra-padding rmd-card__content--remove-margin root-target-card-contents"
           >
             <div
-              class="rmd-card rmd-card--shadowed root-target-card"
-              style="width: 100%;"
+              class="entity-viewer"
             >
               <div
-                class="rmd-card__content rmd-card__content--padded rmd-card__content--extra-padding rmd-card__content--remove-margin root-target-card-contents"
+                class="entity-viewer--header"
+              >
+                <a
+                  href="/p/1/the-proposition-text"
+                >
+                  <i
+                    aria-hidden="true"
+                    class="rmd-icon rmd-icon--font material-icons"
+                    role="presentation"
+                    title="Proposition"
+                  >
+                    short_text
+                  </i>
+                </a>
+              </div>
+              <div
+                class="entity-viewer--entity"
               >
                 <div
-                  class="entity-viewer"
+                  class="proposition-viewer"
+                  id="justifications-page--root-target--proposition-entity-viewer"
                 >
                   <div
-                    class="entity-viewer--header"
-                  >
-                    <a
-                      href="/p/1/the-proposition-text"
-                    >
-                      <i
-                        aria-hidden="true"
-                        class="rmd-icon rmd-icon--font material-icons"
-                        role="presentation"
-                        title="Proposition"
-                      >
-                        short_text
-                      </i>
-                    </a>
-                  </div>
-                  <div
-                    class="entity-viewer--entity"
+                    class="proposition-viewer"
                   >
                     <div
-                      class="proposition-viewer"
-                      id="justifications-page--root-target--proposition-entity-viewer"
+                      class="proposition-text"
                     >
-                      <div
-                        class="proposition-viewer"
+                      <a
+                        href="/p/1/the-proposition-text"
                       >
-                        <div
-                          class="proposition-text"
+                        the-proposition-text
+                      </a>
+                    </div>
+                    <div
+                      class="relation-counts"
+                    >
+                       
+                      <a
+                        href="/propositions/1/usages"
+                        title="used in 0 justifications"
+                      >
+                        <span
+                          class="material-symbols"
+                          style="font-variation-settings: "opsz" 12; font-size: 12px;"
                         >
-                          <a
-                            href="/p/1/the-proposition-text"
-                          >
-                            the-proposition-text
-                          </a>
-                        </div>
-                        <div
-                          class="relation-counts"
+                          merge_type
+                        </span>
+                        0
+                      </a>
+                       
+                      <span
+                        class="entity-status-text"
+                      >
+                        <a
+                          class="clickable"
+                          title="0 appearances"
                         >
-                           
-                          <a
-                            href="/propositions/1/usages"
-                            title="used in 0 justifications"
-                          >
-                            <span
-                              class="material-symbols"
-                              style="font-variation-settings: "opsz" 12; font-size: 12px;"
-                            >
-                              merge_type
-                            </span>
-                            0
-                          </a>
-                           
                           <span
-                            class="entity-status-text"
+                            class="material-symbols"
+                            style="font-variation-settings: "opsz" 12; font-size: 12px;"
                           >
-                            <a
-                              class="clickable"
-                              title="0 appearances"
-                            >
-                              <span
-                                class="material-symbols"
-                                style="font-variation-settings: "opsz" 12; font-size: 12px;"
-                              >
-                                pin_drop
-                              </span>
-                              0
-                            </a>
+                            pin_drop
                           </span>
-                        </div>
-                        <div>
-                          <span
-                            class="entity-status-text"
-                          >
-                            created
-                            
-                             
-                            <span
-                              title="12 Jan 2023 4:23:12 PM +00:00"
-                            >
-                              8 hours ago
-                            </span>
-                          </span>
-                        </div>
-                      </div>
+                          0
+                        </a>
+                      </span>
+                    </div>
+                    <div>
+                      <span
+                        class="entity-status-text"
+                      >
+                        created
+                        
+                         
+                        <span
+                          title="12 Jan 2023 4:23:12 PM +00:00"
+                        >
+                          8 hours ago
+                        </span>
+                      </span>
                     </div>
                   </div>
-                  <button
-                    aria-haspopup="menu"
-                    class="rmd-button rmd-button--icon rmd-menu-button hidden"
-                    id="justifications-page--root-target--menu"
-                    title="Actions"
-                    type="button"
-                  >
-                    <i
-                      aria-hidden="true"
-                      class="rmd-icon rmd-icon--font material-icons"
-                    >
-                      more_vert
-                    </i>
-                    <span
-                      class="rmd-ripple-container"
-                    />
-                  </button>
-                </div>
-                <div
-                  class="chips-list"
-                  id="justifications-page--root-target--proposition-tagger--tags"
-                >
-                  <button
-                    class="rmd-button rmd-button--icon rmd-button--text-primary"
-                    title="Add tag"
-                    type="button"
-                  >
-                    <i
-                      aria-hidden="true"
-                      class="rmd-icon rmd-icon--font material-icons"
-                    >
-                      add
-                    </i>
-                    <span
-                      class="rmd-ripple-container"
-                    />
-                  </button>
                 </div>
               </div>
+              <button
+                aria-haspopup="menu"
+                class="rmd-button rmd-button--icon rmd-menu-button hidden"
+                id="justifications-page--root-target--menu"
+                title="Actions"
+                type="button"
+              >
+                <i
+                  aria-hidden="true"
+                  class="rmd-icon rmd-icon--font material-icons"
+                >
+                  more_vert
+                </i>
+                <span
+                  class="rmd-ripple-container"
+                />
+              </button>
+            </div>
+            <div
+              class="chips-list"
+              id="justifications-page--root-target--proposition-tagger--tags"
+            >
+              <div
+                style="position: relative;"
+              />
+              <button
+                class="rmd-button rmd-button--icon rmd-button--text-primary"
+                title="Add tag"
+                type="button"
+              >
+                <i
+                  aria-hidden="true"
+                  class="rmd-icon rmd-icon--font material-icons"
+                >
+                  add
+                </i>
+                <span
+                  class="rmd-ripple-container"
+                />
+              </button>
             </div>
           </div>
         </div>
       </div>
     </div>
     <div
-      class="md-grid--bottom md-grid"
+      class="rmd-grid"
     >
       <div
-        class="md-cell md-cell--6 md-cell--8-tablet md-cell--4-phone proposition-justifications-justification-trees--positive"
+        class="rmd-grid__cell rmd-grid__cell--6 proposition-justifications-justification-trees--positive"
         style="position: relative;"
       >
-        <h2
-          class="md-cell md-cell--12"
-          style="transition: transform 600ms ease 0ms, opacity 600ms ease 0ms;"
-        >
+        <h2>
           Supporting Justifications
         </h2>
-        <div
-          style="transition: transform 615ms ease 50ms, opacity 615ms ease 50ms;"
-        >
+        <div>
           <div
             class="justification-tree"
             id="justification-1582-tree"
           >
             <div
-              class="md-grid chat-bubble"
+              class="chat-bubble"
             >
               <div
                 class="justification-basis-viewer-row"
@@ -627,7 +604,7 @@ exports[`JustificationsPage can add a compound-based justification 1`] = `
                 </button>
               </div>
               <div
-                class="md-cell md-cell--12 actions"
+                class="actions"
               >
                 <button
                   class="rmd-button rmd-button--icon rmd-button--text-primary inactive hiding"
@@ -701,25 +678,18 @@ exports[`JustificationsPage can add a compound-based justification 1`] = `
         </div>
       </div>
       <div
-        class="md-cell md-cell--6 md-cell--8-tablet md-cell--4-phone proposition-justifications-justification-trees--negative"
+        class="rmd-grid__cell rmd-grid__cell--6 proposition-justifications-justification-trees--negative"
         style="position: relative;"
       >
-        <h2
-          class="md-cell md-cell--12"
-          style="transition: transform 600ms ease 0ms, opacity 600ms ease 0ms;"
-        >
+        <h2>
           Opposing Justifications
         </h2>
         <div
-          class="md-cell md-cell--12 cell--centered-contents"
-          style="transition: transform 615ms ease 50ms, opacity 615ms ease 50ms;"
+          style="text-align: center;"
         >
-          None
-        </div>
-        <div
-          class="md-cell md-cell--12 cell--centered-contents"
-          style="transition: transform 630ms ease 100ms, opacity 630ms ease 100ms;"
-        >
+          <div>
+            None
+          </div>
           <button
             class="rmd-button rmd-button--text rmd-button--text-primary"
             type="button"

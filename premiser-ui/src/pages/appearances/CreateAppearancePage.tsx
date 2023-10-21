@@ -11,6 +11,7 @@ import { mediaExcerptSchema } from "@/normalizationSchemas";
 import { combineIds } from "@/viewModels";
 import { editors } from "@/actions";
 import CreateAppearanceEditor from "./CreateAppearanceEditor";
+import { Page } from "@/components/layout/Page";
 
 interface MatchParams {
   mediaExcerptId: EntityId;
@@ -50,18 +51,17 @@ export default function CreateAppearancePage(props: Props) {
   const title = `Create Appearance in MediaExcerpt ${mediaExcerptId}`;
 
   return (
-    <div className="md-grid">
+    <Page>
       <HowdjuHelmet>
         <title>{title} — Howdju</title>
       </HowdjuHelmet>
-      <h1 className="md-cell md-cell--12">{title}</h1>
-      <p className="md-cell md-cell--12">What appears in this MediaExcerpt?</p>
+      <h1>{title}</h1>
+      <p>What appears in this MediaExcerpt?</p>
       <CreateAppearanceEditor
         id={combineIds(id, "editor")}
         editorId={editorId}
-        className="md-cell md-cell--12"
         commitBehavior="CommitThenView"
       />
-    </div>
+    </Page>
   );
 }

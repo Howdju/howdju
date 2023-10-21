@@ -3,6 +3,7 @@ import { useLocation } from "react-router";
 import queryString from "query-string";
 import useDeepCompareEffect from "use-deep-compare-effect";
 import { isArray } from "lodash";
+import { GridCell } from "@react-md/utils";
 
 import { EntityId } from "howdju-common";
 
@@ -15,9 +16,10 @@ import {
 } from "@/normalizationSchemas";
 import AppearanceCard from "@/pages/appearances/AppearanceCard";
 import HowdjuHelmet from "@/Helmet";
-import CellList, { largeCellClasses } from "@/CellList";
 import page from "./factCheckPageSlice";
 import { CircularProgress } from "@/components/progress/CircularProgress";
+import { appearanceCardColSpans } from "@/components/listEntities/ListEntitiesWidget";
+import { FlipGrid } from "@/components/layout/FlipGrid";
 
 /**
  * A page displaying Appearances that are part of a FactCheck.
@@ -90,45 +92,42 @@ function ValidParamsFactCheckPage({
   }
 
   return (
-    <div className="md-grid">
+    <div>
       <HowdjuHelmet>
         <title>{title} — Howdju</title>
       </HowdjuHelmet>
 
-      <h1 className="md-cell md-cell--12">{title}</h1>
+      <h1>{title}</h1>
 
-      <h2 className="md-cell md-cell--12">Users</h2>
-      <ul className="md-cell md-cell--12">
+      <h2>Users</h2>
+      <ul>
         {users.map((user) => (
           <li key={user.id}>
             {user.longName} {user.username && <>({user.username})</>}
           </li>
         ))}
       </ul>
-      <h2 className="md-cell md-cell--12">URLs</h2>
-      <ul className="md-cell md-cell--12">
+      <h2>URLs</h2>
+      <ul>
         {urls.map((url) => (
           <li key={url.id}>{url.url}</li>
         ))}
       </ul>
-      <h2 className="md-cell md-cell--12">Sources</h2>
-      <ul className="md-cell md-cell--12">
+      <h2>Sources</h2>
+      <ul>
         {sources.map((source) => (
           <li key={source.id}>{source.description}</li>
         ))}
       </ul>
 
-      <h2 className="md-cell md-cell--12">Appearances</h2>
-      <CellList>
+      <h2>Appearances</h2>
+      <FlipGrid>
         {appearances.map((appearance) => (
-          <AppearanceCard
-            id={appearance.id}
-            key={appearance.id}
-            appearance={appearance}
-            className={largeCellClasses}
-          />
+          <GridCell key={appearance.id} {...appearanceCardColSpans}>
+            <AppearanceCard id={appearance.id} appearance={appearance} />
+          </GridCell>
         ))}
-      </CellList>
+      </FlipGrid>
     </div>
   );
 }

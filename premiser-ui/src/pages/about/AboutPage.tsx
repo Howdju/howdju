@@ -5,12 +5,16 @@ import { Card, CardContent } from "@/components/card/Card";
 import mdSource from "./AboutPage.md";
 
 import "./AboutPage.scss";
+import { Page } from "@/components/layout/Page";
+import SingleColumnGrid from "@/components/layout/SingleColumnGrid";
 
 const AboutPage = () => (
-  <div className="md-grid" id="about-page">
-    <Card className="md-cell--12">
-      <CardContent dangerouslySetInnerHTML={{ __html: mdSource }} />
-    </Card>
-  </div>
+  <Page id="about-page">
+    <SingleColumnGrid>
+      <Card>
+        <CardContent dangerouslySetInnerHTML={{ __html: mdSource }} />
+      </Card>
+    </SingleColumnGrid>
+  </Page>
 );
 export default AboutPage;

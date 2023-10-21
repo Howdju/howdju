@@ -1,10 +1,12 @@
 import React, { ReactElement } from "react";
 import cn from "classnames";
+import FlipMove from "react-flip-move";
 
 import { ChipProps } from "./Chip";
+import { ComponentId } from "@/types";
+import config from "@/config";
 
 import "./ChipsList.scss";
-import { ComponentId } from "@/types";
 
 export interface ChipsListProps {
   id: ComponentId;
@@ -21,7 +23,7 @@ export function ChipsList(props: ChipsListProps) {
 
   return (
     <div {...rest} className={cn(className, "chips-list")}>
-      {chips}
+      <FlipMove {...config.ui.flipMove}>{chips}</FlipMove>
       {extraChildren}
     </div>
   );

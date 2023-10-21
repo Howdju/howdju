@@ -20,6 +20,7 @@ import passwordResetConfirmationPage, {
 import { combineIds } from "@/viewModels";
 import SolidButton from "@/components/button/SolidButton";
 import { push } from "connected-react-router";
+import SingleColumnGrid from "@/components/layout/SingleColumnGrid";
 
 export default function PasswordResetConfirmationPage() {
   const location = useLocation();
@@ -98,22 +99,20 @@ function ValidPasswordResetConfirmationPage({
       <Helmet>
         <title>Password Reset — Howdju</title>
       </Helmet>
-      <div className="md-grid">
-        <div className="md-cell md-cell--12">
-          <Card title="Password Reset" subtitle={subtitle}>
-            <CardContent>
-              {!email && (
-                <div>
-                  Checking password reset code…
-                  <CircularProgress id="checking-password-reset-code-progress" />
-                </div>
-              )}
-              {errorMessage}
-              {email && isSubmitted ? confirmedMessage : form}
-            </CardContent>
-          </Card>
-        </div>
-      </div>
+      <SingleColumnGrid>
+        <Card title="Password Reset" subtitle={subtitle}>
+          <CardContent>
+            {!email && (
+              <div>
+                Checking password reset code…
+                <CircularProgress id="checking-password-reset-code-progress" />
+              </div>
+            )}
+            {errorMessage}
+            {email && isSubmitted ? confirmedMessage : form}
+          </CardContent>
+        </Card>
+      </SingleColumnGrid>
     </div>
   );
 }

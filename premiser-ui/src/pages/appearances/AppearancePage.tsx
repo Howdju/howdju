@@ -18,6 +18,7 @@ import { PrimaryContextTrail } from "@/components/contextTrail/PrimaryContextTra
 import { FontIcon } from "@react-md/icon";
 import { flows } from "@/actions";
 import app from "@/app/appSlice";
+import SingleColumnGrid from "@/components/layout/SingleColumnGrid";
 
 interface MatchParams {
   appearanceId: EntityId;
@@ -142,25 +143,25 @@ export default function AppearancePage(props: Props) {
   ) : undefined;
 
   return (
-    <div className="md-grid">
+    <div>
       <HowdjuHelmet>
         <title>{title} — Howdju</title>
       </HowdjuHelmet>
-      <h1 className="md-cell md-cell--12">{title}</h1>
+      <h1>{title}</h1>
       <FocusValidatingContextTrail
         id="appearance-page-context-trail"
         focusEntityType="APPEARANCE"
         focusEntityId={appearanceId}
-        className="md-cell md-cell--12"
       />
       {appearance ? (
-        <AppearanceCard
-          id="appearance-page--appearance-card"
-          appearance={appearance}
-          contextTrailItems={contextTrailItems}
-          menu={menu}
-          style={{ width: "100%" }}
-        />
+        <SingleColumnGrid>
+          <AppearanceCard
+            id="appearance-page--appearance-card"
+            appearance={appearance}
+            contextTrailItems={contextTrailItems}
+            menu={menu}
+          />
+        </SingleColumnGrid>
       ) : (
         <CircularProgress id="appearance-page--progress" />
       )}

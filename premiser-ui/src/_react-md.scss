@@ -27,4 +27,5 @@ $md-typography-extended: false;
 @include react-md-utils;
 
 @import "./react-md-fixes";
-@include react-md-fixes($md-grid-desktop-breakpoint, $md-grid-phone-gutter);
+@import "./grid";
+@include react-md-fixes($rmd-utils-desktop-min-width, $grid-gutter);

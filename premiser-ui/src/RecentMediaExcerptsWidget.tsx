@@ -2,8 +2,9 @@ import React, { HTMLAttributes } from "react";
 
 import { MediaExcerptOut } from "howdju-common";
 
-import { largeCellClasses } from "./CellList";
-import ListEntitiesWidget from "./components/listEntities/ListEntitiesWidget";
+import ListEntitiesWidget, {
+  mediaExcerptCardColSpans,
+} from "./components/listEntities/ListEntitiesWidget";
 import { api } from "./actions";
 import { mediaExcerptsSchema } from "./normalizationSchemas";
 import MediaExcerptCard from "./components/mediaExcerpts/MediaExcerptCard";
@@ -19,26 +20,20 @@ export default function RecentMediaExcerptsWidget({
   widgetId,
   ...rest
 }: Props) {
-  const toCard = (mediaExcerpt: MediaExcerptOut) => {
+  function toCard(mediaExcerpt: MediaExcerptOut) {
     const cardId = `${id}-media-excerpt-${mediaExcerpt.id}`;
     return (
-      <MediaExcerptCard
-        id={cardId}
-        key={cardId}
-        mediaExcerpt={mediaExcerpt}
-        className={largeCellClasses}
-      />
+      <MediaExcerptCard id={cardId} key={cardId} mediaExcerpt={mediaExcerpt} />
     );
-  };
-
+  }
   return (
     <ListEntitiesWidget
       {...rest}
       id={id}
       widgetId={widgetId}
+      cardColSpans={mediaExcerptCardColSpans}
       entitiesWidgetStateKey="recentMediaExcerpts"
       fetchEntities={api.fetchRecentMediaExcerpts}
-      cellClasses={largeCellClasses}
       entityToCard={toCard}
       entitiesSchema={mediaExcerptsSchema}
       emptyEntitiesMessage="No recent media excerpts"

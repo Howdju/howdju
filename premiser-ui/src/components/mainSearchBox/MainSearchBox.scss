@@ -41,6 +41,7 @@
 
 #main-search-box-form {
   padding-left: 0.5rem;
+  width: 100%;
 }
 
 #main-search--help-dialog {
@@ -62,6 +63,6 @@
   }
 }
 
-#mainSearch-listbox * {
+#header #mainSearch-listbox * {
   color: $primary-text-color;
 }

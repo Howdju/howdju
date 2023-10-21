@@ -2,12 +2,9 @@
 @import "./util";
 @import "./colors";
 @import "./react-md";
-@import "./grid";
 @import "./react-material-symbols";
 
 // TODO(#593) apply a dark theme https://v2.react-md.dev/guides/customizing-your-theme#conditional-dark-theme
-
-@include apply-react-md-grid;
 
 html {
   background-color: $dark-background-color;
@@ -141,23 +138,6 @@ strong {
   }
 }
 
-/* When the cards are vertically aligned, the spacing just distracts */
-.md-grid--card-list {
-  .md-cell {
-    margin: 0;
-  }
-}
-
-$single-column-cell-breakpoint: $md-grid-desktop-breakpoint - 1;
-@media (max-width: $single-column-cell-breakpoint) {
-  // For cells that switch to single-column, we want no spacing
-  .md-grid--card-list--tablet {
-    .md-cell {
-      margin: 0;
-    }
-  }
-}
-
 .md-inline-block.text-expand-toggle {
   vertical-align: text-top;
 }
@@ -202,4 +182,12 @@ $single-column-cell-breakpoint: $md-grid-desktop-breakpoint - 1;
   }
   padding: 10px;
   text-align: center;
+}
+
+// Cards that are the top-level element in a grid cell should fill it. This
+// allows us to use a separate component for the grid cell and the card, which
+// allows us to use ReactFlip.
+.rmd-grid__cell > .rmd-card {
+  width: 100%;
+  height: 100%;
 }

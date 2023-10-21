@@ -9,6 +9,7 @@ import { writQuoteSchema } from "@/normalizationSchemas";
 import WritQuoteCard from "@/WritQuoteCard";
 import { useAppSelector } from "@/hooks";
 import { CircularProgress } from "@/components/progress/CircularProgress";
+import SingleColumnGrid from "@/components/layout/SingleColumnGrid";
 
 const id = "WritQuotePage";
 type Params = {
@@ -33,20 +34,15 @@ const WritQuotePage = () => {
 
   const progress = <CircularProgress id={`${id}-Progress`} />;
   const viewer = writQuote && (
-    <WritQuoteCard
-      id={id}
-      writQuote={writQuote}
-      showUrls={true}
-      className="md-cell--12"
-    />
+    <WritQuoteCard id={id} writQuote={writQuote} showUrls={true} />
   );
   return (
-    <div className="md-grid">
+    <div>
       <HowdjuHelmet>
         <title>{`WritQuote: &ldquo;${writQuote?.title}&rdquo; — Howdju`}</title>
       </HowdjuHelmet>
-      <h1 className="md-cell--12">{writQuote?.title}</h1>
-      {writQuote ? viewer : progress}
+      <h1>{writQuote?.title}</h1>
+      <SingleColumnGrid>{writQuote ? viewer : progress}</SingleColumnGrid>
     </div>
   );
 };

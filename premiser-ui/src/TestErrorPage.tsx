@@ -1,5 +1,4 @@
 import React, { ChangeEvent, MouseEvent, useState } from "react";
-import { FocusContainer } from "react-md";
 import { NativeSelect } from "@react-md/form";
 
 import { Card, CardActions, CardContent } from "@/components/card/Card";
@@ -65,36 +64,34 @@ export default function TestErrorPage() {
   const { message, level } = state;
   return (
     <Card title="Test error">
-      <FocusContainer focusOnMount containFocus={false}>
-        <CardContent>
-          <SingleLineTextArea
-            id="message"
-            name="message"
-            value={message}
-            required
-            onPropertyChange={onMessageChange}
-          />
-          <NativeSelect
-            id="level"
-            label="Level"
-            value={level}
-            onChange={onLevelChange}
-            children={LEVELS.map((level) => (
-              <option key={level.value} value={level.value}>
-                {level.label}
-              </option>
-            ))}
-          />
-        </CardContent>
-        <CardActions>
-          <OutlineButton disabled={!message} onClick={onCreateError}>
-            Create test error
-          </OutlineButton>
-          <OutlineButton disabled={!message} onClick={onCreateMessage}>
-            Create test message
-          </OutlineButton>
-        </CardActions>
-      </FocusContainer>
+      <CardContent>
+        <SingleLineTextArea
+          id="message"
+          name="message"
+          value={message}
+          required
+          onPropertyChange={onMessageChange}
+        />
+        <NativeSelect
+          id="level"
+          label="Level"
+          value={level}
+          onChange={onLevelChange}
+          children={LEVELS.map((level) => (
+            <option key={level.value} value={level.value}>
+              {level.label}
+            </option>
+          ))}
+        />
+      </CardContent>
+      <CardActions>
+        <OutlineButton disabled={!message} onClick={onCreateError}>
+          Create test error
+        </OutlineButton>
+        <OutlineButton disabled={!message} onClick={onCreateMessage}>
+          Create test message
+        </OutlineButton>
+      </CardActions>
     </Card>
   );
 }

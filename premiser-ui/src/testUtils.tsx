@@ -12,6 +12,7 @@ import { setupServer } from "msw/node";
 import { Saga } from "redux-saga";
 import { head } from "lodash";
 import { normalize, schema } from "normalizr";
+import { Configuration } from "@react-md/layout";
 
 import { AppStore, RootState, sagaMiddleware, setupStore } from "./setupStore";
 
@@ -97,7 +98,9 @@ export function renderWithProviders(
   }: PropsWithChildren<Record<string, unknown>>): JSX.Element {
     return (
       <Provider store={store}>
-        <Router history={history}>{children}</Router>
+        <Router history={history}>
+          <Configuration>{children}</Configuration>
+        </Router>
       </Provider>
     );
   }

@@ -1,8 +1,8 @@
 import React, { useEffect } from "react";
-import { toString } from "lodash";
 import { FontIcon } from "@react-md/icon";
 import { RouteComponentProps } from "react-router";
 import { push } from "connected-react-router";
+import { GridCell } from "@react-md/utils";
 
 import { EntityId, logger } from "howdju-common";
 
@@ -12,7 +12,6 @@ import { CircularProgress } from "@/components/progress/CircularProgress";
 import Helmet from "../../Helmet";
 import { api, editors, flows } from "../../actions";
 import app from "../../app/appSlice";
-import CellList, { largeCellClasses } from "../../CellList";
 import * as characters from "../../characters";
 import { mediaExcerptsSchema, sourceSchema } from "../../normalizationSchemas";
 import { combineIds, combineSuggestionsKeys } from "../../viewModels";
@@ -22,6 +21,9 @@ import SourceEntityCard from "@/components/sources/SourceEntityCard";
 import sourcePage from "./sourcePageSlice";
 import paths from "@/paths";
 import FetchMoreButton from "@/components/button/FetchMoreButton";
+import SingleColumnGrid from "@/components/layout/SingleColumnGrid";
+import { mediaExcerptCardColSpans } from "@/components/listEntities/ListEntitiesWidget";
+import { FlipGrid } from "@/components/layout/FlipGrid";
 
 const id = "source-page";
 const editorId = "sourcePageEditorId";
@@ -79,11 +81,10 @@ export default function SourcePage(props: Props) {
   const sourceName = source?.description ?? characters.ellipsis;
   const title = sourceName;
 
-  const mediaExcerptCards = mediaExcerpts.map((mediaExcerpt, index) => (
+  const mediaExcerptCards = mediaExcerpts.map((mediaExcerpt) => (
     <MediaExcerptCard
-      id={combineIds(id, "media-excerpts", toString(index))}
-      className={largeCellClasses}
-      key={index}
+      id={combineIds(id, "media-excerpts", mediaExcerpt.id)}
+      key={mediaExcerpt.id}
       mediaExcerpt={mediaExcerpt}
     />
   ));
@@ -122,44 +123,49 @@ export default function SourcePage(props: Props) {
     />
   );
   return (
-    <div id={id} className="md-grid">
+    <div id={id}>
       <Helmet>
         <title>{title} — Howdju</title>
       </Helmet>
-      <h1 className="md-cell md-cell--12">Source {source?.id}</h1>
+      <h1>Source {source?.id}</h1>
       {isFetchingSource && (
         <CircularProgress id="source-page--source--progress" />
       )}
       {!isFetchingSource && !source && <p>Not found.</p>}
       {source && (
-        <SourceEntityCard
-          id={combineIds(id, "source")}
-          editorId={combineIds(editorId, "source")}
-          className="md-cell md-cell--12"
-          source={source}
-          menu={menu}
-          suggestionsKey={combineSuggestionsKeys(id, "source")}
-        />
+        <SingleColumnGrid>
+          <SourceEntityCard
+            id={combineIds(id, "source")}
+            editorId={combineIds(editorId, "source")}
+            source={source}
+            menu={menu}
+            suggestionsKey={combineSuggestionsKeys(id, "source")}
+          />
+        </SingleColumnGrid>
       )}
 
-      <h2 className="md-cell md-cell--12">Media excerpts</h2>
+      <h2>Media excerpts</h2>
       {isFetchingMediaExcerpts && (
-        <div className="md-cell md-cell--12 cell--centered-contents">
-          <CircularProgress id="source-page--media-excerpts--progress" />
-        </div>
+        <CircularProgress id="source-page--media-excerpts--progress" />
       )}
       {!isFetchingMediaExcerpts && mediaExcerptCards.length === 0 && (
-        <div className="md-cell md-cell--12">
+        <div>
           <p>None.</p>
         </div>
       )}
-      <CellList className="md-grid md-cell md-cell--12 md-grid--card-list--tablet">
-        {mediaExcerptCards}
-        <FetchMoreButton
-          isFetching={isFetchingMediaExcerpts}
-          onClick={fetchMoreMediaExcerpts}
-        />
-      </CellList>
+      <FlipGrid>
+        {mediaExcerptCards.map((card) => (
+          <GridCell key={card.key} {...mediaExcerptCardColSpans}>
+            {card}
+          </GridCell>
+        ))}
+        <GridCell key="fetch-more-button" {...mediaExcerptCardColSpans}>
+          <FetchMoreButton
+            isFetching={isFetchingMediaExcerpts}
+            onClick={fetchMoreMediaExcerpts}
+          />
+        </GridCell>
+      </FlipGrid>
     </div>
   );
 }

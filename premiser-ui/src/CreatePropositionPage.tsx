@@ -73,6 +73,8 @@ import { useAppDispatch, useAppSelector } from "./hooks";
 import useDeepCompareEffect from "use-deep-compare-effect";
 import TextButton from "@/components/button/TextButton";
 import IconButton from "@/components/button/IconButton";
+import { Grid } from "@react-md/utils";
+import SingleColumnGrid from "./components/layout/SingleColumnGrid";
 
 const titleTextKeyByMode = {
   [CreatePropositionPageMode.CREATE_PROPOSITION]: CREATE_PROPOSITION_TITLE,
@@ -322,8 +324,8 @@ export default function CreatePropositionPage({ mode, location }: Props) {
         <title>{title} — Howdju</title>
       </Helmet>
       <form onSubmit={onSubmit}>
-        <div className="md-grid">
-          <Card title={title} className="md-cell md-cell--12">
+        <SingleColumnGrid>
+          <Card title={title}>
             <CardContent>
               <TextButton
                 icon={<FontIcon>person_add</FontIcon>}
@@ -334,8 +336,8 @@ export default function CreatePropositionPage({ mode, location }: Props) {
                 Add Speaker
               </TextButton>
               {hasSpeakers && (
-                <div className="md-grid">
-                  <div className="md-cell md-cell--6">
+                <Grid clone={true} columns={2}>
+                  <div>
                     {map(speakers, (speaker, index) => (
                       <div key={index}>
                         <EntityViewer
@@ -385,7 +387,7 @@ export default function CreatePropositionPage({ mode, location }: Props) {
                       </div>
                     ))}
                   </div>
-                </div>
+                </Grid>
               )}
             </CardContent>
 
@@ -477,7 +479,7 @@ export default function CreatePropositionPage({ mode, location }: Props) {
               </SubmitButton>
             </CardActions>
           </Card>
-        </div>
+        </SingleColumnGrid>
       </form>
     </div>
   );

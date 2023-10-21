@@ -183,55 +183,34 @@ class JustificationsPage extends Component<Props> {
           </title>
         </Helmet>
 
-        <div className="md-grid md-grid--top">
-          <FocusValidatingContextTrail
-            id="justifications-page-context-trail"
-            focusEntityType={rootTargetType}
-            focusEntityId={rootTargetId}
-            className="md-cell md-cell--12"
-          />
-          <div className="md-cell md-cell--12">
-            <JustificationRootTargetCard
-              id={this.id("root-target")}
-              {...rootTargetProps}
-              editorId={JustificationsPage.rootTargetEditorId}
-              suggestionsKey={this.suggestionsKey("root-target")}
-              extraMenuItems={rootTargetExtraMenuItems}
-              contextTrailItem={
-                contextTrailItems?.[contextTrailItems.length - 1]
-              }
-            />
-          </div>
+        <FocusValidatingContextTrail
+          id="justifications-page-context-trail"
+          focusEntityType={rootTargetType}
+          focusEntityId={rootTargetId}
+        />
+        <JustificationRootTargetCard
+          id={this.id("root-target")}
+          {...rootTargetProps}
+          editorId={JustificationsPage.rootTargetEditorId}
+          suggestionsKey={this.suggestionsKey("root-target")}
+          extraMenuItems={rootTargetExtraMenuItems}
+          contextTrailItem={contextTrailItems?.[contextTrailItems.length - 1]}
+        />
 
-          {isFetching && (
-            <div className="md-grid md-grid--bottom">
-              <div className="md-cell md-cell--12 cell--centered-contents">
-                <CircularProgress
-                  key="progress"
-                  id="justifications-page-progress"
-                />
-              </div>
-            </div>
-          )}
-          {!isFetching && !hasJustifications && (
-            <div
-              className="md-cell md-cell--12 cell--centered-contents"
-              key="no-justifications-message"
-            >
-              <div>No justifications.</div>
-            </div>
-          )}
-          {hasJustifications || (
-            <div
-              className="md-cell md-cell--12 cell--centered-contents"
-              key="add-justification-button"
-            >
-              <TextButton onClick={this.showNewJustificationDialog}>
-                {t(ADD_JUSTIFICATION_CALL_TO_ACTION)}
-              </TextButton>
-            </div>
-          )}
-        </div>
+        {isFetching && (
+          <CircularProgress key="progress" id="justifications-page-progress" />
+        )}
+        {!isFetching && !hasJustifications && (
+          <div key="no-justifications-message">No justifications.</div>
+        )}
+        {hasJustifications || (
+          <TextButton
+            key="add-justification-button"
+            onClick={this.showNewJustificationDialog}
+          >
+            {t(ADD_JUSTIFICATION_CALL_TO_ACTION)}
+          </TextButton>
+        )}
 
         <JustificationsTree
           id="justificationsPage"
@@ -248,7 +227,6 @@ class JustificationsPage extends Component<Props> {
           }
           contextTrailItems={contextTrailItems}
           onClickWritQuoteUrl={onClickWritQuoteUrl}
-          className="md-grid--bottom"
         />
 
         {isNewJustificationDialogVisible && (

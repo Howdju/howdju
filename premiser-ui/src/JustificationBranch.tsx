@@ -380,14 +380,13 @@ function JustificationBranch({
     >
       <JustificationChatBubble
         id={`justification-${justification.id}-chat-bubble`}
-        className="md-grid"
         justification={justification}
         doShowControls={doShowControls}
         showBasisUrls={showBasisUrls}
         showStatusText={showStatusText}
         menu={menu}
         contextTrailItems={contextTrailItems}
-        actions={<div className="md-cell md-cell--12 actions">{actions}</div>}
+        actions={<div className="actions">{actions}</div>}
         onMouseOver={onBubbleMouseOver}
         onMouseLeave={onBubbleMouseLeave}
         onClickWritQuoteUrl={onClickWritQuoteUrl}

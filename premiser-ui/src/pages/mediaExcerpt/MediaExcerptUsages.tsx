@@ -1,7 +1,7 @@
 import React, { UIEvent, useEffect } from "react";
 import isEmpty from "lodash/isEmpty";
 import map from "lodash/map";
-import FlipMove from "react-flip-move";
+import { GridCell } from "@react-md/utils";
 
 import { EntityId } from "howdju-common";
 
@@ -10,12 +10,15 @@ import {
   justificationsSchema,
 } from "../../normalizationSchemas";
 import JustificationCard from "../../JustificationCard";
-import config from "../../config";
 import { useAppDispatch, useAppSelector, useAppEntitySelector } from "@/hooks";
-import FlipMoveWrapper from "@/FlipMoveWrapper";
 import AppearanceCard from "../appearances/AppearanceCard";
 import page from "./mediaExcerptUsagesSlice";
 import FetchMoreButton from "@/components/button/FetchMoreButton";
+import {
+  appearanceCardColSpans,
+  justificationCardColSpans,
+} from "@/components/listEntities/ListEntitiesWidget";
+import { FlipGrid } from "@/components/layout/FlipGrid";
 
 interface Props {
   mediaExcerptId: EntityId;
@@ -75,54 +78,36 @@ export default function MediaExcerptUsages({ mediaExcerptId }: Props) {
   );
 
   return (
-    <div className="md-grid">
-      <h1 className="md-cell md-cell--12">Justifications</h1>
-      <FlipMove
-        {...config.ui.flipMove}
-        className="md-cell md-cell--12 center-text"
-      >
-        {map(justifications, (j) => {
+    <div>
+      <h1>Justifications</h1>
+      <FlipGrid>
+        {justifications.map((j) => {
           const id = `justification-card-${j.id}`;
           return (
-            <FlipMoveWrapper key={id}>
-              <JustificationCard
-                className="md-cell md-cell--6"
-                id={id}
-                justification={j}
-              />
-            </FlipMoveWrapper>
+            <GridCell key={id} {...justificationCardColSpans}>
+              <JustificationCard id={id} justification={j} />
+            </GridCell>
           );
         })}
-      </FlipMove>
+      </FlipGrid>
       {!isFetchingJustifications && !hasJustifications && (
-        <div className="md-cell md-cell--12 text-center">No justifications</div>
+        <div>No justifications</div>
       )}
-      <div className="md-cell md-cell--12 cell--centered-contents">
-        {fetchMoreJustificationsButton}
-      </div>
+      <div>{fetchMoreJustificationsButton}</div>
 
-      <h1 className="md-cell md-cell--12">Appearances</h1>
-      <FlipMove
-        {...config.ui.flipMove}
-        className="md-cell md-cell--12 center-text"
-      >
+      <h1>Appearances</h1>
+      <FlipGrid>
         {map(appearances, (a) => {
           const id = `appearance-card-${a.id}`;
           return (
-            <FlipMoveWrapper key={id}>
-              <AppearanceCard
-                className="md-cell md-cell--6"
-                id={id}
-                appearance={a}
-              />
-            </FlipMoveWrapper>
+            <GridCell key={id} {...appearanceCardColSpans}>
+              <AppearanceCard id={id} appearance={a} />
+            </GridCell>
           );
         })}
-      </FlipMove>
-      {!isFetchingAppearances && !hasAppearances && (
-        <div className="md-cell md-cell--12 text-center">No appearances</div>
-      )}
-      <div className="md-cell md-cell--12 cell--centered-contents">
+      </FlipGrid>
+      {!isFetchingAppearances && !hasAppearances && <div>No appearances</div>}
+      <div>
         <FetchMoreButton
           key="fetch-more-appearances-button"
           isFetching={isFetchingAppearances}

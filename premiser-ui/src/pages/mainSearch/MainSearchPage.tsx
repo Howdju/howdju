@@ -1,8 +1,7 @@
 import React, { useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { map } from "lodash";
-import FlipMove from "react-flip-move";
 import { useLocation } from "react-router";
+import { GridCell } from "@react-md/utils";
 
 import {
   MediaExcerptView,
@@ -15,16 +14,21 @@ import {
 import { CircularProgress } from "@/components/progress/CircularProgress";
 import mainSearcher from "../../mainSearcher";
 import PropositionCard from "../../PropositionCard";
-import { smallCellClasses } from "../../CellList";
 import { api, goto } from "../../actions";
 import { mainSearchResultSchema } from "../../normalizationSchemas";
-import config from "../../config";
 import TagsViewer from "@/components/tags/TagsViewer";
 import { useAppEntitySelector, useAppSelector } from "@/hooks";
 import SourceEntityCard from "@/components/sources/SourceEntityCard";
 import MediaExcerptCard from "@/components/mediaExcerpts/MediaExcerptCard";
 import PersorgEntityCard from "@/PersorgEntityCard";
 import { TagOutOrInput } from "@/components/tags/TagsControl";
+import {
+  persorgCardColSpans,
+  mediaExcerptCardColSpans,
+  sourceCardColSpans,
+  propositionCardColSpans,
+} from "@/components/listEntities/ListEntitiesWidget";
+import { FlipGrid } from "@/components/layout/FlipGrid";
 
 export default function MainSearchPage() {
   const location = useLocation();
@@ -50,70 +54,65 @@ export default function MainSearchPage() {
     dispatch(goto.tag(tag as TagOut));
   };
 
-  const loading = (
-    <CircularProgress id="progress" className="md-cell md-cell--12" />
-  );
-  const noResults = <div className="md-cell md-cell--12">No results.</div>;
+  const loading = <CircularProgress id="progress" />;
+  const noResults = <div>No results.</div>;
 
   return (
-    <div id="main-search-page" className="md-grid">
-      <h1 className="md-cell md-cell--12">
-        Search results for: &ldquo;{searchText}&rdquo;
-      </h1>
+    <div id="main-search-page">
+      <h1>Search results for: &ldquo;{searchText}&rdquo;</h1>
       {isFetching && loading}
 
-      <h2 className="md-cell md-cell--12">Tags</h2>
-      <FlipMove
-        className="md-cell md-cell--12 md-grid md-grid--card-list--tablet"
-        {...config.ui.flipMove}
-      >
-        {tags.length > 0 && (
-          <TagsViewer
-            id="main-search-tags-viewer"
-            mode="view"
-            tags={tags}
-            canHide={false}
-            votable={false}
-            onClickTag={goToTag}
-          />
-        )}
-      </FlipMove>
+      <h2>Tags</h2>
+      {tags.length > 0 && (
+        <TagsViewer
+          id="main-search-tags-viewer"
+          mode="view"
+          tags={tags}
+          canHide={false}
+          votable={false}
+          onClickTag={goToTag}
+        />
+      )}
       {!isFetching && tags.length < 1 && noResults}
 
-      <h2 className="md-cell md-cell--12">Propositions</h2>
-      <FlipMove
-        className="md-cell md-cell--12 md-grid md-grid--card-list--tablet"
-        {...config.ui.flipMove}
-      >
-        {map(propositions, toPropositionCard)}
-      </FlipMove>
+      <h2>Propositions</h2>
+      <FlipGrid>
+        {propositions.map((p) => (
+          <GridCell key={p.id} {...propositionCardColSpans}>
+            {toPropositionCard(p)}
+          </GridCell>
+        ))}
+      </FlipGrid>
       {!isFetching && propositions.length < 1 && noResults}
 
-      <h2 className="md-cell md-cell--12">Sources</h2>
-      <FlipMove
-        className="md-cell md-cell--12 md-grid md-grid--card-list--tablet"
-        {...config.ui.flipMove}
-      >
-        {map(sources, toSourceCard)}
-      </FlipMove>
+      <h2>Sources</h2>
+      <FlipGrid>
+        {sources.map((s) => (
+          <GridCell key={s.id} {...sourceCardColSpans}>
+            {toSourceCard(s)}
+          </GridCell>
+        ))}
+      </FlipGrid>
       {!isFetching && sources.length < 1 && noResults}
 
-      <h2 className="md-cell md-cell--12">Persorgs</h2>
-      <FlipMove
-        className="md-cell md-cell--12 md-grid md-grid--card-list--tablet"
-        {...config.ui.flipMove}
-      >
-        {map(persorgs, toPersorgCard)}
-      </FlipMove>
+      <h2>Persorgs</h2>
+      <FlipGrid>
+        {persorgs.map((p) => (
+          <GridCell key={p.id} {...persorgCardColSpans}>
+            {toPersorgCard(p)}
+          </GridCell>
+        ))}
+      </FlipGrid>
       {!isFetching && persorgs.length < 1 && noResults}
 
-      <h2 className="md-cell md-cell--12">Media excerpts</h2>
-      <FlipMove
-        className="md-cell md-cell--12 md-grid md-grid--card-list--tablet"
-        {...config.ui.flipMove}
-      >
-        {map(mediaExcerpts, toMediaExcerptCard)}
-      </FlipMove>
+      <h2>Media excerpts</h2>
+      <FlipGrid>
+        {mediaExcerpts.map((me) => (
+          <GridCell key={me.id} {...mediaExcerptCardColSpans}>
+            {toMediaExcerptCard(me)}
+          </GridCell>
+        ))}
+      </FlipGrid>
       {!isFetching && mediaExcerpts.length < 1 && noResults}
     </div>
   );
@@ -121,48 +120,20 @@ export default function MainSearchPage() {
 
 function toPropositionCard(proposition: PropositionOut) {
   const id = `proposition-card-${proposition.id}`;
-  return (
-    <PropositionCard
-      proposition={proposition}
-      id={id}
-      key={id}
-      className={smallCellClasses}
-    />
-  );
+  return <PropositionCard proposition={proposition} id={id} key={id} />;
 }
 
 function toSourceCard(source: SourceOut) {
   const id = `source-card-${source.id}`;
-  return (
-    <SourceEntityCard
-      source={source}
-      id={id}
-      key={id}
-      className={smallCellClasses}
-    />
-  );
+  return <SourceEntityCard source={source} id={id} key={id} />;
 }
 
 function toMediaExcerptCard(mediaExcerpt: MediaExcerptView) {
   const id = `media-excerpt-card-${mediaExcerpt.id}`;
-  return (
-    <MediaExcerptCard
-      mediaExcerpt={mediaExcerpt}
-      id={id}
-      key={id}
-      className={smallCellClasses}
-    />
-  );
+  return <MediaExcerptCard mediaExcerpt={mediaExcerpt} id={id} key={id} />;
 }
 
 function toPersorgCard(persorg: PersorgOut) {
   const id = `persorg-card-${persorg.id}`;
-  return (
-    <PersorgEntityCard
-      persorg={persorg}
-      id={id}
-      key={id}
-      className={smallCellClasses}
-    />
-  );
+  return <PersorgEntityCard persorg={persorg} id={id} key={id} />;
 }
