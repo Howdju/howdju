@@ -1,12 +1,13 @@
 import React, { MouseEvent, ReactElement, useEffect } from "react";
 import { ActionCreator } from "@reduxjs/toolkit";
 import { schema } from "normalizr";
-import { Grid, GridCell } from "@react-md/utils";
+import { GridCell } from "@react-md/utils";
 
-import { useAppDispatch, useAppSelector } from "../../hooks";
+import { useAppDispatch, useAppSelector } from "@/hooks";
 import FetchMoreButton from "../button/FetchMoreButton";
 import FetchButton from "../button/FetchButton";
 import { denormalizedEntity } from "@/selectors";
+import { FlipGrid } from "@/components/layout/FlipGrid";
 
 /** Corresponds to GridCSSProperties */
 export interface FormFactorGridCellProps {
@@ -39,6 +40,7 @@ export const propositionCardColSpans = smallCardColSpans;
 export const appearanceCardColSpans = largeCardColSpans;
 export const justificationCardColSpans = largeCardColSpans;
 export const mediaExcerptCardColSpans = largeCardColSpans;
+export const statementCardColSpans = largeCardColSpans;
 
 type ListEntitiesWidgetProps = {
   id: string;
@@ -114,11 +116,11 @@ export default function ListEntitiesWidget({
     </FetchButton>
   );
   return (
-    <Grid id={id} {...rest}>
+    <FlipGrid id={id} {...rest}>
       {entities?.map((e) => {
         const card = entityToCard(e);
         return (
-          <GridCell clone={true} key={card.key} {...cardColSpans}>
+          <GridCell key={card.key} {...cardColSpans}>
             {card}
           </GridCell>
         );
@@ -143,6 +145,6 @@ export default function ListEntitiesWidget({
           {retryButtonCell}
         </GridCell>
       )}
-    </Grid>
+    </FlipGrid>
   );
 }

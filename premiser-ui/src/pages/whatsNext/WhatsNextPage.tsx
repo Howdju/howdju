@@ -8,7 +8,7 @@ import mdSource from "./WhatsNextPage.md";
 import "./WhatsNextPage.scss";
 
 const WhatsNextPage = () => (
-  <div id="about-page">
+  <div id="whats-next-page">
     <SingleColumnGrid>
       <Card>
         <CardContent dangerouslySetInnerHTML={{ __html: mdSource }} />

@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import Helmet from "../../Helmet";
 import get from "lodash/get";
 import map from "lodash/map";
+import { GridCell } from "@react-md/utils";
 
 import { api } from "../../actions";
 import PropositionCard from "../../PropositionCard";
@@ -12,7 +13,8 @@ import { EntityId } from "howdju-common";
 import { RouteComponentProps } from "react-router";
 import { useAppDispatch, useAppSelector } from "@/hooks";
 import { CircularProgress } from "@/components/progress/CircularProgress";
-import { Grid } from "@react-md/utils";
+import { FlipGrid } from "@/components/layout/FlipGrid";
+import { propositionCardColSpans } from "@/components/listEntities/ListEntitiesWidget";
 
 interface MatchParams {
   tagId: EntityId;
@@ -47,12 +49,16 @@ export default function TagPage(props: Props) {
         <title>{title} — Howdju</title>
       </Helmet>
       <h1>{title}</h1>
-      <Grid clone={true} columns={4} phoneColumns={2}>
+      <FlipGrid>
         {map(propositions, (proposition) => {
           const id = `proposition-card-${proposition.id}`;
-          return <PropositionCard proposition={proposition} id={id} key={id} />;
+          return (
+            <GridCell key={id} {...propositionCardColSpans}>
+              <PropositionCard proposition={proposition} id={id} />
+            </GridCell>
+          );
         })}
-      </Grid>
+      </FlipGrid>
       {!isFetching && propositions.length < 1 && (
         <div>No tagged propositions</div>
       )}

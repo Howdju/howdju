@@ -4,7 +4,7 @@ import { denormalize } from "normalizr";
 import { FontIcon } from "@react-md/icon";
 import { RouteComponentProps } from "react-router";
 import { push } from "connected-react-router";
-import { Grid } from "@react-md/utils";
+import { GridCell } from "@react-md/utils";
 
 import { EntityId, MediaExcerptOut, StatementOut } from "howdju-common";
 
@@ -30,6 +30,11 @@ import { useAppDispatch, useAppSelector } from "@/hooks";
 import MediaExcerptCard from "@/components/mediaExcerpts/MediaExcerptCard";
 import app from "@/app/appSlice";
 import paths from "@/paths";
+import { FlipGrid } from "@/components/layout/FlipGrid";
+import {
+  mediaExcerptCardColSpans,
+  statementCardColSpans,
+} from "@/components/listEntities/ListEntitiesWidget";
 
 const id = "persorg-page";
 const editorId = "persorgPageEditorId";
@@ -163,9 +168,13 @@ export default function PersorgPage(props: Props) {
           <p>None.</p>
         </div>
       )}
-      <Grid columns={2} clone={true}>
-        {statementCards}
-      </Grid>
+      <FlipGrid>
+        {statementCards.map((card) => (
+          <GridCell key={card.key} {...statementCardColSpans}>
+            {card}
+          </GridCell>
+        ))}
+      </FlipGrid>
 
       <h2>Media excerpts</h2>
       {isFetchingMediaExcerpts && (
@@ -178,9 +187,13 @@ export default function PersorgPage(props: Props) {
           <p>None.</p>
         </div>
       )}
-      <Grid columns={2} clone={true}>
-        {mediaExcerptCards}
-      </Grid>
+      <FlipGrid>
+        {mediaExcerptCards.map((card) => (
+          <GridCell key={card.key} {...mediaExcerptCardColSpans}>
+            {card}
+          </GridCell>
+        ))}
+      </FlipGrid>
     </div>
   );
 }

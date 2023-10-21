@@ -183,3 +183,11 @@ strong {
   padding: 10px;
   text-align: center;
 }
+
+// Cards that are the top-level element in a grid cell should fill it. This
+// allows us to use a separate component for the grid cell and the card, which
+// allows us to use ReactFlip.
+.rmd-grid__cell > .rmd-card {
+  width: 100%;
+  height: 100%;
+}

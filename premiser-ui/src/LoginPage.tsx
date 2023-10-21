@@ -1,9 +1,7 @@
 import React, { Component, FormEvent } from "react";
 import { goBack } from "connected-react-router";
 import { get } from "lodash";
-import { FocusContainer } from "react-md";
 import { connect, ConnectedProps } from "react-redux";
-import { Grid, GridCell } from "@react-md/utils";
 
 import { Credentials, makeCredentials } from "howdju-common";
 
@@ -29,6 +27,8 @@ import OutlineButton from "./components/button/OutlineButton";
 import ErrorMessages from "./ErrorMessages";
 import { makeErrorPropCreator } from "./modelErrorMessages";
 import paths from "./paths";
+import { Page } from "./components/layout/Page";
+import SingleColumnGrid from "./components/layout/SingleColumnGrid";
 
 interface OwnProps {
   authEmail: string | undefined;
@@ -81,43 +81,42 @@ class LoginPage extends Component<Props> {
     );
 
     return (
-      <Grid id="login-page">
+      <Page id="login-page">
         <Helmet>
           <title>Login — Howdju</title>
         </Helmet>
-        <GridCell colSpan={12} clone={true}>
+        <SingleColumnGrid>
           <Card title="Login" subtitle={subtitle}>
             <CardContent>
               <ErrorMessages errors={this.props.editorState?.errors?._errors} />
               <form onSubmit={this.onSubmit}>
-                <FocusContainer focusOnMount containFocus={false}>
-                  <EmailField
-                    id="email"
-                    name="email"
-                    value={email}
-                    autoComplete="username"
-                    required
-                    onPropertyChange={this.onPropertyChange}
-                    onSubmit={this.onSubmit}
-                    disabled={isLoggingIn}
-                    messageProps={{
-                      ...errorProps((c) => c.email),
-                    }}
-                  />
-                  <PasswordField
-                    id="password"
-                    name="password"
-                    value={password}
-                    autoComplete="current-password"
-                    required
-                    onPropertyChange={this.onPropertyChange}
-                    onSubmit={this.onSubmit}
-                    disabled={isLoggingIn}
-                    messageProps={{
-                      ...errorProps((c) => c.password),
-                    }}
-                  />
-                </FocusContainer>
+                <EmailField
+                  id="email"
+                  name="email"
+                  value={email}
+                  autoComplete="username"
+                  autoFocus={true}
+                  required
+                  onPropertyChange={this.onPropertyChange}
+                  onSubmit={this.onSubmit}
+                  disabled={isLoggingIn}
+                  messageProps={{
+                    ...errorProps((c) => c.email),
+                  }}
+                />
+                <PasswordField
+                  id="password"
+                  name="password"
+                  value={password}
+                  autoComplete="current-password"
+                  required
+                  onPropertyChange={this.onPropertyChange}
+                  onSubmit={this.onSubmit}
+                  disabled={isLoggingIn}
+                  messageProps={{
+                    ...errorProps((c) => c.password),
+                  }}
+                />
 
                 <CardActions>
                   {isLoggingIn && (
@@ -143,8 +142,6 @@ class LoginPage extends Component<Props> {
               </form>
             </CardContent>
           </Card>
-        </GridCell>
-        <GridCell colSpan={12} clone={true}>
           <Card>
             <CardContent>
               Howdju 2.0 is currently in private gamma. Enter your email to sign
@@ -172,8 +169,8 @@ class LoginPage extends Component<Props> {
               </form>
             </CardContent>
           </Card>
-        </GridCell>
-      </Grid>
+        </SingleColumnGrid>
+      </Page>
     );
   }
 }

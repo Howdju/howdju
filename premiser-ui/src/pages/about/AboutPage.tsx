@@ -1,19 +1,20 @@
 import React from "react";
-import { Grid, GridCell } from "@react-md/utils";
 
 import { Card, CardContent } from "@/components/card/Card";
 
 import mdSource from "./AboutPage.md";
 
 import "./AboutPage.scss";
+import { Page } from "@/components/layout/Page";
+import SingleColumnGrid from "@/components/layout/SingleColumnGrid";
 
 const AboutPage = () => (
-  <Grid id="about-page">
-    <GridCell colSpan={12} clone={true}>
+  <Page id="about-page">
+    <SingleColumnGrid>
       <Card>
         <CardContent dangerouslySetInnerHTML={{ __html: mdSource }} />
       </Card>
-    </GridCell>
-  </Grid>
+    </SingleColumnGrid>
+  </Page>
 );
 export default AboutPage;

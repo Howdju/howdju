@@ -214,7 +214,6 @@ describe("CreatePropositionPage", () => {
       );
 
       // Assert
-      jest.runAllTimers();
       expect(
         screen.queryByRole("button", { name: new RegExp(tagName) })
       ).not.toBeInTheDocument();

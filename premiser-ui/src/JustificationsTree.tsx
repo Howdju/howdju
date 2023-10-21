@@ -3,6 +3,7 @@ import FlipMove from "react-flip-move";
 import get from "lodash/get";
 import groupBy from "lodash/groupBy";
 import map from "lodash/map";
+import { Grid, GridCell } from "@react-md/utils";
 
 import {
   ContextTrailItem,
@@ -18,10 +19,7 @@ import { ComponentId, OnClickJustificationWritQuoteUrl } from "./types";
 import { useAppSelector } from "./hooks";
 import { selectIsWindowNarrow } from "./selectors";
 import FlipMoveWrapper from "./FlipMoveWrapper";
-
-import "./JustificationsTree.scss";
 import TextButton from "./components/button/TextButton";
-import { Grid, GridCell } from "@react-md/utils";
 
 interface Props {
   id: ComponentId;
@@ -95,6 +93,15 @@ export default function JustificationsTree({
 
   const isWindowNarrow = useAppSelector(selectIsWindowNarrow);
 
+  // The branches will take up half of the cells on large screens. On smaller screens
+  // the isWindowNarrow condition below should apply to combine them into a single column.
+  const justificationBranchColSpans = {
+    largeDesktop: { colSpan: 6 },
+    desktop: { colSpan: 6 },
+    tablet: { colSpan: 8 },
+    phone: { colSpan: 4 },
+  };
+
   let branchesCells = null;
   if (isWindowNarrow || isCondensed || (!hasBothSides && !isUnCondensed)) {
     branchesCells = (
@@ -119,20 +126,17 @@ export default function JustificationsTree({
       <GridCell
         clone={true}
         key={positiveTreeClass}
-        largeDesktop={{ colSpan: 6 }}
-        desktop={{ colSpan: 6 }}
-        tablet={{ colSpan: 8 }}
-        phone={{ colSpan: 4 }}
+        {...justificationBranchColSpans}
       >
         <FlipMove {...config.ui.flipMove} className={positiveTreeClass}>
           {hasJustifications && <h2>Supporting Justifications</h2>}
           {hasJustifications && !hasPositiveJustifications && (
-            <>
+            <div style={{ textAlign: "center" }}>
               <div>None</div>
               <TextButton onClick={showNewPositiveJustificationDialog}>
                 {t(ADD_JUSTIFICATION_CALL_TO_ACTION)}
               </TextButton>
-            </>
+            </div>
           )}
           {map(positiveJustifications, toBranch)}
         </FlipMove>
@@ -140,20 +144,17 @@ export default function JustificationsTree({
       <GridCell
         clone={true}
         key={negativeTreeClass}
-        largeDesktop={{ colSpan: 6 }}
-        desktop={{ colSpan: 6 }}
-        tablet={{ colSpan: 8 }}
-        phone={{ colSpan: 4 }}
+        {...justificationBranchColSpans}
       >
         <FlipMove {...config.ui.flipMove} className={negativeTreeClass}>
           {hasJustifications && <h2>Opposing Justifications</h2>}
           {hasJustifications && !hasNegativeJustifications && (
-            <>
+            <div style={{ textAlign: "center" }}>
               <div>None</div>
               <TextButton onClick={showNewNegativeJustificationDialog}>
                 {t(ADD_JUSTIFICATION_CALL_TO_ACTION)}
               </TextButton>
-            </>
+            </div>
           )}
           {map(negativeJustifications, toBranch)}
         </FlipMove>

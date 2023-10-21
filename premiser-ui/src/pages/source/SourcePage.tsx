@@ -1,8 +1,8 @@
 import React, { useEffect } from "react";
-import { toString } from "lodash";
 import { FontIcon } from "@react-md/icon";
 import { RouteComponentProps } from "react-router";
 import { push } from "connected-react-router";
+import { GridCell } from "@react-md/utils";
 
 import { EntityId, logger } from "howdju-common";
 
@@ -22,7 +22,8 @@ import sourcePage from "./sourcePageSlice";
 import paths from "@/paths";
 import FetchMoreButton from "@/components/button/FetchMoreButton";
 import SingleColumnGrid from "@/components/layout/SingleColumnGrid";
-import { Grid } from "@react-md/utils";
+import { mediaExcerptCardColSpans } from "@/components/listEntities/ListEntitiesWidget";
+import { FlipGrid } from "@/components/layout/FlipGrid";
 
 const id = "source-page";
 const editorId = "sourcePageEditorId";
@@ -80,10 +81,10 @@ export default function SourcePage(props: Props) {
   const sourceName = source?.description ?? characters.ellipsis;
   const title = sourceName;
 
-  const mediaExcerptCards = mediaExcerpts.map((mediaExcerpt, index) => (
+  const mediaExcerptCards = mediaExcerpts.map((mediaExcerpt) => (
     <MediaExcerptCard
-      id={combineIds(id, "media-excerpts", toString(index))}
-      key={index}
+      id={combineIds(id, "media-excerpts", mediaExcerpt.id)}
+      key={mediaExcerpt.id}
       mediaExcerpt={mediaExcerpt}
     />
   ));
@@ -152,13 +153,19 @@ export default function SourcePage(props: Props) {
           <p>None.</p>
         </div>
       )}
-      <Grid clone={true} columns={2} phoneColumns={1}>
-        {mediaExcerptCards}
-        <FetchMoreButton
-          isFetching={isFetchingMediaExcerpts}
-          onClick={fetchMoreMediaExcerpts}
-        />
-      </Grid>
+      <FlipGrid>
+        {mediaExcerptCards.map((card) => (
+          <GridCell key={card.key} {...mediaExcerptCardColSpans}>
+            {card}
+          </GridCell>
+        ))}
+        <GridCell key="fetch-more-button" {...mediaExcerptCardColSpans}>
+          <FetchMoreButton
+            isFetching={isFetchingMediaExcerpts}
+            onClick={fetchMoreMediaExcerpts}
+          />
+        </GridCell>
+      </FlipGrid>
     </div>
   );
 }

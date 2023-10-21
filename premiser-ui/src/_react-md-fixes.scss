@@ -7,7 +7,7 @@
   }
 }
 
-@mixin react-md-fixes($grid-desktop-breakpoint, $grid-phone-gutter) {
+@mixin react-md-fixes($grid-desktop-breakpoint, $grid-gutter) {
   .md-tooltip {
     font-size: large;
     padding: 25px;
@@ -25,8 +25,8 @@
       // Instead of displaying md-list-tiles at a constant height (which works for single line of text, which we are
       // removing below) unset the height and give them a margin
       .md-list-item {
-        margin-top: $grid-phone-gutter;
-        margin-bottom: $grid-phone-gutter;
+        margin-top: $grid-gutter;
+        margin-bottom: $grid-gutter;
         .md-list-tile {
           height: unset;
         }

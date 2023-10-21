@@ -35,12 +35,16 @@ const config = {
     // react-md's desktop breakpoint is 840px
     narrowBreakpoint: 840,
     shortTextLength: 256,
-    flipMove: {
-      duration: 600,
-      easing: "ease",
-      staggerDurationBy: 15,
-      staggerDelayBy: 50,
-    },
+    flipMove:
+      // Disable FLIP animations in tests
+      process.env.NODE_ENV === "test"
+        ? { duration: 0 }
+        : {
+            duration: 600,
+            easing: "ease",
+            staggerDurationBy: 15,
+            staggerDelayBy: 50,
+          },
   },
   sessionStorageIdKey: "ssid",
 };

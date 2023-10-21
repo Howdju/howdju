@@ -1,9 +1,8 @@
 import React, { MouseEvent, useEffect } from "react";
 import { useLocation } from "react-router";
-import FlipMove from "react-flip-move";
 import { isArray, mapValues, pick, map, isEmpty } from "lodash";
 import queryString from "query-string";
-import { Grid, GridCell } from "@react-md/utils";
+import { GridCell } from "@react-md/utils";
 
 import {
   MediaExcerptSearchFilter,
@@ -12,11 +11,12 @@ import {
 
 import { CircularProgress } from "@/components/progress/CircularProgress";
 import { api } from "../../actions";
-import config from "../../config";
 import { useAppDispatch, useAppSelector, useAppEntitySelector } from "@/hooks";
 import MediaExcerptCard from "@/components/mediaExcerpts/MediaExcerptCard";
 import { mediaExcerptsSchema } from "@/normalizationSchemas";
 import FetchMoreButton from "@/components/button/FetchMoreButton";
+import { mediaExcerptCardColSpans } from "@/components/listEntities/ListEntitiesWidget";
+import { FlipGrid } from "@/components/layout/FlipGrid";
 
 const fetchCount = 20;
 
@@ -73,18 +73,16 @@ export default function MediaExcerptsSearchPage() {
         </>
       )}
 
-      <Grid cloneStyles={true}>
-        <FlipMove {...config.ui.flipMove}>
-          {map(mediaExcerpts, (me) => {
-            const id = `mediaExcerpt-card-${me.id}`;
-            return (
-              <GridCell clone={true}>
-                <MediaExcerptCard id={id} mediaExcerpt={me} key={id} />
-              </GridCell>
-            );
-          })}
-        </FlipMove>
-      </Grid>
+      <FlipGrid>
+        {map(mediaExcerpts, (me) => {
+          const id = `mediaExcerpt-card-${me.id}`;
+          return (
+            <GridCell {...mediaExcerptCardColSpans}>
+              <MediaExcerptCard id={id} mediaExcerpt={me} key={id} />
+            </GridCell>
+          );
+        })}
+      </FlipGrid>
       {!isFetching && !hasMediaExcerpts && <div>No media excerpts</div>}
       {isFetching && (
         <div>

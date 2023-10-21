@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { useLocation } from "react-router";
-import { Grid, GridCell } from "@react-md/utils";
+import { GridCell } from "@react-md/utils";
 
 import {
   MediaExcerptView,
@@ -28,6 +28,7 @@ import {
   sourceCardColSpans,
   propositionCardColSpans,
 } from "@/components/listEntities/ListEntitiesWidget";
+import { FlipGrid } from "@/components/layout/FlipGrid";
 
 export default function MainSearchPage() {
   const location = useLocation();
@@ -75,43 +76,43 @@ export default function MainSearchPage() {
       {!isFetching && tags.length < 1 && noResults}
 
       <h2>Propositions</h2>
-      <Grid>
+      <FlipGrid>
         {propositions.map((p) => (
-          <GridCell key={p.id} {...propositionCardColSpans} clone={true}>
+          <GridCell key={p.id} {...propositionCardColSpans}>
             {toPropositionCard(p)}
           </GridCell>
         ))}
-      </Grid>
+      </FlipGrid>
       {!isFetching && propositions.length < 1 && noResults}
 
       <h2>Sources</h2>
-      <Grid>
+      <FlipGrid>
         {sources.map((s) => (
-          <GridCell key={s.id} {...sourceCardColSpans} clone={true}>
+          <GridCell key={s.id} {...sourceCardColSpans}>
             {toSourceCard(s)}
           </GridCell>
         ))}
-      </Grid>
+      </FlipGrid>
       {!isFetching && sources.length < 1 && noResults}
 
       <h2>Persorgs</h2>
-      <Grid>
+      <FlipGrid>
         {persorgs.map((p) => (
-          <GridCell key={p.id} {...persorgCardColSpans} clone={true}>
+          <GridCell key={p.id} {...persorgCardColSpans}>
             {toPersorgCard(p)}
           </GridCell>
         ))}
-      </Grid>
+      </FlipGrid>
       {!isFetching && persorgs.length < 1 && noResults}
 
       <h2>Media excerpts</h2>
-      <Grid>
+      <FlipGrid>
         {mediaExcerpts.map((me) => (
-          <GridCell key={me.id} {...mediaExcerptCardColSpans} clone={true}>
+          <GridCell key={me.id} {...mediaExcerptCardColSpans}>
             {toMediaExcerptCard(me)}
           </GridCell>
         ))}
-      </Grid>
+      </FlipGrid>
       {!isFetching && mediaExcerpts.length < 1 && noResults}
     </div>
   );

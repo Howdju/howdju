@@ -3,7 +3,7 @@ import { useLocation } from "react-router";
 import queryString from "query-string";
 import useDeepCompareEffect from "use-deep-compare-effect";
 import { isArray } from "lodash";
-import { Grid, GridCell } from "@react-md/utils";
+import { GridCell } from "@react-md/utils";
 
 import { EntityId } from "howdju-common";
 
@@ -19,6 +19,7 @@ import HowdjuHelmet from "@/Helmet";
 import page from "./factCheckPageSlice";
 import { CircularProgress } from "@/components/progress/CircularProgress";
 import { appearanceCardColSpans } from "@/components/listEntities/ListEntitiesWidget";
+import { FlipGrid } from "@/components/layout/FlipGrid";
 
 /**
  * A page displaying Appearances that are part of a FactCheck.
@@ -120,13 +121,13 @@ function ValidParamsFactCheckPage({
       </ul>
 
       <h2>Appearances</h2>
-      <Grid>
+      <FlipGrid>
         {appearances.map((appearance) => (
           <GridCell key={appearance.id} {...appearanceCardColSpans}>
             <AppearanceCard id={appearance.id} appearance={appearance} />
           </GridCell>
         ))}
-      </Grid>
+      </FlipGrid>
     </div>
   );
 }

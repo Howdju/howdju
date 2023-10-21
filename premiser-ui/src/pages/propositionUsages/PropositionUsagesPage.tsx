@@ -1,11 +1,10 @@
 import React, { UIEvent, useEffect } from "react";
 import { map, isEmpty } from "lodash";
 import { RouteComponentProps } from "react-router";
-import { Grid, GridCell } from "@react-md/utils";
+import { GridCell } from "@react-md/utils";
 
 import { EntityId } from "howdju-common";
 
-import config from "@/config";
 import { CircularProgress } from "@/components/progress/CircularProgress";
 import { api } from "../../actions";
 import {
@@ -17,7 +16,6 @@ import {
 } from "../../normalizationSchemas";
 import StatementCard from "../../StatementCard";
 import { combineIds } from "../../viewModels";
-import FlipMove from "react-flip-move";
 import JustificationCard from "../../JustificationCard";
 import { useAppDispatch, useAppEntitySelector, useAppSelector } from "@/hooks";
 import ErrorPage from "@/ErrorPage";
@@ -30,7 +28,9 @@ import {
   appearanceCardColSpans,
   justificationCardColSpans,
   propositionCardColSpans,
+  statementCardColSpans,
 } from "@/components/listEntities/ListEntitiesWidget";
+import { FlipGrid } from "@/components/layout/FlipGrid";
 
 const pageId = "proposition-usages-page";
 const fetchCount = 20;
@@ -137,12 +137,16 @@ function ValidPropositionUsagesPage({ propositionId }: ValidProps) {
       )}
 
       <h2>Direct Statements</h2>
-      <Grid clone={true} columns={2}>
+      <FlipGrid>
         {map(directStatements, (s) => {
           const id = combineIds(pageId, "statement", s.id);
-          return <StatementCard id={id} key={id} statement={s} />;
+          return (
+            <GridCell key={id} {...statementCardColSpans}>
+              <StatementCard id={id} key={id} statement={s} />
+            </GridCell>
+          );
         })}
-      </Grid>
+      </FlipGrid>
       {!isFetchingDirect && !hasDirectStatements && (
         <div>No direct statements</div>
       )}
@@ -153,12 +157,16 @@ function ValidPropositionUsagesPage({ propositionId }: ValidProps) {
       )}
 
       <h2>Indirect Statements</h2>
-      <Grid clone={true} columns={2}>
+      <FlipGrid>
         {map(indirectStatements, (s) => {
           const id = combineIds(pageId, "statement", s.id);
-          return <StatementCard id={id} key={id} statement={s} />;
+          return (
+            <GridCell key={id} {...statementCardColSpans}>
+              <StatementCard id={id} key={id} statement={s} />
+            </GridCell>
+          );
         })}
-      </Grid>
+      </FlipGrid>
       {!isFetchingIndirect && !hasIndirectStatements && (
         <div>No indirect statements</div>
       )}
@@ -169,18 +177,16 @@ function ValidPropositionUsagesPage({ propositionId }: ValidProps) {
       )}
 
       <h2>Justifications</h2>
-      <Grid cloneStyles={true}>
-        <FlipMove {...config.ui.flipMove}>
-          {map(justifications, (j) => {
-            const id = `justification-card-${j.id}`;
-            return (
-              <GridCell key={id} {...justificationCardColSpans}>
-                <JustificationCard id={id} justification={j} />
-              </GridCell>
-            );
-          })}
-        </FlipMove>
-      </Grid>
+      <FlipGrid>
+        {map(justifications, (j) => {
+          const id = `justification-card-${j.id}`;
+          return (
+            <GridCell key={id} {...justificationCardColSpans}>
+              <JustificationCard id={id} justification={j} />
+            </GridCell>
+          );
+        })}
+      </FlipGrid>
       {!isFetchingJustifications && !hasJustifications && (
         <div>No justifications</div>
       )}
@@ -192,18 +198,16 @@ function ValidPropositionUsagesPage({ propositionId }: ValidProps) {
       <div>{fetchMoreJustificationsButton}</div>
 
       <h2>Appearances</h2>
-      <Grid cloneStyles={true}>
-        <FlipMove {...config.ui.flipMove}>
-          {map(appearances, (a) => {
-            const id = `appearance-card-${a.id}`;
-            return (
-              <GridCell key={id} {...appearanceCardColSpans}>
-                <AppearanceCard id={id} appearance={a} />
-              </GridCell>
-            );
-          })}
-        </FlipMove>
-      </Grid>
+      <FlipGrid>
+        {map(appearances, (a) => {
+          const id = `appearance-card-${a.id}`;
+          return (
+            <GridCell key={id} {...appearanceCardColSpans}>
+              <AppearanceCard id={id} appearance={a} />
+            </GridCell>
+          );
+        })}
+      </FlipGrid>
       {!isFetchingAppearances && !hasAppearances && <div>No Appearances</div>}
       {isFetchingAppearances && (
         <div>
@@ -212,18 +216,16 @@ function ValidPropositionUsagesPage({ propositionId }: ValidProps) {
       )}
 
       <h2>PropositionCompounds</h2>
-      <Grid cloneStyles={true}>
-        <FlipMove {...config.ui.flipMove}>
-          {map(propositionCompounds, (pc) => {
-            const id = `proposition-compound-card-${pc.id}`;
-            return (
-              <GridCell key={id} {...propositionCardColSpans}>
-                <PropositionCompoundCard id={id} propositionCompound={pc} />
-              </GridCell>
-            );
-          })}
-        </FlipMove>
-      </Grid>
+      <FlipGrid>
+        {map(propositionCompounds, (pc) => {
+          const id = `proposition-compound-card-${pc.id}`;
+          return (
+            <GridCell key={id} {...propositionCardColSpans}>
+              <PropositionCompoundCard id={id} propositionCompound={pc} />
+            </GridCell>
+          );
+        })}
+      </FlipGrid>
       {!isFetchingPropositionCompounds && !hasPropositionCompounds && (
         <div>No PropositionCompounds</div>
       )}

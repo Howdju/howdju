@@ -130,6 +130,9 @@ exports[`JustificationsPage Shows a justified proposition 1`] = `
               class="chips-list"
               id="justifications-page--root-target--proposition-tagger--tags"
             >
+              <div
+                style="position: relative;"
+              />
               <button
                 class="rmd-button rmd-button--icon rmd-button--text-primary"
                 title="Add tag"
@@ -308,6 +311,9 @@ exports[`JustificationsPage can add a compound-based justification 1`] = `
               class="chips-list"
               id="justifications-page--root-target--proposition-tagger--tags"
             >
+              <div
+                style="position: relative;"
+              />
               <button
                 class="rmd-button rmd-button--icon rmd-button--text-primary"
                 title="Add tag"
@@ -335,14 +341,10 @@ exports[`JustificationsPage can add a compound-based justification 1`] = `
         class="rmd-grid__cell rmd-grid__cell--6 proposition-justifications-justification-trees--positive"
         style="position: relative;"
       >
-        <h2
-          style="transition: transform 600ms ease 0ms, opacity 600ms ease 0ms;"
-        >
+        <h2>
           Supporting Justifications
         </h2>
-        <div
-          style="transition: transform 615ms ease 50ms, opacity 615ms ease 50ms;"
-        >
+        <div>
           <div
             class="justification-tree"
             id="justification-1582-tree"
@@ -679,23 +681,25 @@ exports[`JustificationsPage can add a compound-based justification 1`] = `
         class="rmd-grid__cell rmd-grid__cell--6 proposition-justifications-justification-trees--negative"
         style="position: relative;"
       >
-        <h2
-          style="transition: transform 600ms ease 0ms, opacity 600ms ease 0ms;"
-        >
+        <h2>
           Opposing Justifications
         </h2>
-        <div>
-          None
-        </div>
-        <button
-          class="rmd-button rmd-button--text rmd-button--text-primary"
-          type="button"
+        <div
+          style="text-align: center;"
         >
-          Add one now
-          <span
-            class="rmd-ripple-container"
-          />
-        </button>
+          <div>
+            None
+          </div>
+          <button
+            class="rmd-button rmd-button--text rmd-button--text-primary"
+            type="button"
+          >
+            Add one now
+            <span
+              class="rmd-ripple-container"
+            />
+          </button>
+        </div>
       </div>
     </div>
   </div>

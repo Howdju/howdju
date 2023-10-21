@@ -11,6 +11,8 @@ interface Props {
 /**
  * A class-based component to wrap functional component children of FlipMove.
  *
+ * We might be able to use React.forwardRef() instead (https://github.com/joshwcomeau/react-flip-move#usage-with-functional-components)
+ *
  * TODO(#221) revisit whether we need this if we replace/upgrade react-flip-move.
  *
  * Prevents this error:

@@ -1,18 +1,27 @@
 @import "~react-md/src/scss/react-md";
+
 @import "./colors";
 @import "./grid";
 @import "./util";
 
 $slide-size: $md-btn-icon-size;
 
+.counter-justifications h3 {
+  margin: $grid-gutter 0;
+}
+.chat-bubble > .counter-justifications {
+  margin-bottom: $grid-gutter;
+}
 .chat-bubble--negative {
   & > .counter-justifications {
+    margin-left: $grid-gutter;
     margin-right: $polarity-offset;
   }
 }
 .chat-bubble--positive {
   & > .counter-justifications {
     margin-left: $polarity-offset;
+    margin-right: $grid-gutter;
   }
 }
 

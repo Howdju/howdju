@@ -1,6 +1,7 @@
 @import "~@react-md/utils/dist/_variables";
 @import "./flatui-colors";
 @import "./tree";
+@import "./grid";
 
 $section-margin: 1em;
 $banner-padding: 3em;
@@ -123,8 +124,8 @@ $banner-padding: 3em;
     ul,
     .banner-content {
       width: 100%;
-      padding-left: $rmd-grid-gutter-var;
-      padding-right: $rmd-grid-gutter-var;
+      padding-left: $grid-gutter;
+      padding-right: $grid-gutter;
     }
     ul.blocks {
       width: 100%;

@@ -3,7 +3,7 @@ import { useLocation } from "react-router";
 import isEmpty from "lodash/isEmpty";
 import map from "lodash/map";
 import { denormalize } from "normalizr";
-import { Grid, GridCell } from "@react-md/utils";
+import { GridCell } from "@react-md/utils";
 
 import { JustificationView } from "howdju-common";
 
@@ -16,6 +16,7 @@ import { useAppDispatch, useAppSelector } from "@/hooks";
 import { extractFilters, extractIncludeUrls } from "./queryStringExtraction";
 import FetchMoreButton from "@/components/button/FetchMoreButton";
 import { largeCardColSpans } from "@/components/listEntities/ListEntitiesWidget";
+import { FlipGrid } from "@/components/layout/FlipGrid";
 
 const fetchCount = 20;
 
@@ -88,12 +89,11 @@ export default function JustificationsSearchPage() {
         </>
       )}
 
-      <Grid>
+      <FlipGrid>
         {map(justifications, (j) => {
           const id = `justification-card-${j.id}`;
-          // TODO(#221) add FLIP
           return (
-            <GridCell key={id} {...largeCardColSpans} clone={true}>
+            <GridCell key={id} {...largeCardColSpans}>
               <JustificationCard
                 id={id}
                 justification={j}
@@ -103,7 +103,7 @@ export default function JustificationsSearchPage() {
             </GridCell>
           );
         })}
-      </Grid>
+      </FlipGrid>
       {!isFetching && !hasJustifications && <div>No justifications</div>}
       {isFetching && (
         <CircularProgress id={`$justificationsSearchPage-Progress`} />

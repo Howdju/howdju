@@ -123,6 +123,9 @@ exports[`CreatePropositionPage (with fake timers) renders correctly with query p
               id="create-proposition-page--tags"
             >
               <div
+                style="position: relative;"
+              />
+              <div
                 style="display: flex; align-items: center;"
               >
                 <div
