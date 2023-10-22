@@ -1,14 +1,12 @@
-import cn from "classnames";
 import { ConnectedRouter } from "connected-react-router";
 import { Action, Location, UnregisterCallback } from "history";
 import forEach from "lodash/forEach";
 import isFinite from "lodash/isFinite";
 import map from "lodash/map";
 import throttle from "lodash/throttle";
-import React, { Component, ComponentClass, MouseEvent } from "react";
+import React, { Component, MouseEvent } from "react";
 import { hot } from "react-hot-loader/root";
-import { Tab, Tabs, TabsProps } from "react-md";
-import { IdPropType } from "react-md/lib";
+import { TabsList, Tab } from "@react-md/tabs";
 import { connect, ConnectedProps } from "react-redux";
 import { Switch } from "react-router";
 import { Link } from "react-router-dom";
@@ -302,14 +300,8 @@ class App extends Component<Props> {
     this.props.app.setNavDrawerVisibility(false);
   };
 
-  onTabChange = (
-    activeTabIndex: number,
-    _tabId: IdPropType,
-    _tabControlsId: IdPropType,
-    _tabChildren: React.ReactNode,
-    _event: Event
-  ) => {
-    this.setState({ activeTabIndex });
+  onTabChange = (activeIndexNumber: number) => {
+    this.setState({ activeTabIndex: activeIndexNumber });
   };
 
   onHistoryListen = (location: Location, _action: Action) => {
@@ -492,24 +484,20 @@ class App extends Component<Props> {
       </Sheet>
     );
 
-    const pageTabs = (
-      <Tabs
-        tabId="mainTab"
-        centered
+    const newTabs = (
+      <TabsList
         className="toolbarTabs"
-        activeTabIndex={activeTabIndex}
-        onTabChange={this.onTabChange}
-        style={{ position: "absolute", left: 0, bottom: 0, right: 0 }}
+        align="center"
+        activeIndex={activeTabIndex}
+        onActiveIndexChange={this.onTabChange}
       >
-        {map(tabInfos, (ti) => (
-          <Tab
-            label={<Link to={ti.path}>{ti.text}</Link>}
-            id={ti.id}
-            key={ti.id}
-          />
+        {map(tabInfos, (ti, i) => (
+          <Tab active={i === activeTabIndex} id={ti.id} key={ti.id}>
+            <Link to={ti.path}>{ti.text}</Link>
+          </Tab>
         ))}
-      </Tabs>
-    ) as unknown as ComponentClass<TabsProps>;
+      </TabsList>
+    );
 
     const title =
       isFinite(activeTabIndex) && activeTabIndex >= 0
@@ -530,17 +518,12 @@ class App extends Component<Props> {
                 <meta name="viewport" content={viewportContent} />
               </Helmet>
 
-              <Header tabs={pageTabs} />
+              <Header />
+              {newTabs}
 
               {navDrawer}
 
-              <div
-                id="page"
-                className={cn({
-                  "md-toolbar-relative": !pageTabs,
-                  "md-toolbar-relative--prominent": !!pageTabs,
-                })}
-              >
+              <div id="page">
                 <Switch>{routes}</Switch>
               </div>
 

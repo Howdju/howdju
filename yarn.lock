@@ -6542,7 +6542,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-md/app-bar@npm:^2.9.1":
+"@react-md/app-bar@npm:^2, @react-md/app-bar@npm:^2.9.1":
   version: 2.9.1
   resolution: "@react-md/app-bar@npm:2.9.1"
   dependencies:
@@ -6979,6 +6979,28 @@ __metadata:
     prop-types:
       optional: true
   checksum: 20faaec82c20802c8e8a3d951f2b1e6382a731ab64cee5a7933cf37e992369a63ff7ffd23d83776ddbebd6d5038dc3392b83130b0000876b94101e6553f30e0f
+  languageName: node
+  linkType: hard
+
+"@react-md/tabs@npm:^2":
+  version: 2.9.1
+  resolution: "@react-md/tabs@npm:2.9.1"
+  dependencies:
+    "@react-md/icon": ^2.9.1
+    "@react-md/states": ^2.9.1
+    "@react-md/theme": ^2.9.1
+    "@react-md/transition": ^2.9.1
+    "@react-md/typography": ^2.9.1
+    "@react-md/utils": ^2.9.1
+    classnames: ^2.3.1
+    prop-types: ">= 15.6"
+    react-transition-group: ^4.4.2
+  peerDependencies:
+    react: ">= 16.8"
+  dependenciesMeta:
+    prop-types:
+      optional: true
+  checksum: 4b30fd896809073170b2d453d1652afb927894a2dfe35d3c7e3d62cbad381235a5a49a907cf99e0a5f6706f802a99860060919ef973847798aa237cbaed4cbd1
   languageName: node
   linkType: hard
 
@@ -28500,6 +28522,7 @@ __metadata:
     "@babel/preset-typescript": ^7.18.6
     "@babel/runtime-corejs3": ^7.22.6
     "@grrr/cookie-consent": ^1.0.4
+    "@react-md/app-bar": ^2
     "@react-md/autocomplete": "Howdju/react-md#workspace=@react-md/autocomplete&commit=739fcf8b359727d958d6befe46014fe8b3dfe11c"
     "@react-md/avatar": ^2
     "@react-md/button": ^2
@@ -28514,6 +28537,7 @@ __metadata:
     "@react-md/progress": ^2
     "@react-md/sheet": ^2
     "@react-md/states": ^2
+    "@react-md/tabs": ^2
     "@react-md/theme": ^2
     "@react-md/typography": ^2
     "@react-md/utils": ^2

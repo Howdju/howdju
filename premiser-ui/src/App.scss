@@ -113,6 +113,7 @@ strong {
 
 // Tabs that appear to be contiguous with the toolbar.  But to avoid handling the navigate ourselves, they are actually not in the toolbar
 .toolbarTabs {
+  background-color: $primary-color;
   * {
     color: $light-text-color;
   }

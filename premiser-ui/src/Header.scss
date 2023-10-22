@@ -29,6 +29,10 @@
   }
 }
 
+#main-search-container {
+  flex-grow: 1;
+}
+
 a.md-title--toolbar {
   text-decoration: none;
 }
@@ -36,8 +40,4 @@ a.md-title--toolbar {
 #title {
   font-family: "Orbitron", sans-serif;
   font-weight: 400;
-}
-
-.toggleNavDrawerVisibility {
-  margin-right: 1em;
 }
