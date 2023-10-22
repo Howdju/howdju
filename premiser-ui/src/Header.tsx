@@ -6,7 +6,6 @@ import { AppBar, AppBarTitle, AppBarAction } from "@react-md/app-bar";
 
 import app from "./app/appSlice";
 import MainSearch from "@/components/mainSearchBox/MainSearchBox";
-import IconButton from "@/components/button/IconButton";
 
 import "./Header.scss";
 

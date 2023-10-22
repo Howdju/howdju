@@ -8,7 +8,7 @@ import { useAppDispatch } from "./hooks";
  * where it is only possible to add messages from a functional component. Since
  * we want to add messages from sagas, we need to capture the addMessage function.
  *
- * TODO figure out a better approach to app toasts.
+ * TODO(#605) figure out a better approach to app toasts.
  */
 export function AddMessageCapturer() {
   const addMessage = useAddMessage();
