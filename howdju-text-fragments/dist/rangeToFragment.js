@@ -19224,14 +19224,10 @@
       justificationVotePolarities = mod.enum(["POSITIVE", "NEGATIVE"]);
       JustificationVote = Entity.extend({
         polarity: justificationVotePolarities,
-        // TODO(256): replace justificationId with justification.id.
-        justificationId: mod.string(),
-        justification: JustificationRef
+        justificationId: mod.string()
       });
       JustificationVotePolarities = justificationVotePolarities.Enum;
-      CreateJustificationVote = JustificationVote.omit({
-        justification: true
-      });
+      CreateJustificationVote = JustificationVote;
       DeleteJustificationVote = CreateJustificationVote;
       TaggableEntityType = mod.enum(["PROPOSITION", "STATEMENT"]);
       TagVote = Entity.extend({
