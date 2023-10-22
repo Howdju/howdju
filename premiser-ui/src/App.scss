@@ -109,33 +109,11 @@ strong {
   @include center-contents;
 }
 
-.context-menu--floating {
-  // Must be above the .justification-tree .verified icons
-  z-index: 2;
-  button {
-    background-color: white;
-  }
-  &,
-  &.md-menu-container {
-    position: absolute;
-  }
-}
-
-.md-inline-block.text-expand-toggle {
-  vertical-align: text-top;
-}
-
 .clickable {
   cursor: pointer;
   &:hover {
     text-decoration: underline;
   }
-}
-
-.md-tab-label {
-  font-family: "Oswald", sans-serif;
-  font-weight: 200;
-  font-size: 20px;
 }
 
 .selection-label {

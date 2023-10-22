@@ -68,11 +68,6 @@ $slide-size: $icon-button-size;
     }
   }
 
-  .md-list--menu {
-    // Menus will always be ltr
-    direction: ltr;
-  }
-
   .justification-status-text {
     text-align: right;
     display: inline-block;
@@ -81,9 +76,6 @@ $slide-size: $icon-button-size;
 
   &.positivey {
     & > * > .actions {
-      // Override App.scss .md-dialog-footer--card
-      justify-content: flex-start;
-
       .rmd-icon,
       .material-symbols {
         // When positivey, the icons make more sense flipped

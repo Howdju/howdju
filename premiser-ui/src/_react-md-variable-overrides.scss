@@ -27,11 +27,3 @@ $rmd-typography-desktop-max-line-length: 60em;
 $rmd-typography-mobile-max-line-length: 40em;
 
 $rmd-tab-indicator-color: $secondary-color;
-
-// TODO(17) don't apply a CSS override; figure out why active input labels on top of cards have a bad color.
-// _colors.scss: `.md-background { &--card { background: get-color('card', $light-theme); } }`
-// vs.
-// react-md/form _mixins.scss: `@mixin rmd-floating-label`.
-.md-background--card .rmd-floating-label {
-  background-color: $rmd-theme-surface;
-}

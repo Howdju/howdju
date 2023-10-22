@@ -7,17 +7,8 @@ $gradient-start-opacity: 0.6;
 $gradient-point: 25%;
 $slide-size: $icon-button-size;
 
-// All must be less than $md-toolbar-z-index (default 15) or else they will float above the toolbar upon scrolling
-// ($md-menu-z-index is 10)
 $gradient-z-index: 5;
 $over-gradient-z-index: 10;
-
-.context-menu--root-target {
-  z-index: $over-gradient-z-index;
-  .md-list--menu {
-    z-index: $over-gradient-z-index + 1;
-  }
-}
 
 ul.target-trail {
   padding-left: 35px;
@@ -25,10 +16,6 @@ ul.target-trail {
     @include material-icon-list-item("replay");
     margin: 5px;
   }
-}
-
-.context-menu {
-  float: right;
 }
 
 .entity-viewer .entity-viewer {

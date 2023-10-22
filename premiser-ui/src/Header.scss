@@ -6,35 +6,15 @@
     color: $light-text-color;
   }
 
-  .md-autocomplete-list {
-    * {
-      color: $primary-text-color;
-    }
-  }
-
   .mainSearchAutocomplete {
     margin-top: 10px;
     margin-left: 10px;
     padding-right: 20px;
-
-    .md-divider {
-      // Don't show the divider until the input is selected
-      background-color: inherit;
-      &:after {
-        // Make it a little smaller than the default 2px because $light-text-color is kind of bright
-        height: 1px;
-        background-color: $light-text-color;
-      }
-    }
   }
 }
 
 #main-search-container {
   flex-grow: 1;
-}
-
-a.md-title--toolbar {
-  text-decoration: none;
 }
 
 #title {

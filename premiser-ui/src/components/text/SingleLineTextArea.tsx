@@ -12,7 +12,6 @@ import {
   OnKeyDownCallback,
   OnPropertyChangeCallback,
   PropertyChanges,
-  toReactMdOnBlur,
 } from "@/types";
 import { combineIds } from "@/viewModels";
 import { mapValues } from "lodash";
@@ -97,7 +96,7 @@ export default function SingleLineTextArea({
         maxRows={maxRows}
         disabled={disabled}
         maxLength={maxLength ?? undefined}
-        onBlur={toReactMdOnBlur(onBlur)}
+        onBlur={onBlur}
         onKeyDown={_onKeyDown}
         onPropertyChange={_onPropertyChange}
         ref={(ta: HTMLTextAreaElement) => {

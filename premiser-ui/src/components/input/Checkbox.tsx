@@ -3,6 +3,7 @@ import {
   Checkbox as ReactMdCheckbox,
   CheckboxProps as ReactMdCheckboxProps,
 } from "@react-md/form";
+import cn from "classnames";
 
 import { OnPropertyChangeCallback } from "@/types";
 import { FormMessage, FormMessageProps } from "@/components/form/FormMessage";
@@ -27,7 +28,14 @@ export function Checkbox({
   }
   return (
     <div className="howdju-checkbox">
-      <ReactMdCheckbox id={id} onChange={onChange} {...rest}>
+      <ReactMdCheckbox
+        id={id}
+        onChange={onChange}
+        {...rest}
+        className={cn({
+          "error-message": !!messageProps?.errorMessage,
+        })}
+      >
         {children}
       </ReactMdCheckbox>
       {messageProps && (

@@ -18,7 +18,6 @@ import {
   withFakeTimers,
   withMockServer,
   setupUserEvent,
-  progressToBeGone,
 } from "@/testUtils";
 
 const REACT_MD_CARD_CLASS = ".rmd-card";
@@ -69,10 +68,9 @@ describe("ListEntitiesWidget", () => {
 
       // Assert
       await waitFor(() => {
-        progressToBeGone(screen.queryByRole("progressbar"));
+        expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
       });
 
-      // TODO(17) update the widgets to be accessible so we can do `screen.findAllByRole("list-item")`
       expect(container.querySelectorAll(REACT_MD_CARD_CLASS)).toHaveLength(
         initialFetchCount
       );
@@ -91,7 +89,7 @@ describe("ListEntitiesWidget", () => {
         />
       );
       await waitFor(() => {
-        progressToBeGone(screen.queryByRole("progressbar"));
+        expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
       });
 
       const user = setupUserEvent();
@@ -105,10 +103,9 @@ describe("ListEntitiesWidget", () => {
 
       // Assert
       await waitFor(() => {
-        progressToBeGone(screen.queryByRole("progressbar"));
+        expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
       });
       jest.runAllTimers();
-      // TODO(17): update the widgets to be accessible so we can do `screen.findAllByRole("list-item")`
       expect(container.querySelectorAll(REACT_MD_CARD_CLASS)).toHaveLength(
         initialFetchCount + fetchCount
       );

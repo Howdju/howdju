@@ -122,32 +122,6 @@ export const errorFormatsToText = (errors: IssueFormat[]) =>
   capitalize(join(map(errors, errorFormatToString), ", "));
 
 /**
- * A version of makeErrorPropCreator that returns props compatible with react-md@1's conventions.
- *
- * TODO(17) delete after upgrading all components that use this to react-md@2.
- */
-export function makeReactMd1ErrorPropCreator<T>(
-  wasSubmitAttempted: boolean,
-  errors: ModelErrors<T> | undefined,
-  dirtyFields: DirtyFields<T> | undefined,
-  blurredFields: BlurredFields<T> | undefined
-) {
-  const errorProps = makeErrorPropCreator(
-    wasSubmitAttempted,
-    errors,
-    dirtyFields,
-    blurredFields
-  );
-  return function makeReactMd1ErrorProps(fieldSelector: (entity: T) => any) {
-    const props = errorProps(fieldSelector);
-    return {
-      error: !!props.errorMessage,
-      errorText: props.errorMessage?.toString(),
-    };
-  };
-}
-
-/**
  * Creates a function that will create error message props for react-md components.
  *
  * Based upon the errors and field statuses (dirty or blurred), the returned function will generate

@@ -1,5 +1,4 @@
 import React from "react";
-import cn from "classnames";
 import { MaterialSymbol } from "react-material-symbols";
 
 import { CreateRegistrationConfirmationInput } from "howdju-common";
@@ -124,12 +123,7 @@ export default function RegistrationConfirmationEditorFields({
         checked={registrationConfirmation?.doesAcceptTerms}
         onPropertyChange={onPropertyChange}
         label={
-          <div
-            className={cn({
-              "error-message": !!errorProps((rc) => rc.doesAcceptTerms)
-                .errorMessage,
-            })}
-          >
+          <div>
             I have read and agree to the{" "}
             <a
               href={paths.userAgreement()}
@@ -160,16 +154,7 @@ export default function RegistrationConfirmationEditorFields({
         name="is13YearsOrOlder"
         checked={registrationConfirmation?.is13YearsOrOlder}
         onPropertyChange={onPropertyChange}
-        label={
-          <div
-            className={cn({
-              "error-message": !!errorProps((rc) => rc.is13YearsOrOlder)
-                .errorMessage,
-            })}
-          >
-            I am 13 years old or older.
-          </div>
-        }
+        label={<div>I am 13 years old or older.</div>}
         messageProps={errorProps((rc) => rc.is13YearsOrOlder)}
       />
       <Checkbox
@@ -180,14 +165,7 @@ export default function RegistrationConfirmationEditorFields({
         checked={registrationConfirmation?.hasMajorityConsent}
         onPropertyChange={onPropertyChange}
         label={
-          // TODO(17) allow helpText to have an error state (don't forget other .errorMessage in
-          // this component.)
-          <div
-            className={cn({
-              "error-message": !!errorProps((rc) => rc.hasMajorityConsent)
-                .errorMessage,
-            })}
-          >
+          <div>
             I am old enough in my local jurisdiction to enter into legal
             agreements and to consent to the processing of my personal data.
           </div>
@@ -202,11 +180,7 @@ export default function RegistrationConfirmationEditorFields({
         checked={registrationConfirmation?.isNotGdpr}
         onPropertyChange={onPropertyChange}
         label={
-          <div
-            className={cn({
-              "error-message": !!errorProps((rc) => rc.isNotGdpr).errorMessage,
-            })}
-          >
+          <div>
             I am not located in the European Union (EU), the European Economic
             Area (EEA), or in any other jurisdiction that is subject to the
             General Data Protection Regulation (GDPR). (See{" "}

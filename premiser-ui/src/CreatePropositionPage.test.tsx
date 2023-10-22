@@ -28,7 +28,6 @@ import {
   clickEnabledButton,
   getElementByQuerySelector,
   makeRouteComponentProps,
-  progressToBeGone,
   renderWithProviders,
   setupUserEvent,
   withFakeTimers,
@@ -483,7 +482,7 @@ describe("CreatePropositionPage", () => {
       );
 
       await waitFor(() => {
-        progressToBeGone(screen.queryByRole("progressbar"));
+        expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
       });
 
       // Use click/keyboard instead of type to trigger autocompletes.
@@ -495,7 +494,7 @@ describe("CreatePropositionPage", () => {
 
       const createButton = screen.getByRole("button", { name: /create/i });
       await waitFor(() =>
-        expect(createButton).not.toHaveClass("md-text--disabled")
+        expect(createButton).not.toHaveClass("rmd-button--disabled")
       );
 
       // Act

@@ -190,20 +190,8 @@ export function setupUserEvent() {
  */
 export function clickEnabledButton(user: UserEvent, name: string | RegExp) {
   const button = screen.getByRole("button", { name });
-  expect(button).not.toHaveClass("md-text--disabled");
+  expect(button).not.toHaveClass("rmd-button--disabled");
   return user.click(button);
-}
-
-/** Throws if progress is in the document and visible. */
-export function progressToBeGone(progress: HTMLElement | null) {
-  try {
-    expect(progress).not.toBeInTheDocument();
-  } catch {
-    // Sometimes CircularProgress hangs around in the DOM even though it is invisible.
-    // TODO(17): Check if this is still necessary after upgrading react-md
-    // eslint-disable-next-line jest/no-conditional-expect
-    expect(progress).toHaveStyle({ opacity: 0 });
-  }
 }
 
 export function getTextContent(element: Element | null) {

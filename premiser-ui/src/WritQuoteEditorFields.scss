@@ -1,16 +1,5 @@
 @import "./colors";
 
-.writ-quote-url-input {
-  // Even though the url input is disabled, the user can still interact with the buttons.  So show those the normal color.
-  // TODO(282) this should appear disabled when the inputs are actually disabled via the passdown prop
-  .md-text-field-icon--disabled {
-    &,
-    .rmd-icon {
-      color: $icon-color;
-    }
-  }
-}
-
 .writ-quote-editor-fields {
   padding-bottom: 15px;
 }

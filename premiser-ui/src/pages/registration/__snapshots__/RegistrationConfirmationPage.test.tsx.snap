@@ -248,9 +248,7 @@ exports[`RegistrationConfirmationPage shows error message for duplicate username
                     class="rmd-label"
                     for="does-accept-terms"
                   >
-                    <div
-                      class=""
-                    >
+                    <div>
                       I have read and agree to the
                        
                       <a
@@ -310,9 +308,7 @@ exports[`RegistrationConfirmationPage shows error message for duplicate username
                     class="rmd-label"
                     for="is-13-years-or-older"
                   >
-                    <div
-                      class=""
-                    >
+                    <div>
                       I am 13 years old or older.
                     </div>
                   </label>
@@ -351,9 +347,7 @@ exports[`RegistrationConfirmationPage shows error message for duplicate username
                     class="rmd-label"
                     for="has-majority-consent"
                   >
-                    <div
-                      class=""
-                    >
+                    <div>
                       I am old enough in my local jurisdiction to enter into legal agreements and to consent to the processing of my personal data.
                     </div>
                   </label>
@@ -392,9 +386,7 @@ exports[`RegistrationConfirmationPage shows error message for duplicate username
                     class="rmd-label"
                     for="is-not-gdpr"
                   >
-                    <div
-                      class=""
-                    >
+                    <div>
                       I am not located in the European Union (EU), the European Economic Area (EEA), or in any other jurisdiction that is subject to the General Data Protection Regulation (GDPR). (See
                        
                       <a
@@ -718,9 +710,7 @@ exports[`RegistrationConfirmationPage shows form 1`] = `
                     class="rmd-label"
                     for="does-accept-terms"
                   >
-                    <div
-                      class=""
-                    >
+                    <div>
                       I have read and agree to the
                        
                       <a
@@ -780,9 +770,7 @@ exports[`RegistrationConfirmationPage shows form 1`] = `
                     class="rmd-label"
                     for="is-13-years-or-older"
                   >
-                    <div
-                      class=""
-                    >
+                    <div>
                       I am 13 years old or older.
                     </div>
                   </label>
@@ -821,9 +809,7 @@ exports[`RegistrationConfirmationPage shows form 1`] = `
                     class="rmd-label"
                     for="has-majority-consent"
                   >
-                    <div
-                      class=""
-                    >
+                    <div>
                       I am old enough in my local jurisdiction to enter into legal agreements and to consent to the processing of my personal data.
                     </div>
                   </label>
@@ -862,9 +848,7 @@ exports[`RegistrationConfirmationPage shows form 1`] = `
                     class="rmd-label"
                     for="is-not-gdpr"
                   >
-                    <div
-                      class=""
-                    >
+                    <div>
                       I am not located in the European Union (EU), the European Economic Area (EEA), or in any other jurisdiction that is subject to the General Data Protection Regulation (GDPR). (See
                        
                       <a
