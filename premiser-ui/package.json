@@ -130,6 +130,7 @@
     "@react-md/list": "^2",
     "@react-md/menu": "^2",
     "@react-md/progress": "^2",
+    "@react-md/sheet": "^2",
     "@react-md/states": "^2",
     "@react-md/theme": "^2",
     "@react-md/typography": "^2",

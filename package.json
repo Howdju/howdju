@@ -93,5 +93,8 @@
     "react-native@^0.66": "patch:react-native@npm%3A0.66.5#./.yarn/patches/react-native-npm-0.66.5-22e5dd8ec5.patch",
     "react-material-symbols@^4.1.1": "patch:react-material-symbols@npm%3A4.1.1#./.yarn/patches/react-material-symbols-npm-4.1.1-d06ca7bff7.patch",
     "jsdom@^21.1.2": "patch:jsdom@npm%3A21.1.2#./.yarn/patches/jsdom-npm-21.1.2-4916b89bf1.patch"
+  },
+  "dependencies": {
+    "@react-md/alert": "^2"
   }
 }

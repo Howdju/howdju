@@ -9,6 +9,7 @@ $md-typography-extended: false;
 @import "./react-md-variable-overrides";
 @import "./react-md-everything";
 
+@import "~@react-md/alert/dist/mixins";
 @import "~@react-md/avatar/dist/mixins";
 @import "~@react-md/button/dist/mixins";
 @import "~@react-md/card/dist/mixins";
@@ -20,6 +21,7 @@ $md-typography-extended: false;
 @import "~@react-md/list/dist/mixins";
 @import "~@react-md/menu/dist/mixins";
 @import "~@react-md/progress/dist/mixins";
+@import "~@react-md/sheet/dist/mixins";
 @import "~@react-md/states/dist/mixins";
 @import "~@react-md/theme/dist/mixins";
 @import "~@react-md/typography/dist/mixins";

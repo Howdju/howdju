@@ -5,7 +5,7 @@
   // TODO(282) this should appear disabled when the inputs are actually disabled via the passdown prop
   .md-text-field-icon--disabled {
     &,
-    .md-icon {
+    .rmd-icon {
       color: $icon-color;
     }
   }

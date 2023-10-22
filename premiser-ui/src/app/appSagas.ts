@@ -24,6 +24,7 @@ import { callApiResponse } from "@/apiActions";
 import app from "@/app/appSlice";
 import { logger } from "../logger";
 import { uiErrorTypes } from "../uiErrors";
+import { ToastMessage } from "@react-md/alert";
 
 export function* showAlertForLogin() {
   yield takeEvery(
@@ -33,6 +34,42 @@ export function* showAlertForLogin() {
         yield put(
           app.addToast(t(YOU_ARE_LOGGED_IN_AS, action.payload.user.email))
         );
+      }
+    }
+  );
+}
+
+let reactMdAddMessage: (message: ToastMessage) => void;
+const earlyToastMessages: ToastMessage[] = [];
+
+/**
+ * Translate our addToast action into a react-md alert message action.
+ *
+ * We designed our toast system around react-md@1, which had a Snackbar Component
+ * accepting a toast prop. react-md@2's version only accepts messages from hooks,
+ * which is incompatible with us creating toasts from sagas.
+ */
+export function* toastToReactMdAlertMessageConverter() {
+  yield takeEvery(
+    app.captureAddMessage,
+    function* captureAddMessageWorker(action) {
+      reactMdAddMessage = action.payload.reactMdAddMessage;
+      if (earlyToastMessages.length) {
+        for (const message of earlyToastMessages) {
+          reactMdAddMessage(message);
+        }
+        earlyToastMessages.length = 0;
+      }
+    }
+  );
+  yield takeEvery(
+    app.addToast,
+    function* toastToReactMdAlertMessageConverterWorker(action) {
+      const { message } = action.payload;
+      if (reactMdAddMessage) {
+        reactMdAddMessage(message);
+      } else {
+        earlyToastMessages.push(message);
       }
     }
   );
