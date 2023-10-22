@@ -620,9 +620,6 @@ export const toJustificationVote = wrapMapper(
       }),
       polarity: row.polarity,
       justificationId: toIdString(row.justification_id),
-      justification: JustificationRef.parse({
-        id: toIdString(row.justification_id),
-      }),
     };
   }
 );

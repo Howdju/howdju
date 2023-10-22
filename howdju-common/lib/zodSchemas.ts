@@ -1503,17 +1503,13 @@ export type CreateCounterJustificationBasis =
 const justificationVotePolarities = z.enum(["POSITIVE", "NEGATIVE"]);
 export const JustificationVote = Entity.extend({
   polarity: justificationVotePolarities,
-  // TODO(256): replace justificationId with justification.id.
   justificationId: z.string(),
-  justification: JustificationRef,
 });
 export type JustificationVote = z.infer<typeof JustificationVote>;
 export type JustificationVotePolarity = JustificationVote["polarity"];
 export const JustificationVotePolarities = justificationVotePolarities.Enum;
 
-export const CreateJustificationVote = JustificationVote.omit({
-  justification: true,
-});
+export const CreateJustificationVote = JustificationVote;
 export type CreateJustificationVote = z.infer<typeof CreateJustificationVote>;
 
 export const DeleteJustificationVote = CreateJustificationVote;

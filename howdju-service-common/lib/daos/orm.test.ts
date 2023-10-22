@@ -15,9 +15,6 @@ describe("orm", () => {
     const expectedEntity = {
       id: toIdString(voteId),
       polarity,
-      justification: {
-        id: toIdString(justificationId),
-      },
       justificationId: toIdString(justificationId),
     };
     expect(toJustificationVote(row)).toEqual(expectedEntity);
