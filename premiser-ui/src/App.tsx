@@ -1,26 +1,19 @@
-import cn from "classnames";
 import { ConnectedRouter } from "connected-react-router";
 import { Action, Location, UnregisterCallback } from "history";
 import forEach from "lodash/forEach";
 import isFinite from "lodash/isFinite";
 import map from "lodash/map";
 import throttle from "lodash/throttle";
-import React, { Component, ComponentClass, MouseEvent } from "react";
+import React, { Component, MouseEvent } from "react";
 import { hot } from "react-hot-loader/root";
-import {
-  Drawer,
-  ListItem,
-  Snackbar,
-  Tab,
-  Tabs,
-  TabsProps,
-  Toolbar,
-} from "react-md";
-import { IdPropType } from "react-md/lib";
+import { TabsList, Tab } from "@react-md/tabs";
 import { connect, ConnectedProps } from "react-redux";
 import { Switch } from "react-router";
 import { Link } from "react-router-dom";
 import { FontIcon } from "@react-md/icon";
+import { Sheet } from "@react-md/sheet";
+import { List } from "@react-md/list";
+import { MessageQueue } from "@react-md/alert";
 
 import { actions, inIframe } from "howdju-client-common";
 import { isTruthy } from "howdju-common";
@@ -73,6 +66,8 @@ import t, {
 } from "./texts";
 import { isDevice, isScrollPastBottom, isScrollPastTop } from "./util";
 import WindowMessageHandler from "./WindowMessageHandler";
+import { MenuItem, MenuItemLink } from "@/components/menu/Menu";
+import { AddMessageCapturer } from "./AddMessageCapturer";
 
 import "./App.scss";
 import "./fonts.js";
@@ -301,22 +296,12 @@ class App extends Component<Props> {
     this.props.app.hideNavDrawer();
   };
 
-  onNavDrawerVisibilityChange = (visible: boolean) => {
-    this.props.app.setNavDrawerVisibility(visible);
+  onNavSheetRequestClose = () => {
+    this.props.app.setNavDrawerVisibility(false);
   };
 
-  dismissSnackbar = () => {
-    this.props.app.dismissToast();
-  };
-
-  onTabChange = (
-    activeTabIndex: number,
-    _tabId: IdPropType,
-    _tabControlsId: IdPropType,
-    _tabChildren: React.ReactNode,
-    _event: Event
-  ) => {
-    this.setState({ activeTabIndex });
+  onTabChange = (activeIndexNumber: number) => {
+    this.setState({ activeTabIndex: activeIndexNumber });
   };
 
   onHistoryListen = (location: Location, _action: Action) => {
@@ -345,126 +330,9 @@ class App extends Component<Props> {
       authEmail,
       hasAuthToken,
       isNavDrawerVisible,
-      toasts,
       isMobileSiteDisabled,
     } = this.props;
     const { activeTabIndex } = this.state;
-
-    const navItems = [
-      <ListItem
-        key="home"
-        primaryText="Home"
-        leftIcon={<FontIcon>home</FontIcon>}
-        component={Link}
-        to={paths.home()}
-      />,
-      <ListItem
-        key="createProposition"
-        primaryText="Make a proposition"
-        leftIcon={<FontIcon>add</FontIcon>}
-        component={Link}
-        to="/create-proposition"
-      />,
-      <ListItem
-        key="createMediaExcerpt"
-        primaryText="Make an excerpt"
-        leftIcon={<FontIcon>format_quote</FontIcon>}
-        component={Link}
-        to="/media-excerpts/new"
-      />,
-      <ListItem
-        key="tools"
-        primaryText="Chrome Extension"
-        leftIcon={<FontIcon>build</FontIcon>}
-        component="a"
-        href="https://chrome.google.com/webstore/detail/howdju-extension/gijlmlebhfiglpgdlgphbmaamhkchoei/"
-        target="_blank"
-      />,
-      <ListItem
-        key="policies"
-        primaryText="Policies"
-        leftIcon={<FontIcon>gavel</FontIcon>}
-        component="a"
-        href={paths.policies()}
-        target="_blank"
-      />,
-    ];
-
-    if (authEmail || hasAuthToken) {
-      // Authenticated users can access their settings
-      navItems.push(
-        <ListItem
-          key="Settings"
-          primaryText="Settings"
-          leftIcon={<FontIcon>settings</FontIcon>}
-          component={Link}
-          to={paths.settings()}
-        />
-      );
-    } else {
-      // Anonymous users still need access to privacy settings
-      navItems.push(
-        <ListItem
-          key="privacySettings"
-          primaryText="Privacy settings"
-          leftIcon={<FontIcon>speaker_phone</FontIcon>}
-          onClick={() => showPrivacyConsentDialog()}
-        />
-      );
-    }
-
-    if (isDevice()) {
-      if (isMobileSiteDisabled) {
-        navItems.push(
-          <ListItem
-            key="mobile-site"
-            primaryText="Mobile site"
-            leftIcon={<FontIcon>smartphone</FontIcon>}
-            onClick={this.enableMobileSite}
-          />
-        );
-      } else {
-        navItems.push(
-          <ListItem
-            key="desktop-site"
-            primaryText="Desktop site"
-            leftIcon={<FontIcon>desktop_windows</FontIcon>}
-            onClick={this.disableMobileSite}
-          />
-        );
-      }
-    }
-    if (authEmail || hasAuthToken) {
-      navItems.push(
-        <ListItem
-          key="logout"
-          primaryText="Logout"
-          leftIcon={<FontIcon>exit_to_app</FontIcon>}
-          onClick={this.logout}
-        />
-      );
-    } else {
-      if (config.isRegistrationEnabled) {
-        navItems.push(
-          <ListItem
-            key="register"
-            primaryText="Register"
-            leftIcon={<FontIcon>person_add</FontIcon>}
-            component={Link}
-            to={paths.requestRegistration()}
-          />
-        );
-      }
-      navItems.push(
-        <ListItem
-          key="login"
-          primaryText="Login"
-          leftIcon={<FontIcon>https</FontIcon>}
-          component={Link}
-          to={paths.login()}
-        />
-      );
-    }
 
     const authEmailDiv = (
       <div>
@@ -476,54 +344,160 @@ class App extends Component<Props> {
         )}
       </div>
     );
-    const navDrawer = (
-      <Drawer
-        id="app-nav-drawer"
-        position="right"
-        type={Drawer.DrawerTypes.TEMPORARY}
-        header={
-          <Toolbar
-            nav={
-              <IconButton
-                id="close-app-nav-drawer-button"
-                aria-label="Close Nav Drawer"
-                onClick={this.hideNavDrawer}
-              >
-                <FontIcon>close</FontIcon>
-              </IconButton>
-            }
-            className="md-divider-border md-divider-border--bottom"
+    const navItems = [
+      <MenuItem
+        key="login-status"
+        primaryText={authEmail ? authEmailDiv : <em>Not logged in</em>}
+        leftAddon={
+          <IconButton
+            id="close-app-nav-drawer-button"
+            aria-label="Close Nav Drawer"
+            onClick={this.hideNavDrawer}
           >
-            <div className="app-nav-drawer-header">
-              {authEmail ? authEmailDiv : <em>Not logged in</em>}
-            </div>
-          </Toolbar>
+            <FontIcon>close</FontIcon>
+          </IconButton>
         }
-        navItems={navItems}
+      />,
+      <MenuItemLink
+        key="home"
+        primaryText="Home"
+        leftAddon={<FontIcon>home</FontIcon>}
+        component={Link}
+        to={paths.home()}
+      />,
+      <MenuItemLink
+        key="createProposition"
+        primaryText="Make a proposition"
+        leftAddon={<FontIcon>add</FontIcon>}
+        component={Link}
+        to="/create-proposition"
+      />,
+      <MenuItemLink
+        key="createMediaExcerpt"
+        primaryText="Make an excerpt"
+        leftAddon={<FontIcon>format_quote</FontIcon>}
+        component={Link}
+        to="/media-excerpts/new"
+      />,
+      <MenuItemLink
+        key="tools"
+        primaryText="Chrome Extension"
+        leftAddon={<FontIcon>build</FontIcon>}
+        component="a"
+        href="https://chrome.google.com/webstore/detail/howdju-extension/gijlmlebhfiglpgdlgphbmaamhkchoei/"
+        target="_blank"
+      />,
+      <MenuItemLink
+        key="policies"
+        primaryText="Policies"
+        leftAddon={<FontIcon>gavel</FontIcon>}
+        component="a"
+        href={paths.policies()}
+        target="_blank"
+      />,
+    ];
+
+    if (authEmail || hasAuthToken) {
+      // Authenticated users can access their settings
+      navItems.push(
+        <MenuItemLink
+          key="Settings"
+          primaryText="Settings"
+          leftAddon={<FontIcon>settings</FontIcon>}
+          component={Link}
+          to={paths.settings()}
+        />
+      );
+    } else {
+      // Anonymous users still need access to privacy settings
+      navItems.push(
+        <MenuItem
+          key="privacySettings"
+          primaryText="Privacy settings"
+          leftAddon={<FontIcon>speaker_phone</FontIcon>}
+          onClick={() => showPrivacyConsentDialog()}
+        />
+      );
+    }
+
+    if (isDevice()) {
+      if (isMobileSiteDisabled) {
+        navItems.push(
+          <MenuItem
+            key="mobile-site"
+            primaryText="Mobile site"
+            leftAddon={<FontIcon>smartphone</FontIcon>}
+            onClick={this.enableMobileSite}
+          />
+        );
+      } else {
+        navItems.push(
+          <MenuItem
+            key="desktop-site"
+            primaryText="Desktop site"
+            leftAddon={<FontIcon>desktop_windows</FontIcon>}
+            onClick={this.disableMobileSite}
+          />
+        );
+      }
+    }
+    if (authEmail || hasAuthToken) {
+      navItems.push(
+        <MenuItem
+          key="logout"
+          primaryText="Logout"
+          leftAddon={<FontIcon>exit_to_app</FontIcon>}
+          onClick={this.logout}
+        />
+      );
+    } else {
+      if (config.isRegistrationEnabled) {
+        navItems.push(
+          <MenuItemLink
+            key="register"
+            primaryText="Register"
+            leftAddon={<FontIcon>person_add</FontIcon>}
+            component={Link}
+            to={paths.requestRegistration()}
+          />
+        );
+      }
+      navItems.push(
+        <MenuItemLink
+          key="login"
+          primaryText="Login"
+          leftAddon={<FontIcon>https</FontIcon>}
+          component={Link}
+          to={paths.login()}
+        />
+      );
+    }
+    const navDrawer = (
+      <Sheet
+        id="app-nav-drawer"
+        aria-label="Howdju App Navigation Sheet"
+        position="right"
         visible={isNavDrawerVisible}
-        onVisibilityChange={this.onNavDrawerVisibilityChange}
-        style={{ zIndex: 100 }}
-      />
+        onRequestClose={this.onNavSheetRequestClose}
+      >
+        <List onClick={this.hideNavDrawer}>{navItems}</List>
+      </Sheet>
     );
 
-    const pageTabs = (
-      <Tabs
-        tabId="mainTab"
-        centered
+    const newTabs = (
+      <TabsList
         className="toolbarTabs"
-        activeTabIndex={activeTabIndex}
-        onTabChange={this.onTabChange}
-        style={{ position: "absolute", left: 0, bottom: 0, right: 0 }}
+        align="center"
+        activeIndex={activeTabIndex}
+        onActiveIndexChange={this.onTabChange}
       >
-        {map(tabInfos, (ti) => (
-          <Tab
-            label={<Link to={ti.path}>{ti.text}</Link>}
-            id={ti.id}
-            key={ti.id}
-          />
+        {map(tabInfos, (ti, i) => (
+          <Tab active={i === activeTabIndex} id={ti.id} key={ti.id}>
+            <Link to={ti.path}>{ti.text}</Link>
+          </Tab>
         ))}
-      </Tabs>
-    ) as unknown as ComponentClass<TabsProps>;
+      </TabsList>
+    );
 
     const title =
       isFinite(activeTabIndex) && activeTabIndex >= 0
@@ -537,38 +511,34 @@ class App extends Component<Props> {
     return (
       <ErrorBoundary>
         <ConnectedRouter history={history}>
-          <div id="app" onClick={this.onClickApp}>
-            <Helmet>
-              <title>{title}</title>
-              <meta name="viewport" content={viewportContent} />
-            </Helmet>
+          <MessageQueue id="toast-message-queue">
+            <div id="app" onClick={this.onClickApp}>
+              <Helmet>
+                <title>{title}</title>
+                <meta name="viewport" content={viewportContent} />
+              </Helmet>
 
-            <Header tabs={pageTabs} />
+              <Header />
+              {newTabs}
 
-            {navDrawer}
+              {navDrawer}
 
-            <div
-              id="page"
-              className={cn({
-                "md-toolbar-relative": !pageTabs,
-                "md-toolbar-relative--prominent": !!pageTabs,
-              })}
-            >
-              <Switch>{routes}</Switch>
+              <div id="page">
+                <Switch>{routes}</Switch>
+              </div>
+
+              <div id="footer">
+                Use of this site constitutes acceptance of our{" "}
+                <Link to={paths.userAgreement()}>User Agreement</Link> and{" "}
+                <Link to={paths.privacyPolicy()}>Privacy Policy</Link>.
+              </div>
+
+              <AddMessageCapturer />
+              <ReportContentDialog />
+              <PropositionAppearancesDialog />
+              <MediaExcerptApparitionsDialog />
             </div>
-
-            <div id="footer">
-              Use of this site constitutes acceptance of our{" "}
-              <Link to={paths.userAgreement()}>User Agreement</Link> and{" "}
-              <Link to={paths.privacyPolicy()}>Privacy Policy</Link>.
-            </div>
-
-            <Snackbar toasts={toasts} onDismiss={this.dismissSnackbar} />
-
-            <ReportContentDialog />
-            <PropositionAppearancesDialog />
-            <MediaExcerptApparitionsDialog />
-          </div>
+          </MessageQueue>
         </ConnectedRouter>
       </ErrorBoundary>
     );
@@ -580,13 +550,12 @@ const mapStateToProps = (state: RootState) => {
   const authEmail = selectAuthEmail(state);
   const hasAuthToken = isTruthy(selectAuthToken(state));
   const privacyConsentState = selectPrivacyConsent(state);
-  const { isMobileSiteDisabled, isNavDrawerVisible, toasts } = app;
+  const { isMobileSiteDisabled, isNavDrawerVisible } = app;
 
   return {
     authEmail,
     hasAuthToken,
     isNavDrawerVisible,
-    toasts,
     isMobileSiteDisabled,
     privacyConsentState,
   };

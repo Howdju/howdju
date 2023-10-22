@@ -77,6 +77,7 @@ export const setupStore = (
             /payload\.mediaExcerpt\.locators\.urlLocators\.\d+\.autoConfirmationStatus\.(earliest|latest)(Not)?FoundAt/,
             "payload.urlLocator.created",
             /payload\.urlLocator\.autoConfirmationStatus\.(earliest|latest)(Not)?FoundAt/,
+            "payload.reactMdAddMessage",
           ],
           ignoredPaths: [
             // TODO(484) figure out how to handle timestamps in a way that is acceptable to redux.

@@ -1,15 +1,12 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { LocationChangeAction, LOCATION_CHANGE } from "connected-react-router";
+import { ToastMessage } from "@react-md/alert";
 
 import { ui } from "@/actions";
 import paths from "../paths";
 import { goto } from "../actions";
 import { isWindowNarrow } from "../util";
 import { Location, LocationState } from "history";
-
-export interface ToastData {
-  text: string;
-}
 
 export const appSlice = createSlice({
   name: "app",
@@ -18,7 +15,6 @@ export const appSlice = createSlice({
     isMobileSiteDisabled: false,
     isWindowNarrow: isWindowNarrow(),
     loginRedirectLocation: null as Location<LocationState> | null,
-    toasts: [] as ToastData[],
   },
   reducers: {
     showNavDrawer: (state) => {
@@ -33,14 +29,22 @@ export const appSlice = createSlice({
     setNavDrawerVisibility: (state, action: PayloadAction<boolean>) => {
       state.isNavDrawerVisible = action.payload;
     },
-    addToast: {
-      prepare: (text: string) => ({ payload: { text } }),
-      reducer: (state, action: PayloadAction<ToastData>) => {
-        state.toasts.push(action.payload);
-      },
+    captureAddMessage: {
+      prepare: (reactMdAddMessage: (message: ToastMessage) => void) => ({
+        payload: { reactMdAddMessage },
+      }),
+      // This action exists just to forward the payload to the saga
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
+      reducer: () => {},
     },
-    dismissToast: (state) => {
-      state.toasts = state.toasts.slice(1);
+    addToast: {
+      prepare: (text: string) => {
+        const message: ToastMessage = { children: text };
+        return { payload: { message } };
+      },
+      // This action exists just to forward the payload to the saga
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
+      reducer: () => {},
     },
     disableMobileSite: (state) => {
       state.isMobileSiteDisabled = true;

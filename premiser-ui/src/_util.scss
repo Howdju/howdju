@@ -7,7 +7,8 @@
 
   &.md-card-title,
   &.context-menu--floating,
-  & .md-icon {
+  & .rmd-icon,
+  & .material-symbols {
     display: none;
   }
 }

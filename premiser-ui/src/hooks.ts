@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 import { Schema } from "normalizr";
+import { ToastMessage, useAddMessage } from "@react-md/alert";
 
 import type { RootState, AppDispatch } from "./setupStore";
 import { Denormalized, denormalizedEntity, InferResult } from "./selectors";
@@ -8,6 +9,14 @@ import { Denormalized, denormalizedEntity, InferResult } from "./selectors";
 // Use throughout your app instead of plain `useDispatch` and `useSelector`
 export const useAppDispatch: () => AppDispatch = useDispatch;
 export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
+
+export function useAddToast() {
+  const addMessage = useAddMessage();
+  return function (text: string) {
+    const message: ToastMessage = { children: text };
+    addMessage(message);
+  };
+}
 
 export function usePreviousValue<T>(value: T) {
   const ref = useRef<T>();

@@ -62,8 +62,11 @@ $slide-size: $md-btn-icon-size;
     }
   }
 
-  .otherSelected .md-icon {
-    color: $concrete;
+  .otherSelected {
+    .rmd-icon,
+    .material-symbols {
+      color: $concrete;
+    }
   }
 
   .md-list--menu {
@@ -82,7 +85,8 @@ $slide-size: $md-btn-icon-size;
       // Override App.scss .md-dialog-footer--card
       justify-content: flex-start;
 
-      .rmd-icon {
+      .rmd-icon,
+      .material-symbols {
         // When positivey, the icons make more sense flipped
         @include flip-icon-horizontal;
       }
@@ -98,7 +102,8 @@ $slide-size: $md-btn-icon-size;
       justify-content: flex-start;
       direction: rtl;
 
-      .md-icon {
+      .rmd-icon,
+      .material-symbols {
         transform: none;
       }
 
