@@ -8,6 +8,7 @@ import FetchMoreButton from "../button/FetchMoreButton";
 import FetchButton from "../button/FetchButton";
 import { denormalizedEntity } from "@/selectors";
 import { FlipGrid } from "@/components/layout/FlipGrid";
+import { CircularProgress } from "../progress/CircularProgress";
 
 /** Corresponds to GridCSSProperties */
 export interface FormFactorGridCellProps {
@@ -125,6 +126,11 @@ export default function ListEntitiesWidget({
           </GridCell>
         );
       })}
+      {!hasEntities && isFetching && (
+        <GridCell key="progress">
+          <CircularProgress id={`${id}-progress`} />
+        </GridCell>
+      )}
       {hasEntities && (
         <GridCell key="fetch-more-button" {...cardColSpans}>
           {fetchMoreButtonCell}
