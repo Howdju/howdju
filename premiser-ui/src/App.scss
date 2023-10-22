@@ -31,20 +31,11 @@ body,
 p {
   line-height: 20px;
 }
-// Display link buttons with the correct color
-.md-btn.md-background--primary a {
-  color: $md-primary-background-text-color;
-}
-.md-btn.md-background--secondary a,
-#error-boundary {
-  color: $md-secondary-background-text-color;
-}
 
 .error-message,
 .error-message li,
-.error-message a,
-.md-text--error a {
-  color: $md-text-field-error-color;
+.error-message a {
+  color: $error-color;
 }
 
 b {
@@ -93,15 +84,6 @@ strong {
 
 #webpack-hot-middleware-clientOverlay * {
   color: $light-text-color;
-}
-
-#app-nav-drawer {
-  width: min(400px, $md-drawer-desktop-width);
-
-  // TODO(276) make this more like the left-nav rules
-  // The left nav drawer's rules are:
-  // On mobile devices, the width of the drawer will be calc(100vw - 56px) and a max width of 320px.
-  // On tablets and desktop screens, the width will be equal to the $md-drawer-tablet-width and $md-drawer-desktop-width but no more than 400px.
 }
 
 // This should be in react-md's _tooltips.scss, but it isn't loaded for some reason

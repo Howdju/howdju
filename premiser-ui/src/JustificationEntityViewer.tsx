@@ -1,5 +1,4 @@
-import React, { ComponentType } from "react";
-import { Props as ReactMdProps } from "react-md/lib";
+import React, { ComponentType, MouseEventHandler } from "react";
 import moment from "moment";
 import { FontIcon } from "@react-md/icon";
 
@@ -32,7 +31,7 @@ interface Props {
   contextTrailItems?: ContextTrailItem[];
   showStatusText: boolean;
   onClickWritQuoteUrl?: OnClickJustificationWritQuoteUrl;
-  onExpandCounterAncestors?: ReactMdProps["onClick"];
+  onExpandCounterAncestors?: MouseEventHandler;
   component?: ComponentType | string;
   suggestionsKey?: SuggestionsKey;
 }

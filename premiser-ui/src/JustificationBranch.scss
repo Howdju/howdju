@@ -1,10 +1,9 @@
-@import "~react-md/src/scss/react-md";
-
 @import "./colors";
+@import "./components";
 @import "./grid";
 @import "./util";
 
-$slide-size: $md-btn-icon-size;
+$slide-size: $icon-button-size;
 
 .counter-justifications h3 {
   margin: $grid-gutter 0;
