@@ -97,15 +97,13 @@ export default function SourcePage(props: Props) {
     dispatch(api.fetchMoreSourceMediaExcerpts(mediaExcerptsContinuationToken));
   }
 
-  // TODO(17): pass props directly after upgrading react-md to a version with correct types
-  const menuClassNameProps = { menuClassName: "context-menu" } as any;
   const menu = (
     <DropdownMenu
-      icon
+      buttonType="icon"
       id={combineIds(id, "menu")}
-      {...menuClassNameProps}
-      children={"more_vert"}
-      menuItems={[
+      menuClassName="context-menu"
+      children={<FontIcon>more_vert</FontIcon>}
+      items={[
         <MenuItem
           primaryText="Edit"
           key="edit"

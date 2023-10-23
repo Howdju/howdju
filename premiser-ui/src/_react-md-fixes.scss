@@ -1,52 +1,6 @@
 @import "colors";
 
-@media screen and (max-width: 1024px) {
-  // For some odd reason react-md moves a --right drawer to the left on small screens.  Force it to the right by unsetting left: 0
-  .md-drawer--right.md-drawer--right {
-    left: auto;
-  }
-}
-
 @mixin react-md-fixes($grid-desktop-breakpoint, $grid-gutter) {
-  .md-tooltip {
-    font-size: large;
-    padding: 25px;
-  }
-
-  #header {
-    .md-divider--text-field {
-      // For some reason the non-zero (4-8px depending on screen width) margin-bottom was disappearing this divider
-      margin-bottom: 0;
-    }
-  }
-
-  @media (max-width: ($grid-desktop-breakpoint - 1)) {
-    .md-autocomplete-list {
-      // Instead of displaying md-list-tiles at a constant height (which works for single line of text, which we are
-      // removing below) unset the height and give them a margin
-      .md-list-item {
-        margin-top: $grid-gutter;
-        margin-bottom: $grid-gutter;
-        .md-list-tile {
-          height: unset;
-        }
-      }
-      // On mobile, allow autoomplete suggestions to wrap so that they don't go off-screen
-      .md-tile-text--primary,
-      .md-tile-text--secondary {
-        overflow: visible;
-        text-overflow: ellipsis;
-        white-space: normal;
-      }
-    }
-  }
-
-  .md-card-text.entity-viewer:last-child,
-  .entity-card > .md-card-text:last-child {
-    // For atoms, they are the only child and they don't look good with a large padding bottom
-    padding-bottom: 16px;
-  }
-
   .rmd-field-message-container {
     // Otherwise the fields are not full-width in the form.
     flex-grow: 1;
@@ -56,4 +10,9 @@
     min-height: 0;
     margin-bottom: 0;
   }
+}
+
+.rmd-floating-label {
+  // Override the black text to make it softer.
+  color: rgba(0, 0, 0, 0.54);
 }

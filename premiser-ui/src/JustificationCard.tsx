@@ -1,5 +1,4 @@
-import React, { Component, CSSProperties } from "react";
-import { Props as ReactMdProps } from "react-md/lib";
+import React, { Component, CSSProperties, MouseEventHandler } from "react";
 import cn from "classnames";
 
 import { ContextTrailItem, JustificationView } from "howdju-common";
@@ -19,7 +18,7 @@ interface Props {
   contextTrailItems?: ContextTrailItem[];
   showBasisUrls?: boolean;
   doShowTargets?: boolean;
-  onExpandCounterAncestors?: ReactMdProps["onClick"];
+  onExpandCounterAncestors?: MouseEventHandler;
   onClickWritQuoteUrl?: OnClickJustificationWritQuoteUrl;
   style?: CSSProperties;
 }

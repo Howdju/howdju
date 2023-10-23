@@ -116,17 +116,6 @@ export const toOnChangeCallback = (
   };
 };
 
-// TODO(#17) remove
-export const toCheckboxOnChangeCallback = (
-  onPropertyChange: OnPropertyChangeCallback
-): ((checked: boolean, event: Event) => void) => {
-  return function onChange(checked: boolean, event: Event) {
-    const name = (event as unknown as ChangeEvent<HTMLInputElement>).target
-      .name;
-    onPropertyChange({ [name]: checked });
-  };
-};
-
 export function toToggleOnChangeCallback(
   onPropertyChange?: OnPropertyChangeCallback
 ): ChangeEventHandler<any> {

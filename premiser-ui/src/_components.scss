@@ -2,6 +2,7 @@
 @import "./grid";
 
 $list-item-left-padding: 1.5em;
+$icon-button-size: 3rem;
 
 @mixin material-icon-list-item($icon-name, $font-family: "Material Icons") {
   &:before {

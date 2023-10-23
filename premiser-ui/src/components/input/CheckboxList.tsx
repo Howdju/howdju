@@ -26,7 +26,6 @@ interface CheckboxListProps {
 }
 
 /** Renders checkboxes and returns values as an array of selected items. */
-// TODO(#17) why not a multi-Select?
 export default function CheckboxList({
   id,
   name,

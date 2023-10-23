@@ -10,10 +10,7 @@ import CheckboxList from "@/components/input/CheckboxList";
 import ErrorMessages from "../ErrorMessages";
 import { combineIds, combineNames } from "../viewModels";
 import { EntityEditorFieldsProps } from "@/editors/withEditor";
-import {
-  makeErrorPropCreator,
-  makeReactMd1ErrorPropCreator,
-} from "@/modelErrorMessages";
+import { makeErrorPropCreator } from "@/modelErrorMessages";
 import { TextArea } from "@/components/text/TextArea";
 
 const reportTypeDescriptions = {
@@ -53,12 +50,6 @@ export default function ContentReportEditorFields(
   } = props;
   const description = contentReport?.description;
   const types = contentReport?.types;
-  const reactMd1ErrorProps = makeReactMd1ErrorPropCreator(
-    wasSubmitAttempted,
-    errors,
-    dirtyFields,
-    blurredFields
-  );
   const errorProps = makeErrorPropCreator(
     wasSubmitAttempted,
     errors,
@@ -75,7 +66,7 @@ export default function ContentReportEditorFields(
         onPropertyChange={onPropertyChange}
         descriptionsByCode={reportTypeDescriptions}
         disabled={disabled}
-        {...reactMd1ErrorProps((cr) => cr.types)}
+        {...errorProps((cr) => cr.types)}
       />
       <TextArea
         id={combineIds(id, "description")}

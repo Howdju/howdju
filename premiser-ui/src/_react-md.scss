@@ -2,12 +2,7 @@
   Entrypoint for styling react-md
  */
 
-// Disable per https://react-md.dev/guides/working-with-v1#the-pain-points
-$md-typography-extended: false;
-@import "./rmd-variable-overrides";
-@import "~react-md/src/scss/react-md";
 @import "./react-md-variable-overrides";
-@import "./react-md-everything";
 
 @import "~@react-md/alert/dist/mixins";
 @import "~@react-md/app-bar/dist/mixins";

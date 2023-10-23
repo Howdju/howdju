@@ -5,8 +5,6 @@ import { FormMessage, FormMessageProps } from "@/components/form/FormMessage";
 import { combineIds } from "@/viewModels";
 import { OnPropertyChangeCallback } from "@/types";
 
-import "./RadioGroup.scss";
-
 interface RadioInfo extends Pick<RadioProps, "label"> {
   value: string;
 }

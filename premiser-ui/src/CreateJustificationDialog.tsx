@@ -24,8 +24,6 @@ import {
   DialogFooter,
 } from "./components/dialog/Dialog";
 
-import "./CreateJustificationDialog.scss";
-
 type Props = {
   id: ComponentId;
   editorId: string;
@@ -91,7 +89,6 @@ export default function CreateJustificationDialog(props: Props) {
       id="newJustificationDialog"
       visible={visible || false}
       onRequestClose={onHide}
-      className="md-overlay--wide-dialog"
       title="Add justification"
     >
       <DialogContent>
@@ -108,7 +105,7 @@ export default function CreateJustificationDialog(props: Props) {
           }
         />
       </DialogContent>
-      <DialogFooter className="md-dialog-footer md-dialog-footer--inline">
+      <DialogFooter>
         {addNewJustificationDialogCancelButton}
         {addNewJustificationDialogSubmitButton}
       </DialogFooter>

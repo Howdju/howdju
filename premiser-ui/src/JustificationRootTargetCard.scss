@@ -1,4 +1,3 @@
-@import "~react-md/src/scss/react-md";
 @import "./flatui-colors";
 @import "./colors";
 @import "./grid";
@@ -6,19 +5,10 @@
 
 $gradient-start-opacity: 0.6;
 $gradient-point: 25%;
-$slide-size: $md-btn-icon-size;
+$slide-size: $icon-button-size;
 
-// All must be less than $md-toolbar-z-index (default 15) or else they will float above the toolbar upon scrolling
-// ($md-menu-z-index is 10)
 $gradient-z-index: 5;
 $over-gradient-z-index: 10;
-
-.context-menu--root-target {
-  z-index: $over-gradient-z-index;
-  .md-list--menu {
-    z-index: $over-gradient-z-index + 1;
-  }
-}
 
 ul.target-trail {
   padding-left: 35px;
@@ -26,10 +16,6 @@ ul.target-trail {
     @include material-icon-list-item("replay");
     margin: 5px;
   }
-}
-
-.context-menu {
-  float: right;
 }
 
 .entity-viewer .entity-viewer {
@@ -41,7 +27,7 @@ ul.target-trail {
   // https://medium.com/@dave_lunny/animating-css-gradients-using-only-css-d2fd7671e759
 
   // Provide a background color for the card, which we make transparent
-  background: get-color("card", $md-light-theme);
+  background: white;
 
   .root-target-card {
     // The z-index must apply to the children to get them over the gradient.

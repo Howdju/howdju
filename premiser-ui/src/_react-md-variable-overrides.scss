@@ -1,27 +1,29 @@
-/** Variables overrides for react-md@1 */
+/** Variables overrides for react-md@2 */
 
-@import "@/flatui-colors";
 @import "./colors";
 
-$md-primary-color: $primary-color;
-$md-secondary-color: $secondary-color;
-$md-text-field-error-color: $error-color;
-$md-font-family: "Lato", sans-serif;
-$md-theme-light: false;
-$rmd-chip-outline-background-color: $clouds;
+$rmd-theme-light: true;
+$rmd-theme-primary: $primary-color;
+$rmd-theme-secondary: $secondary-color;
+$rmd-theme-warning: $warning-color;
+$rmd-theme-error: $error-color;
+$rmd-theme-success: $success-color;
+// AutoComplete items should look like cards.
+$rmd-theme-surface: white;
+$rmd-theme-light-background: $light-background-color;
+$rmd-theme-light-surface: $light-surface-color;
+$rmd-theme-dark-background: $dark-background-color;
+$rmd-theme-dark-surface: $dark-surface-color;
 
-$md-toolbar-prominent-height: 105px;
-// The docs say that $md-toolbar-prominent-height overrides these.  But in my experience it does not.
-$md-toolbar-desktop-prominent-height: $md-toolbar-prominent-height;
-$md-toolbar-tablet-prominent-height: $md-toolbar-prominent-height;
-$md-toolbar-mobile-prominent-height: $md-toolbar-prominent-height;
+$rmd-chip-outline-background-color: $light-surface-color;
 
-// react-md requires us to define these using material design colors when md-primary-color is a non-material design color
-$md-data-table-contextual-fallback-color: $md-blue-grey-900;
-// These are when md-secondary-color is non material design
-$md-linear-progress-fallback-color: $md-deep-orange-a-700;
-$md-switch-ball-fallback-color: $md-deep-orange-a-700;
+// rmd-form-message on card was dark (#212121) but we want it to be light.)
+// $rmd-theme-text-secondary-on-background depends on rmd-card-secondary-color, so
+// we can override the color by setting that value.
+$rmd-card-secondary-color: #757575;
 
-$md-avatar-default-background: rgba(0, 0, 0, 0);
-$md-avatar-default-color: $icon-color;
-$md-chip-icon-default-color: $icon-color;
+$rmd-typography-font-family: "Lato", sans-serif;
+$rmd-typography-desktop-max-line-length: 60em;
+$rmd-typography-mobile-max-line-length: 40em;
+
+$rmd-tab-indicator-color: $secondary-color;

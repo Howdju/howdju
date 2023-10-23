@@ -9,7 +9,6 @@ import {
   UrlOut,
 } from "howdju-common";
 import { FocusEvent, FocusEventHandler, MouseEvent } from "react";
-import { logger } from "./logger";
 import { UiErrorType } from "./uiErrors";
 
 /**
@@ -48,37 +47,6 @@ export type OnBlurCallback = FocusEventHandler<
 export type OnCheckboxBlurCallback =
   | ((event: FocusEvent<HTMLElement>) => void)
   | undefined;
-
-/**
- * TODO(17) remove.
- * @deprecated react-md@2 does not have this problem.
- */
-export const toReactMdOnBlur = (
-  onBlurCallback?: OnBlurCallback
-): ReactMdOnBlur => {
-  return function (event: FocusEvent<HTMLElement>) {
-    if (onBlurCallback) {
-      if ("name" in event.target) {
-        onBlurCallback(event as FocusEvent<HTMLInputElement>);
-      } else {
-        logger.error(
-          "Unable to call blur callback because event did not target an HTMLInputElement"
-        );
-      }
-    }
-  };
-};
-
-/**
- * The type of react-md's onBlur event.
- *
- * Sadly react-md uses HTMLElement instead of HTMLInputElement, which prevents us from acessing the
- * event's name for form state management.
- *
- * TODO(17) remove.
- * @deprecated react-md@2 does not have this problem
- */
-type ReactMdOnBlur = (event: React.FocusEvent<HTMLElement>) => void;
 
 /**
  * Represent changes to form field properties.

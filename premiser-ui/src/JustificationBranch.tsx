@@ -329,6 +329,7 @@ function JustificationBranch({
           <Card
             key="newCounterJustificationCard"
             className="justification-card"
+            style={{ width: "100%" }}
           >
             <CardContent>
               <CounterJustificationEditor

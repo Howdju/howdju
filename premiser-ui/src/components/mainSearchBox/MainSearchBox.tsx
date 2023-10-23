@@ -77,7 +77,6 @@ export default function MainSearchBox() {
         fetchSuggestions={api.fetchMainSearchSuggestions}
         cancelSuggestions={cancelMainSearchSuggestions}
         className="mainSearchAutocomplete"
-        areaClassName="md-text-field--toolbar"
         singleLine={true}
         onSubmit={onSubmit}
         rightControls={
