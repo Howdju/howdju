@@ -492,13 +492,8 @@ describe("CreatePropositionPage", () => {
         await user.keyboard(letter);
       }
 
-      const createButton = screen.getByRole("button", { name: /create/i });
-      await waitFor(() =>
-        expect(createButton).not.toHaveClass("rmd-button--disabled")
-      );
-
       // Act
-      await user.click(createButton);
+      await clickEnabledButton(user, /create/i);
 
       // Assert
       await waitFor(() => expect(requestBody).toBeTruthy());
