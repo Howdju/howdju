@@ -142,13 +142,16 @@ function appearanceToCard(
   trailItems: ContextTrailItem[]
 ) {
   return (
-    <AppearanceCard
-      id={combineIds(id, "appearance", appearance.id)}
-      style={{ width: "100%" }}
-      appearance={appearance}
-      contextTrailItems={trailItems}
-      mode="CONTEXT_TRAIL"
-    />
+    <>
+      <AppearanceCard
+        id={combineIds(id, "appearance", appearance.id)}
+        style={{ width: "100%" }}
+        appearance={appearance}
+        contextTrailItems={trailItems}
+        mode="CONTEXT_TRAIL"
+      />
+      <p>Presents:</p>
+    </>
   );
 }
 

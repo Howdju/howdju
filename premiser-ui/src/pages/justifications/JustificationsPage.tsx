@@ -54,6 +54,7 @@ import FocusValidatingContextTrail from "@/components/contextTrail/FocusValidati
 import { RootTargetProps } from "@/JustificationRootTargetViewer";
 import TextButton from "@/components/button/TextButton";
 import { MenuItem } from "@/components/menu/Menu";
+import { Page } from "@/components/layout/Page";
 
 const justificationsPageId = "justifications-page";
 
@@ -171,7 +172,7 @@ class JustificationsPage extends Component<Props> {
     } as RootTargetProps;
 
     return (
-      <div id="justifications-page">
+      <Page id="justifications-page">
         <Helmet>
           <title>
             {rootTarget
@@ -239,7 +240,7 @@ class JustificationsPage extends Component<Props> {
             onHide={this.cancelNewJustificationDialog}
           />
         )}
-      </div>
+      </Page>
     );
   }
 }

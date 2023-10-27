@@ -32948,7 +32948,7 @@
         break;
       }
       case "APPEARANCE":
-        return "POSITIVE";
+        return "NEUTRAL";
     }
   }
   function negateRelationPolarity(polarity) {

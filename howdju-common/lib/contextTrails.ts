@@ -346,7 +346,7 @@ export function contextTrailItemPolarity(
       break;
     }
     case "APPEARANCE":
-      return "POSITIVE";
+      return "NEUTRAL";
   }
 }
 
