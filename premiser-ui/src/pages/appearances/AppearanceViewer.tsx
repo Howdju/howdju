@@ -40,7 +40,6 @@ export default function AppearanceViewer({
           created={appearance.created}
           creator={appearance.creator}
         />
-        <p>Presents:</p>
       </div>
     );
   }

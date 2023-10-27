@@ -62,7 +62,7 @@ export class ContextTrailsService {
                   { userId },
                   info.connectingEntityId
                 ),
-              polarity: "POSITIVE" as const,
+              polarity: "NEUTRAL" as const,
             };
         }
       })
