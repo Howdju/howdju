@@ -39,12 +39,23 @@ import {
   BasedJustificationWithRootRef,
   PersistedEntity,
   CreateJustificationInput,
+  PropositionCreatedAsType,
+  StatementCreatedAsType,
 } from "howdju-common";
 import { Moment } from "moment";
 import { toIdString } from "./daosUtil";
 
 export const EntityRowId = z.number().transform(toString);
 export type EntityRowId = number;
+
+export type JustStatement = Omit<
+  Statement,
+  "sentence" | "speaker" | "creator"
+> & {
+  sentence: { id: EntityId };
+  speaker: { id: EntityId };
+  creator: { id: EntityId };
+};
 
 export interface PropositionRow {
   proposition_id: EntityRowId;
@@ -53,6 +64,9 @@ export interface PropositionRow {
   created: Moment;
   creator_user_id: EntityRowId;
   creator_long_name?: string;
+  created_as_type?: PropositionCreatedAsType;
+  created_as_appearance_id?: EntityRowId;
+  created_as_statement_id?: EntityRowId;
 }
 export type PropositionData = Persisted<Proposition> & {
   normalText?: string;
@@ -67,7 +81,11 @@ export interface StatementRow {
   id?: EntityRowId;
   sentence_type: SentenceType;
   sentence_id: EntityRowId;
+  speaker_persorg_id: EntityRowId;
+  creator_user_id: EntityRowId;
   created: Moment;
+  created_as_type: StatementCreatedAsType;
+  created_as_statement_id?: EntityRowId;
 }
 export type StatementData = Omit<
   Persisted<Statement>,

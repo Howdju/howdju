@@ -407,6 +407,7 @@ export default function CreatePropositionPage({ mode, location }: Props) {
                 dirtyFields={dirtyFields?.proposition}
                 blurredFields={blurredFields?.proposition}
                 editorDispatch={noopEditorDispatch}
+                showQuestionCheckbox={true}
               />
               <TagsControl
                 id={combineIds(id, tagsName)}

@@ -41,6 +41,18 @@ export default function PropositionViewer({
     : "";
   const creatorName = get(proposition, "creator.longName");
   const creatorNameDescription = (creatorName && ` by ${creatorName}`) || "";
+  const createdAsInfo = makeCreatedAsInfo(proposition);
+  const createdAsText = createdAsInfo ? (
+    <span>
+      {" "}
+      as{" "}
+      {createdAsInfo.href ? (
+        <Link to={createdAsInfo.href}>a {createdAsInfo.type}</Link>
+      ) : (
+        `a ${createdAsInfo.type}`
+      )}
+    </span>
+  ) : null;
 
   function showPropositionAppearanceDialog() {
     dispatch(propositionAppearancesDialog.showDialog(proposition.id));
@@ -105,8 +117,8 @@ export default function PropositionViewer({
           {showStatusText && (
             <div>
               <span className="entity-status-text">
-                created{creatorNameDescription}{" "}
-                <span title={created}>{age}</span>
+                created{creatorNameDescription}
+                {createdAsText} <span title={created}>{age}</span>
               </span>
             </div>
           )}
@@ -114,4 +126,28 @@ export default function PropositionViewer({
       )}
     </div>
   );
+}
+
+function makeCreatedAsInfo(proposition: PropositionOut) {
+  if (!proposition.createdAs) {
+    return undefined;
+  }
+  const typeId = proposition.createdAs.id;
+  switch (proposition.createdAs.type) {
+    case "QUESTION":
+      return {
+        type: "question",
+        href: undefined,
+      };
+    case "STATEMENT":
+      return {
+        type: "statement",
+        href: typeId ? paths.statement(typeId) : undefined,
+      };
+    case "APPEARANCE":
+      return {
+        type: "appearance",
+        href: typeId ? paths.appearance(typeId) : undefined,
+      };
+  }
 }

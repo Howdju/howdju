@@ -14,7 +14,9 @@ import {
   EntityId,
   JustificationBasisTypes,
   JustificationRootTargetTypes,
+  Logger,
   Proposition,
+  PropositionCreatedAsType,
   PropositionOut,
   PropositionRef,
   requireArgs,
@@ -33,6 +35,7 @@ import { keyBy, reduce, toString, uniq } from "lodash";
 export class PropositionsDao {
   constructor(
     private readonly database: Database,
+    private readonly logger: Logger,
     private readonly usersDao: UsersDao
   ) {}
 
@@ -46,12 +49,15 @@ export class PropositionsDao {
     } = await this.database.query<PropositionRow>(
       "createProposition",
       `
-      insert into propositions (text, normal_text, creator_user_id, created)
-      values ($1, $2, $3, $4)
+      insert into propositions (
+        text, normal_text, created_as_type, creator_user_id, created
+      )
+      values ($1, $2, $3, $4, $5)
       returning proposition_id`,
       [
         cleanWhitespace(createProposition.text),
         normalizeText(createProposition.text),
+        createProposition.isQuestion ? "QUESTION" : undefined,
         userId,
         now,
       ]
@@ -94,16 +100,51 @@ export class PropositionsDao {
     const creators = await this.usersDao.readUserBlurbsForIds(creatorIds);
     const creatorsById = keyBy(creators, "id");
 
-    return rows.map((row) =>
-      brandedParse(PropositionRef, {
+    return rows.map((row) => {
+      const proposition: Proposition = {
         id: toString(row.proposition_id),
         text: row.text,
         normalText: row.normal_text,
         slug: toSlug(row.text),
         creator: creatorsById[toString(row.creator_user_id)],
         created: row.created,
-      })
-    );
+      };
+      if (row.created_as_type) {
+        proposition.createdAs = {
+          type: row.created_as_type,
+          id: this.getCreatedAsId(row),
+        };
+      }
+      return brandedParse(PropositionRef, proposition);
+    });
+  }
+
+  private getCreatedAsId(row: PropositionRow) {
+    if (!row.created_as_type) {
+      throw new Error(
+        `Cannot call getCreatedAsId if row.created_as_type is undefined`
+      );
+    }
+    switch (row.created_as_type) {
+      case "APPEARANCE":
+        if (!row.created_as_appearance_id) {
+          this.logger.error(
+            `Proposition ${row.proposition_id} has created_as_type APPEARANCE but no created_as_appearance_id`
+          );
+          return undefined;
+        }
+        return toIdString(row.created_as_appearance_id);
+      case "STATEMENT":
+        if (!row.created_as_statement_id) {
+          this.logger.error(
+            `Proposition ${row.proposition_id} has created_as_type STATEMENT but no created_as_statement_id`
+          );
+          return undefined;
+        }
+        return toIdString(row.created_as_statement_id);
+      case "QUESTION":
+        return undefined;
+    }
   }
 
   async readPropositionByText(propositionText: string) {
@@ -235,6 +276,32 @@ export class PropositionsDao {
       return undefined;
     }
     return toProposition(rows[0]);
+  }
+
+  updateCreatedAsForId(
+    propositionId: EntityId,
+    createdAsType: PropositionCreatedAsType,
+    createdAsEntityId: string
+  ) {
+    if (!["APPEARANCE", "STATEMENT"].includes(createdAsType)) {
+      throw new Error(
+        `Unsupported createdAsType for proposition update: ${createdAsType}. Must be APPEARANCE or STATEMENT`
+      );
+    }
+    return this.database.query(
+      "updateCreatedAsForId",
+      `
+        update propositions
+        set created_as_type = $1, created_as_appearance_id = $2, created_as_statement_id = $3
+        where proposition_id = $4
+        `,
+      [
+        createdAsType,
+        createdAsType === "APPEARANCE" ? createdAsEntityId : undefined,
+        createdAsType === "STATEMENT" ? createdAsEntityId : undefined,
+        propositionId,
+      ]
+    );
   }
 
   deleteProposition(proposition: PropositionRef, deletedAt: Moment) {

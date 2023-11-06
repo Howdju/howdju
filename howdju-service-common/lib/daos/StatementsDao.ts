@@ -1,4 +1,5 @@
 import map from "lodash/map";
+import { Moment } from "moment";
 
 import {
   brandedParse,
@@ -11,6 +12,7 @@ import {
   PropositionOut,
   SentenceType,
   SentenceTypes,
+  StatementCreatedAsType,
   StatementOut,
   StatementRef,
 } from "howdju-common";
@@ -18,9 +20,9 @@ import {
 import { BaseDao } from "./BaseDao";
 import { toStatement } from "./orm";
 import { Database, PropositionsDao } from "..";
-import { Moment } from "moment";
 import { toIdString } from "./daosUtil";
 import { ensurePresent } from "../services/patterns";
+import { JustStatement, StatementRow } from "./dataTypes";
 
 export class StatementsDao extends BaseDao {
   constructor(
@@ -32,6 +34,7 @@ export class StatementsDao extends BaseDao {
   }
 
   async readStatementForId(statementId: EntityId) {
+    // TODO(#613) it should be possible to read all statements in a single query
     const statement = await this.readStatementWithoutSentenceForId(statementId);
     if (!statement) {
       return undefined;
@@ -206,7 +209,7 @@ export class StatementsDao extends BaseDao {
   }
 
   async readStatementsWithoutSentencesForIds(statementIds: EntityId[]) {
-    const { rows } = await this.db.query(
+    const { rows } = await this.db.query<StatementRow>(
       "readStatementsWithoutSentencesForIds",
       `
         select
@@ -218,16 +221,36 @@ export class StatementsDao extends BaseDao {
       `,
       [statementIds]
     );
-    return rows.map((row) =>
-      brandedParse(StatementRef, {
+    return rows.map((row) => {
+      const statement: JustStatement = {
         id: toIdString(row.statement_id),
         sentenceType: row.sentence_type,
         sentence: { id: toIdString(row.sentence_id) },
         speaker: { id: toIdString(row.speaker_persorg_id) },
         created: row.created,
         creator: { id: toIdString(row.creator_user_id) },
-      })
-    );
+      };
+      if (row.created_as_type) {
+        statement.createdAs = {
+          type: row.created_as_type,
+          id: this.getCreatedAsId(row),
+        };
+      }
+      return brandedParse(StatementRef, statement);
+    });
+  }
+
+  private getCreatedAsId(row: StatementRow) {
+    switch (row.created_as_type) {
+      case "STATEMENT":
+        if (!row.created_as_statement_id) {
+          this.logger.error(
+            `Statement ${row.statement_id} has created_as_type STATEMENT but no created_as_statement_id`
+          );
+          return undefined;
+        }
+        return toIdString(row.created_as_statement_id);
+    }
   }
 
   async readStatementsForSpeakerPersorgId(speakerPersorgId: EntityId) {
@@ -285,6 +308,29 @@ export class StatementsDao extends BaseDao {
     );
     return await Promise.all(
       map(rows, (row) => this.readStatementForId(row.statement_id))
+    );
+  }
+  updateCreatedAsForStatementIds(
+    statementIds: EntityId[],
+    createdAsType: StatementCreatedAsType,
+    createdAsEntityId: EntityId
+  ) {
+    if (statementIds.length === 0) {
+      return;
+    }
+    return this.db.query(
+      "updateCreatedAsForStatementIds",
+      `
+        update statements
+        set created_as_type = $1
+          , created_as_statement_id = $2
+        where statement_id = any($3)
+      `,
+      [
+        createdAsType,
+        createdAsType === "STATEMENT" ? createdAsEntityId : undefined,
+        statementIds,
+      ]
     );
   }
 }

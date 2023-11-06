@@ -62,7 +62,7 @@ export function daosInitializer(provider: DatabaseProvider) {
   const justificationScoresDao = new JustificationScoresDao(database);
   const passwordResetRequestsDao = new PasswordResetRequestsDao(database);
   const propositionCompoundsDao = new PropositionCompoundsDao(logger, database);
-  const propositionsDao = new PropositionsDao(database, usersDao);
+  const propositionsDao = new PropositionsDao(database, logger, usersDao);
   const picRegionsDao = new PicRegionsDao(logger, database);
   const vidSegmentsDao = new VidSegmentsDao(logger, database);
   const writQuoteUrlTargetsDao = new WritQuoteUrlTargetsDao(logger, database);

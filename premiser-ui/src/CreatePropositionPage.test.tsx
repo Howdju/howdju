@@ -415,6 +415,7 @@ describe("CreatePropositionPage", () => {
       const basisProposition: PropositionOut = brandedParse(PropositionRef, {
         id: basisSourceId,
         text: "This warrants a response.",
+        normalText: "This warrants a response.",
         created: moment(),
       });
       const justification: CreateJustification = {

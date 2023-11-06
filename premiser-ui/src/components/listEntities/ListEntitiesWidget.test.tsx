@@ -30,6 +30,7 @@ const propositions = Array.from(Array(20).keys()).map((id) => ({
   ...PropositionRef.parse({ id: `proposition${id}` }),
   created,
   text: `The proposition text ${id}`,
+  normalText: `The proposition text ${id}`,
 }));
 const initialFetchCount = 7;
 const fetchCount = 8;

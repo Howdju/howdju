@@ -12,6 +12,7 @@ import {
   JustificationOut,
   PropositionRef,
   toSlug,
+  UserRef,
   utcNow,
 } from "howdju-common";
 import {
@@ -43,6 +44,7 @@ describe("JustificationsPage", () => {
       ...PropositionRef.parse({ id: "1" }),
       created,
       text: "the-proposition-text",
+      normalText: "the-proposition-text",
       justifications,
       tags: [],
       recommendedTags: [],
@@ -99,6 +101,7 @@ describe("JustificationsPage", () => {
       ...PropositionRef.parse({ id: "1" }),
       created,
       text: "the-proposition-text",
+      normalText: "the-proposition-text",
       justifications,
       tags: [],
       recommendedTags: [],
@@ -132,6 +135,8 @@ describe("JustificationsPage", () => {
           > = {
             proposition: brandedParse(PropositionRef, {
               ...proposition,
+              normalText: proposition.text,
+              creator: brandedParse(UserRef, proposition.creator),
               created: utcNow(),
             }),
           };
@@ -173,7 +178,9 @@ describe("JustificationsPage", () => {
 
     // Assert
     jest.runAllTimers();
-    expect(await screen.findByText(updatedText)).toBeInTheDocument();
+    expect(
+      await screen.findByText(updatedText, { ignore: '[aria-hidden="true"]' })
+    ).toBeInTheDocument();
   });
 
   test("can add a compound-based justification", async () => {
@@ -185,6 +192,7 @@ describe("JustificationsPage", () => {
       ...PropositionRef.parse({ id: rootTargetId }),
       created,
       text: "the-proposition-text",
+      normalText: "the-proposition-text",
       justifications,
       tags: [],
       recommendedTags: [],

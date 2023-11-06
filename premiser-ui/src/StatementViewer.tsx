@@ -45,6 +45,17 @@ export default function StatementViewer({
     : "";
   const creatorName = get(statement, "creator.longName");
   const creatorNameDescription = (creatorName && ` by ${creatorName}`) || "";
+  const createdAsInfo = makeCreatedAsInfo(statement);
+  const createdAsText = createdAsInfo ? (
+    <span>
+      as{" "}
+      {createdAsInfo.href ? (
+        <Link to={createdAsInfo.href}>a {createdAsInfo.type}</Link>
+      ) : (
+        `a ${createdAsInfo.type}`
+      )}
+    </span>
+  ) : null;
 
   return (
     <div {...rest} id={id} className={cn(className, "statement-viewer")}>
@@ -68,11 +79,26 @@ export default function StatementViewer({
         {showStatusText && (
           <div>
             <span className="entity-status-text">
-              created{creatorNameDescription} <span title={created}>{age}</span>
+              created{creatorNameDescription}
+              {createdAsText} <span title={created}>{age}</span>
             </span>
           </div>
         )}
       </div>
     </div>
   );
+}
+
+function makeCreatedAsInfo(statement: StatementOut) {
+  if (!statement.createdAs) {
+    return undefined;
+  }
+  const typeId = statement.createdAs.id;
+  switch (statement.createdAs.type) {
+    case "STATEMENT":
+      return {
+        type: "statement",
+        href: typeId ? paths.statement(typeId) : undefined,
+      };
+  }
 }

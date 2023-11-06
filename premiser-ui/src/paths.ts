@@ -3,7 +3,6 @@ import isEmpty from "lodash/isEmpty";
 import queryString from "query-string";
 
 import {
-  AppearanceOut,
   ContextTrailItem,
   EntityId,
   JustificationBasisSourceType,
@@ -151,8 +150,7 @@ class Paths {
     `/sources/${source.id}/${toSlug(source.description)}`;
   submitMediaExcerpt = () => "/media-excerpts/new";
 
-  appearance = (appearance: AppearanceOut) =>
-    `/media-excerpts/${appearance.mediaExcerpt.id}/appearances/${appearance.id}`;
+  appearance = (appearanceId: EntityId) => `/appearances/${appearanceId}`;
 
   tools = () => "/tools";
 

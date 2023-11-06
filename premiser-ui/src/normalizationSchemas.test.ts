@@ -29,17 +29,20 @@ describe("normalizationSchemas", () => {
       const proposition1: PropositionOut = brandedParse(PropositionRef, {
           id: "1",
           text: "a proposition",
+          normalText: "a proposition",
           justifications: [],
           created: moment(),
         }),
         proposition2: PropositionOut = brandedParse(PropositionRef, {
           id: "2",
           text: "another proposition",
+          normalText: "another proposition",
           created: moment(),
         }),
         proposition3: PropositionOut = brandedParse(PropositionRef, {
           id: "3",
           text: "yet another proposition",
+          normalText: "yet another proposition",
           created: moment(),
         }),
         propositionCompound1 = brandedParse(PropositionCompoundRef, {

@@ -198,7 +198,7 @@ const routesById = {
   appearance: (
     <Route
       exact
-      path="/media-excerpts/:mediaExcerptId/appearances/:appearanceId/"
+      path="/appearances/:appearanceId/"
       component={AppearancePage}
     />
   ),

@@ -102,43 +102,43 @@ describe("StatementsService", () => {
         })
       );
     });
-    describe("readStatementForId", () => {
-      test("reads a statement", async () => {
-        const { user } = await testHelper.makeUser();
-        const now = utcNow();
-        const createStatement: CreateStatement = {
+  });
+  describe("readStatementForId", () => {
+    test("reads a statement", async () => {
+      const { user } = await testHelper.makeUser();
+      const now = utcNow();
+      const createStatement: CreateStatement = {
+        speaker: {
+          isOrganization: false,
+          name: "Test Person",
+        },
+        sentenceType: "STATEMENT",
+        sentence: {
           speaker: {
-            isOrganization: false,
-            name: "Test Person",
+            isOrganization: true,
+            name: "Test Organization",
           },
-          sentenceType: "STATEMENT",
+          sentenceType: "PROPOSITION",
           sentence: {
-            speaker: {
-              isOrganization: true,
-              name: "Test Organization",
-            },
-            sentenceType: "PROPOSITION",
-            sentence: {
-              text: "Test Proposition",
-            },
+            text: "Test Proposition",
           },
-        };
+        },
+      };
 
-        const { statement } = await service.doReadOrCreate(
-          createStatement,
-          user.id,
-          now
-        );
+      const { statement } = await service.doReadOrCreate(
+        createStatement,
+        user.id,
+        now
+      );
 
-        // Act
-        const readStatement = await service.readStatementForId(
-          { userId: user.id },
-          statement.id
-        );
+      // Act
+      const readStatement = await service.readStatementForId(
+        { userId: user.id },
+        statement.id
+      );
 
-        // Assert
-        expect(readStatement).toEqual(statement);
-      });
+      // Assert
+      expect(readStatement).toEqual(statement);
     });
   });
 });

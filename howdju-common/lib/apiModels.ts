@@ -35,6 +35,7 @@ import {
   MediaExcerptSpeaker,
   PersistedEntity,
   JustificationPolarity,
+  StatementCreatedAs,
 } from "./zodSchemas";
 import {
   EntityRef,
@@ -161,6 +162,7 @@ export type StatementOut = PersistedEntity &
     justifications?: JustificationOut[];
     created: Moment;
     creator: CreatorBlurb;
+    createdAs?: StatementCreatedAs;
     rootJustificationCountByPolarity?: JustificationCountMap;
   } & (
     | {
