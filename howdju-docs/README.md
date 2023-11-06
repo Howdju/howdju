@@ -24,8 +24,10 @@ aws-vault exec user@howdju -- aws cloudfront create-invalidation --distribution-
 To check on the progress of the invalidation:
 
 ```sh
-aws-vault exec user@howdju -- aws cloudfront get-invalidation --distribution-id ECBMF327IDKRF --id ICND34MNYTU8KAQQDWXNSXIS95
+aws-vault exec user@howdju -- aws cloudfront get-invalidation --distribution-id ECBMF327IDKRF --id <invalidation-id>
 ```
+
+where `<invalidation-id>` comes from the output of the `create-invalidation` command.
 
 If you update `not-found.html`, upload that too.
 
