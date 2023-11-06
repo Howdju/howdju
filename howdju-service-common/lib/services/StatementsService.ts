@@ -9,6 +9,7 @@ import {
   PropositionOut,
   SentenceType,
   SentenceTypes,
+  StatementCreatedAs,
   StatementOut,
 } from "howdju-common";
 
@@ -153,7 +154,7 @@ export class StatementsService extends EntityService<
     } as
       | { sentence: StatementOut; sentenceType: "STATEMENT" }
       | { sentence: PropositionOut; sentenceType: "PROPOSITION" };
-    let isOutmostStatementExtant = false;
+    let isLatestStatementExtant = false;
     const rootPropositionId = proposition.id;
     for (let i = createStatements.length - 1; i >= 0; i--) {
       const currCreateStatement = createStatements[i];
@@ -172,7 +173,7 @@ export class StatementsService extends EntityService<
           speaker: persorg,
         });
       if (equivalentStatementId) {
-        isOutmostStatementExtant = true;
+        isLatestStatementExtant = true;
         const sentence = await this.readStatementForId(
           { userId },
           equivalentStatementId
@@ -200,17 +201,52 @@ export class StatementsService extends EntityService<
           sentence,
           sentenceType: "STATEMENT",
         };
-        isOutmostStatementExtant = false;
+        isLatestStatementExtant = false;
       }
     }
     if (prevSentenceInfo.sentenceType === "PROPOSITION") {
       throw new InvalidRequestError(`No statement found.`);
     }
 
+    const statement = prevSentenceInfo.sentence;
+    await this.updateCreatedAsForStatementsSentences(statement, proposition);
+
     return {
-      isExtant: isOutmostStatementExtant,
-      statement: prevSentenceInfo.sentence,
+      isExtant: isLatestStatementExtant,
+      statement,
     };
+  }
+
+  /** Persists and updates the inner sentences to have createdAs of the outer statement. */
+  private async updateCreatedAsForStatementsSentences(
+    statement: StatementOut,
+    proposition: PropositionOut
+  ) {
+    const innerStatements = collectInnerStatements(statement);
+    await Promise.all([
+      this.propositionsService.updateCreatedAs(
+        proposition.id,
+        "STATEMENT",
+        statement.id
+      ),
+      this.statementsDao.updateCreatedAsForStatementIds(
+        innerStatements.map(({ id }) => id),
+        "STATEMENT",
+        statement.id
+      ),
+    ]);
+
+    const createdAs: StatementCreatedAs = {
+      type: "STATEMENT",
+      id: statement.id,
+    };
+    let currSentence: StatementOut | PropositionOut | undefined =
+      statement.sentence;
+    while (currSentence) {
+      currSentence.createdAs = createdAs;
+      currSentence =
+        "sentence" in currSentence ? currSentence.sentence : undefined;
+    }
   }
 
   protected doUpdate(
@@ -250,6 +286,17 @@ export class StatementsService extends EntityService<
       rootPropositionId
     );
   }
+}
+
+function collectInnerStatements(statement: StatementOut) {
+  const innerStatements = [];
+  let currSentence: StatementOut | PropositionOut | undefined =
+    statement.sentence;
+  while ("sentenceType" in currSentence) {
+    innerStatements.push(currSentence);
+    currSentence = currSentence.sentence;
+  }
+  return innerStatements;
 }
 
 function collectSentences(statement: CreateStatement) {

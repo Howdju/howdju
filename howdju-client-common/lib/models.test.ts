@@ -14,6 +14,8 @@ describe("makeJustificationViewModel", () => {
     const rootProposition: PropositionOut = {
       ...PropositionRef.parse({ id: "example" }),
       text: "By law, no building in Washington, D.C. may be taller than the Capitol building",
+      normalText:
+        "By law, no building in Washington, D.C. may be taller than the Capitol building",
       created,
     };
     const justification = makeJustificationViewModel({
@@ -33,6 +35,8 @@ describe("makeJustificationViewModel", () => {
               entity: {
                 ...PropositionRef.parse({ id: "example" }),
                 text: "The 1899 Height of Buildings Act established that no building could be taller than the Capitol (289 feet)",
+                normalText:
+                  "The 1899 Height of Buildings Act established that no building could be taller than the Capitol (289 feet)",
                 created,
               },
             },
@@ -49,6 +53,8 @@ describe("makeJustificationViewModel", () => {
     const rootProposition: PropositionOut = {
       ...PropositionRef.parse({ id: "example" }),
       text: "By law, no building in Washington, D.C. may be taller than the Capitol building",
+      normalText:
+        "By law, no building in Washington, D.C. may be taller than the Capitol building",
       created,
     };
     const proJustification = makeJustificationViewModel({
@@ -68,6 +74,8 @@ describe("makeJustificationViewModel", () => {
               entity: {
                 ...PropositionRef.parse({ id: "example" }),
                 text: "The 1899 Height of Buildings Act established that no building could be taller than the Capitol (289 feet)",
+                normalText:
+                  "The 1899 Height of Buildings Act established that no building could be taller than the Capitol (289 feet)",
                 created,
               },
             },
@@ -96,6 +104,8 @@ describe("makeJustificationViewModel", () => {
                 ...PropositionRef.parse({ id: "example" }),
                 created,
                 text: "The 1910 Height of Buildings Act amended the 1899 act to base the height restriction on the width of adjacent streets.",
+                normalText:
+                  "The 1910 Height of Buildings Act amended the 1899 act to base the height restriction on the width of adjacent streets.",
               },
             },
           ],

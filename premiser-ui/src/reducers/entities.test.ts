@@ -45,11 +45,13 @@ describe("entities", () => {
       const targetProposition: PropositionOut = brandedParse(PropositionRef, {
         id: "1",
         text: "target proposition",
+        normalText: "target proposition",
         created: moment(),
       });
       const atom1Proposition = brandedParse(PropositionRef, {
         id: "4",
         text: "atom 1",
+        normalText: "atom 1",
         created: moment(),
       });
       const propositionCompound1 = brandedParse(PropositionCompoundRef, {
@@ -103,6 +105,7 @@ describe("entities", () => {
       const atom2Proposition = brandedParse(PropositionRef, {
         id: "3",
         text: "atom 1",
+        normalText: "atom 1",
         created: moment(),
       });
       const propositionCompound2 = brandedParse(PropositionCompoundRef, {
@@ -203,6 +206,7 @@ describe("entities", () => {
       const rootProposition: PropositionOut = brandedParse(PropositionRef, {
         id: "1",
         text: "root proposition",
+        normalText: "root proposition",
         created: moment(),
       });
       const propositionCompound1 = brandedParse(PropositionCompoundRef, {
@@ -314,6 +318,7 @@ describe("entities", () => {
       const rootProposition: PropositionOut = brandedParse(PropositionRef, {
         id: "1",
         text: "root proposition",
+        normalText: "root proposition",
         created: moment(),
       });
       const propositionCompound1 = brandedParse(PropositionCompoundRef, {

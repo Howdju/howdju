@@ -117,6 +117,59 @@ exports[`CreatePropositionPage (with fake timers) renders correctly with query p
                   type="submit"
                 />
               </div>
+              <div
+                class="howdju-checkbox"
+              >
+                <div
+                  class="rmd-toggle-container"
+                >
+                  <span
+                    class="rmd-toggle"
+                  >
+                    <input
+                      class="rmd-toggle__input"
+                      id="create-proposition-page--proposition--is-question"
+                      name="proposition.isQuestion"
+                      type="checkbox"
+                    />
+                    <span
+                      class="rmd-toggle__icon rmd-toggle__icon--overlay"
+                    >
+                      <i
+                        aria-hidden="true"
+                        class="rmd-icon rmd-icon--font material-icons"
+                      >
+                        check_box
+                      </i>
+                    </span>
+                    <span
+                      class="rmd-ripple-container"
+                    />
+                  </span>
+                  <label
+                    class="rmd-label"
+                    for="create-proposition-page--proposition--is-question"
+                  >
+                    <p>
+                      create as a question
+                       
+                      <button
+                        class="rmd-button rmd-button--icon rmd-button--text-primary show-source-description-help-dialog"
+                        type="button"
+                      >
+                        <span
+                          class="material-symbols"
+                        >
+                          help
+                        </span>
+                        <span
+                          class="rmd-ripple-container"
+                        />
+                      </button>
+                    </p>
+                  </label>
+                </div>
+              </div>
             </div>
             <div
               class="chips-list"

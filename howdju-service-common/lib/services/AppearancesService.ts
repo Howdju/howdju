@@ -72,10 +72,13 @@ export class AppearancesService {
         )
     );
 
-    await this.appearanceConfirmationsService.createAppearanceConfirmation(
-      { userId },
-      { appearanceId: id, polarity: "POSITIVE" }
-    );
+    await Promise.all([
+      this.appearanceConfirmationsService.createAppearanceConfirmation(
+        { userId },
+        { appearanceId: id, polarity: "POSITIVE" }
+      ),
+      this.propositionsService.updateCreatedAs(propositionId, "APPEARANCE", id),
+    ]);
 
     const isExtant = isExtantApparitionEntity && isExtantAppearance;
     const appearance = {

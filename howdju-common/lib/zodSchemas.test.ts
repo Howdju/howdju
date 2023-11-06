@@ -12,6 +12,7 @@ describe("Justification schema", () => {
         entity: {
           id: "1",
           text: "the target text",
+          normalText: "the target text",
           created,
         },
       },
@@ -25,6 +26,7 @@ describe("Justification schema", () => {
               propositionCompoundId: "1",
               entity: {
                 text: "the basis text",
+                normalText: "the basis text",
                 created,
               },
             },
@@ -33,6 +35,7 @@ describe("Justification schema", () => {
       },
       rootTarget: {
         text: "the root text",
+        normalText: "the root text",
         created: moment("2023-01-12"),
       },
       rootTargetType: "PROPOSITION",

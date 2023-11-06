@@ -31,6 +31,7 @@ import {
   newImpossibleError,
   CreatePropositionTagVote,
   PropositionOut,
+  PropositionCreatedAsType,
 } from "howdju-common";
 
 import { permissions } from "../permissions";
@@ -598,5 +599,17 @@ export class PropositionsService {
       })
     );
     return [tags, propositionTagVotes];
+  }
+
+  async updateCreatedAs(
+    propositionId: EntityId,
+    entityType: PropositionCreatedAsType,
+    entityId: EntityId
+  ) {
+    return await this.propositionsDao.updateCreatedAsForId(
+      propositionId,
+      entityType,
+      entityId
+    );
   }
 }

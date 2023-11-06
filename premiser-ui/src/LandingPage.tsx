@@ -35,11 +35,15 @@ export default class LandingPage extends Component {
     const rootProposition: PropositionOut = {
       ...PropositionRef.parse({ id: "example" }),
       text: "By law, no building in Washington, D.C. may be taller than the Capitol building",
+      normalText:
+        "By law, no building in Washington, D.C. may be taller than the Capitol building",
       created,
     };
     const proJustificationProposition: PropositionOut = {
       ...PropositionRef.parse({ id: "example" }),
       text: "The 1899 Height of Buildings Act established that no building could be taller than the Capitol (289 feet)",
+      normalText:
+        "The 1899 Height of Buildings Act established that no building could be taller than the Capitol (289 feet)",
       created,
     };
     const proJustification = makeJustificationViewModel({
@@ -115,6 +119,8 @@ export default class LandingPage extends Component {
     const conJustificationProposition: PropositionOut = {
       ...PropositionRef.parse({ id: "example" }),
       text: "In general, buildings in Washington, D.C. may be no taller than the width of their adjacent street plus 20 feet ",
+      normalText:
+        "In general, buildings in Washington, D.C. may be no taller than the width of their adjacent street plus 20 feet ",
       created,
     };
     const conJustification = makeJustificationViewModel({
@@ -206,6 +212,8 @@ export default class LandingPage extends Component {
                 ...PropositionRef.parse({ id: "example" }),
                 created,
                 text: "The 1910 Height of Buildings Act amended the 1899 act to base the height restriction on the width of adjacent streets.",
+                normalText:
+                  "The 1910 Height of Buildings Act amended the 1899 act to base the height restriction on the width of adjacent streets.",
               },
             },
           ],

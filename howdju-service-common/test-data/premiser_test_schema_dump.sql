@@ -46,6 +46,26 @@ CREATE TYPE public.media_excerpt_type AS ENUM (
 );
 
 
+--
+-- Name: proposition_created_as_types; Type: TYPE; Schema: public; Owner: -
+--
+
+CREATE TYPE public.proposition_created_as_types AS ENUM (
+    'APPEARANCE',
+    'QUESTION',
+    'STATEMENT'
+);
+
+
+--
+-- Name: statement_created_as_types; Type: TYPE; Schema: public; Owner: -
+--
+
+CREATE TYPE public.statement_created_as_types AS ENUM (
+    'STATEMENT'
+);
+
+
 SET default_tablespace = '';
 
 SET default_table_access_method = heap;
@@ -866,7 +886,11 @@ CREATE TABLE public.propositions (
     normal_text character varying(2048),
     creator_user_id integer,
     created timestamp without time zone,
-    deleted timestamp without time zone
+    deleted timestamp without time zone,
+    created_as_type public.proposition_created_as_types,
+    created_as_appearance_id bigint,
+    created_as_statement_id bigint,
+    CONSTRAINT propositions_check CHECK ((num_nonnulls(created_as_appearance_id, created_as_statement_id) <= 1))
 );
 
 
@@ -1031,7 +1055,10 @@ CREATE TABLE public.statements (
     root_proposition_id integer NOT NULL,
     creator_user_id integer NOT NULL,
     created timestamp without time zone NOT NULL,
-    deleted timestamp without time zone
+    deleted timestamp without time zone,
+    created_as_type public.statement_created_as_types,
+    created_as_statement_id bigint,
+    CONSTRAINT statements_created_as_statement_id_check CHECK ((num_nonnulls(created_as_statement_id) <= 1))
 );
 
 
@@ -2318,11 +2345,35 @@ ALTER TABLE ONLY public.persorgs
 
 
 --
+-- Name: propositions propositions_created_as_appearance_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.propositions
+    ADD CONSTRAINT propositions_created_as_appearance_id_fkey FOREIGN KEY (created_as_appearance_id) REFERENCES public.appearances(appearance_id);
+
+
+--
+-- Name: propositions propositions_created_as_statement_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.propositions
+    ADD CONSTRAINT propositions_created_as_statement_id_fkey FOREIGN KEY (created_as_statement_id) REFERENCES public.statements(statement_id);
+
+
+--
 -- Name: sources sources_creator_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.sources
     ADD CONSTRAINT sources_creator_user_id_fkey FOREIGN KEY (creator_user_id) REFERENCES public.users(user_id);
+
+
+--
+-- Name: statements statements_created_as_statement_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.statements
+    ADD CONSTRAINT statements_created_as_statement_id_fkey FOREIGN KEY (created_as_statement_id) REFERENCES public.statements(statement_id);
 
 
 --

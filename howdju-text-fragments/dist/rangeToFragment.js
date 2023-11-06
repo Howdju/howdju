@@ -18404,7 +18404,7 @@
       });
     }
   }
-  var import_lodash6, Entity, CreateModel, PersistedEntity, UserExternalIds, User, UserBlurb, Proposition, UpdatePropositionInput, UpdateProposition, Tag, CreateTag, CreateTagInput, tagVotePolarities, PropositionTagVote, PropositionTagVotePolarities, CreatePropositionTagVote, CreatePropositionTagVoteInput, CreatePropositionInput, CreateProposition, Persorg, CreatePersorg, CreatePersorgInput, UpdatePersorg, UpdatePersorgInput, sentenceTypes, baseStatement, Statement, SentenceTypes, CreateStatementInput, CreateStatement, Writ, CreateWrit, CreateWritInput, UpdateWrit, UpdateWritInput, DomAnchor, CreateDomAnchor, UrlTarget, Url, CreateUrl, CreateUrlInput, UrlLocator, WritQuote, PicRegion, VidSegment, AudSegment, sourceExcerptTypes, SourceExcerpt, SourceExcerptTypes, CreateUrlLocator, CreateUrlLocatorInput, Source, CreateSource, CreateSourceInput, UpdateSource, UpdateSourceInput, MediaExcerptCitation, CreateMediaExcerptCitation, CreateMediaExcerptCitationInput, MediaExcerptCitationIdentifier, MediaExcerptSpeakerIdentifier, MediaExcerptSpeaker, CreateMediaExcerptSpeaker, CreateMediaExcerptSpeakerInput, MediaExcerpt, Appearance, CreateAppearance, CreateAppearanceInput, AppearanceConfirmationPolarity, CreateAppearanceConfirmation, PropositionCompoundAtom, PropositionCompound, CreatePropositionCompoundAtomInput, UpdatePropositionCompoundAtomInput, CreatePropositionCompoundInput, CreatePropositionCompoundAtom, UpdatePropositionCompoundAtom, CreatePropositionCompound, UpdatePropositionCompoundInput, UpdatePropositionCompound, JustificationPolarity, JustificationPolarities, RelationPolarity2, JustificationRootPolarity, JustificationRootPolarities, JustificationBasisType, JustificationBasisTypes, justificationBaseShape, JustificationRootTargetType, JustificationRootTargetTypes, JustificationTargetType, Justification, JustificationTargetTypes, PropositionRef, StatementRef, JustificationRef, JustificationVoteRef, PropositionCompoundRef, SourceExcerptRef, WritQuoteRef, WritRef, PersorgRef, TagRef, TagVoteRef, UrlRef, UserRef, PropositionTagVoteRef, RegistrationRequestRef, PasswordResetRequestRef, AccountSettingsRef, ContentReportRef, UrlLocatorRef, MediaExcerptRef, SourceRef, CreateWritQuoteInput, CreateWritQuote, UpdateWritQuoteInput, UpdateWritQuote, CreateVidSegmentInput, CreateVidSegment, CreateAudSegmentInput, CreateAudSegment, UpdateVidSegmentInput, UpdateVidSegment, CreatePicRegionInput, CreatePicRegion, UpdatePicRegionInput, UpdatePicRegion, CreateSourceExcerptInput, CreateSourceExcerpt, CreateMediaExcerptBase, CreateMediaExcerpt, CreateMediaExcerptInput, UpdateMediaExcerpt, UpdateMediaExcerptInput, CreateUrlLocatorsInput, CreateMediaExcerptCitationsInput, CreateMediaExcerptSpeakersInput, createJustificationBaseShape, createJustificationInputBaseShape, CreateJustificationInput, CreateJustification, CreateCounterJustificationInput, CreateCounterJustification, justificationVotePolarities, JustificationVote, JustificationVotePolarities, CreateJustificationVote, DeleteJustificationVote, TaggableEntityType, TagVote, TagVotePolarities, CreateTagVote, EntityType, EntityTypes, ContentReportType, ContentReportTypes, ContentReport, CreateContentReport, CreateContentReportInput, CreateUser, AccountSettings, CreateAccountSettings, UpdateAccountSettings, CreateJustifiedSentenceInput, CreateJustifiedSentence, RegistrationRequest, CreateRegistrationRequest, CreateRegistrationRequestInput, passwordMaxLength, Password, RegistrationConfirmation, CreateRegistrationConfirmation, CreateRegistrationConfirmationInput, PasswordResetRequest, CreatePasswordResetRequest, CreatePasswordResetRequestInput, PasswordResetConfirmation, Credentials, CreationInfo;
+  var import_lodash6, Entity, CreateModel, PersistedEntity, UserExternalIds, User, UserBlurb, propositionCreatedAsTypes, Proposition, isQuestion, UpdatePropositionInput, UpdateProposition, Tag, CreateTag, CreateTagInput, tagVotePolarities, PropositionTagVote, PropositionTagVotePolarities, CreatePropositionTagVote, CreatePropositionTagVoteInput, CreateProposition, CreatePropositionInput, Persorg, CreatePersorg, CreatePersorgInput, UpdatePersorg, UpdatePersorgInput, sentenceTypes, statementCreatedAsTypes, baseStatement, Statement, SentenceTypes, CreateStatementInput, CreateStatement, Writ, CreateWrit, CreateWritInput, UpdateWrit, UpdateWritInput, DomAnchor, CreateDomAnchor, UrlTarget, Url, CreateUrl, CreateUrlInput, UrlLocator, WritQuote, PicRegion, VidSegment, AudSegment, sourceExcerptTypes, SourceExcerpt, SourceExcerptTypes, CreateUrlLocator, CreateUrlLocatorInput, Source, CreateSource, CreateSourceInput, UpdateSource, UpdateSourceInput, MediaExcerptCitation, CreateMediaExcerptCitation, CreateMediaExcerptCitationInput, MediaExcerptCitationIdentifier, MediaExcerptSpeakerIdentifier, MediaExcerptSpeaker, CreateMediaExcerptSpeaker, CreateMediaExcerptSpeakerInput, MediaExcerpt, Appearance, CreateAppearance, CreateAppearanceInput, AppearanceConfirmationPolarity, CreateAppearanceConfirmation, PropositionCompoundAtom, PropositionCompound, CreatePropositionCompoundAtomInput, UpdatePropositionCompoundAtomInput, CreatePropositionCompoundInput, CreatePropositionCompoundAtom, UpdatePropositionCompoundAtom, CreatePropositionCompound, UpdatePropositionCompoundInput, UpdatePropositionCompound, JustificationPolarity, JustificationPolarities, RelationPolarity2, JustificationRootPolarity, JustificationRootPolarities, JustificationBasisType, JustificationBasisTypes, justificationBaseShape, JustificationRootTargetType, JustificationRootTargetTypes, JustificationTargetType, Justification, JustificationTargetTypes, PropositionRef, StatementRef, JustificationRef, JustificationVoteRef, PropositionCompoundRef, SourceExcerptRef, WritQuoteRef, WritRef, PersorgRef, TagRef, TagVoteRef, UrlRef, UserRef, PropositionTagVoteRef, RegistrationRequestRef, PasswordResetRequestRef, AccountSettingsRef, ContentReportRef, UrlLocatorRef, MediaExcerptRef, SourceRef, CreateWritQuoteInput, CreateWritQuote, UpdateWritQuoteInput, UpdateWritQuote, CreateVidSegmentInput, CreateVidSegment, CreateAudSegmentInput, CreateAudSegment, UpdateVidSegmentInput, UpdateVidSegment, CreatePicRegionInput, CreatePicRegion, UpdatePicRegionInput, UpdatePicRegion, CreateSourceExcerptInput, CreateSourceExcerpt, CreateMediaExcerptBase, CreateMediaExcerpt, CreateMediaExcerptInput, UpdateMediaExcerpt, UpdateMediaExcerptInput, CreateUrlLocatorsInput, CreateMediaExcerptCitationsInput, CreateMediaExcerptSpeakersInput, createJustificationBaseShape, createJustificationInputBaseShape, CreateJustificationInput, CreateJustification, CreateCounterJustificationInput, CreateCounterJustification, justificationVotePolarities, JustificationVote, JustificationVotePolarities, CreateJustificationVote, DeleteJustificationVote, TaggableEntityType, TagVote, TagVotePolarities, CreateTagVote, EntityType, EntityTypes, ContentReportType, ContentReportTypes, ContentReport, CreateContentReport, CreateContentReportInput, CreateUser, AccountSettings, CreateAccountSettings, UpdateAccountSettings, CreateJustifiedSentenceInput, CreateJustifiedSentence, RegistrationRequest, CreateRegistrationRequest, CreateRegistrationRequestInput, passwordMaxLength, Password, RegistrationConfirmation, CreateRegistrationConfirmation, CreateRegistrationConfirmationInput, PasswordResetRequest, CreatePasswordResetRequest, CreatePasswordResetRequestInput, PasswordResetConfirmation, Credentials, CreationInfo;
   var init_zodSchemas = __esm({
     "../howdju-common/lib/zodSchemas.ts"() {
       "use strict";
@@ -18439,6 +18439,11 @@
       UserBlurb = User.pick({
         longName: true
       }).merge(PersistedEntity);
+      propositionCreatedAsTypes = mod.enum([
+        "APPEARANCE",
+        "STATEMENT",
+        "QUESTION"
+      ]);
       Proposition = Entity.extend({
         /**
          * The text of the proposition.
@@ -18446,10 +18451,29 @@
          * Text should be a concise, neutral point of view, unambiguous, declarative independent clause.
          */
         text: mod.string().min(1),
+        normalText: mod.string().min(1),
+        slug: mod.string().optional(),
+        /**
+         * If present, contains information signaling the user's intent in creating the proposition.
+         *
+         * A question is not a separate entity, and the field's presence indicates that the user
+         * created the proposition as a question. I.e. in the speculative, hypothetical, or dubitative mood.
+         * https://glossary.sil.org/term/mood-and-modality
+         */
+        createdAs: mod.object({
+          type: propositionCreatedAsTypes,
+          /** Optional because questions are not an entity. */
+          id: mod.string().optional()
+        }).optional(),
+        creator: UserBlurb.optional(),
         created: momentObject
       });
+      isQuestion = mod.boolean().default(false).optional();
       UpdatePropositionInput = Proposition.merge(PersistedEntity).omit({
-        created: true
+        created: true,
+        normalText: true
+      }).extend({
+        isQuestion
       });
       UpdateProposition = UpdatePropositionInput;
       Tag = Entity.extend({
@@ -18480,15 +18504,20 @@
           tag: mod.union([TagRef, CreateTagInput])
         })
       );
-      CreatePropositionInput = Proposition.omit({
+      CreateProposition = Proposition.omit({
+        normalText: true,
+        slug: true,
+        creator: true,
+        createdAs: true,
         created: true
       }).extend({
+        tags: mod.array(CreateTag).optional(),
+        propositionTagVotes: mod.array(CreatePropositionTagVote).optional(),
+        isQuestion
+      });
+      CreatePropositionInput = CreateProposition.extend({
         tags: mod.array(CreateTagInput).optional(),
         propositionTagVotes: mod.array(CreatePropositionTagVoteInput).optional()
-      });
-      CreateProposition = CreatePropositionInput.extend({
-        tags: mod.array(CreateTag).optional(),
-        propositionTagVotes: mod.array(CreatePropositionTagVote).optional()
       });
       Persorg = Entity.extend({
         isOrganization: mod.boolean(),
@@ -18528,9 +18557,20 @@
       });
       UpdatePersorgInput = UpdatePersorg;
       sentenceTypes = mod.enum(["PROPOSITION", "STATEMENT"]);
+      statementCreatedAsTypes = mod.enum(["STATEMENT"]);
       baseStatement = {
         speaker: Persorg,
-        created: momentObject
+        created: momentObject,
+        creator: UserBlurb.optional(),
+        /**
+         * If present, contains information signaling the user's intent in creating the statement.
+         *
+         * Currently Statements can only be created directly or as part of other statements.
+         */
+        createdAs: mod.object({
+          type: statementCreatedAsTypes,
+          id: mod.string()
+        }).optional()
       };
       Statement = mod.lazy(
         () => mod.discriminatedUnion("sentenceType", [

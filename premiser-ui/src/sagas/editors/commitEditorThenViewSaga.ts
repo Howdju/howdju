@@ -56,7 +56,7 @@ export const editorCommitResultGotoActionCreators = {
   MEDIA_EXCERPT: ({ mediaExcerpt }: { mediaExcerpt: MediaExcerptOut }) =>
     goto.mediaExcerpt(mediaExcerpt),
   APPEARANCE: ({ appearance }: { appearance: AppearanceOut }) =>
-    push(paths.appearance(appearance)),
+    push(paths.appearance(appearance.id)),
 };
 
 export type ViewableEditorType = Extract<

@@ -78,6 +78,11 @@ export const UserBlurb = User.pick({
 }).merge(PersistedEntity);
 export type UserBlurb = z.output<typeof UserBlurb>;
 
+const propositionCreatedAsTypes = z.enum([
+  "APPEARANCE",
+  "STATEMENT",
+  "QUESTION",
+]);
 /**
  * A declarative statement of fact that the system tracks.
  *
@@ -90,13 +95,40 @@ export const Proposition = Entity.extend({
    * Text should be a concise, neutral point of view, unambiguous, declarative independent clause.
    */
   text: z.string().min(1),
+  normalText: z.string().min(1),
+  slug: z.string().optional(),
+  /**
+   * If present, contains information signaling the user's intent in creating the proposition.
+   *
+   * A question is not a separate entity, and the field's presence indicates that the user
+   * created the proposition as a question. I.e. in the speculative, hypothetical, or dubitative mood.
+   * https://glossary.sil.org/term/mood-and-modality
+   */
+  createdAs: z
+    .object({
+      type: propositionCreatedAsTypes,
+      /** Optional because questions are not an entity. */
+      id: z.string().optional(),
+    })
+    .optional(),
+  creator: UserBlurb.optional(),
   created: momentObject,
 });
 export type Proposition = z.infer<typeof Proposition>;
+// Corresponds to proposition_created_as_choices in Postgres
+export type PropositionCreatedAsType = z.output<
+  typeof propositionCreatedAsTypes
+>;
 
-export const UpdatePropositionInput = Proposition.merge(PersistedEntity).omit({
-  created: true,
-});
+const isQuestion = z.boolean().default(false).optional();
+export const UpdatePropositionInput = Proposition.merge(PersistedEntity)
+  .omit({
+    created: true,
+    normalText: true,
+  })
+  .extend({
+    isQuestion,
+  });
 export type UpdatePropositionInput = z.infer<typeof UpdatePropositionInput>;
 export const UpdateProposition = UpdatePropositionInput;
 export type UpdateProposition = z.infer<typeof UpdateProposition>;
@@ -152,18 +184,24 @@ export const CreatePropositionTagVoteInput: z.ZodType<CreatePropositionTagVoteIn
     })
   );
 
-export const CreatePropositionInput = Proposition.omit({
+export const CreateProposition = Proposition.omit({
+  normalText: true,
+  slug: true,
+  creator: true,
+  createdAs: true,
   created: true,
 }).extend({
+  tags: z.array(CreateTag).optional(),
+  propositionTagVotes: z.array(CreatePropositionTagVote).optional(),
+  isQuestion,
+});
+export type CreateProposition = z.output<typeof CreateProposition>;
+
+export const CreatePropositionInput = CreateProposition.extend({
   tags: z.array(CreateTagInput).optional(),
   propositionTagVotes: z.array(CreatePropositionTagVoteInput).optional(),
 });
 export type CreatePropositionInput = z.infer<typeof CreatePropositionInput>;
-export const CreateProposition = CreatePropositionInput.extend({
-  tags: z.array(CreateTag).optional(),
-  propositionTagVotes: z.array(CreatePropositionTagVote).optional(),
-});
-export type CreateProposition = CreatePropositionInput;
 
 /** Something capable of making speech: a person or organization. */
 export const Persorg = Entity.extend({
@@ -213,10 +251,16 @@ export type UpdatePersorg = z.infer<typeof UpdatePersorg>;
 export const UpdatePersorgInput = UpdatePersorg;
 export type UpdatePersorgInput = z.infer<typeof UpdatePersorgInput>;
 
+export type StatementCreatedAs = {
+  type: StatementCreatedAsType;
+  id?: string;
+};
 /** Represents an utterance of a proposition by a persorg. */
 export type Statement = Entity & {
   speaker: Persorg;
   created: Moment;
+  creator?: UserBlurb;
+  createdAs?: StatementCreatedAs;
 } & (
     | {
         sentenceType: "PROPOSITION";
@@ -228,10 +272,24 @@ export type Statement = Entity & {
       }
   );
 const sentenceTypes = z.enum(["PROPOSITION", "STATEMENT"]);
+const statementCreatedAsTypes = z.enum(["STATEMENT"]);
 const baseStatement = {
   speaker: Persorg,
   created: momentObject,
+  creator: UserBlurb.optional(),
+  /**
+   * If present, contains information signaling the user's intent in creating the statement.
+   *
+   * Currently Statements can only be created directly or as part of other statements.
+   */
+  createdAs: z
+    .object({
+      type: statementCreatedAsTypes,
+      id: z.string(),
+    })
+    .optional(),
 };
+export type StatementCreatedAsType = z.output<typeof statementCreatedAsTypes>;
 export const Statement: z.ZodType<Statement> = z.lazy(() =>
   z.discriminatedUnion("sentenceType", [
     Entity.extend({
