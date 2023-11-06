@@ -48,6 +48,7 @@ export default function StatementViewer({
   const createdAsInfo = makeCreatedAsInfo(statement);
   const createdAsText = createdAsInfo ? (
     <span>
+      {" "}
       as{" "}
       {createdAsInfo.href ? (
         <Link to={createdAsInfo.href}>a {createdAsInfo.type}</Link>

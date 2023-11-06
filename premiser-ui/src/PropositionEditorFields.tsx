@@ -115,6 +115,7 @@ export default function PropositionEditorFields(props: Props) {
       messageProps={errorProps((s) => s.isQuestion)}
     />
   );
+  // TODO(#461) add dialog to the DOM only once
   const isQuestionHelpDialog = (
     <Dialog
       id="proposition-question-help-dialog"
