@@ -4,8 +4,16 @@ A Nextra-based documentation site for docs.howdju.com.
 
 ## Development
 
+Running the live-reload dev version:
+
 ```sh
 yarn run dev
+```
+
+Running the build-once prod version locally:
+
+```sh
+yarn run build-and-start
 ```
 
 ## Deployment

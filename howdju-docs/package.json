@@ -4,8 +4,9 @@
   "scripts": {
     "lint": "next lint",
     "dev": "next dev -p 8080",
-    "build-and-start": "next build && next start -p 8080",
-    "build-and-export": "next build && next export"
+    "build-and-start": "yarn run clean && next build && next start -p 8080",
+    "build-and-export": "yarn run clean && next build && next export",
+    "clean": "rm -rf .next out"
   },
   "dependencies": {
     "@svgr/webpack": "^8.1.0",
