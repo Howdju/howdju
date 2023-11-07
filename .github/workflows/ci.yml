@@ -13,7 +13,7 @@ on:
 
 env:
   HOWDJU_RUNNING_IN_GITHUB_WORKFLOW:
-  YARN_VERSION: 3.3.1
+  YARN_VERSION: 4.0.1
 
 jobs:
   premerge-checks:
