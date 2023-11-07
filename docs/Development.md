@@ -24,6 +24,7 @@ nodenv install 18.18.2
 nodenv shell 18.18.2
 # Enable yarn
 corepack enable
+yarn set version 4.0.1
 ```
 
 The correct node version should automatically activate due to the `.node-version`/`.nvmrc` files.
