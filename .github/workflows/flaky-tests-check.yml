@@ -36,12 +36,12 @@ jobs:
       - name: Setup Node.JS
         uses: actions/setup-node@v3
         with:
-          node-version: 18.18.2
+          node-version: ${{ vars.NODE_VERSION }}
           cache: "yarn"
       - name: Install Yarn
         run: |
           corepack enable
-          yarn set version $YARN_VERSION
+          yarn set version ${{ vars.NODE_VERSION }}
       - name: Install dependencies
         run: yarn install
       - name: Check flaky tests

@@ -24,11 +24,11 @@ jobs:
           aws-region: ${{ env.AWS_REGION }}
       - uses: actions/setup-node@v3
         with:
-          node-version: 18.18.2
+          node-version: ${{ vars.NODE_VERSION }}
       - name: Corepack
         # Enables yarn v2
         run: corepack enable
-          yarn set version $YARN_VERSION
+          yarn set version ${{ vars.NODE_VERSION }}
       - name: Yarn install
         run: yarn install
       - name: Update API Lambda Alias
