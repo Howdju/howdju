@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 ensure_data_volume() {
   if ! mountpoint -q ${data_mount_path}; then

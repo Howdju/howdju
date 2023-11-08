@@ -7,7 +7,7 @@ Howdju React Native mobile app.
 Start the bundler:
 
 ```shell
- yarn run start
+yarn run start
 ```
 
 In another terminal, build and run the mobile app:

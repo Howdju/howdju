@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 # https://stackoverflow.com/a/56026209
 # https://github.com/not-an-aardvark/git-delete-squashed
 git checkout -q master &&\

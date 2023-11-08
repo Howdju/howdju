@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 aws events put-rule \
   --name scoreJustifications_scheduledRule_prod_2 \
   --schedule-expression 'rate(5 minutes)' \
