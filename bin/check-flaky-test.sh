@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Usage:
 #   check-flaky-test.sh <total_runs> [<jest_args>]

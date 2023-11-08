@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 esbuild src/rangeToFragment.ts --bundle --outfile=dist/tmp/rangeToFragment.js --platform=browser --target=es2016
 cmp --silent dist/rangeToFragment.js dist/tmp/rangeToFragment.js || {

@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 # everything:
 pg_dump -h 127.0.0.1 -p 5433 premiser -U premiser_rds > premiser_prod_dump-$(date -u "+%Y-%m-%dT%H:%M:%SZ").sql
 

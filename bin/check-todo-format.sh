@@ -13,7 +13,7 @@ if [[ $? -ne 0 ]]; then
  exit 1
 fi
 
-echo "${output}" | grep '^+' | egrep '\bTODO\b' | egrep -v '\bTODO\(\#?[0-9]+(,#?[0-9]+)*\)'
+echo "${output}" | grep '^+.*\bTODO\b' | egrep -v '\bTODO\(\#?[0-9]+(,#?[0-9]+)*\)'
 
 # grep returns 0 if it found matches. It is an error if we found matches.
 if [ $? -eq 0 ] ; then

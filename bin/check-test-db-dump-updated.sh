@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # gfind on macOS: `brew install findutils`
 latest_migration_modification=$(gfind premiser-api/db/migrations -type f -printf '%T@ %p\n' | sort -n | tail -1 | cut -f1 -d" ")
