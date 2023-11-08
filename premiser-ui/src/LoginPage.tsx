@@ -142,33 +142,6 @@ class LoginPage extends Component<Props> {
               </form>
             </CardContent>
           </Card>
-          <Card>
-            <CardContent>
-              Howdju 2.0 is currently in private gamma. Enter your email to sign
-              up for updates:
-            </CardContent>
-            <CardContent>
-              <form
-                action="//howdju.us16.list-manage.com/subscribe/post?u=ccf334287da1fbf7af0904629&amp;id=f08c3a775d"
-                method="post"
-                target="_blank"
-                // https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/rel/noopener
-                {...{ rel: "noopener" }}
-              >
-                <EmailField id="mce-email" name="EMAIL" required />
-                <input
-                  type="hidden"
-                  name="b_ccf334287da1fbf7af0904629_f08c3a775d"
-                  tabIndex={-1}
-                />
-                <CardActions>
-                  <SolidButton type="submit" name="subscribe">
-                    Subscribe
-                  </SolidButton>
-                </CardActions>
-              </form>
-            </CardContent>
-          </Card>
         </SingleColumnGrid>
       </Page>
     );

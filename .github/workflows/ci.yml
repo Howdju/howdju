@@ -31,12 +31,12 @@ jobs:
       - name: Setup Node.JS
         uses: actions/setup-node@v3
         with:
-          node-version: $NODE_VERSION
+          node-version: ${{ vars.NODE_VERSION }}
           cache: "yarn"
       - name: Install Yarn
         run: |
           corepack enable
-          yarn set version $YARN_VERSION
+          yarn set version ${{ vars.YARN_VERSION }}
       - name: Install dependencies
         run: yarn install
       - name: Lint
@@ -127,12 +127,12 @@ jobs:
       - name: Setup Node.JS
         uses: actions/setup-node@v3
         with:
-          node-version: $NODE_VERSION
+          node-version: ${{ vars.NODE_VERSION }}
           cache: "yarn"
       - name: Install Yarn
         run: |
           corepack enable
-          yarn set version $YARN_VERSION
+          yarn set version ${{ vars.YARN_VERSION }}
       - name: Install dependencies
         run: yarn install
       - name: Changed-files test coverage
