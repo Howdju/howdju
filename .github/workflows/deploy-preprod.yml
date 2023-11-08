@@ -48,7 +48,8 @@ jobs:
           node-version: ${{ vars.NODE_VERSION }}
       - name: Corepack
         # Enables yarn v2
-        run: corepack enable
+        run: |
+          corepack enable
           yarn set version ${{ vars.YARN_VERSION }}
       - name: Yarn install
         run: yarn install
