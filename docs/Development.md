@@ -67,15 +67,15 @@ have `premiser_admin` for now for parity with the production database.
 
 ```shell
 PGPASSWORD=$POSTGRES_SUPERUSER_PASSWORD
-psql --echo-all -h localhost -U postgres < db/create-users.sql
+psql --echo-all -h localhost -U postgres < premiser-api/db/create-users.sql
 echo 'create database premiser;' | psql -h localhost -U postgres
-psql --echo-all -h localhost -U postgres premiser < db/migrations/0*.sql
+psql --echo-all -h localhost -U postgres premiser < premiser-api/db/migrations/0*.sql
 ```
 
 Create a local environment file for the API:
 
 ```shell
-cp ../config/example.env ../config/local.env
+cp ./config/example.env ./config/local.env
 ```
 
 Be sure to update `DB_PASSWORD` to be `premiser_api`'s password.
