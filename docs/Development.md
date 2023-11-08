@@ -83,7 +83,7 @@ Be sure to update `DB_PASSWORD` to be `premiser_api`'s password.
 ### Create a Howdju user
 
 ```shell
-yarn run create-user:local --email test@localhost --username=test_user
+yarn run create-user:local --email test@test.test --username=test_user
 ```
 
 Alternatively, you can go through the registration process (grab the registration URLs from the API output.)
