@@ -12,7 +12,7 @@ development tasks.
 
 ### Install node
 
-Install node and yarn.
+Install node, yarn, and [psql](https://www.postgresql.org/download/).
 
 On macOS using `nodenv`, this could be:
 
