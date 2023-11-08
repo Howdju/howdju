@@ -42,7 +42,7 @@ export default {
       </>
     )
   },
-  docsRepositoryBase: 'https://github.com/Howdju/howdju/tree/main/howdju-docs',
+  docsRepositoryBase: 'https://github.com/Howdju/howdju/tree/master/howdju-docs',
   logo: (
     <>
       <svg version="1.1" viewBox="0 0 270.93 270.93" xmlns="http://www.w3.org/2000/svg">
