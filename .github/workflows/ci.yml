@@ -13,7 +13,6 @@ on:
 
 env:
   HOWDJU_RUNNING_IN_GITHUB_WORKFLOW:
-  YARN_VERSION: 4.0.1
 
 jobs:
   premerge-checks:
@@ -32,7 +31,7 @@ jobs:
       - name: Setup Node.JS
         uses: actions/setup-node@v3
         with:
-          node-version: 18.18.2
+          node-version: $NODE_VERSION
           cache: "yarn"
       - name: Install Yarn
         run: |
@@ -128,7 +127,7 @@ jobs:
       - name: Setup Node.JS
         uses: actions/setup-node@v3
         with:
-          node-version: 18.18.2
+          node-version: $NODE_VERSION
           cache: "yarn"
       - name: Install Yarn
         run: |
