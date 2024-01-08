@@ -30207,12 +30207,12 @@ __metadata:
   linkType: hard
 
 "react-devtools-core@npm:^4.13.0":
-  version: 4.21.0
-  resolution: "react-devtools-core@npm:4.21.0"
+  version: 4.28.5
+  resolution: "react-devtools-core@npm:4.28.5"
   dependencies:
     shell-quote: "npm:^1.6.1"
     ws: "npm:^7"
-  checksum: 3b7887bb111091682a65975cf0e0a541d2ab236d21cc0d7d04178db141eafc100baca4ae3526fe22d64a8522b413764b98390cde2059d439905544b344a03acb
+  checksum: 7c951a6a9b773e4fd56b2f1894c83aaec417373cf01aa261bd2dd286e6c6f1d8c67a3749ecb1d106dbf9e8cda0e6ed1bfd6ce1b61c81e035f2527be3dd9eebc2
   languageName: node
   linkType: hard
 
