@@ -9,6 +9,8 @@ on:
 env:
   AWS_REGION: us-east-1
   HOWDJU_RUNNING_IN_GITHUB_WORKFLOW:
+  NODE_VERSION: 18.18.2
+  YARN_VERSION: 4.0.1
 
 jobs:
   deployment:
@@ -24,12 +26,12 @@ jobs:
           aws-region: ${{ env.AWS_REGION }}
       - uses: actions/setup-node@v3
         with:
-          node-version: ${{ vars.NODE_VERSION }}
+          node-version: ${{ env.NODE_VERSION }}
       - name: Corepack
         # Enables yarn v2
         run: |
           corepack enable
-          yarn set version ${{ vars.YARN_VERSION }}
+          yarn set version ${{ env.YARN_VERSION }}
       - name: Yarn install
         run: yarn install
       - name: Update API Lambda Alias
