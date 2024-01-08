@@ -13,6 +13,9 @@ on:
 
 env:
   HOWDJU_RUNNING_IN_GITHUB_WORKFLOW:
+  TEST_POSTGRES_PASSWORD: "TEST_POSTGRES_PASSWORD"
+  NODE_VERSION: 18.18.2
+  YARN_VERSION: 4.0.1
 
 jobs:
   premerge-checks:
@@ -21,7 +24,7 @@ jobs:
       howdju-db:
         image: postgres:12.5
         env:
-          POSTGRES_PASSWORD: ${{secrets.TEST_POSTGRES_PASSWORD}}
+          POSTGRES_PASSWORD: ${{ env.TEST_POSTGRES_PASSWORD }}
         ports:
           - 5432:5432
 
@@ -31,12 +34,12 @@ jobs:
       - name: Setup Node.JS
         uses: actions/setup-node@v3
         with:
-          node-version: ${{ vars.NODE_VERSION }}
+          node-version: ${{ env.NODE_VERSION }}
           cache: "yarn"
       - name: Install Yarn
         run: |
           corepack enable
-          yarn set version ${{ vars.YARN_VERSION }}
+          yarn set version ${{ env.YARN_VERSION }}
       - name: Install dependencies
         run: yarn install
       - name: Lint
@@ -50,7 +53,7 @@ jobs:
       - name: Test & coverage
         env:
           DB_USER: postgres
-          DB_PASSWORD: ${{secrets.TEST_POSTGRES_PASSWORD}}
+          DB_PASSWORD: ${{ env.TEST_POSTGRES_PASSWORD }}
           DB_HOST: localhost
           DB_PORT: 5432
           LOG_LEVEL: silly
@@ -90,7 +93,7 @@ jobs:
       howdju-db:
         image: postgres:12.5
         env:
-          POSTGRES_PASSWORD: ${{secrets.TEST_POSTGRES_PASSWORD}}
+          POSTGRES_PASSWORD: ${{ env.TEST_POSTGRES_PASSWORD }}
         ports:
           - 5432:5432
 
@@ -107,7 +110,7 @@ jobs:
         run: |
           # Fetch commits to a depth so that head and base reach their merge base.
           comparison=$(gh api\
-            repos/Howdju/howdju/compare/${{ github.event.pull_request.base.sha }}...${{github.event.pull_request.head.sha }})
+            repos/Howdju/howdju/compare/${{ github.event.pull_request.base.sha }}...${{ github.event.pull_request.head.sha }})
           behind_by=$(echo -E $comparison | jq -r '.behind_by')
           ahead_by=$(echo -E $comparison | jq -r '.ahead_by')
           echo "ahead_by: $ahead_by; behind by: $behind_by"
@@ -116,34 +119,34 @@ jobs:
             base_depth=$((behind_by+1))
             echo Fetching base to depth $base_depth
             git -c protocol.version=2 fetch --no-tags --no-recurse-submodules\
-              --depth=$base_depth origin ${{github.event.pull_request.base.sha }}
+              --depth=$base_depth origin ${{ github.event.pull_request.base.sha }}
           fi
           if [[ $ahead_by -gt 0 ]]; then
             head_depth=$((ahead_by+1))
             echo Fetching head to depth $head_depth
             git -c protocol.version=2 fetch --no-tags --no-recurse-submodules\
-              --depth=$head_depth origin ${{github.event.pull_request.head.sha }}
+              --depth=$head_depth origin ${{ github.event.pull_request.head.sha }}
           fi
       - name: Setup Node.JS
         uses: actions/setup-node@v3
         with:
-          node-version: ${{ vars.NODE_VERSION }}
+          node-version: ${{ env.NODE_VERSION }}
           cache: "yarn"
       - name: Install Yarn
         run: |
           corepack enable
-          yarn set version ${{ vars.YARN_VERSION }}
+          yarn set version ${{ env.YARN_VERSION }}
       - name: Install dependencies
         run: yarn install
       - name: Changed-files test coverage
         env:
           DB_USER: postgres
-          DB_PASSWORD: ${{secrets.TEST_POSTGRES_PASSWORD}}
+          DB_PASSWORD: ${{ env.TEST_POSTGRES_PASSWORD }}
           DB_HOST: localhost
           DB_PORT: 5432
           LOG_LEVEL: silly
           NODE_ENV: test
-        run: yarn run test:all:coverage:changed ${{github.event.pull_request.base.sha }}
+        run: yarn run test:all:coverage:changed ${{ github.event.pull_request.base.sha }}
       - name: Output merged changed-files coverage summary
         id: changed-files-coverage-summary
         run: |
