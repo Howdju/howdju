@@ -18,11 +18,13 @@ yarn run build-and-start
 
 ## Deployment
 
+Build the docs locally:
+
 ```sh
 yarn run build-and-export
 ```
 
-Upload contents of `out` folder to s3://docs.howdju.com.
+Upload contents of `out` folder to s3://docs.howdju.com:
 
 ```sh
 aws-vault exec user@howdju -- aws s3 sync out s3://docs.howdju.com
