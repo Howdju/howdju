@@ -13,7 +13,7 @@ const parser = new ArgumentParser({
 parser.add_argument("--email", { required: true });
 parser.add_argument("--username", { required: true });
 parser.add_argument("--shortName");
-parser.add_argument("--longName");
+parser.add_argument("--longName", { default: "testname" });
 parser.add_argument("--phoneNumber");
 parser.add_argument("--inactive", { action: "store_true" });
 parser.add_argument("--creatorUserId");
@@ -34,18 +34,19 @@ async function createUser() {
     prompt: `Please enter the password for ${args.email}:`,
     silent: true,
   });
-  const createUser = CreateUser.parse({
+  const userParams: CreateUser = {
     email: args.email,
     username: args.username,
-    acceptedTerms: false,
-    affirmed13YearsOrOlder: false,
-    affirmedMajorityConsent: false,
-    affirmedNotGdpr: false,
+    doesAcceptTerms: true,
+    is13YearsOrOlder: true,
+    hasMajorityConsent: true,
+    isNotGdpr: true,
     shortName: args.shortName,
     longName: args.longName,
     phoneNumber: args.phoneNumber,
     isActive: !args.inactive,
-  });
+  };
+  const createUser = CreateUser.parse(userParams);
   const user = await usersService.createUserAsUser(
     args.creatorUserId,
     createUser,
