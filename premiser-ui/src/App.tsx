@@ -74,6 +74,11 @@ import "./fonts.js";
 
 const tabInfos = [
   {
+    path: paths.home(),
+    text: "Home",
+    id: "landing-tab",
+  },
+  {
     path: paths.recentActivity(),
     text: t(MAIN_TABS_RECENT_ACTIVITY_TAB_NAME),
     id: "recent-activity-tab",
@@ -489,12 +494,17 @@ class App extends Component<Props> {
         className="toolbarTabs"
         align="center"
         activeIndex={activeTabIndex}
-        onActiveIndexChange={this.onTabChange}
+        onActiveIndexChange={() => {
+          /* noop because onActiveIndexChange is required. We call onTabChange below, though. */
+        }}
       >
         {map(tabInfos, (ti, i) => (
-          <Tab active={i === activeTabIndex} id={ti.id} key={ti.id}>
-            <Link to={ti.path}>{ti.text}</Link>
-          </Tab>
+          // Link must be outer element to reliably capture clicks
+          <Link to={ti.path} key={ti.id} onClick={() => this.onTabChange(i)}>
+            <Tab active={i === activeTabIndex} id={ti.id} tabIndex={i}>
+              {ti.text}
+            </Tab>
+          </Link>
         ))}
       </TabsList>
     );
