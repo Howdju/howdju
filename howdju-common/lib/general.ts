@@ -455,8 +455,21 @@ export const keysTo = (obj: { [k: string]: any }, val: any) =>
   );
 
 export const toJson = function toJson(val: any) {
-  return JSON.stringify(val);
+  return JSON.stringify(val, handleCircularReferences());
 };
+
+function handleCircularReferences() {
+  const seen = new WeakSet();
+  return (_key: string, value: any) => {
+    if (typeof value === "object" && value !== null) {
+      if (seen.has(value)) {
+        return "[Circular]";
+      }
+      seen.add(value);
+    }
+    return value;
+  };
+}
 
 export const fromJson = function fromJson(json: string) {
   return JSON.parse(json);
