@@ -13,6 +13,7 @@ import {
   normalizeQuotation,
   decodeQueryStringObject,
   toSlug,
+  toJson,
 } from "./general";
 
 describe("cleanWhitespace", () => {
@@ -210,5 +211,16 @@ describe("decodeQueryStringObject", () => {
     expect(() =>
       decodeQueryStringObject("foo=bar,hello=world", ["foo", "baz"])
     ).toThrowErrorMatchingSnapshot();
+  });
+});
+
+describe("toJson", () => {
+  test("should stringify an object", () => {
+    expect(toJson({ a: 1, b: "2" })).toBe('{"a":1,"b":"2"}');
+  });
+  test("handles circular references", () => {
+    const obj: any = { a: 1, b: "2" };
+    obj.c = { d: obj };
+    expect(toJson(obj)).toBe('{"a":1,"b":"2","c":{"d":"[Circular]"}}');
   });
 });
