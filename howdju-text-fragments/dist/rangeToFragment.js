@@ -10178,6 +10178,18 @@
       return void 0;
     };
   }
+  function handleCircularReferences() {
+    const seen = /* @__PURE__ */ new WeakSet();
+    return (_key, value) => {
+      if (typeof value === "object" && value !== null) {
+        if (seen.has(value)) {
+          return "[Circular]";
+        }
+        seen.add(value);
+      }
+      return value;
+    };
+  }
   function toSlug(text) {
     if (!text) {
       return text;
@@ -10387,7 +10399,7 @@
         {}
       );
       toJson = function toJson2(val) {
-        return JSON.stringify(val);
+        return JSON.stringify(val, handleCircularReferences());
       };
       fromJson = function fromJson2(json) {
         return JSON.parse(json);
