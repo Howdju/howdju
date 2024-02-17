@@ -383,8 +383,9 @@ class App extends Component<Props> {
         key="documentationSite"
         primaryText="Docs site"
         leftAddon={<MaterialSymbol icon="menu_book" />}
-        component={Link}
+        component="a"
         href="https://docs.howdju.com"
+        target="_blank"
       />,
       <MenuItemLink
         key="tools"
