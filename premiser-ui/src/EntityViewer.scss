@@ -5,22 +5,32 @@
   display: flex;
   align-items: center;
 
+  .entity-viewer--header {
+    // This flex item should take up as much space as it's content.
+    // Then the entity item will shrink or grow to take up the remaining space.
+    flex-basis: fit-content;
+    margin-right: 16px;
+  }
+
   .entity-viewer--entity {
     // take up all the space next to the context menu
-    flex: 1 1;
+    flex: 1 1 auto;
+    // Override the `min-width: auto` that applies to flex items
+    // (https://stackoverflow.com/a/66689926). Without this, the element
+    // always expands to its content, and overflows its flex container.
+    min-width: 0;
+
     border-left: 1px solid darken($clouds, 5%);
     padding-left: $entity-spacing;
     // Don't be shorter than the font-icon
     min-height: 24px;
+
+    // Display contents as flex, too.
     display: flex;
     align-items: center;
 
     > * {
       width: 100%;
     }
-  }
-
-  .entity-viewer--header {
-    margin-right: 16px;
   }
 }

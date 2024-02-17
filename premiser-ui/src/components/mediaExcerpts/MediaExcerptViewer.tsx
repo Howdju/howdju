@@ -134,9 +134,12 @@ function toAnchorElement(
   }
 
   return (
-    <a href={textFragmentUrl} onClick={onClick}>
-      {displayUrl} {confirmationStatus} {creationInfo}
-    </a>
+    <>
+      <a title={textFragmentUrl} href={textFragmentUrl} onClick={onClick}>
+        {displayUrl}
+      </a>{" "}
+      {confirmationStatus} {creationInfo}
+    </>
   );
 }
 
