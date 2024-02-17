@@ -143,6 +143,13 @@ strong {
   }
   padding: 10px;
   text-align: center;
+
+  #footer-links {
+    :first-child {
+      margin-right: 10px;
+    }
+    float: right;
+  }
 }
 
 // Cards that are the top-level element in a grid cell should fill it. This
