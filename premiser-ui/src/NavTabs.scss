@@ -1,0 +1,31 @@
+@import "./colors";
+
+#nav-tabs {
+  display: flex;
+  // center tabs
+  justify-content: center;
+  background-color: $primary-color;
+}
+
+.nav-tab {
+  flex-basis: content;
+  text-transform: uppercase;
+
+  & > * {
+    // Apply the padding to the child so that the entire tab is clickable
+    padding: 10px 25px;
+    // Apply block so that the top/bottom padding has an effect.
+    display: block;
+  }
+
+  &.active {
+    border-bottom: 2px solid $secondary-color;
+  }
+
+  // Need a border-bottom for the transition out to work.
+  border-bottom: 0px solid $secondary-color;
+  -webkit-transition: border 500ms ease-out;
+  -moz-transition: border 500ms ease-out;
+  -o-transition: border 500ms ease-out;
+  transition: border 500ms ease-out;
+}
