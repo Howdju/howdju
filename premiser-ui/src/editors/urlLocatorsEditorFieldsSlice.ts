@@ -3,16 +3,15 @@ import { createSlice } from "@reduxjs/toolkit";
 import { api } from "@/apiActions";
 
 const initialState = {
-  urlStatesByName: {} as Record<
-    string,
-    { isFetchingCanonicalUrl: boolean; canonicalUrl: string | undefined }
-  >,
+  urlStatesByName: {} as Record<string, ReturnType<typeof defaultUrlState>>,
 };
 
-const defaultUrlState = {
-  isFetchingCanonicalUrl: false,
-  canonicalUrl: undefined,
-};
+function defaultUrlState() {
+  return {
+    isFetchingCanonicalUrl: false,
+    canonicalUrl: undefined as string | undefined,
+  };
+}
 
 export const urlLocatorsEditorFieldsSlice = createSlice({
   name: "urlLocatorsEditorFields",
@@ -21,7 +20,7 @@ export const urlLocatorsEditorFieldsSlice = createSlice({
   extraReducers(builder) {
     builder.addCase(api.fetchCanonicalUrl, (state, { meta: { urlKey } }) => {
       if (!(urlKey in state.urlStatesByName)) {
-        state.urlStatesByName[urlKey] = defaultUrlState;
+        state.urlStatesByName[urlKey] = defaultUrlState();
       }
       state.urlStatesByName[urlKey].isFetchingCanonicalUrl = true;
     });
