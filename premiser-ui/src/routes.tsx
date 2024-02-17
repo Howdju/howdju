@@ -30,7 +30,6 @@ import SourcePage from "./pages/source/SourcePage";
 import SubmitMediaExcerptPage from "./pages/SubmitMediaExcerptPage";
 import TagPage from "./pages/tag/TagPage";
 import TestErrorPage from "./TestErrorPage";
-import WhatsNextPage from "./pages/whatsNext/WhatsNextPage";
 
 import WritQuotePage from "./pages/WritQuotePage";
 import { map } from "lodash";
@@ -84,7 +83,6 @@ const routesById = {
   recentActivity: (
     <Route exact path={paths.recentActivity()} component={RecentActivityPage} />
   ),
-  whatsNext: <Route exact path={paths.whatsNext()} component={WhatsNextPage} />,
   about: <Route exact path={paths.about()} component={AboutPage} />,
 
   writQuote: (

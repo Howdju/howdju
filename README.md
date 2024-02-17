@@ -14,6 +14,37 @@ preprod](https://github.com/Howdju/howdju/actions/workflows/deploy-preprod.yml/b
 using evidence. The content is currently user-generated, and we hope to augment users' actions with
 machine learning.
 
+## Contributing
+
+We welcome your contributions!
+
+Please [join our
+Slack](https://join.slack.com/t/howdju/shared_invite/zt-1qbfzlfsj-YRswgQ5RCLDHelef6ya6xg) to
+introduce yourself and chat about what interests you. Before contributing please look over our
+[Contributor Guidelines](https://github.com/Howdju/howdju/blob/master/CONTRIBUTING.md).
+
+### Issues
+
+Our [open issues](https://github.com/Howdju/howdju/issues) indicate the work we have identified.
+
+Here are some focused ways to view issues:
+
+- [Assigned to Carl](https://github.com/Howdju/howdju/issues/assigned/carlgieringer) these are
+  issues I'm actively working on or that I intend to work on soon.
+- [Enhancements](https://github.com/Howdju/howdju/issues?q=is%3Aopen+is%3Aissue+label%3Aenhancement):
+  features on our road map (as opposed to bugs.)
+- [Core domain](https://github.com/Howdju/howdju/labels/core%20domain): these are the work items
+  that relate to Howdju‘s primary fact-checking functionality.
+- [In the Add Appearances project](https://github.com/orgs/Howdju/projects/3): this is a Kanban
+  board that contains similar issues to those assigned to Carl.
+- [Good first issues](https://github.com/Howdju/howdju/labels/good%20first%20issue): Howdju welcomes
+  contributions! Carl is happy to explain the platform and the development process to newcomers. I
+  am also happy to talk through ideas for features and implementation approaches.
+
+The current general direction is to evaluate and improve the social fact-checking functionality.
+
+### Contribution guidelines
+
 ## Development
 
 See [docs/Development.md](https://github.com/Howdju/howdju/blob/master/docs/Development.md) to get
@@ -83,13 +114,6 @@ See Howdju/howdju#304.
 
 We initially considered Premiser as a name for Howdju, and so some packages have this name. Howdju
 is now the preferred name.
-
-## Contributing guide
-
-If you'd like to contribute to Howdju, great! Please feel free to join our Slack to introduce
-yourself and chat about what interests you. If you're specifically interested in contributing code
-changes to Howdju's source code or issues to this repository, please see our [Contributor
-guidelines](https://github.com/Howdju/howdju/blob/master/CONTRIBUTING.md).
 
 ## Code layout
 
