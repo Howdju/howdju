@@ -18,14 +18,16 @@ machine learning.
 
 We welcome your contributions!
 
-Please feel free to [join our Slack](https://join.slack.com/t/howdju/shared_invite/zt-1qbfzlfsj-YRswgQ5RCLDHelef6ya6xg) to introduce
-yourself and chat about what interests you. Before contributing please look over our [Contributor
-Guidelines](https://github.com/Howdju/howdju/blob/master/CONTRIBUTING.md).
+Please [join our
+Slack](https://join.slack.com/t/howdju/shared_invite/zt-1qbfzlfsj-YRswgQ5RCLDHelef6ya6xg) to
+introduce yourself and chat about what interests you. Before contributing please look over our
+[Contributor Guidelines](https://github.com/Howdju/howdju/blob/master/CONTRIBUTING.md).
 
 ### Issues
 
-Browse our [open issues](https://github.com/Howdju/howdju/issues) to get an idea of the direction of
-the prototype. Here are some focused ways to view issues:
+Our [open issues](https://github.com/Howdju/howdju/issues) indicate the work we have identified.
+
+Here are some focused ways to view issues:
 
 - [Assigned to Carl](https://github.com/Howdju/howdju/issues/assigned/carlgieringer) these are
   issues I'm actively working on or that I intend to work on soon.

@@ -15,6 +15,6 @@ the platform, check out our [contributing resources on Github](https://github.co
 ## Community
 
 Please [join Howdju’s
-slack](https://join.slack.com/t/howdju/shared_invite/zt-1qbfzlfsj-YRswgQ5RCLDHelef6ya6xg) if you
-would like to meet or discuss Howdju, fact-checking, or any interesting topic approached with an
-open mind and in good faith.
+slack](https://join.slack.com/t/howdju/shared_invite/zt-1qbfzlfsj-YRswgQ5RCLDHelef6ya6xg) to meet
+other truth seeks, to discuss Howdju, fact-checking, critical thinking, media literacy, current
+events. We welcome all respectful dialog approached with an open mind and in good faith.
