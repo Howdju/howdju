@@ -380,7 +380,8 @@ export default class LandingPage extends Component {
 
         <p>
           Justifications can either support or oppose the truth of a
-          proposition.
+          proposition. (Justifications indented to the left support the things
+          above them—those indented to the right oppose things above them.)
         </p>
 
         <div className="banner">

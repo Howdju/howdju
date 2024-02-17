@@ -20,4 +20,11 @@
 #title {
   font-family: "Orbitron", sans-serif;
   font-weight: 400;
+
+  // Set a width-relative size normally…
+  font-size: 1.2vw;
+  // …but below a certain width, stop shrinking the text
+  @media (max-width: 768px) {
+    font-size: 0.6em;
+  }
 }

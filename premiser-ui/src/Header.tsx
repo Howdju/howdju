@@ -13,10 +13,8 @@ export default function Header() {
   const dispatch = useDispatch();
   return (
     <AppBar id="header">
-      <AppBarTitle>
-        <Link to="/">
-          <span id="title">howdju?</span>
-        </Link>
+      <AppBarTitle id="title">
+        <Link to="/">howdju?</Link>
       </AppBarTitle>
       <AppBarTitle id="main-search-container">
         <MainSearch />
