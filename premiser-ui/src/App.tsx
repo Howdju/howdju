@@ -65,21 +65,10 @@ import NavTabs from "./NavTabs";
 import "./App.scss";
 import "./fonts.js";
 
-// react-md tabs always require an activeTabIndex, but we want to support no
-// active tab when the user is not on a tab.
-// Using a large value causes react-md to draw the active tab indicator offscreen.
-// https://github.com/mlaursen/react-md/blob/292cebf72f7c3caa3e07542b0c7945a290666030/packages/tabs/src/useTabIndicatorStyles.ts#L42
-//
-// Only works on initial page load since react-md handles updates differently
-// and skips if there is no corresponding tab:
-// https://github.com/mlaursen/react-md/blob/292cebf72f7c3caa3e07542b0c7945a290666030/packages/tabs/src/useTabIndicatorStyles.ts#L53
-const defaultActiveTabIndex = 100;
-
 class App extends Component<Props> {
   throttledOnWindowScroll: () => void;
   windowMessageHandler?: WindowMessageHandler;
   state = {
-    activeTabIndex: defaultActiveTabIndex,
     windowPageYOffset: window.pageYOffset,
     isOverscrolledTop: false,
     isOverscrolledBottom: false,

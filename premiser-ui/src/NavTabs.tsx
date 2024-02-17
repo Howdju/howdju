@@ -33,6 +33,7 @@ const tabInfos = [
   },
 ];
 
+/** A component for navigating to recommended content entry points, using a tab-like presentation. */
 export default function NavTabs() {
   useEffect(() => syncTabToPathname(window.location.pathname));
 
@@ -46,6 +47,8 @@ export default function NavTabs() {
     []
   );
 
+  // Use -1 to indicate no selected tab as a convenience. This is what findIndex
+  // will return for no matching tab.
   const [activeTabIndex, setActiveTabIndex] = useState(-1);
 
   function syncTabToPathname(pathname: string) {
