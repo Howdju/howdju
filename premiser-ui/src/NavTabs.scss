@@ -12,6 +12,7 @@
   text-transform: uppercase;
 
   & > * {
+    color: $light-text-color;
     // Apply the padding to the child so that the entire tab is clickable
     padding: 10px 25px;
     // Apply block so that the top/bottom padding has an effect.
