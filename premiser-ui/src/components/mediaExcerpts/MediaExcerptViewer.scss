@@ -35,6 +35,10 @@ ul.url-locators {
     @include material-icon-list-item("link");
 
     > a {
+      // Force long URLs to break
+      word-break: break-all;
+      word-wrap: break-word;
+
       .rmd-icon,
       .material-symbols {
         vertical-align: middle;
