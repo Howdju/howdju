@@ -1,12 +1,9 @@
+import { MaterialSymbol } from "react-material-symbols";
 import { ConnectedRouter } from "connected-react-router";
-import { Action, Location, UnregisterCallback } from "history";
 import forEach from "lodash/forEach";
-import isFinite from "lodash/isFinite";
-import map from "lodash/map";
 import throttle from "lodash/throttle";
 import React, { Component, MouseEvent } from "react";
 import { hot } from "react-hot-loader/root";
-import { TabsList, Tab } from "@react-md/tabs";
 import { connect, ConnectedProps } from "react-redux";
 import { Switch } from "react-router";
 import { Link } from "react-router-dom";
@@ -59,43 +56,30 @@ import {
 import sentryInit from "./sentryInit";
 import { RootState } from "./setupStore";
 import { startPersisting, stopPersisting } from "./store";
-import t, {
-  MAIN_TABS_ABOUT_TAB_NAME,
-  MAIN_TABS_RECENT_ACTIVITY_TAB_NAME,
-} from "./texts";
 import { isDevice, isScrollPastBottom, isScrollPastTop } from "./util";
 import WindowMessageHandler from "./WindowMessageHandler";
 import { MenuItem, MenuItemLink } from "@/components/menu/Menu";
 import { AddMessageCapturer } from "./AddMessageCapturer";
+import NavTabs from "./NavTabs";
 
 import "./App.scss";
 import "./fonts.js";
-import { MaterialSymbol } from "react-material-symbols";
 
-const tabInfos = [
-  {
-    path: paths.home(),
-    text: "Home",
-    id: "landing-tab",
-  },
-  {
-    path: paths.recentActivity(),
-    text: t(MAIN_TABS_RECENT_ACTIVITY_TAB_NAME),
-    id: "recent-activity-tab",
-  },
-  {
-    path: paths.about(),
-    text: t(MAIN_TABS_ABOUT_TAB_NAME),
-    id: "about-tab",
-  },
-];
+// react-md tabs always require an activeTabIndex, but we want to support no
+// active tab when the user is not on a tab.
+// Using a large value causes react-md to draw the active tab indicator offscreen.
+// https://github.com/mlaursen/react-md/blob/292cebf72f7c3caa3e07542b0c7945a290666030/packages/tabs/src/useTabIndicatorStyles.ts#L42
+//
+// Only works on initial page load since react-md handles updates differently
+// and skips if there is no corresponding tab:
+// https://github.com/mlaursen/react-md/blob/292cebf72f7c3caa3e07542b0c7945a290666030/packages/tabs/src/useTabIndicatorStyles.ts#L53
+const defaultActiveTabIndex = 100;
 
 class App extends Component<Props> {
   throttledOnWindowScroll: () => void;
-  unlistenToHistory?: UnregisterCallback;
   windowMessageHandler?: WindowMessageHandler;
   state = {
-    activeTabIndex: 0,
+    activeTabIndex: defaultActiveTabIndex,
     windowPageYOffset: window.pageYOffset,
     isOverscrolledTop: false,
     isOverscrolledBottom: false,
@@ -107,8 +91,6 @@ class App extends Component<Props> {
   }
 
   componentDidMount() {
-    this.unlistenToHistory = history.listen(this.onHistoryListen);
-    this.initializeTabIndex();
     window.addEventListener("resize", this.onWindowResize, false);
     window.addEventListener("scroll", this.throttledOnWindowScroll, false);
     window.addEventListener("message", this.receiveMessage, false);
@@ -228,7 +210,6 @@ class App extends Component<Props> {
   };
 
   componentWillUnmount() {
-    if (this.unlistenToHistory) this.unlistenToHistory();
     window.removeEventListener("resize", this.onWindowResize);
     window.removeEventListener("scroll", this.throttledOnWindowScroll);
     window.removeEventListener("message", this.receiveMessage);
@@ -284,10 +265,6 @@ class App extends Component<Props> {
     this.resetOverscrollState();
   };
 
-  initializeTabIndex = () => {
-    this.syncTabToPathname(window.location.pathname);
-  };
-
   logout = () => {
     this.props.api.logout();
   };
@@ -298,19 +275,6 @@ class App extends Component<Props> {
 
   onNavSheetRequestClose = () => {
     this.props.app.setNavDrawerVisibility(false);
-  };
-
-  onTabChange = (activeIndexNumber: number) => {
-    this.setState({ activeTabIndex: activeIndexNumber });
-  };
-
-  onHistoryListen = (location: Location, _action: Action) => {
-    this.syncTabToPathname(location.pathname);
-  };
-
-  syncTabToPathname = (pathname: string) => {
-    const index = tabInfos.findIndex((ti) => ti.path === pathname);
-    this.setState({ activeTabIndex: index });
   };
 
   onClickApp = (_event: MouseEvent) => {
@@ -332,7 +296,6 @@ class App extends Component<Props> {
       isNavDrawerVisible,
       isMobileSiteDisabled,
     } = this.props;
-    const { activeTabIndex } = this.state;
 
     const authEmailDiv = (
       <div>
@@ -492,31 +455,6 @@ class App extends Component<Props> {
       </Sheet>
     );
 
-    const newTabs = (
-      <TabsList
-        className="toolbarTabs"
-        align="center"
-        activeIndex={activeTabIndex}
-        onActiveIndexChange={() => {
-          /* noop because onActiveIndexChange is required. We call onTabChange below, though. */
-        }}
-      >
-        {map(tabInfos, (ti, i) => (
-          // Link must be outer element to reliably capture clicks
-          <Link to={ti.path} key={ti.id} onClick={() => this.onTabChange(i)}>
-            <Tab active={i === activeTabIndex} id={ti.id} tabIndex={i}>
-              {ti.text}
-            </Tab>
-          </Link>
-        ))}
-      </TabsList>
-    );
-
-    const title =
-      isFinite(activeTabIndex) && activeTabIndex >= 0
-        ? `${tabInfos[activeTabIndex].text} — Howdju`
-        : "Howdju";
-
     const viewportContent = isMobileSiteDisabled
       ? "width=1024, initial-scale=1"
       : "width=device-width, initial-scale=1, user-scalable=no";
@@ -527,12 +465,12 @@ class App extends Component<Props> {
           <MessageQueue id="toast-message-queue">
             <div id="app" onClick={this.onClickApp}>
               <Helmet>
-                <title>{title}</title>
+                <title>Howdju</title>
                 <meta name="viewport" content={viewportContent} />
               </Helmet>
 
               <Header />
-              {newTabs}
+              <NavTabs />
 
               {navDrawer}
 
