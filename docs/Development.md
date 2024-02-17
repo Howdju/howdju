@@ -6,7 +6,8 @@ development tasks.
 ## CI/CD status
 
 - [![CI](https://github.com/Howdju/howdju/actions/workflows/ci.yml/badge.svg?branch=master&event=push)](https://github.com/Howdju/howdju/actions/workflows/ci.yml)
-- [![Deploy to preprod](https://github.com/Howdju/howdju/actions/workflows/deploy-preprod.yml/badge.svg?branch=master&event=workflow_run)](https://github.com/Howdju/howdju/actions/workflows/deploy-preprod.yml)
+- [![Deploy to
+preprod](https://github.com/Howdju/howdju/actions/workflows/deploy-preprod.yml/badge.svg?branch=master&event=workflow_run)](https://github.com/Howdju/howdju/actions/workflows/deploy-preprod.yml)
 
 ## Prerequisites
 
@@ -34,8 +35,8 @@ consistent version to avoid any issues with dependencies.
 
 ### Install dependencies
 
-This project uses Yarn workspaces to allow packages to depend on each other during development and to share
-dependencies.
+This project uses Yarn workspaces to allow packages to depend on each other during development and
+to share dependencies.
 
 ```shell
 yarn install
@@ -45,8 +46,8 @@ yarn install
 
 #### Create a Postgres server in Docker
 
-You'll need to decide on a password for the `postgres`
-'superuser' for the new database instance, and enter it into the first command.
+You'll need to decide on a password for the `postgres` 'superuser' for the new database instance,
+and enter it into the first command.
 
 ```shell
 printf 'Enter Postgres superuser password:'; read -s POSTGRES_SUPERUSER_PASSWORD
@@ -57,13 +58,12 @@ docker logs howdju_postgres --follow
 
 #### Create the Postgres users, database, and schema
 
-You'll need to select two new passwords.
-`premiser_admin` is the Postgres user that will own and control the database.`premiser_api` is the
-user the Howdju API will use to connect to the database. If you are prompted for the password for
-`postgres`, enter the superuser password you set above.
+You'll need to select two new passwords. `premiser_admin` is the Postgres user that will own and
+control the database.`premiser_api` is the user the Howdju API will use to connect to the database.
+If you are prompted for the password for `postgres`, enter the superuser password you set above.
 
-Note: For a local development database, the `premiser_admin` and `postgres` superuser are probably redundant, but we
-have `premiser_admin` for now for parity with the production database.
+Note: For a local development database, the `premiser_admin` and `postgres` superuser are probably
+redundant, but we have `premiser_admin` for now for parity with the production database.
 
 ```shell
 PGPASSWORD=$POSTGRES_SUPERUSER_PASSWORD
@@ -86,7 +86,8 @@ Be sure to update `DB_PASSWORD` to be `premiser_api`'s password.
 yarn run create-user:local --email test@test.test --username=test_user
 ```
 
-Alternatively, you can go through the registration process (grab the registration URLs from the API output.)
+Alternatively, you can go through the registration process (grab the registration URLs from the API
+output.)
 
 ## Running the platform locally
 
@@ -123,11 +124,16 @@ This will automatically open a browser. If it doesn't, point yours to `localhost
 
 ## Automatic code checks
 
-The most precise way to run automated checks is to run the
-Github premerge action. See [Testing Github actions](#testing-github-actions)
-below.
+The most precise way to run automated checks is to run the Github premerge action. See [Testing
+Github actions](#testing-github-actions) below.
 
 You can also run `yarn run check:everything`.
+
+## Code style and architectural conventions
+
+Prettier and ESLint enforce many code-level stylistic conventions. For coding conventions not
+covered by our automated checks — and for larger architectural conventions — see [our Architectural
+Decision Records (ADRs)](https://github.com/Howdju/howdju/tree/master/docs/adrs).
 
 ## Development
 
@@ -148,13 +154,11 @@ Do this every time:
 
 ### DCO commits
 
-As explained in our CONTRIBUTORS guide, all code contributions must include a
-certification of the ["Developer Certificate of
-Origin"](https://developercertificate.org/). Our PR checks will fail if you
-forget to do so. You can do this by adding the `--signoff` flag to your commits. Please
-note that adding this flag to your commits and contributing them to Howdju
-indicates a legal certification on your part. Refer to our CONTRIBUTORS guide
-for details.
+As explained in our CONTRIBUTORS guide, all code contributions must include a certification of the
+["Developer Certificate of Origin"](https://developercertificate.org/). Our PR checks will fail if
+you forget to do so. You can do this by adding the `--signoff` flag to your commits. Please note
+that adding this flag to your commits and contributing them to Howdju indicates a legal
+certification on your part. Refer to our CONTRIBUTORS guide for details.
 
 You can amend an existing commit to have the DCO like:
 
@@ -189,13 +193,13 @@ git push --set-upstream origin <branchName>
 # Visit link output by push command to open a PR
 ```
 
-We enforce 'squash and merge' for our PRs so that we have a linear history and
-so that mainline commits are easier to scan.
+We enforce 'squash and merge' for our PRs so that we have a linear history and so that mainline
+commits are easier to scan.
 
 #### Working on top of a PR branch
 
-Often you'll want to build on top of changes that are in a PR. This is fine, but
-requires some additional steps.
+Often you'll want to build on top of changes that are in a PR. This is fine, but requires some
+additional steps.
 
 ```bash
 # Assuming that HEAD is your PR branch
@@ -269,8 +273,8 @@ yarn workspaces foreach -Av exec bash -c '[[ -f jest.config.ts ]] && yarn add --
 
 ### Branching a dependency
 
-If we need to modify a dependency: fork it, clone it locally, link it locally, and then
-create the fix.
+If we need to modify a dependency: fork it, clone it locally, link it locally, and then create the
+fix.
 
 This command will link the project of the CWD to the local clone. (I think the resolutions field it
 adds to the workspace root apply the link to all packages in the monorepo, so it's not necessary to
@@ -314,18 +318,17 @@ Deployments are partially automated.
 
 ### API and web app
 
-A Github action automatically deploys the API and web app to the preprod
-environment.
+A Github action automatically deploys the API and web app to the preprod environment.
 
-After confirming that the preprod environment is valid, deploy the API and
-web app to prod using the
+After confirming that the preprod environment is valid, deploy the API and web app to prod using the
 [prod deployment Github Action](https://github.com/Howdju/howdju/actions/workflows/deploy-prod.yml).
 
 ### Publishing infrastructure changes
 
 TODO(46): give TerraformStateUpdater appropriate permissions
 
-Request that your user get access to the role `TerraformStateUpdater`. Add a section to `~/.aws/config` for the role:
+Request that your user get access to the role `TerraformStateUpdater`. Add a section to
+`~/.aws/config` for the role:
 
 ```ini
 [profile terraform@howdju]
@@ -373,8 +376,9 @@ In the "Run and Debug" activity, run "Attach".
 
 #### With Chrome debugger
 
-Open Chrome to `chrome://inspect`. Click "Open dedicated DevTools for Node". The Chrome debugger should automatically
-connect to the node process. The Chrome debugger should automatically reconnect whenever the API restarts.
+Open Chrome to `chrome://inspect`. Click "Open dedicated DevTools for Node". The Chrome debugger
+should automatically connect to the node process. The Chrome debugger should automatically reconnect
+whenever the API restarts.
 
 ### Debugging/inspecting the UI
 
@@ -428,7 +432,8 @@ Features:
 
 ### Service integration tests
 
-Including infra for creating an initialized hermetic Postgres database using Docker (`testUtil.initDb`).
+Including infra for creating an initialized hermetic Postgres database using Docker
+(`testUtil.initDb`).
 
 `howdju-service-common/lib/services/JustificationsService.test.ts` is a good example.
 
@@ -495,10 +500,10 @@ command will output how often the test fails along with the output from failed t
 
 ### Testing Github actions
 
-Warning: Act currently fails for tests that use our Postgres docker because Act doesn't support Github
-actions services. ([issue](https://github.com/nektos/act/issues/173)). We might be able to work
-around this by detecting Act (I think it adds an env. var. `ACT`) and running the Postgres docker
-like we do with local runs, but that sort of defeats the purpose of act.
+Warning: Act currently fails for tests that use our Postgres docker because Act doesn't support
+Github actions services. ([issue](https://github.com/nektos/act/issues/173)). We might be able to
+work around this by detecting Act (I think it adds an env. var. `ACT`) and running the Postgres
+docker like we do with local runs, but that sort of defeats the purpose of act.
 
 Install nektos/act:
 
@@ -539,8 +544,8 @@ For information about configuring linting, see eslint-config-howdju/README.md.
 
 ### Prettier
 
-Each workspace must install the `--exact` same version of `prettier` and define a script `check-format`
-that calls `prettier` like:
+Each workspace must install the `--exact` same version of `prettier` and define a script
+`check-format` that calls `prettier` like:
 
 ```sh
 yarn run prettier --check --ignore-path .gitignore .
@@ -548,9 +553,9 @@ yarn run prettier --check --ignore-path .gitignore .
 
 Each workspace must have a `.prettierrc` containing an empty JSON object (`{}`).
 
-Each of our configs in `eslint-config-howdju` extends `prettier` as the last extended config so that it can override
-any previous configs. If a package extends a config other than one of these, it must also be sure to
-extend `prettier` as the last overridden config.
+Each of our configs in `eslint-config-howdju` extends `prettier` as the last extended config so that
+it can override any previous configs. If a package extends a config other than one of these, it must
+also be sure to extend `prettier` as the last overridden config.
 
 ### TypeScript
 
@@ -577,7 +582,8 @@ Base config `tsconfig.json` in workspace root and packages extend it like:
 ### Jest
 
 Base config exporting the config object and packages must define their own `jest.config.js` that
-merges any customizations with the base. Preferably with `lodash`'s `merge` so that the merge is recursive.
+merges any customizations with the base. Preferably with `lodash`'s `merge` so that the merge is
+recursive.
 
 ```ts
 import type { Config } from "jest";
@@ -627,29 +633,34 @@ rm $pg_dump_file_name
 
 ## AWS
 
-This section is about accessing and changing infrastructure in AWS. Most contributors will not need this.
+This section is about accessing and changing infrastructure in AWS. Most contributors will not need
+this.
 
 ### Password management
 
 - Use a password manager.
 - Memorize your: computer password, email password, and password manager password.
 - Store all non-memorized passwords in your password manager.
-- Never write down or persist a non-encrypted password. Passwords are either memorized or stored in the password
-  manager.
-- Use memorable diceware-style passwords: password managers like 1Password will autogenerate passwords like
-  `lingua-GARDENIA-concur-softly`, which are easy to type (for managed passwords, if you can't copy-paste for some
-  reason) and can be easy to remember, if you make up an image or story that goes along with the password. So, for this
-  example password, you might imagine a tongue licking a gardenia flower, agreeing with it with a soft whispering
-  voice. (See [XKCD](https://xkcd.com/936/).) It's important that you allow a professional password manager
-  auto-generate these phrases, and that you not iterate through multiple choices to select one that is easy to remember,
-  as this decreases the effective search space of the generated passwords. Instead, come up with a mental image to help
-  you remember the words. The more silly or ridiculous, the easier it may be to remember.
-- Enable two-factor auth for all accounts that support it. Use a virtual MFA like Authy or Microsoft Authenticator.
+- Never write down or persist a non-encrypted password. Passwords are either memorized or stored in
+  the password manager.
+- Use memorable diceware-style passwords: password managers like 1Password will autogenerate
+  passwords like `lingua-GARDENIA-concur-softly`, which are easy to type (for managed passwords, if
+  you can't copy-paste for some reason) and can be easy to remember, if you make up an image or
+  story that goes along with the password. So, for this example password, you might imagine a tongue
+  licking a gardenia flower, agreeing with it with a soft whispering voice. (See
+  [XKCD](https://xkcd.com/936/).) It's important that you allow a professional password manager
+  auto-generate these phrases, and that you not iterate through multiple choices to select one that
+  is easy to remember, as this decreases the effective search space of the generated passwords.
+  Instead, come up with a mental image to help you remember the words. The more silly or ridiculous,
+  the easier it may be to remember.
+- Enable two-factor auth for all accounts that support it. Use a virtual MFA like Authy or Microsoft
+  Authenticator.
 
 ### Install `aws-vault`
 
-[`aws-vault`](https://github.com/99designs/aws-vault/) allows securely storing and accessing AWS credentials in a
-development environment. You'll need an AWS admin to provide your AWS username, access key, and secret access key.
+[`aws-vault`](https://github.com/99designs/aws-vault/) allows securely storing and accessing AWS
+credentials in a development environment. You'll need an AWS admin to provide your AWS username,
+access key, and secret access key.
 
 ```shell
 brew install --cask aws-vault
@@ -680,13 +691,14 @@ Running commands with your credentials:
 aws-vault exec username@howdju -- terraform apply
 ```
 
-See `aws-vault`'s [USAGE](https://github.com/99designs/aws-vault/blob/master/USAGE.md) page for more.
+See `aws-vault`'s [USAGE](https://github.com/99designs/aws-vault/blob/master/USAGE.md) page for
+more.
 
 ### SSH access
 
-Upload your public key named like `username.pub` to `s3://howdju-bastion-logs/public-keys/`. (The username for the
-bastion host need not match your AWS username, but it should for simplicity.) The bastion host refreshes
-from these every 5 minutes.
+Upload your public key named like `username.pub` to `s3://howdju-bastion-logs/public-keys/`. (The
+username for the bastion host need not match your AWS username, but it should for simplicity.) The
+bastion host refreshes from these every 5 minutes.
 
 Generate a new SSH key:
 
