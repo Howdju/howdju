@@ -158,6 +158,8 @@ export default function ApiAutoComplete<T>({
       // Since the ApiAutoComplete input is a textarea which lacks the 'enter submits form'
       // behavior, simulate it with a submit input.
       submitInputRef.current?.click();
+      event.preventDefault();
+      debouncedFetchSuggestions.cancel();
     }
   }
 
