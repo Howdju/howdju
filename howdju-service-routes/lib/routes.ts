@@ -52,11 +52,11 @@ import {
   CreateMediaExcerptSpeaker,
 } from "howdju-common";
 import {
+  AppProvider,
   EntityNotFoundError,
   InvalidLoginError,
   InvalidRequestError,
   prefixErrorPath,
-  ServicesProvider,
 } from "howdju-service-common";
 
 import { Authed, Body, PathParams, QueryStringParams } from "./routeSchemas";
@@ -75,13 +75,14 @@ export const serviceRoutes = {
     request: handler(
       QueryStringParams("searchText"),
       async (
-        appProvider: ServicesProvider,
-        { queryStringParams: { searchText } }
+        appProvider: AppProvider,
+        { authToken, queryStringParams: { searchText } }
       ) => {
         if (!searchText) {
           throw new InvalidRequestError("searchText is required.");
         }
         const propositions = await appProvider.propositionsTextSearcher.search(
+          authToken,
           searchText
         );
         return { body: { propositions } };
@@ -94,7 +95,7 @@ export const serviceRoutes = {
     request: handler(
       QueryStringParams("searchText"),
       async (
-        appProvider: ServicesProvider,
+        appProvider: AppProvider,
         { queryStringParams: { searchText } }
       ) => {
         const tags = await appProvider.tagsService.readTagsLikeTagName(
@@ -110,13 +111,16 @@ export const serviceRoutes = {
     request: handler(
       QueryStringParams("searchText"),
       async (
-        appProvider: ServicesProvider,
-        { queryStringParams: { searchText } }
+        appProvider: AppProvider,
+        { authToken, queryStringParams: { searchText } }
       ) => {
         if (!searchText) {
           throw new InvalidRequestError("searchText is required.");
         }
-        const writs = await appProvider.writsTitleSearcher.search(searchText);
+        const writs = await appProvider.writsTitleSearcher.search(
+          authToken,
+          searchText
+        );
         return { body: { writs } };
       }
     ),
@@ -127,13 +131,14 @@ export const serviceRoutes = {
     request: handler(
       QueryStringParams("searchText"),
       async (
-        appProvider: ServicesProvider,
-        { queryStringParams: { searchText } }
+        appProvider: AppProvider,
+        { authToken, queryStringParams: { searchText } }
       ) => {
         if (!searchText) {
           throw new InvalidRequestError("searchText is required.");
         }
         const persorgs = await appProvider.persorgsNameSearcher.search(
+          authToken,
           searchText
         );
         return { body: { persorgs } };
@@ -146,13 +151,14 @@ export const serviceRoutes = {
     request: handler(
       QueryStringParams("searchText"),
       async (
-        appProvider: ServicesProvider,
-        { queryStringParams: { searchText } }
+        appProvider: AppProvider,
+        { authToken, queryStringParams: { searchText } }
       ) => {
         if (!searchText) {
           throw new InvalidRequestError("searchText is required.");
         }
         const sources = await appProvider.sourceDescriptionSearcher.search(
+          authToken,
           searchText
         );
         return { body: { sources } };
@@ -165,13 +171,16 @@ export const serviceRoutes = {
     request: handler(
       QueryStringParams("searchText"),
       async (
-        appProvider: ServicesProvider,
-        { queryStringParams: { searchText } }
+        appProvider: AppProvider,
+        { authToken, queryStringParams: { searchText } }
       ) => {
         if (!searchText) {
           throw new InvalidRequestError("searchText is required.");
         }
-        const results = await appProvider.mainSearchService.search(searchText);
+        const results = await appProvider.mainSearchService.search(
+          authToken,
+          searchText
+        );
         return { body: results };
       }
     ),
@@ -181,7 +190,7 @@ export const serviceRoutes = {
     method: httpMethods.GET,
     request: handler(
       PathParams("tagId"),
-      async (appProvider: ServicesProvider, { pathParams: { tagId } }) => {
+      async (appProvider: AppProvider, { pathParams: { tagId } }) => {
         const tag = await appProvider.tagsService.readTagForId(tagId);
         return { body: { tag } };
       }
@@ -197,7 +206,7 @@ export const serviceRoutes = {
     request: handler(
       QueryStringParams("tagId"),
       async (
-        appProvider: ServicesProvider,
+        appProvider: AppProvider,
         { queryStringParams: { tagId }, authToken }
       ) => {
         if (!tagId) {
@@ -225,7 +234,7 @@ export const serviceRoutes = {
         "count"
       ),
       async (
-        appProvider: ServicesProvider,
+        appProvider: AppProvider,
         {
           authToken,
           queryStringParams: {
@@ -272,7 +281,7 @@ export const serviceRoutes = {
     request: handler(
       Authed.merge(Body({ proposition: CreateProposition })),
       async (
-        appProvider: ServicesProvider,
+        appProvider: AppProvider,
         { authToken, body: { proposition: createProposition } }
       ) => {
         const { proposition, isExtant } = await prefixErrorPath(
@@ -294,7 +303,7 @@ export const serviceRoutes = {
     request: handler(
       PathParams("propositionId"),
       async (
-        appProvider: ServicesProvider,
+        appProvider: AppProvider,
         { pathParams: { propositionId }, authToken }
       ) => {
         const proposition =
@@ -312,7 +321,7 @@ export const serviceRoutes = {
     request: handler(
       Body({ proposition: UpdateProposition }).merge(Authed),
       async (
-        appProvider: ServicesProvider,
+        appProvider: AppProvider,
         { authToken, body: { proposition: updateProposition } }
       ) => {
         const proposition = await prefixErrorPath(
@@ -332,7 +341,7 @@ export const serviceRoutes = {
     request: handler(
       PathParams("propositionId").merge(Authed),
       async (
-        appProvider: ServicesProvider,
+        appProvider: AppProvider,
         { authToken, pathParams: { propositionId } }
       ) => {
         await prefixErrorPath(
@@ -354,7 +363,7 @@ export const serviceRoutes = {
     request: handler(
       Body({ statement: CreateStatement }).merge(Authed),
       async (
-        appProvider: ServicesProvider,
+        appProvider: AppProvider,
         { authToken, body: { statement: inStatement } }
       ) => {
         const { isExtant, statement } =
@@ -371,7 +380,7 @@ export const serviceRoutes = {
     method: httpMethods.GET,
     request: handler(
       PathParams("persorgId"),
-      async (appProvider: ServicesProvider, { pathParams: { persorgId } }) => {
+      async (appProvider: AppProvider, { pathParams: { persorgId } }) => {
         const statements =
           await appProvider.statementsService.readStatementsForSpeakerPersorgId(
             persorgId
@@ -390,7 +399,7 @@ export const serviceRoutes = {
     request: handler(
       QueryStringParams("sentenceType", "sentenceId"),
       async (
-        appProvider: ServicesProvider,
+        appProvider: AppProvider,
         { queryStringParams: { sentenceType, sentenceId } }
       ) => {
         if (
@@ -423,7 +432,7 @@ export const serviceRoutes = {
     request: handler(
       QueryStringParams("rootPropositionId"),
       async (
-        appProvider: ServicesProvider,
+        appProvider: AppProvider,
         { queryStringParams: { rootPropositionId } }
       ) => {
         if (!rootPropositionId) {
@@ -446,7 +455,7 @@ export const serviceRoutes = {
     request: handler(
       QueryStringParams("rootPropositionId"),
       async (
-        appProvider: ServicesProvider,
+        appProvider: AppProvider,
         { queryStringParams: { rootPropositionId } }
       ) => {
         if (!rootPropositionId) {
@@ -468,7 +477,7 @@ export const serviceRoutes = {
     request: handler(
       PathParams("statementId"),
       async (
-        appProvider: ServicesProvider,
+        appProvider: AppProvider,
         { authToken, pathParams: { statementId } }
       ) => {
         const statement =
@@ -490,7 +499,7 @@ export const serviceRoutes = {
     request: handler(
       QueryStringParams("propositionIds"),
       async (
-        appProvider: ServicesProvider,
+        appProvider: AppProvider,
         { queryStringParams: { propositionIds } }
       ) => {
         if (!propositionIds) {
@@ -513,7 +522,7 @@ export const serviceRoutes = {
     method: httpMethods.GET,
     request: handler(
       PathParams("persorgId"),
-      async (appProvider: ServicesProvider, { pathParams: { persorgId } }) => {
+      async (appProvider: AppProvider, { pathParams: { persorgId } }) => {
         const persorg = await appProvider.persorgsService.readPersorgForId(
           persorgId
         );
@@ -527,7 +536,7 @@ export const serviceRoutes = {
     request: handler(
       Authed.merge(Body({ persorg: UpdatePersorg })),
       async (
-        appProvider: ServicesProvider,
+        appProvider: AppProvider,
         { authToken, body: { persorg: updatePersorg } }
       ) => {
         const persorg = await prefixErrorPath(
@@ -544,7 +553,7 @@ export const serviceRoutes = {
     request: handler(
       Authed.merge(PathParams("persorgId")),
       async (
-        appProvider: ServicesProvider,
+        appProvider: AppProvider,
         { authToken, pathParams: { persorgId } }
       ) => {
         await prefixErrorPath(
@@ -563,7 +572,7 @@ export const serviceRoutes = {
     method: httpMethods.GET,
     request: handler(
       PathParams("sourceId"),
-      async (appProvider: ServicesProvider, { pathParams: { sourceId } }) => {
+      async (appProvider: AppProvider, { pathParams: { sourceId } }) => {
         const source = await appProvider.sourcesService.readSourceForId(
           sourceId
         );
@@ -577,7 +586,7 @@ export const serviceRoutes = {
     request: handler(
       Authed.merge(Body({ source: UpdateSource })),
       async (
-        appProvider: ServicesProvider,
+        appProvider: AppProvider,
         { authToken, body: { source: updateSource } }
       ) => {
         const source = await prefixErrorPath(
@@ -594,7 +603,7 @@ export const serviceRoutes = {
     request: handler(
       Authed.merge(PathParams("sourceId")),
       async (
-        appProvider: ServicesProvider,
+        appProvider: AppProvider,
         { authToken, pathParams: { sourceId } }
       ) => {
         await prefixErrorPath(
@@ -617,7 +626,7 @@ export const serviceRoutes = {
     request: handler(
       PathParams("propositionId"),
       async (
-        appProvider: ServicesProvider,
+        appProvider: AppProvider,
         { pathParams: { propositionId }, authToken }
       ) => {
         const proposition =
@@ -639,7 +648,7 @@ export const serviceRoutes = {
     request: handler(
       PathParams("statementId"),
       async (
-        appProvider: ServicesProvider,
+        appProvider: AppProvider,
         { pathParams: { statementId }, authToken }
       ) => {
         const statement =
@@ -662,7 +671,7 @@ export const serviceRoutes = {
     request: handler(
       PathParams("propositionCompoundId"),
       async (
-        appProvider: ServicesProvider,
+        appProvider: AppProvider,
         { pathParams: { propositionCompoundId } }
       ) => {
         const propositionCompound =
@@ -683,7 +692,7 @@ export const serviceRoutes = {
     request: handler(
       PathParams("sourceExcerptParaphraseId"),
       async (
-        appProvider: ServicesProvider,
+        appProvider: AppProvider,
         { pathParams: { sourceExcerptParaphraseId }, authToken }
       ) => {
         const sourceExcerptParaphrase =
@@ -706,7 +715,7 @@ export const serviceRoutes = {
     request: handler(
       Authed.merge(Body({ justification: CreateJustification })),
       async (
-        appProvider: ServicesProvider,
+        appProvider: AppProvider,
         { authToken, body: { justification: createJustification } }
       ) => {
         const { justification, isExtant } = await prefixErrorPath(
@@ -732,7 +741,7 @@ export const serviceRoutes = {
         "includeUrls"
       ),
       async (
-        appProvider: ServicesProvider,
+        appProvider: AppProvider,
         {
           queryStringParams: {
             filters: encodedFilters,
@@ -767,7 +776,7 @@ export const serviceRoutes = {
     request: handler(
       Authed.merge(PathParams("justificationId")),
       async (
-        appProvider: ServicesProvider,
+        appProvider: AppProvider,
         { authToken, pathParams: { justificationId } }
       ) => {
         await prefixErrorPath(
@@ -790,7 +799,7 @@ export const serviceRoutes = {
     request: handler(
       QueryStringParams("contextTrailInfos"),
       async (
-        appProvider: ServicesProvider,
+        appProvider: AppProvider,
         { authToken, queryStringParams: { contextTrailInfos } }
       ) => {
         if (!contextTrailInfos) {
@@ -822,7 +831,7 @@ export const serviceRoutes = {
     request: handler(
       Authed.merge(Body({ writQuote: CreateWritQuote })),
       async (
-        appProvider: ServicesProvider,
+        appProvider: AppProvider,
         { authToken, body: { writQuote: createWritQuote } }
       ) => {
         const { writQuote, alreadyExists } = await prefixErrorPath(
@@ -842,7 +851,7 @@ export const serviceRoutes = {
     request: handler(
       QueryStringParams("sorts", "continuationToken", "count"),
       async (
-        appProvider: ServicesProvider,
+        appProvider: AppProvider,
         { queryStringParams: { sorts: encodedSorts, continuationToken, count } }
       ) => {
         const sorts = decodeSorts(encodedSorts);
@@ -866,10 +875,7 @@ export const serviceRoutes = {
     method: httpMethods.GET,
     request: handler(
       PathParams("writQuoteId"),
-      async (
-        appProvider: ServicesProvider,
-        { pathParams: { writQuoteId } }
-      ) => {
+      async (appProvider: AppProvider, { pathParams: { writQuoteId } }) => {
         const writQuote =
           await appProvider.writQuotesService.readWritQuoteForId(writQuoteId);
         return { body: { writQuote } };
@@ -916,7 +922,7 @@ export const serviceRoutes = {
     request: handler(
       QueryStringParams("sorts", "continuationToken", "count"),
       async (
-        appProvider: ServicesProvider,
+        appProvider: AppProvider,
         { queryStringParams: { sorts: encodedSorts, continuationToken, count } }
       ) => {
         const sorts = decodeSorts(encodedSorts);
@@ -942,7 +948,7 @@ export const serviceRoutes = {
     request: handler(
       Authed.merge(Body({ mediaExcerpt: CreateMediaExcerpt })),
       async (
-        appProvider: ServicesProvider,
+        appProvider: AppProvider,
         { authToken, body: { mediaExcerpt: createMediaExcerpt } }
       ) => {
         const { isExtant, mediaExcerpt } =
@@ -964,10 +970,7 @@ export const serviceRoutes = {
     method: "GET",
     request: handler(
       PathParams("mediaExcerptId"),
-      async (
-        appProvider: ServicesProvider,
-        { pathParams: { mediaExcerptId } }
-      ) => {
+      async (appProvider: AppProvider, { pathParams: { mediaExcerptId } }) => {
         const mediaExcerpt =
           await appProvider.mediaExcerptsService.readMediaExcerptForId(
             mediaExcerptId
@@ -985,7 +988,7 @@ export const serviceRoutes = {
     request: handler(
       QueryStringParams("filters", "sorts", "continuationToken", "count"),
       async (
-        appProvider: ServicesProvider,
+        appProvider: AppProvider,
         {
           queryStringParams: {
             filters: encodedFilters,
@@ -1020,7 +1023,7 @@ export const serviceRoutes = {
     request: handler(
       Authed.merge(PathParams("mediaExcerptId")),
       async (
-        appProvider: ServicesProvider,
+        appProvider: AppProvider,
         { authToken, pathParams: { mediaExcerptId } }
       ) => {
         await appProvider.mediaExcerptsService.deleteMediaExcerpt(
@@ -1040,7 +1043,7 @@ export const serviceRoutes = {
         )
       ),
       async (
-        appProvider: ServicesProvider,
+        appProvider: AppProvider,
         {
           authToken,
           pathParams: { mediaExcerptId },
@@ -1063,7 +1066,7 @@ export const serviceRoutes = {
     request: handler(
       Authed.merge(PathParams("mediaExcerptId", "urlLocatorId")),
       async (
-        appProvider: ServicesProvider,
+        appProvider: AppProvider,
         { authToken, pathParams: { mediaExcerptId, urlLocatorId } }
       ) => {
         await appProvider.mediaExcerptsService.deleteUrlLocator(
@@ -1083,7 +1086,7 @@ export const serviceRoutes = {
         Body({ citations: z.array(CreateMediaExcerptCitation) })
       ),
       async (
-        appProvider: ServicesProvider,
+        appProvider: AppProvider,
         {
           authToken,
           pathParams: { mediaExcerptId },
@@ -1108,7 +1111,7 @@ export const serviceRoutes = {
         QueryStringParams("sourceId", "normalPincite")
       ),
       async (
-        appProvider: ServicesProvider,
+        appProvider: AppProvider,
         {
           authToken,
           pathParams: { mediaExcerptId },
@@ -1134,7 +1137,7 @@ export const serviceRoutes = {
         Body({ speakers: z.array(CreateMediaExcerptSpeaker) })
       ),
       async (
-        appProvider: ServicesProvider,
+        appProvider: AppProvider,
         {
           authToken,
           pathParams: { mediaExcerptId },
@@ -1159,7 +1162,7 @@ export const serviceRoutes = {
         QueryStringParams("persorgId")
       ),
       async (
-        appProvider: ServicesProvider,
+        appProvider: AppProvider,
         {
           authToken,
           pathParams: { mediaExcerptId },
@@ -1186,7 +1189,7 @@ export const serviceRoutes = {
     request: handler(
       Authed.merge(Body({ appearance: CreateAppearance })),
       async (
-        appProvider: ServicesProvider,
+        appProvider: AppProvider,
         { authToken, body: { appearance: createAppearance } }
       ) => {
         const { appearance, isExtant } =
@@ -1204,7 +1207,7 @@ export const serviceRoutes = {
     request: handler(
       PathParams("appearanceId"),
       async (
-        appProvider: ServicesProvider,
+        appProvider: AppProvider,
         { authToken, pathParams: { appearanceId } }
       ) => {
         const appearance =
@@ -1222,7 +1225,7 @@ export const serviceRoutes = {
     request: handler(
       QueryStringParams("filters", "sorts", "continuationToken", "count"),
       async (
-        appProvider: ServicesProvider,
+        appProvider: AppProvider,
         {
           authToken,
           queryStringParams: {
@@ -1271,7 +1274,7 @@ export const serviceRoutes = {
         )
       ),
       async (
-        appProvider: ServicesProvider,
+        appProvider: AppProvider,
         { authToken, pathParams: { appearanceId }, body: createConfirmation }
       ) => {
         const confirmationStatus =
@@ -1296,7 +1299,7 @@ export const serviceRoutes = {
     request: handler(
       Authed.merge(PathParams("appearanceId")),
       async (
-        appProvider: ServicesProvider,
+        appProvider: AppProvider,
         { authToken, pathParams: { appearanceId } }
       ) => {
         await appProvider.appearanceConfirmationsService.deleteAppearanceConfirmation(
@@ -1324,7 +1327,7 @@ export const serviceRoutes = {
     request: handler(
       QueryStringParams("userIds", "urlIds", "sourceIds"),
       async (
-        appProvider: ServicesProvider,
+        appProvider: AppProvider,
         { authToken, queryStringParams: { userIds, urlIds, sourceIds } }
       ) => {
         if (!userIds) {
@@ -1357,7 +1360,7 @@ export const serviceRoutes = {
     method: httpMethods.POST,
     request: handler(
       Body({ credentials: Credentials }),
-      async (appProvider: ServicesProvider, { body: { credentials } }) => {
+      async (appProvider: AppProvider, { body: { credentials } }) => {
         try {
           const { user, authToken, expires } =
             (await appProvider.authService.login(credentials)) as {
@@ -1381,7 +1384,7 @@ export const serviceRoutes = {
     method: httpMethods.POST,
     request: handler(
       Authed,
-      async (appProvider: ServicesProvider, { authToken }) => {
+      async (appProvider: AppProvider, { authToken }) => {
         await appProvider.authService.logout(authToken);
       }
     ),
@@ -1391,10 +1394,7 @@ export const serviceRoutes = {
     method: httpMethods.POST,
     request: handler(
       Body({ passwordResetRequest: CreatePasswordResetRequest }),
-      async (
-        appProvider: ServicesProvider,
-        { body: { passwordResetRequest } }
-      ) => {
+      async (appProvider: AppProvider, { body: { passwordResetRequest } }) => {
         const duration = await appProvider.passwordResetService.createRequest(
           passwordResetRequest
         );
@@ -1408,7 +1408,7 @@ export const serviceRoutes = {
     request: handler(
       QueryStringParams("passwordResetCode"),
       async (
-        appProvider: ServicesProvider,
+        appProvider: AppProvider,
         { queryStringParams: { passwordResetCode } }
       ) => {
         if (!passwordResetCode) {
@@ -1430,7 +1430,7 @@ export const serviceRoutes = {
         passwordResetConfirmation: PasswordResetConfirmation,
       }),
       async (
-        appProvider: ServicesProvider,
+        appProvider: AppProvider,
         { body: { passwordResetConfirmation } }
       ) => {
         const { user, authToken, expires } =
@@ -1446,10 +1446,7 @@ export const serviceRoutes = {
     method: httpMethods.POST,
     request: handler(
       Body({ registrationRequest: CreateRegistrationRequest }),
-      async (
-        appProvider: ServicesProvider,
-        { body: { registrationRequest } }
-      ) => {
+      async (appProvider: AppProvider, { body: { registrationRequest } }) => {
         const duration = await prefixErrorPath(
           appProvider.registrationService.createRequest(registrationRequest),
           "registrationRequest"
@@ -1464,7 +1461,7 @@ export const serviceRoutes = {
     request: handler(
       QueryStringParams("registrationCode"),
       async (
-        appProvider: ServicesProvider,
+        appProvider: AppProvider,
         { queryStringParams: { registrationCode } }
       ) => {
         const email =
@@ -1481,7 +1478,7 @@ export const serviceRoutes = {
     request: handler(
       Body({ registrationConfirmation: CreateRegistrationConfirmation }),
       async (
-        appProvider: ServicesProvider,
+        appProvider: AppProvider,
         { body: { registrationConfirmation } }
       ) => {
         const { user, authToken, expires } = (await prefixErrorPath(
@@ -1504,7 +1501,7 @@ export const serviceRoutes = {
     request: handler(
       Authed.merge(Body({ justificationVote: CreateJustificationVote })),
       async (
-        appProvider: ServicesProvider,
+        appProvider: AppProvider,
         { body: { justificationVote: createJustificationVote }, authToken }
       ) => {
         const justificationVote =
@@ -1523,7 +1520,7 @@ export const serviceRoutes = {
     request: handler(
       Authed.merge(Body({ justificationVote: DeleteJustificationVote })),
       async (
-        appProvider: ServicesProvider,
+        appProvider: AppProvider,
         { body: { justificationVote }, authToken }
       ) => {
         await appProvider.justificationVotesService.deleteVote(
@@ -1559,7 +1556,7 @@ export const serviceRoutes = {
     request: handler(
       Authed.merge(Body({ propositionTagVote: CreatePropositionTagVote })),
       async (
-        appProvider: ServicesProvider,
+        appProvider: AppProvider,
         { body: { propositionTagVote: createPropositionTagVote }, authToken }
       ) => {
         const propositionTagVote =
@@ -1581,7 +1578,7 @@ export const serviceRoutes = {
     request: handler(
       PathParams("propositionTagVoteId").merge(Authed),
       async (
-        appProvider: ServicesProvider,
+        appProvider: AppProvider,
         { pathParams: { propositionTagVoteId }, authToken }
       ) => {
         await appProvider.propositionTagVotesService.deletePropositionTagVoteForId(
@@ -1600,7 +1597,7 @@ export const serviceRoutes = {
     request: handler(
       Authed.merge(Body({ user: CreateUser })),
       async (
-        appProvider: ServicesProvider,
+        appProvider: AppProvider,
         { authToken, body: { user: createUser } }
       ) => {
         const user = await appProvider.usersService.createUserAsAuthToken(
@@ -1620,7 +1617,7 @@ export const serviceRoutes = {
     request: handler(
       Authed.merge(Body({ accountSettings: CreateAccountSettings })),
       async (
-        appProvider: ServicesProvider,
+        appProvider: AppProvider,
         { authToken, body: { accountSettings: createAccountSettings } }
       ) => {
         const accountSettings =
@@ -1637,7 +1634,7 @@ export const serviceRoutes = {
     method: httpMethods.GET,
     request: handler(
       Authed,
-      async (appProvider: ServicesProvider, { authToken }) => {
+      async (appProvider: AppProvider, { authToken }) => {
         const accountSettings =
           await appProvider.accountSettingsService.readOrCreateAccountSettings(
             authToken
@@ -1652,7 +1649,7 @@ export const serviceRoutes = {
     request: handler(
       Authed.merge(Body({ accountSettings: UpdateAccountSettings })),
       async (
-        appProvider: ServicesProvider,
+        appProvider: AppProvider,
         { authToken, body: { accountSettings: updateAccountSettings } }
       ) => {
         const accountSettings = await appProvider.accountSettingsService.update(
@@ -1672,7 +1669,7 @@ export const serviceRoutes = {
     request: handler(
       Body({ contentReport: CreateContentReport }),
       async (
-        appProvider: ServicesProvider,
+        appProvider: AppProvider,
         { authToken, body: { contentReport } }
       ) => {
         await appProvider.contentReportsService.createContentReport(
@@ -1693,7 +1690,7 @@ export const serviceRoutes = {
       // Require auth to prevent abuse
       Authed.merge(QueryStringParams("url", "quotation")),
       async (
-        appProvider: ServicesProvider,
+        appProvider: AppProvider,
         { queryStringParams: { url, quotation } }
       ) => {
         if (!url) {
@@ -1715,7 +1712,7 @@ export const serviceRoutes = {
     method: httpMethods.GET,
     request: handler(
       Authed.merge(QueryStringParams("url")),
-      async (appProvider: ServicesProvider, { queryStringParams: { url } }) => {
+      async (appProvider: AppProvider, { queryStringParams: { url } }) => {
         if (!url) {
           throw new InvalidRequestError("url is required.");
         }

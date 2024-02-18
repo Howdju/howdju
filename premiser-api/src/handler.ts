@@ -28,13 +28,17 @@ import {
   HttpStatusCode,
   httpStatusCodes,
 } from "howdju-common";
-import { AwsLogger, configureGatewayContext } from "howdju-service-common";
+import {
+  AppProvider,
+  AwsLogger,
+  configureGatewayContext,
+} from "howdju-service-common";
 
 import { routeRequest } from "./router";
 import { apiHost } from "./config/util";
 import * as customHeaderKeys from "./customHeaderKeys";
 import * as headerKeys from "./headerKeys";
-import { ApiProvider, AppProvider } from "./init";
+import { ApiProvider } from "./init";
 import { ApiCallback, Request, RequestIdentifiers } from "./types";
 
 const allowedHeaders = concat(

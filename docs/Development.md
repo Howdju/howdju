@@ -406,6 +406,18 @@ Consider only mocking dependencies that introduce:
 - Unreliability or unpredictability
 - Compexity in test environment setup that isn't outweighed by the additional test coverage.
 
+### Running tests
+
+You can run tests in a package using:
+
+```sh
+DEBUG_PRINT_DB_QUERIES=true yarn run test <suitePattern> --testNamePattern="'<testPattern>'"
+```
+
+Where `<suitePattern>` and `--testNamePattern` are optional. `<suitePattern>` matches against the
+'test suite' (file name) and `--testNamePattern` matches against the `describe` or `test` text of
+the tests.
+
 ### Types of tests
 
 ### Unit tests

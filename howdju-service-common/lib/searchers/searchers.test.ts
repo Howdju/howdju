@@ -10,7 +10,7 @@ import { SourceDescriptionSearcher } from "./searchers";
 
 const dbConfig = makeTestDbConfig();
 
-describe("sourcesDescriptionSearcher", () => {
+describe("sourceDescriptionSearcher", () => {
   let dbName: string;
   let pool: Pool;
 
@@ -37,20 +37,20 @@ describe("sourcesDescriptionSearcher", () => {
       const fooSources = await Promise.all(
         new Array(3)
           .fill(0)
-          .map(async (_x, i) =>
+          .map((_x, i) =>
             testHelper.makeSource(user.id, { description: `foo ${i}` })
           )
       );
       await Promise.all(
-        new Array(3).fill(0).map(
-          async (_x, i) =>
-            await testHelper.makeSource(user.id, {
-              description: `bar ${i}`,
-            })
+        new Array(3).fill(0).map((_x, i) =>
+          testHelper.makeSource(user.id, {
+            description: `bar ${i}`,
+          })
         )
       );
+      const authToken = "auth-token";
 
-      const sources = await searcher.search("foo");
+      const sources = await searcher.search(authToken, "foo");
 
       expect(sources).toIncludeSameMembers(
         expectToBeSameMomentDeep(fooSources)

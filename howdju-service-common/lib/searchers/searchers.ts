@@ -1,83 +1,66 @@
-import { MediaExcerptOut, SourceOut } from "howdju-common";
-
 import { Database } from "../database";
-import {
-  MediaExcerptsDao,
-  PersorgData,
-  PropositionData,
-  PropositionRow,
-  SourceRow,
-  SourcesDao,
-  WritData,
-  WritQuoteData,
-} from "../daos";
-import {
-  toProposition,
-  toWrit,
-  toWritQuote,
-  toPersorg,
-  ToWritMapperRow,
-  ToWritQuoteMapperRow,
-  ToPersorgMapperRow,
-} from "../daos/orm";
 import { TextSearcher } from "./TextSearcher";
-import { toIdString } from "../daos/daosUtil";
+import {
+  MediaExcerptsService,
+  PersorgsService,
+  PropositionsService,
+  SourcesService,
+  WritsService,
+} from "..";
 
-export const makePropositionTextSearcher = (database: Database) =>
-  new TextSearcher<PropositionRow, PropositionData>(
+export const makePropositionTextSearcher = (
+  database: Database,
+  propositionsService: PropositionsService
+) =>
+  new TextSearcher(
     database,
     "propositions",
     "text",
-    toProposition,
+    (authToken, ids) =>
+      propositionsService.readPropositionsForIds({ authToken }, ids),
     "proposition_id"
   );
 export type PropositionTextSearcher = ReturnType<
   typeof makePropositionTextSearcher
 >;
 
-export const makeWritTitleSearcher = (database: Database) =>
-  new TextSearcher<ToWritMapperRow, WritData>(
+// TODO(#201) remove everything writ-related
+export const makeWritTitleSearcher = (
+  database: Database,
+  writsService: WritsService
+) =>
+  new TextSearcher(
     database,
     "writs",
     "title",
-    toWrit,
+    (_authToken, ids) =>
+      Promise.all(ids.map((id) => writsService.readWritForId(id))),
     "writ_id"
   );
 export type WritTitleSearcher = ReturnType<typeof makeWritTitleSearcher>;
 
-export const makeWritQuoteQuoteTextSearcher = (database: Database) =>
-  new TextSearcher<ToWritQuoteMapperRow, WritQuoteData>(
-    database,
-    "writ_quotes",
-    "quote_text",
-    toWritQuote,
-    "writ_quote_id"
-  );
-export type WritQuoteQuoteTextSearcher = ReturnType<
-  typeof makeWritQuoteQuoteTextSearcher
->;
-
-export const makePersorgsNameSearcher = (database: Database) =>
-  new TextSearcher<ToPersorgMapperRow, PersorgData>(
+export const makePersorgsNameSearcher = (
+  database: Database,
+  persorgsService: PersorgsService
+) =>
+  new TextSearcher(
     database,
     "persorgs",
     "name",
-    toPersorg,
+    (_authToken, ids) => persorgsService.readPersorgsForIds(ids),
     "persorg_id"
   );
 export type PersorgsNameSearcher = ReturnType<typeof makePersorgsNameSearcher>;
 
 export const makeSourceDescriptionSearcher = (
   database: Database,
-  sourcesDao: SourcesDao
+  sourcesService: SourcesService
 ) =>
-  new TextSearcher<SourceRow, SourceOut>(
+  new TextSearcher(
     database,
     "sources",
     "description",
-    function ({ source_id }: SourceRow) {
-      return sourcesDao.readSourceForId(toIdString(source_id));
-    },
+    (_authToken, ids) => sourcesService.readSourcesForIds(ids),
     "source_id"
   );
 export type SourceDescriptionSearcher = ReturnType<
@@ -86,17 +69,13 @@ export type SourceDescriptionSearcher = ReturnType<
 
 export const makeMediaExcerptSearcher = (
   database: Database,
-  mediaExerptsDao: MediaExcerptsDao
+  mediaExcerptsService: MediaExcerptsService
 ) =>
-  new TextSearcher<{ media_excerpt_id: number }, MediaExcerptOut>(
+  new TextSearcher(
     database,
     "media_excerpts",
     "quotation",
-    function ({ media_excerpt_id }) {
-      return mediaExerptsDao.readMediaExcerptForId(
-        toIdString(media_excerpt_id)
-      );
-    },
+    (_authToken, ids) => mediaExcerptsService.readMediaExcerptsForIds(ids),
     "media_excerpt_id"
   );
 export type MediaExcerptsSearcher = ReturnType<typeof makeMediaExcerptSearcher>;

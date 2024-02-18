@@ -1,13 +1,14 @@
 import map from "lodash/map";
 import { QueryResultRow } from "pg";
 
-import { filterDefined } from "howdju-common";
+import { AuthToken, EntityId } from "howdju-common";
 
 import { Database } from "../database";
+import { toIdString } from "../daos/daosUtil";
 
 const emptyResults = Promise.resolve([]);
 
-export class TextSearcher<Row extends QueryResultRow, Data> {
+export class TextSearcher<Entity> {
   searchFullTextPhraseQuery: string;
   searchFullTextPlainQuery: string;
   searchContainingTextQuery: string;
@@ -16,26 +17,33 @@ export class TextSearcher<Row extends QueryResultRow, Data> {
     private database: Database,
     private tableName: string,
     private textColumnName: string,
-    private rowMapper: (
-      row: Row
-    ) => Promise<Data | undefined> | Data | undefined,
-    private dedupColumnName: string
+    private entityReader: (
+      authToken: AuthToken | undefined,
+      ids: EntityId[]
+    ) => Promise<Entity[]>,
+    private idColumnName: string
   ) {
     this.searchFullTextPhraseQuery = makeSearchFullTextPhraseQuery(
+      idColumnName,
       tableName,
       textColumnName
     );
     this.searchFullTextPlainQuery = makeSearchFullTextPlainQuery(
+      idColumnName,
       tableName,
       textColumnName
     );
     this.searchContainingTextQuery = makeSearchContainingTextQuery(
+      idColumnName,
       tableName,
       textColumnName
     );
   }
 
-  async search(searchText: string): Promise<Data[]> {
+  async search(
+    authToken: AuthToken | undefined,
+    searchText: string
+  ): Promise<Entity[]> {
     if (!searchText) {
       return emptyResults;
     }
@@ -75,6 +83,7 @@ export class TextSearcher<Row extends QueryResultRow, Data> {
       {
         queryName: "searchFullTextRawQuery",
         sql: makeSearchFullTextRawQuery(
+          this.idColumnName,
           this.tableName,
           this.textColumnName,
           tsquery
@@ -87,33 +96,33 @@ export class TextSearcher<Row extends QueryResultRow, Data> {
         args: [normalSearchText],
       },
     ]);
-    const uniqueRows = removeDups(
-      this.dedupColumnName,
+    const uniqueIds = collectUniqueIds(
+      this.idColumnName,
       phraseRows,
       plainRows,
       rawRows,
       containingRows
-    ) as Row[];
-    const mappedRows = await Promise.all(
-      uniqueRows.map((row) => this.rowMapper(row))
     );
-    return filterDefined(mappedRows);
+    return this.entityReader(authToken, uniqueIds);
   }
 }
 
-function removeDups(idName: string, ...rowsArr: QueryResultRow[][]) {
+function collectUniqueIds(
+  idName: string,
+  ...rowsArr: QueryResultRow[][]
+): EntityId[] {
   const seenIds = new Set();
-  const deduped = [];
+  const uniqueIds = [];
   for (const rows of rowsArr) {
     for (const row of rows) {
-      const id: string = row[idName];
+      const id = toIdString(row[idName]);
       if (!seenIds.has(id)) {
-        deduped.push(row);
+        uniqueIds.push(id);
         seenIds.add(id);
       }
     }
   }
-  return deduped;
+  return uniqueIds;
 }
 
 function normalizeSearchText(searchText: string) {
@@ -126,6 +135,7 @@ function normalizeSearchText(searchText: string) {
 }
 
 function makeSearchFullTextPhraseQuery(
+  idColumnName: string,
   tableName: string,
   textColumnName: string
 ) {
@@ -133,7 +143,7 @@ function makeSearchFullTextPhraseQuery(
     with
       results as (
         select
-            t.*
+            t.${idColumnName}
           , ts_rank_cd(vector, query) as rank
         from
           ${tableName} t,
@@ -148,6 +158,7 @@ function makeSearchFullTextPhraseQuery(
 }
 
 function makeSearchFullTextPlainQuery(
+  idColumnName: string,
   tableName: string,
   textColumnName: string
 ) {
@@ -155,7 +166,7 @@ function makeSearchFullTextPlainQuery(
     with
       results as (
         select
-            t.*
+            t.${idColumnName}
           , ts_rank_cd(vector, query) as rank
         from
           ${tableName} t,
@@ -170,6 +181,7 @@ function makeSearchFullTextPlainQuery(
 }
 
 function makeSearchFullTextRawQuery(
+  idColumnName: string,
   tableName: string,
   textColumnName: string,
   tsquery: string
@@ -178,7 +190,7 @@ function makeSearchFullTextRawQuery(
     with
       results as (
         select
-            t.*
+            t.${idColumnName}
           , ts_rank_cd(vector, ${tsquery}) as rank
         from
           ${tableName} t,
@@ -192,11 +204,12 @@ function makeSearchFullTextRawQuery(
 }
 
 function makeSearchContainingTextQuery(
+  idColumnName: string,
   tableName: string,
   textColumnName: string
 ) {
   return `
-    select *
+    select ${idColumnName}
     from ${tableName}
     where
           ${textColumnName} ilike '%' || $1 || '%'

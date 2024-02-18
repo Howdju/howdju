@@ -1,7 +1,7 @@
 import { apiErrorCodes, httpStatusCodes } from "howdju-common";
+import { AppProvider } from "howdju-service-common";
 import { HandlerResult } from "howdju-service-routes/lib/routeHandler";
 
-import { AppProvider } from "./init";
 import { ApiCallback } from "./types";
 
 interface ResponseArgs extends HandlerResult {
