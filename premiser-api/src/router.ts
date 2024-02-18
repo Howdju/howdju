@@ -9,6 +9,7 @@ import {
   toJson,
 } from "howdju-common";
 import {
+  AppProvider,
   AuthenticationError,
   AuthorizationError,
   ConflictError,
@@ -37,7 +38,6 @@ import {
   unauthenticated,
   unauthorized,
 } from "./responses";
-import { AppProvider } from "./init";
 import { Request, ApiCallback } from "./types";
 
 export async function routeRequest(

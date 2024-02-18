@@ -16,6 +16,7 @@ interface Props
   editorDispatch: EditorFieldsDispatch;
 }
 
+// TODO(#201) remove everything writ-related
 export default function WritEditorFields(props: Props) {
   const {
     writ,

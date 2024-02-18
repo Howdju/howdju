@@ -1,5 +1,5 @@
 import { AuthToken } from "howdju-common";
-import { ServicesProvider } from "howdju-service-common";
+import { AppProvider } from "howdju-service-common";
 import { z } from "zod";
 
 interface CommonRequest {
@@ -30,10 +30,7 @@ export function handler<
   T = InferRequest<S>
 >(
   schema: S,
-  handler: (
-    provider: ServicesProvider,
-    request: T & CommonRequest
-  ) => Promise<R>
+  handler: (provider: AppProvider, request: T & CommonRequest) => Promise<R>
 ) {
   return {
     schema,

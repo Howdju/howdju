@@ -3,9 +3,13 @@ import read from "read";
 
 import { logger } from "howdju-ops";
 import { CreateUser, UserOut } from "howdju-common";
-import { permissions as PERMISSIONS, Permission } from "howdju-service-common";
+import {
+  permissions as PERMISSIONS,
+  Permission,
+  AppProvider,
+} from "howdju-service-common";
 
-import { ApiProvider, AppProvider } from "../src/init";
+import { ApiProvider } from "../src/init";
 
 const parser = new ArgumentParser({
   description: "Add a user",

@@ -1,42 +1,56 @@
+import { MainSearchService } from "..";
 import {
   makePropositionTextSearcher,
   makeWritTitleSearcher,
-  makeWritQuoteQuoteTextSearcher,
   makePersorgsNameSearcher,
   makeSourceDescriptionSearcher,
   makeMediaExcerptSearcher,
 } from "../searchers/searchers";
-import { DaosProvider } from "./daosInit";
+import { ServicesProvider } from "./servicesInit";
 
 /** Provides the searchers and previous providers. */
 export type SearchersProvider = ReturnType<typeof searchersInitializer> &
-  DaosProvider;
+  ServicesProvider;
 
 /** Initializes the searchers. */
-export function searchersInitializer(provider: DaosProvider) {
+export function searchersInitializer(provider: ServicesProvider) {
   const propositionsTextSearcher = makePropositionTextSearcher(
-    provider.database
+    provider.database,
+    provider.propositionsService
   );
-  const writsTitleSearcher = makeWritTitleSearcher(provider.database);
-  const writQuotesQuoteTextSearcher = makeWritQuoteQuoteTextSearcher(
-    provider.database
+  // TODO(#201) remove everything writ-related
+  const writsTitleSearcher = makeWritTitleSearcher(
+    provider.database,
+    provider.writsService
   );
-  const persorgsNameSearcher = makePersorgsNameSearcher(provider.database);
+  const persorgsNameSearcher = makePersorgsNameSearcher(
+    provider.database,
+    provider.persorgsService
+  );
   const sourceDescriptionSearcher = makeSourceDescriptionSearcher(
     provider.database,
-    provider.sourcesDao
+    provider.sourcesService
   );
   const mediaExcerptsSearcher = makeMediaExcerptSearcher(
     provider.database,
-    provider.mediaExcerptsDao
+    provider.mediaExcerptsService
+  );
+
+  const mainSearchService = new MainSearchService(
+    provider.tagsService,
+    propositionsTextSearcher,
+    sourceDescriptionSearcher,
+    mediaExcerptsSearcher,
+    provider.mediaExcerptsService,
+    persorgsNameSearcher
   );
 
   provider.logger.debug("searchersInit complete");
 
   return {
+    mainSearchService,
     propositionsTextSearcher,
     writsTitleSearcher,
-    writQuotesQuoteTextSearcher,
     persorgsNameSearcher,
     sourceDescriptionSearcher,
     mediaExcerptsSearcher,

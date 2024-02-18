@@ -13,11 +13,11 @@ import {
   UserValidator,
   JustificationVoteValidator,
 } from "../validators";
+import { DaosProvider } from "./daosInit";
 import { LoggerProvider } from "./loggerInit";
-import { SearchersProvider } from "./searchersInit";
 
 export type ValidatorsProvider = ReturnType<typeof validatorsInitializer> &
-  SearchersProvider;
+  DaosProvider;
 
 export function validatorsInitializer(provider: LoggerProvider) {
   const urlValidator = new UrlValidator();

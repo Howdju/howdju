@@ -8,7 +8,7 @@ import {
   SourceDescriptionSearcher,
 } from "../searchers";
 import { MediaExcerptsService } from "./MediaExcerptsService";
-import { isDomain, isUrl } from "howdju-common";
+import { AuthToken, isDomain, isUrl } from "howdju-common";
 
 const MAX_EXCERPT_COUNT = 50;
 
@@ -22,7 +22,7 @@ export class MainSearchService {
     private persorgsNameSearcher: PersorgsNameSearcher
   ) {}
 
-  async search(searchText: string) {
+  async search(authToken: AuthToken | undefined, searchText: string) {
     searchText = searchText.trim();
     if (!searchText) {
       return Bluebird.resolve({
@@ -34,18 +34,21 @@ export class MainSearchService {
       });
     }
     // TODO(466) combine search clauses per entity.
-    const mediaExcerpts = await this.searchMediaExcerpts(searchText);
+    const mediaExcerpts = await this.searchMediaExcerpts(authToken, searchText);
     // TODO(466) unify entities into a singular search result.
     return Bluebird.props({
       mediaExcerpts,
-      persorgs: this.persorgsNameSearcher.search(searchText),
-      propositions: this.propositionsTextSearcher.search(searchText),
-      sources: this.sourceDescriptionSearcher.search(searchText),
+      persorgs: this.persorgsNameSearcher.search(authToken, searchText),
+      propositions: this.propositionsTextSearcher.search(authToken, searchText),
+      sources: this.sourceDescriptionSearcher.search(authToken, searchText),
       tags: this.tagsService.readTagsLikeTagName(searchText),
     });
   }
 
-  private async searchMediaExcerpts(searchText: string) {
+  private async searchMediaExcerpts(
+    authToken: AuthToken | undefined,
+    searchText: string
+  ) {
     const isDomainSearch = isDomain(searchText);
     if (isDomainSearch) {
       const { mediaExcerpts } =
@@ -71,6 +74,6 @@ export class MainSearchService {
       return mediaExcerpts;
     }
 
-    return this.mediaExcerptsSearcher.search(searchText);
+    return this.mediaExcerptsSearcher.search(authToken, searchText);
   }
 }

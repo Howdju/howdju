@@ -16,7 +16,6 @@ import {
   JustificationsService,
   JustificationBasisCompoundsService,
   JustificationVotesService,
-  MainSearchService,
   MediaExcerptsService,
   MediaExcerptInfosService,
   PermissionsService,
@@ -241,15 +240,6 @@ export function servicesInitializer(provider: AwsProvider) {
     provider.justificationVotesDao
   );
 
-  const mainSearchService = new MainSearchService(
-    tagsService,
-    provider.propositionsTextSearcher,
-    provider.sourceDescriptionSearcher,
-    provider.mediaExcerptsSearcher,
-    mediaExcerptsService,
-    provider.persorgsNameSearcher
-  );
-
   const registrationService = new RegistrationService(
     provider.logger,
     provider.appConfig,
@@ -328,7 +318,6 @@ export function servicesInitializer(provider: AwsProvider) {
     justificationsService,
     justificationBasisCompoundsService,
     justificationVotesService,
-    mainSearchService,
     mediaExcerptsService,
     mediaExcerptInfosService,
     permissionsService,

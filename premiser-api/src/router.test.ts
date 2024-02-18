@@ -2,7 +2,7 @@ import { toPairs } from "lodash";
 
 import { mockLogger } from "howdju-test-common";
 import { ServiceRoute, serviceRoutes } from "howdju-service-routes";
-import { ServicesProvider } from "howdju-service-common";
+import { AppProvider } from "howdju-service-common";
 import {
   brandedParse,
   httpMethods,
@@ -20,7 +20,7 @@ import moment from "moment";
 
 const mockAppProvider = {
   logger: mockLogger,
-} as ServicesProvider;
+} as AppProvider;
 
 const clientIdentifiers = {
   sessionStorageId: undefined,
@@ -41,7 +41,7 @@ describe("routeRequest", () => {
     const appProvider = {
       propositionsService: { readPropositionForId },
       logger: mockLogger,
-    } as unknown as ServicesProvider;
+    } as unknown as AppProvider;
     const authToken = "the-auth-token";
     const propositionId = "56";
     const request: Request = {
@@ -103,7 +103,7 @@ describe("routeRequest", () => {
     const appProvider = {
       statementsService: { readStatementsForSentenceTypeAndId },
       logger: mockLogger,
-    } as unknown as ServicesProvider;
+    } as unknown as AppProvider;
     const authToken = "the-auth-token";
     const sentenceType = "PROPOSITION";
     const sentenceId = "42";
@@ -148,7 +148,7 @@ describe("routeRequest", () => {
         readUserIdForAuthToken: jest.fn().mockReturnValue(userId),
       },
       logger: mockLogger,
-    } as unknown as ServicesProvider;
+    } as unknown as AppProvider;
     const authToken = "the-auth-token";
     const request: Request = {
       requestIdentifiers: {},
