@@ -19,10 +19,12 @@ import {
 } from "@/hooks";
 import { domainSchema, tagSchema } from "@/normalizationSchemas";
 import explorePage from "./explorePageSlice";
+import { TextField } from "@/components/text/TextField";
 
 export default function ExplorePage() {
   const dispatch = useAppDispatch();
   useEffect(() => void dispatch(explorePage.fetchData()), [dispatch]);
+  const [domainFilter, setDomainFilter] = React.useState("");
 
   const { allTags, allDomains } = useAppAllEntitiesSelector({
     allTags: tagSchema,
@@ -30,6 +32,11 @@ export default function ExplorePage() {
   });
   allTags.sort((a, b) => a.name.localeCompare(b.name));
   allDomains.sort();
+  const filteredDomains = domainFilter
+    ? allDomains.filter(({ domain }) =>
+        domain.toLowerCase().includes(domainFilter.toLowerCase())
+      )
+    : allDomains;
 
   function goToTag(tag: TagOutOrInput) {
     if (!tag.id) {
@@ -65,13 +72,21 @@ export default function ExplorePage() {
       {allTags.length == 0 && !isFetching && "No tags"}
 
       <h2>Domains</h2>
+      <TextField
+        id="explore-page-domain-filter"
+        name="domainFilter"
+        label="Filter domains"
+        value={domainFilter}
+        onPropertyChange={({ domainFilter }) => setDomainFilter(domainFilter)}
+      />
       <ItemGrid
         id="explore-page-domain-grid"
-        items={allDomains.map((domain) => (
+        items={filteredDomains.map((domain) => (
           <DomainCard key={domain.id} domain={domain} />
         ))}
         itemColSpans={smallCardColSpans}
       />
+      {filteredDomains.length == 0 && !!domainFilter && "No matching domains"}
       {allDomains.length == 0 && !isFetching && "No domains"}
     </Page>
   );
