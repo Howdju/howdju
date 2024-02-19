@@ -3,6 +3,7 @@ import crypto from "crypto";
 
 import {
   CreateUrl,
+  Domain,
   EntityId,
   Logger,
   normalizeUrl,
@@ -85,7 +86,7 @@ export class UrlsService {
     return urls;
   }
 
-  async readAllDomains() {
+  async readAllDomains(): Promise<Domain[]> {
     const allDomains = await this.urlsDao.readAllDomains();
     return allDomains.map((domain) => {
       // Create an artificial ID to help the client track the domain (normalizr only handles

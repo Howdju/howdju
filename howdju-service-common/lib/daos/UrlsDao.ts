@@ -66,7 +66,7 @@ export class UrlsDao {
     return url;
   }
 
-  async readAllDomains() {
+  async readAllDomains(): Promise<string[]> {
     const { rows } = await this.database.query(
       "readAllDomains",
       `

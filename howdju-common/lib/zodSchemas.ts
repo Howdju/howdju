@@ -454,6 +454,15 @@ export type CreateUrl = z.infer<typeof CreateUrl>;
 export const CreateUrlInput = CreateUrl;
 export type CreateUrlInput = z.infer<typeof CreateUrlInput>;
 
+/** A domain name. This is currently not an entity; it is derived from URLs. */
+export const Domain = z.object({
+  // A stable identifier for the domain. E.g. the SHA1 hash of the domain.
+  id: z.string(),
+  // The domain e.g. www.example.com
+  domain: z.string(),
+});
+export type Domain = z.output<typeof Domain>;
+
 export const UrlLocator = Entity.extend({
   mediaExcerptId: z.string(),
   url: Url,
@@ -465,7 +474,6 @@ export const UrlLocator = Entity.extend({
   creator: UserBlurb,
 });
 export type UrlLocator = z.output<typeof UrlLocator>;
-
 /** A reference to a part of a textual media. */
 export const WritQuote = Entity.extend({
   quoteText: z.string().min(1).max(4096),

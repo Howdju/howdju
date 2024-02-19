@@ -28,16 +28,22 @@ export const largeCardColSpans: GridCellProps = {
   desktop: { colSpan: 6 },
   largeDesktop: { colSpan: 6 },
 };
-export const smallCardColSpans: GridCellProps = {
+export const mediumCardColSpans: GridCellProps = {
   phone: { colSpan: 4 },
   tablet: { colSpan: 4 },
   desktop: { colSpan: 3 },
   largeDesktop: { colSpan: 3 },
 };
+export const smallCardColSpans: GridCellProps = {
+  phone: { colSpan: 2 },
+  tablet: { colSpan: 4 },
+  desktop: { colSpan: 3 },
+  largeDesktop: { colSpan: 2 },
+};
 
-export const persorgCardColSpans = smallCardColSpans;
-export const sourceCardColSpans = smallCardColSpans;
-export const propositionCardColSpans = smallCardColSpans;
+export const persorgCardColSpans = mediumCardColSpans;
+export const sourceCardColSpans = mediumCardColSpans;
+export const propositionCardColSpans = mediumCardColSpans;
 export const appearanceCardColSpans = largeCardColSpans;
 export const justificationCardColSpans = largeCardColSpans;
 export const mediaExcerptCardColSpans = largeCardColSpans;
@@ -57,6 +63,12 @@ type ListEntitiesWidgetProps = {
   cardColSpans: GridCellProps;
 };
 
+/**
+ * A widget for a grid of entities. It handles fetching, storing, and paginating
+ * the entities.
+ *
+ * Use ItemGrid if you have a static list of items to show.
+ */
 export default function ListEntitiesWidget({
   widgetId,
   fetchEntities,
