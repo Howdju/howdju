@@ -100,7 +100,7 @@ export function* mediaExcerptUsagesSaga() {
 export function* mediaExcerptUsagesJustificationsSaga() {
   yield takeEvery(
     slice.actions.fetchJustifications,
-    // TODO(525) factor out the duplicate logic in these sagas. Use it in factCheckPageSliceSaga too.
+    // TODO(#525) factor out the duplicate logic in these sagas. Use it in factCheckPageSliceSaga too.
     function* ({ payload: { mediaExcerptId, continuationToken } }) {
       const {
         payload: {
