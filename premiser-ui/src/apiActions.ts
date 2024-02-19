@@ -70,6 +70,7 @@ import {
   appearanceSchema,
   appearancesSchema,
   contextTrailItemsSchema,
+  domainsSchema,
   justificationSchema,
   justificationsSchema,
   justificationVoteSchema,
@@ -1614,11 +1615,24 @@ export const api = {
     "FETCH_CANONICAL_URL",
     serviceRoutes.readCanonicalUrl,
     (urlKey: string, url: string) => ({
-      queryStringParams: {
-        url,
+      config: {
+        queryStringParams: {
+          url,
+        },
+        normalizationSchema: { canonicalUrl: nullSchema },
       },
-      normalizationSchema: { canonicalUrl: nullSchema },
       meta: { urlKey },
+    })
+  ),
+
+  fetchExplorePageData: apiActionCreator(
+    "FETCH_EXPLORE_PAGE_DATA",
+    serviceRoutes.readExplorePageData,
+    () => ({
+      normalizationSchema: {
+        tags: tagsSchema,
+        domains: domainsSchema,
+      },
     })
   ),
 };

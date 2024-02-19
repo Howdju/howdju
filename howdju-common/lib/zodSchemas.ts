@@ -1607,6 +1607,7 @@ const EntityType = z.enum([
   "REGISTRATION_REQUEST",
   "SOURCE",
   "STATEMENT",
+  "TAG",
   "TAG_VOTE",
   "URL",
   "URL_LOCATOR",

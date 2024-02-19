@@ -59,7 +59,7 @@ import {
   prefixErrorPath,
 } from "howdju-service-common";
 
-import { Authed, Body, PathParams, QueryStringParams } from "./routeSchemas";
+import { Authed, Body, EmptyRequest, PathParams, QueryStringParams } from "./routeSchemas";
 import { handler } from "./routeHandler";
 
 export type ServiceRoutes = typeof serviceRoutes;
@@ -98,6 +98,9 @@ export const serviceRoutes = {
         appProvider: AppProvider,
         { queryStringParams: { searchText } }
       ) => {
+        if (!searchText) {
+          return { body: { tags: [] } };
+        }
         const tags = await appProvider.tagsService.readTagsLikeTagName(
           searchText
         );
@@ -1721,5 +1724,17 @@ export const serviceRoutes = {
         return { body: { canonicalUrl } };
       }
     ),
+  },
+
+  readExplorePageData: {
+    path: "explore-page",
+    method: httpMethods.GET,
+    request: handler(EmptyRequest, async (appProvider: AppProvider) => {
+      const [tags, domains] = await Promise.all([
+        appProvider.tagsService.readAllTags(),
+        appProvider.urlsService.readAllDomains(),
+      ]);
+      return { body: { tags, domains } };
+    }),
   },
 } as const;

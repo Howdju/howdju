@@ -44,6 +44,11 @@ export const usersSchema = new schema.Array(userSchema);
 export const tagSchema = new schema.Entity<TagOut>("tags");
 export const tagsSchema = new schema.Array(tagSchema);
 
+export const domainSchema = new schema.Entity<{ id: string; domain: string }>(
+  "domains"
+);
+export const domainsSchema = new schema.Array(domainSchema);
+
 export const propositionTagVoteSchema =
   new schema.Entity<PropositionTagVoteOut>("propositionTagVotes", {
     tag: tagSchema,

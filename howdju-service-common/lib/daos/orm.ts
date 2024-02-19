@@ -34,6 +34,7 @@ import {
   SourceOut,
   SourceRef,
   StatementRef,
+  TagOut,
   TagRef,
   toSlug,
   UrlRef,
@@ -897,7 +898,7 @@ export const toTag = wrapMapper(function toTagMapper(row) {
   return {
     id: toIdString(row.tag_id),
     name: row.name,
-  };
+  } as TagOut;
 });
 
 export type ToPersorgMapperRow = PersorgRow &

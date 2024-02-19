@@ -36,6 +36,7 @@ import {
   mediaExcerptCitationKey,
   mediaExcerptSpeakerKey,
   propositionTagVoteSchema,
+  domainSchema,
 } from "@/normalizationSchemas";
 import { MergeDeep } from "type-fest";
 
@@ -89,6 +90,7 @@ type SchemaEntityState<
 export const initialState = {
   appearances: {} as SchemaEntityState<typeof appearanceSchema>,
   contextTrailItems: {} as SchemaEntityState<typeof contextTrailItemSchema>,
+  domains: {} as SchemaEntityState<typeof domainSchema>,
   justifications: {} as SchemaEntityState<
     typeof justificationSchema,
     {

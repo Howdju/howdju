@@ -27,6 +27,11 @@ const tabInfos = [
     id: "recent-activity-tab",
   },
   {
+    path: paths.explore(),
+    text: "Explore",
+    id: "explore-tab",
+  },
+  {
     path: paths.about(),
     text: t(MAIN_TABS_ABOUT_TAB_NAME),
     id: "about-tab",

@@ -1,46 +1,45 @@
+import { Location, LocationState } from "history";
+import { map, reduce } from "lodash";
+import { Key as PathToRegexpKey, pathToRegexp } from "path-to-regexp";
 import React, { ReactElement } from "react";
-import reduce from "lodash/reduce";
 import { Route, RouteProps } from "react-router";
-import { pathToRegexp, Key as PathToRegexpKey } from "path-to-regexp";
 
-import { JustificationRootTargetTypes, commonPaths } from "howdju-common";
+import { commonPaths, JustificationRootTargetTypes } from "howdju-common";
 
-import AccountSettingsPage from "./pages/accountSettings/AccountSettingsPage";
 import AboutPage from "@/pages/about/AboutPage";
+import PasswordResetConfirmationPage from "@/pages/passwordResetConfirmation/PasswordResetConfirmationPage";
+import PasswordResetRequestPage from "@/pages/passwordResetRequest/PasswordResetRequestPage";
+import { PrimaryContextTrailProvider } from "./components/contextTrail/PrimaryContextTrailProvider";
 import CreatePropositionPage from "./CreatePropositionPage";
 import { history } from "./history";
 import IconPage from "./IconPage";
-import JustificationsPage from "./pages/justifications/JustificationsPage";
-import JustificationsSearchPage from "./pages/justificationsSearch/JustificationsSearchPage";
 import LandingPage from "./LandingPage";
 import LoginPage from "./LoginPage";
 import mainSearcher from "./mainSearcher";
-import MainSearchPage from "./pages/mainSearch/MainSearchPage";
 import NotFoundPage from "./NotFoundPage";
-import PasswordResetRequestPage from "@/pages/passwordResetRequest/PasswordResetRequestPage";
-import PasswordResetConfirmationPage from "@/pages/passwordResetConfirmation/PasswordResetConfirmationPage";
-import paths, { createJustificationPath } from "./paths";
+import AccountSettingsPage from "./pages/accountSettings/AccountSettingsPage";
+import AppearancePage from "./pages/appearances/AppearancePage";
+import CreateAppearancePage from "./pages/appearances/CreateAppearancePage";
+import ExplorePage from "./pages/explore/ExplorePage";
+import FactCheckPage from "./pages/factChecks/FactCheckPage";
+import JustificationsPage from "./pages/justifications/JustificationsPage";
+import JustificationsSearchPage from "./pages/justificationsSearch/JustificationsSearchPage";
+import MainSearchPage from "./pages/mainSearch/MainSearchPage";
+import MediaExcerptPage from "./pages/mediaExcerpt/MediaExcerptPage";
+import MediaExcerptsSearchPage from "./pages/mediaExcerptsSearch/MediaExcerptsSearchPage";
 import PersorgPage from "./pages/persorg/PersorgPage";
-import PrivacySettingsPage from "./PrivacySettingsPage";
 import PropositionUsagesPage from "./pages/propositionUsages/PropositionUsagesPage";
-import RecentActivityPage from "./RecentActivityPage";
 import RegistrationConfirmationPage from "./pages/registration/RegistrationConfirmationPage";
 import RegistrationRequestPage from "./pages/registration/RegistrationRequestPage";
 import SourcePage from "./pages/source/SourcePage";
 import SubmitMediaExcerptPage from "./pages/SubmitMediaExcerptPage";
 import TagPage from "./pages/tag/TagPage";
-import TestErrorPage from "./TestErrorPage";
-
 import WritQuotePage from "./pages/WritQuotePage";
-import { map } from "lodash";
+import paths, { createJustificationPath } from "./paths";
+import PrivacySettingsPage from "./PrivacySettingsPage";
+import RecentActivityPage from "./RecentActivityPage";
+import TestErrorPage from "./TestErrorPage";
 import { CreatePropositionPageMode } from "./types";
-import { Location, LocationState } from "history";
-import { PrimaryContextTrailProvider } from "./components/contextTrail/PrimaryContextTrailProvider";
-import MediaExcerptPage from "./pages/mediaExcerpt/MediaExcerptPage";
-import CreateAppearancePage from "./pages/appearances/CreateAppearancePage";
-import AppearancePage from "./pages/appearances/AppearancePage";
-import FactCheckPage from "./pages/factChecks/FactCheckPage";
-import MediaExcerptsSearchPage from "./pages/mediaExcerptsSearch/MediaExcerptsSearchPage";
 
 const renderHomePath = (props: RouteProps) => {
   const mainSearchText =
@@ -83,6 +82,7 @@ const routesById = {
   recentActivity: (
     <Route exact path={paths.recentActivity()} component={RecentActivityPage} />
   ),
+  explore: <Route exact path={paths.explore()} component={ExplorePage} />,
   about: <Route exact path={paths.about()} component={AboutPage} />,
 
   writQuote: (

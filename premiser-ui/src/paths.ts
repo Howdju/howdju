@@ -33,6 +33,7 @@ class Paths {
   home = () => "/";
 
   recentActivity = () => "/recent-activity";
+  explore = () => "/explore";
   about = () => "/about";
 
   login = () => "/login";

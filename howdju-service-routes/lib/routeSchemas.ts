@@ -1,6 +1,9 @@
 import { reduce } from "lodash";
 import { z } from "zod";
 
+export const EmptyRequest = z.object({});
+export type EmptyRequest = z.output<typeof EmptyRequest>;
+
 /**
  * A request schema mixin for routes requiring an auth token.
  *

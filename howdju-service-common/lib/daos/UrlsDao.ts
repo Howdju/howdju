@@ -66,6 +66,19 @@ export class UrlsDao {
     return url;
   }
 
+  async readAllDomains() {
+    const { rows } = await this.database.query(
+      "readAllDomains",
+      `
+          select distinct
+            substring( url from '.*://([^/]*)' ) as domain
+          from urls
+            where deleted is null
+          order by domain`
+    );
+    return rows.map((row) => row.domain).filter((domain) => !!domain);
+  }
+
   async readUrlsForCanonicalUrl(canonicalUrl: string) {
     const { rows } = await this.database.query(
       "readForCanonicalUrl",
