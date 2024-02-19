@@ -82,6 +82,9 @@ $banner-padding: 3em;
   }
 
   ul#ways-to-use {
+    a {
+      text-decoration: underline;
+    }
     li:nth-child(1) {
       background-color: $peter-river;
       border: 1px solid $belize-hole;

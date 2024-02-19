@@ -1,8 +1,6 @@
-import { FontIcon } from "@react-md/icon";
 import cloneDeep from "lodash/cloneDeep";
 import moment from "moment";
 import React, { Component } from "react";
-import { Link } from "react-router-dom";
 
 import { makeJustificationViewModel } from "howdju-client-common";
 import {
@@ -22,13 +20,13 @@ import {
 
 import ContextTrail from "@/components/contextTrail/ContextTrail";
 import JustificationBranch from "./JustificationBranch";
-import paths from "./paths";
 import PropositionCard from "./PropositionCard";
 import { combineIds } from "./viewModels";
 import TreePolarity from "./components/TreePolarity";
 
 import "./LandingPage.scss";
 import MediaExcerptCard from "./components/mediaExcerpts/MediaExcerptCard";
+import { MaterialSymbol } from "react-material-symbols";
 
 export default class LandingPage extends Component {
   render() {
@@ -466,52 +464,41 @@ export default class LandingPage extends Component {
         <p>Howdju&rsquo;s goal is to provide those tools, with your help.</p>
 
         <p>Some ways to use Howdju:</p>
+
         <ul id="ways-to-use" className="blocks">
           <li className="block-item-spacer">
             <div className="icon">
-              <FontIcon>book</FontIcon>
+              <MaterialSymbol icon="fact_check" />
             </div>
-            Organize research: capture the implications of the primary sources
-            you discover, making them available to others while benefiting from
-            the contributions of others.
+            <p>Fact check news articles and social media posts.</p>
+            <p>
+              <a href="https://docs.howdju.com/how-to/fact-check">learn more</a>
+            </p>
           </li>
           <li className="block-item-spacer">
             <div className="icon">
-              <FontIcon>share</FontIcon>
+              <MaterialSymbol icon="bookmark" />
             </div>
-            Share justifications with colleagues or friends to empower informed
-            dialog and to clarify viewpoints.
+            <p>
+              Bookmark more than just the URL: Howdju saves specific parts of a
+              page, along with who said it and what it meant. This makes it
+              easier to find later and to share with others.
+            </p>
+            <p>
+              <a href="https://docs.howdju.com/how-to/bookmark">learn more</a>
+            </p>
           </li>
           <li className="block-item-spacer">
             <div className="icon">
-              <FontIcon>whatshot</FontIcon>
+              <MaterialSymbol icon="notifications" />
             </div>
-            Discover the best information about interesting and relevant topics.
-          </li>
-        </ul>
-
-        <p>How to get started:</p>
-        <ul id="get-started" className="blocks">
-          <li>
-            <Link to="https://chrome.google.com/webstore/detail/howdju-extension/gijlmlebhfiglpgdlgphbmaamhkchoei/">
-              <div className="block-item-spacer">
-                Install the extension to become an info hero
-              </div>
-            </Link>
-          </li>
-          <li>
-            <Link to={paths.recentActivity()}>
-              <div className="block-item-spacer">
-                Browse Howdju&rsquo;s content
-              </div>
-            </Link>
-          </li>
-          <li>
-            <Link to={paths.about()}>
-              <div className="block-item-spacer">
-                Learn more about Howdju&rsquo;s features
-              </div>
-            </Link>
+            <p>
+              Discover the best information about interesting and relevant
+              topics.
+            </p>
+            <p>
+              <a href="https://docs.howdju.com/how-to/discover">learn more</a>
+            </p>
           </li>
         </ul>
       </div>
