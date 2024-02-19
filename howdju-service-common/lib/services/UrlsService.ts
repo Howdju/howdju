@@ -1,7 +1,9 @@
 import { Moment } from "moment";
+import crypto from "crypto";
 
 import {
   CreateUrl,
+  Domain,
   EntityId,
   Logger,
   normalizeUrl,
@@ -82,5 +84,17 @@ export class UrlsService {
     const urls = await this.urlsDao.readUrlsForIds(urlIds);
     ensurePresent(urlIds, urls, "URL");
     return urls;
+  }
+
+  async readAllDomains(): Promise<Domain[]> {
+    const allDomains = await this.urlsDao.readAllDomains();
+    return allDomains.map((domain) => {
+      // Create an artificial ID to help the client track the domain (normalizr only handles
+      // objects, not strings.)
+      const shaHasher = crypto.createHash("sha1");
+      shaHasher.update(domain);
+      const id = shaHasher.digest("hex");
+      return { id, domain };
+    });
   }
 }

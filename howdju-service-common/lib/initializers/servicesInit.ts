@@ -87,7 +87,7 @@ export function servicesInitializer(provider: AwsProvider) {
     provider.writsDao,
     provider.permissionsDao
   );
-  const tagsService = new TagsService(provider.logger, provider.tagsDao);
+  const tagsService = new TagsService(provider.tagsDao);
   const propositionTagVotesService = new PropositionTagVotesService(
     provider.logger,
     authService,

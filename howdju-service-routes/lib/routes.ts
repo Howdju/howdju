@@ -1,55 +1,55 @@
-import { toNumber, split } from "lodash";
+import { split, toNumber } from "lodash";
 import { Moment } from "moment";
 import { z } from "zod";
 
 import {
-  decodeQueryStringObject,
-  decodeSorts,
-  httpMethods,
-  JustificationRootTargetTypes,
-  WritQuote,
-  JustificationSearchFilters,
-  CreateProposition,
-  UpdateProposition,
-  CreateStatement,
-  CreateJustification,
-  CreateWritQuote,
-  UpdateWritQuote,
-  Credentials,
-  CreatePropositionTagVote,
-  CreateUser,
-  CreateAccountSettings,
-  UpdateAccountSettings,
-  CreateContentReport,
-  UpdatePersorg,
-  CreateJustificationVote,
-  DeleteJustificationVote,
-  ContinuationToken,
-  WritOut,
-  AuthToken,
-  WritQuoteOut,
-  UserOut,
-  CreateTagVote,
-  newUnimplementedError,
-  CreateRegistrationRequest,
-  CreateRegistrationConfirmation,
-  parseContextTrail,
-  toJson,
-  CreateMediaExcerpt,
-  MediaExcerptSearchFilterKeys,
-  isDefined,
-  UpdateSource,
-  CreateUrlLocator,
-  CreateAppearance,
-  SentenceTypes,
-  SentenceType,
   AppearanceSearchFilterKeys,
+  AuthToken,
+  ContinuationToken,
+  CreateAccountSettings,
+  CreateAppearance,
   CreateAppearanceConfirmation,
-  CreatePasswordResetRequest,
-  PasswordResetConfirmation,
-  JustificationVoteOut,
+  CreateContentReport,
+  CreateJustification,
+  CreateJustificationVote,
+  CreateMediaExcerpt,
   CreateMediaExcerptCitation,
   CreateMediaExcerptSpeaker,
+  CreatePasswordResetRequest,
+  CreateProposition,
+  CreatePropositionTagVote,
+  CreateRegistrationConfirmation,
+  CreateRegistrationRequest,
+  CreateStatement,
+  CreateTagVote,
+  CreateUrlLocator,
+  CreateUser,
+  CreateWritQuote,
+  Credentials,
+  decodeQueryStringObject,
+  decodeSorts,
+  DeleteJustificationVote,
+  httpMethods,
+  isDefined,
+  JustificationRootTargetTypes,
+  JustificationSearchFilters,
+  JustificationVoteOut,
+  MediaExcerptSearchFilterKeys,
+  newUnimplementedError,
+  parseContextTrail,
+  PasswordResetConfirmation,
+  SentenceType,
+  SentenceTypes,
+  toJson,
+  UpdateAccountSettings,
+  UpdatePersorg,
+  UpdateProposition,
+  UpdateSource,
+  UpdateWritQuote,
+  UserOut,
+  WritOut,
+  WritQuote,
+  WritQuoteOut,
 } from "howdju-common";
 import {
   AppProvider,
@@ -59,8 +59,14 @@ import {
   prefixErrorPath,
 } from "howdju-service-common";
 
-import { Authed, Body, PathParams, QueryStringParams } from "./routeSchemas";
 import { handler } from "./routeHandler";
+import {
+  Authed,
+  Body,
+  EmptyRequest,
+  PathParams,
+  QueryStringParams,
+} from "./routeSchemas";
 
 export type ServiceRoutes = typeof serviceRoutes;
 export type ServiceRoute = ServiceRoutes[keyof ServiceRoutes];
@@ -98,6 +104,9 @@ export const serviceRoutes = {
         appProvider: AppProvider,
         { queryStringParams: { searchText } }
       ) => {
+        if (!searchText) {
+          return { body: { tags: [] } };
+        }
         const tags = await appProvider.tagsService.readTagsLikeTagName(
           searchText
         );
@@ -1721,5 +1730,17 @@ export const serviceRoutes = {
         return { body: { canonicalUrl } };
       }
     ),
+  },
+
+  readExplorePageData: {
+    path: "explore-page",
+    method: httpMethods.GET,
+    request: handler(EmptyRequest, async (appProvider: AppProvider) => {
+      const [tags, domains] = await Promise.all([
+        appProvider.tagsService.readAllTags(),
+        appProvider.urlsService.readAllDomains(),
+      ]);
+      return { body: { tags, domains } };
+    }),
   },
 } as const;

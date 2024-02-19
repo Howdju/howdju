@@ -30,17 +30,10 @@ export type RowMapper<
   T extends QueryResultRow | undefined,
   Args extends any[] | undefined = undefined,
   R extends object = Record<string, unknown>
-> = Args extends any[] ? (row: T, ...args: Args) => R : (row: T) => R;
+> = Args extends any[]
+  ? (row: T, ...args: Args) => R
+  : (row: T) => R | undefined;
 
-export function mapSingle<
-  T extends QueryResultRow,
-  R extends object = Record<string, unknown>,
-  M extends RowMapper<T | undefined, undefined, R> = RowMapper<
-    T | undefined,
-    undefined,
-    R
-  >
->(mapper: M): R;
 export function mapSingle<
   T extends QueryResultRow,
   R extends object = Record<string, unknown>,
@@ -54,7 +47,7 @@ export function mapSingle<
   mapper?: M,
   tableName?: string,
   identifiers?: Record<string, string>
-) {
+): (result: { rows: T[] }) => R | undefined {
   return ({ rows }: { rows: T[] }) => {
     // Some queries, such as insert, have no chance for returning multiple rows.  So then the caller doesnt' pass the logger
     let requireOne = false;
@@ -101,6 +94,9 @@ export const mapManyById =
     const byId: Record<EntityId, R> = {};
     forEach(rows, (row) => {
       const entity = mapper(row);
+      if (!entity) {
+        return;
+      }
       byId[entity.id] = entity;
     });
     return byId;

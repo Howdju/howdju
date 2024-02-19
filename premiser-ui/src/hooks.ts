@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
-import { Schema } from "normalizr";
+import { schema, Schema } from "normalizr";
 import { ToastMessage, useAddMessage } from "@react-md/alert";
 
 import type { RootState, AppDispatch } from "./setupStore";
@@ -32,4 +32,25 @@ export function useAppEntitySelector<S extends Schema>(
   schema: S
 ): Denormalized<S> {
   return useAppSelector((state) => denormalizedEntity(state, result, schema));
+}
+
+/**
+ * Denormalizes all entities corresponding to `schemas` values.
+ *
+ * The keys are the names of the returned object and the values are the singualar
+ * schema value of the normalized entities to denormalize and return.
+ */
+export function useAppAllEntitiesSelector<
+  S extends Record<string, schema.Entity>
+>(schemas: S): { [K in keyof S]: NonNullable<Denormalized<S[K]>>[] } {
+  return useAppSelector((state) =>
+    Object.fromEntries(
+      Object.entries(schemas).map(([key, s]) => {
+        const allIds = Object.keys(
+          state.entities[s.key as keyof typeof state.entities]
+        );
+        return [key, denormalizedEntity(state, allIds, new schema.Array(s))];
+      })
+    )
+  ) as { [K in keyof S]: Denormalized<S[K]> };
 }
