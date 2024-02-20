@@ -13,7 +13,6 @@ import {
   DatabaseProvider,
   AwsProvider,
   ServicesProvider,
-  DaosProvider,
   baseConfig,
   BaseProvider,
 } from "howdju-service-common";
@@ -34,10 +33,10 @@ export class LambdaProvider implements BaseProvider {
     assign(this, { appConfig: baseConfig });
     assign(this, databaseInit(this as unknown as ConfigProvider));
     assign(this, daosInitializer(this as unknown as DatabaseProvider));
-    assign(this, searchersInitializer(this as unknown as DaosProvider));
     assign(this, validatorsInitializer(this as unknown as LoggerProvider));
     assign(this, awsInit(this as unknown as LoggerProvider));
     assign(this, servicesInitializer(this as unknown as AwsProvider));
+    assign(this, searchersInitializer(this as unknown as ServicesProvider));
 
     (this as unknown as LoggerProvider).logger.debug(
       "AppProvider initialization complete"

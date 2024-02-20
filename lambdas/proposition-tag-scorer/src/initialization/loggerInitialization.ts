@@ -1,7 +1,8 @@
 /* This file must pass console to the Logger */
 /* eslint "no-console": ["off"] */
 
-const { AwsLogger } = require("howdju-service-common");
+import { Logger } from "howdju-common";
+import { AwsLogger } from "howdju-service-common";
 
 const logLevel = process.env.LOG_LEVEL || "warn";
 const isAws = !!process.env.IS_AWS;
@@ -11,11 +12,11 @@ const logFormat = isAws ? "json" : "text";
 
 console.log("initializing logger");
 
-exports.logger = new AwsLogger(console, {
+export const logger = new AwsLogger(console, {
   logLevel,
   doLogTimestamp,
   doUseCarriageReturns,
   logFormat,
-});
+}) as unknown as Logger;
 
-exports.logger.debug("initializing logger", { logLevel, isAws });
+logger.debug("initializing logger", { logLevel, isAws });

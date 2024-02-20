@@ -1,35 +1,31 @@
 {
-  "name": "howdju-message-handler",
-  "version": "1.7.0",
-  "description": "AWS Lambda function for handling SNS messages",
-  "main": "src/index.js",
+  "name": "proposition-tag-scorer",
+  "version": "1.2.0",
+  "description": "Scores tags for propositions",
+  "main": "index.ts",
+  "repository": "git@bitbucket.org:howdju/howdju.git",
+  "author": "Carl Gieringer <carl@howdju.com>",
+  "license": "AGPL-3.0-or-later",
   "scripts": {
     "build": "node ../../premiser-api/bin/esbuild.js --entryPoint=src/handler.ts --outfile=dist/index.js",
-    "clean": "rm -rf dist",
     "check-format": "yarn run prettier --check --ignore-path .gitignore .",
+    "clean": "rm -rf dist",
     "fix-format": "yarn run lint --fix && yarn run prettier --write --ignore-path .gitignore .",
     "lint": "eslint --ignore-path=.gitignore .",
     "release": "../bin/release.sh ../../howdju-text-fragments/dist/rangeToFragment.js",
-    "test": "jest",
-    "test-inspect": "node --inspect-brk ../../node_modules/.bin/jest --runInBand --watch",
+    "test": "echo 'TODO(#654) add tests'",
+    "test-inspect": "echo 'TODO(#654) add tests'",
     "typecheck": "tsc"
   },
-  "author": "Carl Gieringer <carl.gieringer@gmail.com>",
-  "license": "AGPL-3.0-or-later",
   "dependencies": {
-    "aws-sdk": "^2.912.0",
-    "howdju-service-common": "workspace:howdju-service-common"
+    "pg": "^8.6.0"
   },
   "devDependencies": {
-    "cli-progress": "^3.9.0",
-    "cross-env": "^7.0.3",
     "esbuild": "^0.18.17",
     "eslint": "^8.27.0",
     "eslint-config-howdju": "workspace:eslint-config-howdju",
-    "howdju-ops": "workspace:howdju-ops",
-    "howdju-test-common": "workspace:howdju-test-common",
     "jest": "^29.3.1",
     "prettier": "2.7.1",
-    "ts-node": "^10.9.1"
+    "typescript": "4.9.4"
   }
 }

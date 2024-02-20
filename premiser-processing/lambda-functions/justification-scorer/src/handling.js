@@ -1,9 +1,9 @@
-const { configureGatewayContext } = require("howdju-service-common");
+const { configureHandlerContext } = require("howdju-service-common");
 
 const { justificationScoresService, logger } = require("./initialization");
 
 exports.handler = (gatewayEvent, gatewayContext, gatewayCallback) => {
-  configureGatewayContext(gatewayContext);
+  configureHandlerContext(gatewayContext);
 
   logger.silly({ gatewayEvent });
   logger.silly({ gatewayContext });

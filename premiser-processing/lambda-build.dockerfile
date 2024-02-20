@@ -1,14 +1,14 @@
-FROM library/amazonlinux:2018.03
+FROM library/amazonlinux
 
 # TODO: replace with esbuild bundling like in premiser-api
 
 RUN \
   yum -y update && \
   yum -y install \
-    git \
-    # necessary to build bcrypt
-    gcc-c++ make \
-    && \
+  git \
+  # necessary to build bcrypt
+  gcc-c++ make \
+  && \
   # configuring git allows us to stash changes
   git config --global user.email "howdju@docker" && \
   git config --global user.name "howdju@docker" && \

@@ -3,10 +3,8 @@ import {
   concat,
   filter,
   get,
-  has,
   map,
   reduce,
-  reject,
   some,
   toNumber,
   unionBy,
@@ -484,13 +482,13 @@ export class PropositionsService {
     const taggedNegativePropositionIds = reduce(
       taggedNegativePropositions,
       (acc, p) => {
-        acc[p.id] = true;
+        acc.add(p.id);
         return acc;
       },
-      {} as Record<EntityId, boolean>
+      new Set<EntityId>()
     );
-    const prunedRecommendedPropositions = reject(recommendedPropositions, (p) =>
-      has(taggedNegativePropositionIds, p.id)
+    const prunedRecommendedPropositions = recommendedPropositions.filter(
+      (p) => !taggedNegativePropositionIds.has(p.id)
     );
     const propositions = unionBy(
       taggedPositivePropositions,
@@ -500,6 +498,7 @@ export class PropositionsService {
 
     return propositions;
   }
+
   private async readOrCreateEquivalentValidPropositionAsUser(
     createProposition: CreateProposition,
     userId: EntityId,
