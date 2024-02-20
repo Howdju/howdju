@@ -13,8 +13,8 @@
     "fix-format": "yarn run lint --fix && yarn run prettier --write --ignore-path .gitignore .",
     "lint": "eslint --ignore-path=.gitignore .",
     "release": "../bin/release.sh ../../howdju-text-fragments/dist/rangeToFragment.js",
-    "test": "echo TODO",
-    "test-inspect": "echo TODO",
+    "test": "echo TODO(#654)",
+    "test-inspect": "echo TODO(#654)",
     "typecheck": "tsc"
   },
   "dependencies": {
