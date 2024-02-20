@@ -86,8 +86,11 @@ export default function ExplorePage() {
         ))}
         itemColSpans={smallCardColSpans}
       />
-      {filteredDomains.length == 0 && !!domainFilter && "No matching domains"}
-      {allDomains.length == 0 && !isFetching && "No domains"}
+      {allDomains.length !== 0 &&
+        filteredDomains.length == 0 &&
+        !!domainFilter &&
+        "No matching domains"}
+      {allDomains.length === 0 && !isFetching && "No domains"}
     </Page>
   );
 }
