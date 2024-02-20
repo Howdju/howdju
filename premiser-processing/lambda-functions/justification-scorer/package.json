@@ -7,7 +7,7 @@
   "author": "Carl Gieringer <carl@howdju.com>",
   "license": "AGPL-3.0-or-later",
   "dependencies": {
-    "pg": "^7.2.0"
+    "pg": "^8.6.0"
   },
   "scripts": {
     "check-format": "yarn run prettier --check --ignore-path .gitignore .",

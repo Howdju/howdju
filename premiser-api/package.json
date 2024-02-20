@@ -87,7 +87,7 @@
     "howdju-service-routes": "workspace:howdju-service-routes",
     "moment": "^2.29.4",
     "path-to-regexp": "^6.2.1",
-    "pg": "^8.5.1",
+    "pg": "^8.6.0",
     "source-map-support": "^0.5.19",
     "uuid": "^9.0.0"
   }

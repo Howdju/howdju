@@ -2,13 +2,10 @@
   "name": "proposition-tag-scorer",
   "version": "1.1.0",
   "description": "Scores tags for propositions",
-  "main": "index.js",
+  "main": "index.ts",
   "repository": "git@bitbucket.org:howdju/howdju.git",
   "author": "Carl Gieringer <carl@howdju.com>",
   "license": "AGPL-3.0-or-later",
-  "dependencies": {
-    "pg": "^7.2.0"
-  },
   "scripts": {
     "build": "node ../../premiser-api/bin/esbuild.js --entryPoint=src/handler.ts --outfile=dist/index.js",
     "check-format": "yarn run prettier --check --ignore-path .gitignore .",
@@ -19,6 +16,9 @@
     "test": "echo TODO",
     "test-inspect": "echo TODO",
     "typecheck": "tsc"
+  },
+  "dependencies": {
+    "pg": "^8.6.0"
   },
   "devDependencies": {
     "esbuild": "^0.18.17",
