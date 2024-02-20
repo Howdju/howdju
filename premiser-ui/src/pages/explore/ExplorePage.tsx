@@ -1,20 +1,30 @@
 import React, { useEffect } from "react";
 
-import { useAppAllEntitiesSelector, useAppDispatch } from "@/hooks";
-import { tagSchema, domainSchema } from "@/normalizationSchemas";
+import { TagOut } from "howdju-common";
+
+import { goto } from "@/actions";
+import { ItemGrid } from "@/components/itemGrid/ItemGrid";
 import { Page } from "@/components/layout/Page";
-import { api } from "@/apiActions";
+import { smallCardColSpans } from "@/components/listEntities/ListEntitiesWidget";
+import { CircularProgress } from "@/components/progress/CircularProgress";
 import { TagOutOrInput } from "@/components/tags/TagsControl";
 import TagsViewer from "@/components/tags/TagsViewer";
-import { goto } from "@/actions";
-import { TagOut } from "howdju-common";
-import { ItemGrid } from "@/components/itemGrid/ItemGrid";
-import { smallCardColSpans } from "@/components/listEntities/ListEntitiesWidget";
 import DomainCard from "@/entities/domain/DomainCard";
+import ErrorMessages from "@/ErrorMessages";
+import Helmet from "@/Helmet";
+import {
+  useAppAllEntitiesSelector,
+  useAppDispatch,
+  useAppSelector,
+} from "@/hooks";
+import { domainSchema, tagSchema } from "@/normalizationSchemas";
+import explorePage from "./explorePageSlice";
+import { TextField } from "@/components/text/TextField";
 
 export default function ExplorePage() {
   const dispatch = useAppDispatch();
-  useEffect(() => void dispatch(api.fetchExplorePageData()), [dispatch]);
+  useEffect(() => void dispatch(explorePage.fetchData()), [dispatch]);
+  const [domainFilter, setDomainFilter] = React.useState("");
 
   const { allTags, allDomains } = useAppAllEntitiesSelector({
     allTags: tagSchema,
@@ -22,6 +32,11 @@ export default function ExplorePage() {
   });
   allTags.sort((a, b) => a.name.localeCompare(b.name));
   allDomains.sort();
+  const filteredDomains = domainFilter
+    ? allDomains.filter(({ domain }) =>
+        domain.toLowerCase().includes(domainFilter.toLowerCase())
+      )
+    : allDomains;
 
   function goToTag(tag: TagOutOrInput) {
     if (!tag.id) {
@@ -30,10 +45,21 @@ export default function ExplorePage() {
     dispatch(goto.tag(tag as TagOut));
   }
 
+  const { isFetching, didError } = useAppSelector((state) => state.explorePage);
+
   return (
     <Page>
-      <h1>Tags</h1>
-      {allTags.length > 0 ? (
+      <Helmet>
+        <title>Explore — Howdju</title>
+      </Helmet>
+
+      <h1>Explore</h1>
+
+      {isFetching && <CircularProgress id="explore-page-fetch-progress" />}
+      {didError && <ErrorMessages errors={["Failed to load data"]} />}
+
+      <h2>Tags</h2>
+      {allTags.length > 0 && (
         <TagsViewer
           id="explore-page-tags-viewer"
           mode="view"
@@ -42,17 +68,29 @@ export default function ExplorePage() {
           votable={false}
           onClickTag={goToTag}
         />
-      ) : (
-        "No tags"
       )}
-      <h1>Domains</h1>
+      {allTags.length == 0 && !isFetching && "No tags"}
+
+      <h2>Domains</h2>
+      <TextField
+        id="explore-page-domain-filter"
+        name="domainFilter"
+        label="Filter domains"
+        value={domainFilter}
+        onPropertyChange={({ domainFilter }) => setDomainFilter(domainFilter)}
+      />
       <ItemGrid
         id="explore-page-domain-grid"
-        items={allDomains.map((domain) => (
+        items={filteredDomains.map((domain) => (
           <DomainCard key={domain.id} domain={domain} />
         ))}
         itemColSpans={smallCardColSpans}
       />
+      {allDomains.length !== 0 &&
+        filteredDomains.length == 0 &&
+        !!domainFilter &&
+        "No matching domains"}
+      {allDomains.length === 0 && !isFetching && "No domains"}
     </Page>
   );
 }

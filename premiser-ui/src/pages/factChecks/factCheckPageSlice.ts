@@ -47,6 +47,7 @@ export const factCheckPage = slice.reducer;
 export function* factCheckPageSaga() {
   yield takeEvery(
     slice.actions.fetchFactCheck,
+    // TODO(#525) factor out the duplicate logic in these sagas.
     function* ({ payload: { userIds, urlIds, sourceIds } }) {
       const {
         payload: {

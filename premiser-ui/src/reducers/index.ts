@@ -9,6 +9,7 @@ import { propositionAppearancesDialog } from "@/components/propositionAppearance
 import { urlLocatorsEditorFields } from "@/editors/urlLocatorsEditorFieldsSlice";
 import { accountSettingsPage } from "@/pages/accountSettings/accountSettingsPageSlice";
 import { createAppearancePage } from "@/pages/appearances/createAppearancePageSlice";
+import { explorePage } from "@/pages/explore/explorePageSlice";
 import { factCheckPage } from "@/pages/factChecks/factCheckPageSlice";
 import { justificationsPage } from "@/pages/justifications/justificationsPageSlice";
 import { justificationsSearchPage } from "@/pages/justificationsSearch/justificationsSearchPageSlice";
@@ -46,6 +47,7 @@ export default (history: History) =>
     editors,
     entities,
     errors,
+    explorePage,
     factCheckPage,
     justificationsPage,
     justificationsSearchPage,

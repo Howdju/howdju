@@ -1,46 +1,47 @@
-import { all } from "redux-saga/effects";
 import { mapValues } from "lodash";
+import { all } from "redux-saga/effects";
 
-import { cancelResourceApiCalls, resourceApiCalls } from "./resourceApiSagas";
-import {
-  configureAfterLogin,
-  configureAfterRehydrate,
-  configureAfterLogout,
-} from "./configureSagas";
+import { mediaExcerptApparitionsDialogSaga } from "@/components/mediaExcerptApparitionsDialog/mediaExcerptApparitionsDialogSlice";
+import { propositionAppearancesDialogSaga } from "@/components/propositionAppearancesDialog/propositionAppearancesDialogSlice";
+import { explorePageSaga } from "@/pages/explore/explorePageSlice";
+import { factCheckPageSaga } from "@/pages/factChecks/factCheckPageSlice";
+import { mediaExcerptUsagesSaga } from "@/pages/mediaExcerpt/mediaExcerptUsagesSlice";
+import { passwordResetConfirmationPageSaga } from "@/pages/passwordResetConfirmation/passwordResetConfirmationPageSlice";
+import { passwordResetRequestPageSaga } from "@/pages/passwordResetRequest/passwordResetRequestPageSlice";
+import * as appSagas from "../app/appSagas";
+import * as justificationsPageSagas from "../pages/justifications/justificationPageSagas";
+import * as justificationsSearchPageSagas from "../pages/justificationsSearch/justificationsSearchPageSagas";
 import { sendPageView } from "./analyticsSagas";
 import {
-  flagRehydrate,
+  checkAuthExpiration,
   checkAuthExpirationOnRehydrate,
   checkAuthExpirationPeriodically,
-  checkAuthExpiration,
+  flagRehydrate,
 } from "./appSagas";
-import { logErrors } from "./logErrorsSaga";
+import {
+  configureAfterLogin,
+  configureAfterLogout,
+  configureAfterRehydrate,
+} from "./configureSagas";
+import { beginEditOfMediaExcerptFromInfo } from "./editors/beginEditOfMediaExcerptFromInfoSaga";
+import { commitEditorThenView } from "./editors/commitEditorThenViewSaga";
+import { commitEditThenPutActionOnSuccess } from "./editors/commitEditThenPutActionOnSuccessSaga";
+import { editorCommitEdit } from "./editors/editorCommitEditSaga";
+import { fetchAndBeginEditOfNewJustificationFromBasisSource } from "./editors/fetchAndBeginEditOfNewJustificationFromBasisSourceSaga";
+import { inferMediaExcerptInfo } from "./editors/inferMediaExcerptInfoSaga";
+import { postExtensionMessages } from "./extensionSagas";
 import {
   apiActionOnSuccess,
   apiActionOnSuccessResponse,
+  clearAuthTokenWhenUnauthorized,
   goTo,
   redirectAfterLogin,
   redirectHomeFromMissingRootTarget,
   redirectToLoginWhenUnauthenticated,
-  clearAuthTokenWhenUnauthorized,
   redirectUnauthenticatedUserToLoginOnPagesNeedingAuthentication,
 } from "./flowSagas";
-import { commitEditorThenView } from "./editors/commitEditorThenViewSaga";
-import { commitEditThenPutActionOnSuccess } from "./editors/commitEditThenPutActionOnSuccessSaga";
-import { fetchAndBeginEditOfNewJustificationFromBasisSource } from "./editors/fetchAndBeginEditOfNewJustificationFromBasisSourceSaga";
-import { editorCommitEdit } from "./editors/editorCommitEditSaga";
-import { beginEditOfMediaExcerptFromInfo } from "./editors/beginEditOfMediaExcerptFromInfoSaga";
-import { postExtensionMessages } from "./extensionSagas";
-import { inferMediaExcerptInfo } from "./editors/inferMediaExcerptInfoSaga";
-import * as appSagas from "../app/appSagas";
-import * as justificationsSearchPageSagas from "../pages/justificationsSearch/justificationsSearchPageSagas";
-import * as justificationsPageSagas from "../pages/justifications/justificationPageSagas";
-import { factCheckPageSaga } from "@/pages/factChecks/factCheckPageSlice";
-import { mediaExcerptUsagesSaga } from "@/pages/mediaExcerpt/mediaExcerptUsagesSlice";
-import { passwordResetRequestPageSaga } from "@/pages/passwordResetRequest/passwordResetRequestPageSlice";
-import { passwordResetConfirmationPageSaga } from "@/pages/passwordResetConfirmation/passwordResetConfirmationPageSlice";
-import { propositionAppearancesDialogSaga } from "@/components/propositionAppearancesDialog/propositionAppearancesDialogSlice";
-import { mediaExcerptApparitionsDialogSaga } from "@/components/mediaExcerptApparitionsDialog/mediaExcerptApparitionsDialogSlice";
+import { logErrors } from "./logErrorsSaga";
+import { cancelResourceApiCalls, resourceApiCalls } from "./resourceApiSagas";
 
 export default () =>
   all([
@@ -91,4 +92,6 @@ export default () =>
 
     propositionAppearancesDialogSaga(),
     mediaExcerptApparitionsDialogSaga(),
+
+    explorePageSaga(),
   ]);
