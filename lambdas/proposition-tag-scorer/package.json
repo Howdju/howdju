@@ -1,6 +1,6 @@
 {
   "name": "proposition-tag-scorer",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Scores tags for propositions",
   "main": "index.ts",
   "repository": "git@bitbucket.org:howdju/howdju.git",
