@@ -11,7 +11,7 @@ import momentDurationFormatSetup from "moment-duration-format";
 anyPromiseRegister("bluebird", { Promise: require("bluebird") });
 momentDurationFormatSetup(moment);
 
-export * from "./apiGateway";
+export * from "./awsHandlers";
 export * from "./config";
 export * from "./daos";
 export * from "./database";

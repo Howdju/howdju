@@ -1,0 +1,31 @@
+{
+  "name": "proposition-tag-scorer",
+  "version": "1.0.0",
+  "description": "Scores tags for propositions",
+  "main": "index.js",
+  "repository": "git@bitbucket.org:howdju/howdju.git",
+  "author": "Carl Gieringer <carl@howdju.com>",
+  "license": "AGPL-3.0-or-later",
+  "dependencies": {
+    "pg": "^7.2.0"
+  },
+  "scripts": {
+    "build": "node ../../premiser-api/bin/esbuild.js --entryPoint=src/handler.ts --outfile=dist/index.js",
+    "check-format": "yarn run prettier --check --ignore-path .gitignore .",
+    "clean": "rm -rf dist",
+    "fix-format": "yarn run lint --fix && yarn run prettier --write --ignore-path .gitignore .",
+    "lint": "eslint --ignore-path=.gitignore .",
+    "release": "../bin/release.sh ../../howdju-text-fragments/dist/rangeToFragment.js",
+    "test": "echo TODO",
+    "test-inspect": "echo TODO",
+    "typecheck": "tsc"
+  },
+  "devDependencies": {
+    "esbuild": "^0.18.17",
+    "eslint": "^8.27.0",
+    "eslint-config-howdju": "workspace:eslint-config-howdju",
+    "jest": "^29.3.1",
+    "prettier": "2.7.1",
+    "typescript": "4.9.4"
+  }
+}

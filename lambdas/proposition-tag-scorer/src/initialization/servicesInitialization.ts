@@ -1,18 +1,18 @@
-const {
+import {
   PropositionTagScoresService,
   PropositionTagScoresDao,
   PropositionTagVotesDao,
   JobHistoryDao,
-} = require("howdju-service-common");
+} from "howdju-service-common";
 
-const { logger } = require("./loggerInitialization");
-const { database } = require("./databaseInitialization");
+import { logger } from "./loggerInitialization";
+import { database } from "./databaseInitialization";
 
 logger.debug("Initializing services");
 const propositionTagScoresDao = new PropositionTagScoresDao(logger, database);
 const jobHistoryDao = new JobHistoryDao(logger, database);
-const propositionTagVotesDao = new PropositionTagVotesDao(logger, database);
-exports.propositionTagScoresService = new PropositionTagScoresService(
+const propositionTagVotesDao = new PropositionTagVotesDao(database);
+export const propositionTagScoresService = new PropositionTagScoresService(
   logger,
   propositionTagScoresDao,
   jobHistoryDao,

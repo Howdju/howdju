@@ -11,7 +11,8 @@
     "lint": "eslint --ignore-path=.gitignore .",
     "release": "../bin/release.sh ../../howdju-text-fragments/dist/rangeToFragment.js",
     "test": "jest",
-    "test-inspect": "node --inspect-brk ../../node_modules/.bin/jest --runInBand --watch"
+    "test-inspect": "node --inspect-brk ../../node_modules/.bin/jest --runInBand --watch",
+    "typecheck": "tsc"
   },
   "author": "Carl Gieringer <carl.gieringer@gmail.com>",
   "license": "AGPL-3.0-or-later",

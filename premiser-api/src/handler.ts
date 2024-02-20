@@ -31,7 +31,7 @@ import {
 import {
   AppProvider,
   AwsLogger,
-  configureGatewayContext,
+  configureHandlerContext,
 } from "howdju-service-common";
 
 import { routeRequest } from "./router";
@@ -58,7 +58,7 @@ export function handler(
   gatewayCallback: APIGatewayProxyCallback
 ) {
   try {
-    configureGatewayContext(gatewayContext);
+    configureHandlerContext(gatewayContext);
 
     const appProvider = getOrCreateAppProvider(gatewayEvent);
 

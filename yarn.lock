@@ -29839,12 +29839,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"proposition-tag-scorer@workspace:premiser-processing/lambda-functions/proposition-tag-scorer":
+"proposition-tag-scorer@workspace:lambdas/proposition-tag-scorer":
   version: 0.0.0-use.local
-  resolution: "proposition-tag-scorer@workspace:premiser-processing/lambda-functions/proposition-tag-scorer"
+  resolution: "proposition-tag-scorer@workspace:lambdas/proposition-tag-scorer"
   dependencies:
+    esbuild: "npm:^0.18.17"
+    eslint: "npm:^8.27.0"
+    eslint-config-howdju: "workspace:eslint-config-howdju"
+    jest: "npm:^29.3.1"
     pg: "npm:^7.2.0"
     prettier: "npm:2.7.1"
+    typescript: "npm:4.9.4"
   languageName: unknown
   linkType: soft
 
