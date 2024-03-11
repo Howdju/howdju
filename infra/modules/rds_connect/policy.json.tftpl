@@ -1,0 +1,27 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+      {
+          "Effect": "Allow",
+          "Action": "ec2-instance-connect:OpenTunnel",
+          "Resource": "arn:aws:ec2:${aws_region}:${aws_account_id}:instance-connect-endpoint/eice-${eice_id}",
+          "Condition": {
+              "NumericEquals": {
+                  "ec2-instance-connect:remotePort": "5432"
+              },
+              "IpAddress": {
+                  "ec2-instance-connect:privateIpAddress": ${subnet_addresses}
+              }
+          }
+      },
+      {
+          "Sid": "Describe",
+          "Action": [
+              "ec2:DescribeInstances",
+              "ec2:DescribeInstanceConnectEndpoints"
+          ],
+          "Effect": "Allow",
+          "Resource": "*"
+      }
+  ]
+}

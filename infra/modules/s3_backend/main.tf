@@ -3,10 +3,16 @@
 
 resource "aws_s3_bucket" "terraform_state" {
   bucket = "howdju-terraform"
-  versioning {
-    enabled = true
+}
+
+
+resource "aws_s3_bucket_versioning" "terraform_state" {
+  bucket = aws_s3_bucket.terraform_state.bucket
+  versioning_configuration {
+    status = "Enabled"
   }
 }
+
 
 resource "aws_dynamodb_table" "terraform_state_lock" {
   name         = "TerraformStateLock"

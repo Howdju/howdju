@@ -26,11 +26,21 @@ resource "aws_lambda_function" "howdju_messages_handler" {
   s3_bucket     = "howdju-lambdas"
   s3_key        = "${local.lambda_name}/${local.lambda_name}-${var.lambda_version}.zip"
   handler       = "index.handler"
-  runtime       = "nodejs14.x"
+  runtime       = "nodejs16.x"
+  memory_size   = 512
+  timeout       = 30
   environment {
     variables = {
       DEFAULT_AWS_REGION = var.aws_region
+      IS_AWS             = "true"
+      LOG_LEVEL          = "silly"
+      MESSAGES_TOPIC_ARN = "arn:aws:sns:us-east-1:007899441171:howdju-messages"
+      NODE_ENV           = "production"
     }
+  }
+  vpc_config {
+    security_group_ids = var.lambda_security_group_ids
+    subnet_ids         = var.lambda_subnet_ids
   }
 }
 
