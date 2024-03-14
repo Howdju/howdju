@@ -1,4 +1,4 @@
-import { Pool, PoolClient, QueryResultRow, QueryResult } from "pg";
+import { PoolClient, QueryResultRow, QueryResult } from "pg";
 import moment from "moment";
 import isDate from "lodash/isDate";
 import map from "lodash/map";
@@ -40,8 +40,22 @@ export interface TxnClient {
   ): Promise<QueryResult<R>>;
 }
 
+export interface PoolClientProvider {
+  /** gets a connected client from the provider's pool. */
+  getClient(): Promise<PoolClient>;
+  /** ends the provider's pool. */
+  close(): Promise<void>;
+}
+
 export class Database {
-  constructor(private logger: Logger, private pool: Pool) {}
+  constructor(
+    private logger: Logger,
+    private clientProvider: PoolClientProvider
+  ) {}
+
+  private async getClient() {
+    return this.clientProvider.getClient();
+  }
 
   private async queryClient<R extends QueryResultRow>(
     client: PoolClient,
@@ -94,7 +108,7 @@ export class Database {
     isolationMode: IsolationMode,
     callback: (client: TxnClient) => Promise<R>
   ): Promise<R> {
-    const client = await this.pool.connect();
+    const client = await this.getClient();
     try {
       await this.queryClient(client, `txn.${txnName}.begin`, "begin");
       await this.queryClient(
@@ -127,7 +141,7 @@ export class Database {
     args?: any[],
     doArrayMode = false
   ) {
-    const client = await this.pool.connect();
+    const client = await this.getClient();
     try {
       return await this.queryClient<R>(
         client,

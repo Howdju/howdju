@@ -1,20 +1,24 @@
 import moment from "moment";
-import { Pool } from "pg";
 
 import { AccountSettings } from "howdju-common";
 import { mockLogger } from "howdju-test-common";
 
 import { AccountSettingsService } from "./AccountSettingsService";
-import { Database, makePool, UsersDao } from "..";
+import { Database, PoolClientProvider, UsersDao } from "..";
 import { makeTestProvider } from "@/initializers/TestProvider";
 import { AuthService } from "./AuthService";
-import { endPoolAndDropDb, initDb, makeTestDbConfig } from "@/util/testUtil";
+import {
+  endPoolAndDropDb,
+  initDb,
+  makeTestClientProvider,
+  makeTestDbConfig,
+} from "@/util/testUtil";
 import { CreateUserDataIn } from "@/daos/dataTypes";
 
 describe("AccountSettingsService", () => {
   const dbConfig = makeTestDbConfig();
   let dbName: string;
-  let pool: Pool;
+  let clientProvider: PoolClientProvider;
 
   let service: AccountSettingsService;
   let usersDao: UsersDao;
@@ -22,8 +26,11 @@ describe("AccountSettingsService", () => {
   beforeEach(async () => {
     dbName = await initDb(dbConfig);
 
-    pool = makePool(mockLogger, { ...dbConfig, database: dbName });
-    const database = new Database(mockLogger, pool);
+    clientProvider = makeTestClientProvider({
+      ...dbConfig,
+      database: dbName,
+    });
+    const database = new Database(mockLogger, clientProvider);
 
     const provider = makeTestProvider(database);
 
@@ -32,7 +39,7 @@ describe("AccountSettingsService", () => {
     authService = provider.authService;
   });
   afterEach(async () => {
-    await endPoolAndDropDb(pool, dbConfig, dbName);
+    await endPoolAndDropDb(clientProvider, dbConfig, dbName);
   });
 
   describe("createAccountSettings", () => {

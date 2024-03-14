@@ -44,13 +44,15 @@ import {
   AppearanceConfirmationsService,
 } from "../services";
 import { AwsProvider } from "./awsInit";
+import { AppConfigProvider } from "./BaseProvider";
 
 /** Provides the services and previous providers. */
 export type ServicesProvider = ReturnType<typeof servicesInitializer> &
-  AwsProvider;
+  AwsProvider &
+  AppConfigProvider;
 
 /** Initializes the services. */
-export function servicesInitializer(provider: AwsProvider) {
+export function servicesInitializer(provider: AwsProvider & AppConfigProvider) {
   const devTopicQueue = [] as TopicMessage[];
   const topicMessageSender = makeTopicMessageSender(provider, devTopicQueue);
 

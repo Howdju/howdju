@@ -1,5 +1,4 @@
 import moment from "moment";
-import { Pool } from "pg";
 import { filter, merge } from "lodash";
 
 import {
@@ -12,14 +11,19 @@ import {
 } from "howdju-common";
 import { mockLogger, expectToBeSameMomentDeep } from "howdju-test-common";
 
-import { endPoolAndDropDb, initDb, makeTestDbConfig } from "@/util/testUtil";
+import {
+  endPoolAndDropDb,
+  initDb,
+  makeTestClientProvider,
+  makeTestDbConfig,
+} from "@/util/testUtil";
 import {
   AuthenticationError,
   Database,
   EntityNotFoundError,
   EntityValidationError,
   JustificationsService,
-  makePool,
+  PoolClientProvider,
   PropositionCompoundsService,
   WritQuotesService,
 } from "..";
@@ -30,7 +34,7 @@ const dbConfig = makeTestDbConfig();
 
 describe("JustificationsService", () => {
   let dbName: string;
-  let pool: Pool;
+  let clientProvider: PoolClientProvider;
 
   let service: JustificationsService;
   let propositionCompoundsService: PropositionCompoundsService;
@@ -39,8 +43,11 @@ describe("JustificationsService", () => {
   beforeEach(async () => {
     dbName = await initDb(dbConfig);
 
-    pool = makePool(mockLogger, { ...dbConfig, database: dbName });
-    const database = new Database(mockLogger, pool);
+    clientProvider = makeTestClientProvider({
+      ...dbConfig,
+      database: dbName,
+    });
+    const database = new Database(mockLogger, clientProvider);
 
     const provider = makeTestProvider(database);
 
@@ -50,7 +57,7 @@ describe("JustificationsService", () => {
     testHelper = provider.testHelper;
   });
   afterEach(async () => {
-    await endPoolAndDropDb(pool, dbConfig, dbName);
+    await endPoolAndDropDb(clientProvider, dbConfig, dbName);
   });
   describe("readOrCreate", () => {
     test("can create a proposition compound based justification targeting a proposition", async () => {

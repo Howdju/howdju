@@ -1,10 +1,10 @@
 import { randomBytes } from "crypto";
 import { readFileSync } from "fs";
-import { Pool, PoolConfig } from "pg";
+import { PoolConfig, QueryResult, QueryResultRow } from "pg";
 
 import { mockLogger } from "howdju-test-common";
 
-import { ApiConfig, baseConfig, makePool } from "..";
+import { ApiConfig, baseConfig, makePool, PoolClientProvider } from "..";
 import { logger, toJson } from "howdju-common";
 import { cloneDeep, toNumber } from "lodash";
 
@@ -16,6 +16,28 @@ export function makeTestDbConfig() {
     port: toNumber(process.env.DB_PORT),
     max: toNumber(process.env.DB_MAX_CONNECTIONS),
   };
+}
+
+export function makeTestClientProvider(config: PoolConfig) {
+  const pool = makePool(mockLogger, config);
+  return {
+    getClient: () => pool.connect(),
+    close: () => pool.end(),
+  };
+}
+
+/** A class to make it easy to run one-off SQL queries in tests. */
+export class TestDatabaseQuerier {
+  constructor(private clientProvider: PoolClientProvider) {}
+
+  async query<R extends QueryResultRow>(sql: string): Promise<QueryResult<R>> {
+    const client = await this.clientProvider.getClient();
+    try {
+      return await client.query(sql);
+    } finally {
+      client.release();
+    }
+  }
 }
 
 export function makeTestApiConfig(): ApiConfig {
@@ -82,18 +104,18 @@ export async function initDb(config: PoolConfig) {
 }
 
 export async function endPoolAndDropDb(
-  pool: Pool | undefined,
+  clientProvider: PoolClientProvider | undefined,
   config: PoolConfig,
   dbName: string
 ) {
-  if (pool) {
-    await pool.end();
-  }
+  await clientProvider?.close();
+
   if (config.database) {
     throw new Error(
       "Must not specify a test database name as it must be randomly generated."
     );
   }
+
   const dbPool = makePool(mockLogger, config);
   await dbPool.query(`DROP DATABASE IF EXISTS ${dbName};`);
   await dbPool.end();

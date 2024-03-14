@@ -27,10 +27,15 @@ export function databaseInit(provider: ConfigProvider) {
   };
   const pool = makePool(provider.logger, config);
 
+  const clientProvider = {
+    getClient: () => pool.connect(),
+    close: () => pool.end(),
+  };
+
   provider.logger.debug("databaseInit complete");
 
   return {
-    pool,
-    database: new Database(provider.logger, pool),
+    database: new Database(provider.logger, clientProvider),
+    databaseClientProvider: clientProvider,
   };
 }

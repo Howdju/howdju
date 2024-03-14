@@ -1,10 +1,13 @@
-import { Pool } from "pg";
-
 import { momentAdd, momentSubtract, utcNow } from "howdju-common";
 import { expectToBeSameMomentDeep, mockLogger } from "howdju-test-common";
 
-import { endPoolAndDropDb, initDb, makeTestDbConfig } from "@/util/testUtil";
-import { Database, makePool } from "../database";
+import {
+  endPoolAndDropDb,
+  initDb,
+  makeTestClientProvider,
+  makeTestDbConfig,
+} from "@/util/testUtil";
+import { Database, PoolClientProvider } from "../database";
 import { makeTestProvider } from "@/initializers/TestProvider";
 import TestHelper from "@/initializers/TestHelper";
 import { UrlLocatorAutoConfirmationDao } from "./UrlLocatorAutoConfirmationDao";
@@ -15,7 +18,7 @@ const dbConfig = makeTestDbConfig();
 
 describe("UrlLocatorAutoConfirmationDao", () => {
   let dbName: string;
-  let pool: Pool;
+  let clientProvider: PoolClientProvider;
   let database: Database;
 
   let dao: UrlLocatorAutoConfirmationDao;
@@ -25,8 +28,11 @@ describe("UrlLocatorAutoConfirmationDao", () => {
   beforeEach(async () => {
     dbName = await initDb(dbConfig);
 
-    pool = makePool(mockLogger, { ...dbConfig, database: dbName });
-    database = new Database(mockLogger, pool);
+    clientProvider = makeTestClientProvider({
+      ...dbConfig,
+      database: dbName,
+    });
+    database = new Database(mockLogger, clientProvider);
 
     const provider = makeTestProvider(database);
 
@@ -36,7 +42,7 @@ describe("UrlLocatorAutoConfirmationDao", () => {
     testHelper = provider.testHelper;
   });
   afterEach(async () => {
-    await endPoolAndDropDb(pool, dbConfig, dbName);
+    await endPoolAndDropDb(clientProvider, dbConfig, dbName);
   });
 
   describe("readConfirmationStatusForUrlLocatorId", () => {

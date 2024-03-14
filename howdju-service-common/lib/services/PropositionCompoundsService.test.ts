@@ -1,10 +1,13 @@
-import { Pool } from "pg";
-
 import { expectToBeSameMomentDeep, mockLogger } from "howdju-test-common";
 import { CreatePropositionCompound, utcNow } from "howdju-common";
 
-import { Database, makePool } from "..";
-import { endPoolAndDropDb, initDb, makeTestDbConfig } from "@/util/testUtil";
+import { Database, PoolClientProvider } from "..";
+import {
+  endPoolAndDropDb,
+  initDb,
+  makeTestClientProvider,
+  makeTestDbConfig,
+} from "@/util/testUtil";
 import { PropositionCompoundsService } from "./PropositionCompoundsService";
 import { makeTestProvider } from "@/initializers/TestProvider";
 import TestHelper from "@/initializers/TestHelper";
@@ -13,15 +16,18 @@ const dbConfig = makeTestDbConfig();
 
 describe("PropositionCompoundsService", () => {
   let dbName: string;
-  let pool: Pool;
+  let clientProvider: PoolClientProvider;
 
   let service: PropositionCompoundsService;
   let testHelper: TestHelper;
   beforeEach(async () => {
     dbName = await initDb(dbConfig);
 
-    pool = makePool(mockLogger, { ...dbConfig, database: dbName });
-    const database = new Database(mockLogger, pool);
+    clientProvider = makeTestClientProvider({
+      ...dbConfig,
+      database: dbName,
+    });
+    const database = new Database(mockLogger, clientProvider);
 
     const provider = makeTestProvider(database);
 
@@ -29,7 +35,7 @@ describe("PropositionCompoundsService", () => {
     testHelper = provider.testHelper;
   });
   afterEach(async () => {
-    await endPoolAndDropDb(pool, dbConfig, dbName);
+    await endPoolAndDropDb(clientProvider, dbConfig, dbName);
   });
   describe("readPropositionCompoundForId", () => {
     test("reads a proposition compound", async () => {

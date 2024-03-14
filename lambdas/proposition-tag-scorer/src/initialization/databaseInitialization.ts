@@ -2,12 +2,14 @@ import pg from "pg";
 import { toNumber } from "lodash";
 
 import {
-  Database,
+  ConfigProvider,
   makeTimestampToUtcMomentParser,
   PgTypeOids,
 } from "howdju-service-common";
+import { databaseInit } from "howdju-service-common/lib/initializers/databaseInit";
 
 import { logger } from "./loggerInitialization";
+import { baseProvider } from "./baseInit";
 
 pg.types.setTypeParser(
   PgTypeOids.TIMESTAMP,
@@ -29,4 +31,5 @@ const config = {
 export const pool = new pg.Pool(config);
 pool.on("error", (err) => logger.error("database pool error", { err }));
 
-export const database = new Database(logger, pool);
+const configProvider = { ...baseProvider, logger } as ConfigProvider;
+export const { database } = databaseInit(configProvider);

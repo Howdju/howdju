@@ -6,13 +6,13 @@ import {
   baseConfig,
   ApiConfig,
   LoggerProvider,
-  ConfigProviderConfig,
+  AppConfigProvider,
 } from "howdju-service-common";
 
 import devConfig from "../config/config.development";
 import prodConfig from "../config/config.production";
 
-export function makeConfig(provider: LoggerProvider): ConfigProviderConfig {
+export function makeConfig(provider: LoggerProvider): AppConfigProvider {
   const stageConfig = {
     uiAuthority: provider.getConfigVal(
       "UI_AUTHORITY",

@@ -27,10 +27,15 @@ const args = parser.parse_args();
 
 const appProvider = new ApiProvider(args.stage) as unknown as AppProvider;
 
-const { usersService, permissionsService, groupsService, pool } = appProvider;
+const {
+  usersService,
+  permissionsService,
+  groupsService,
+  databaseClientProvider,
+} = appProvider;
 
 Promise.resolve(createUser())
-  .finally(() => void pool.end())
+  .finally(() => void databaseClientProvider.close())
   .catch((err) => console.log({ err }));
 
 async function createUser() {

@@ -1,12 +1,16 @@
 import { expect } from "@jest/globals";
-import { Pool } from "pg";
 
 import { CreateStatement, utcNow } from "howdju-common";
 import { mockLogger } from "howdju-test-common";
 
-import { Database, makePool } from "../database";
+import { Database, PoolClientProvider } from "../database";
 import TestHelper from "@/initializers/TestHelper";
-import { endPoolAndDropDb, initDb, makeTestDbConfig } from "@/util/testUtil";
+import {
+  endPoolAndDropDb,
+  initDb,
+  makeTestClientProvider,
+  makeTestDbConfig,
+} from "@/util/testUtil";
 import { makeTestProvider } from "@/initializers/TestProvider";
 import { StatementsService } from "..";
 import { merge } from "lodash";
@@ -15,7 +19,7 @@ const dbConfig = makeTestDbConfig();
 
 describe("StatementsService", () => {
   let dbName: string;
-  let pool: Pool;
+  let clientProvider: PoolClientProvider;
   let database: Database;
 
   let service: StatementsService;
@@ -23,8 +27,11 @@ describe("StatementsService", () => {
   beforeEach(async () => {
     dbName = await initDb(dbConfig);
 
-    pool = makePool(mockLogger, { ...dbConfig, database: dbName });
-    database = new Database(mockLogger, pool);
+    clientProvider = makeTestClientProvider({
+      ...dbConfig,
+      database: dbName,
+    });
+    database = new Database(mockLogger, clientProvider);
 
     const provider = makeTestProvider(database);
 
@@ -32,7 +39,7 @@ describe("StatementsService", () => {
     testHelper = provider.testHelper;
   });
   afterEach(async () => {
-    await endPoolAndDropDb(pool, dbConfig, dbName);
+    await endPoolAndDropDb(clientProvider, dbConfig, dbName);
   });
   describe("doReadOrCreate", () => {
     test("creates a statement", async () => {
