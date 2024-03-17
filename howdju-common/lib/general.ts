@@ -24,6 +24,7 @@ import {
 } from "lodash";
 import moment, { Moment, unitOfTime, Duration, TemplateFunction } from "moment";
 import isAbsoluteUrlLib from "is-absolute-url";
+import decircular from "decircular";
 
 import { newProgrammingError } from "./commonErrors";
 import { CamelCasedPropertiesDeep, MergeDeep } from "type-fest";
@@ -458,21 +459,8 @@ export const toJson = function toJson(
   val: any,
   replacer?: (key: string, value: any) => any
 ) {
-  return JSON.stringify(val, handleCircularReferences(replacer));
+  return JSON.stringify(decircular(val), replacer);
 };
-
-function handleCircularReferences(replacer?: (key: string, value: any) => any) {
-  const seen = new WeakSet();
-  return (key: string, value: any) => {
-    if (typeof value === "object" && value !== null) {
-      if (seen.has(value)) {
-        return "[Circular]";
-      }
-      seen.add(value);
-    }
-    return replacer ? replacer(key, value) : value;
-  };
-}
 
 export const fromJson = function fromJson(json: string) {
   return JSON.parse(json);

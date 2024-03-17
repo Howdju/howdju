@@ -16586,6 +16586,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"decircular@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "decircular@npm:1.0.0"
+  checksum: 8710dec50e2e643e38f12866537ff3aeac60c035e662474a9ec6641050d600b68bd18bc9e46c60d8b3d23a7f989815d646ff6aa818d446451143207b898fe4ae
+  languageName: node
+  linkType: hard
+
 "decode-named-character-reference@npm:^1.0.0":
   version: 1.0.2
   resolution: "decode-named-character-reference@npm:1.0.2"
@@ -21790,6 +21797,7 @@ __metadata:
     ajv: "npm:^8.1.0"
     ajv-formats: "npm:^2.0.2"
     approx-string-match: "npm:^2.0.0"
+    decircular: "npm:^1.0.0"
     dom-anchor-text-position: "npm:^5.0.0"
     dom-anchor-text-quote: "npm:^4.0.2"
     esbuild: "npm:^0.18.17"
