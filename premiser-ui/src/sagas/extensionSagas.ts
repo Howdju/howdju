@@ -22,9 +22,6 @@ export function* postExtensionMessages() {
           "should not call extension action when we are not in an extension iframe."
         );
       }
-      logger.trace(
-        `difficult postExtensionMessagesWorker ${JSON.stringify({ action })}`
-      );
       try {
         // The extension's content script could be on any page, so allow any target origin ('*')
         window.parent.postMessage(domSerializationSafe(action), "*");
@@ -56,7 +53,7 @@ export function* postExtensionMessages() {
 function* repostMessage(action: Action) {
   while (true) {
     yield* delay(config.contentScriptAckDelayMs);
-    logger.trace(`repostMessage ${JSON.stringify({ action })}`);
+    logger.trace(`repostMessage ${toJson({ action })}`);
     window.parent.postMessage(action, "*");
   }
 }

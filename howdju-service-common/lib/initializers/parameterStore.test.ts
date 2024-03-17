@@ -1,3 +1,5 @@
+import { toJson } from "howdju-common";
+
 describe("parameterStore", () => {
   describe("getParameterStoreConfig", () => {
     it("should return deserialized parameters", async () => {
@@ -32,7 +34,7 @@ describe("parameterStore", () => {
         Parameters: [
           {
             Name: "/test/DATABASE_CONNECTION_INFO",
-            Value: JSON.stringify(expected.DATABASE_CONNECTION_INFO),
+            Value: toJson(expected.DATABASE_CONNECTION_INFO),
           },
         ],
       });

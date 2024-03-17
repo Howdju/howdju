@@ -454,20 +454,23 @@ export const keysTo = (obj: { [k: string]: any }, val: any) =>
     {} as { [k: string]: typeof val }
   );
 
-export const toJson = function toJson(val: any) {
-  return JSON.stringify(val, handleCircularReferences());
+export const toJson = function toJson(
+  val: any,
+  replacer?: (key: string, value: any) => any
+) {
+  return JSON.stringify(val, handleCircularReferences(replacer));
 };
 
-function handleCircularReferences() {
+function handleCircularReferences(replacer?: (key: string, value: any) => any) {
   const seen = new WeakSet();
-  return (_key: string, value: any) => {
+  return (key: string, value: any) => {
     if (typeof value === "object" && value !== null) {
       if (seen.has(value)) {
         return "[Circular]";
       }
       seen.add(value);
     }
-    return value;
+    return replacer ? replacer(key, value) : value;
   };
 }
 

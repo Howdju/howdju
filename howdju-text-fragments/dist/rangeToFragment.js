@@ -10178,16 +10178,16 @@
       return void 0;
     };
   }
-  function handleCircularReferences() {
+  function handleCircularReferences(replacer) {
     const seen = /* @__PURE__ */ new WeakSet();
-    return (_key, value) => {
+    return (key, value) => {
       if (typeof value === "object" && value !== null) {
         if (seen.has(value)) {
           return "[Circular]";
         }
         seen.add(value);
       }
-      return value;
+      return replacer ? replacer(key, value) : value;
     };
   }
   function toSlug(text) {
@@ -10398,8 +10398,8 @@
         },
         {}
       );
-      toJson = function toJson2(val) {
-        return JSON.stringify(val, handleCircularReferences());
+      toJson = function toJson2(val, replacer) {
+        return JSON.stringify(val, handleCircularReferences(replacer));
       };
       fromJson = function fromJson2(json) {
         return JSON.parse(json);

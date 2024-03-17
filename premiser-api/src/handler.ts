@@ -27,6 +27,7 @@ import {
   HttpMethod,
   HttpStatusCode,
   httpStatusCodes,
+  toJson,
 } from "howdju-common";
 import {
   AppProvider,
@@ -130,7 +131,7 @@ function makeGatewayResult(
       appProvider.logger.warn("noContent response received body.  Ignoring");
     } else {
       filteredHeaders[headerKeys.CONTENT_TYPE] = "application/json";
-      bodyJson = JSON.stringify(body);
+      bodyJson = toJson(body);
     }
   }
 
