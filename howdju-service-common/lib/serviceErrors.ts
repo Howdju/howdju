@@ -24,7 +24,7 @@ export class EntityValidationError extends HowdjuApiError {
   // TODO(26): remove BespokeValidationErrors
   errors: ModelErrors<any> | BespokeValidationErrors;
   constructor(errors: ModelErrors<any> | BespokeValidationErrors) {
-    super("(EntityValidationError) " + JSON.stringify(errors));
+    super("(EntityValidationError) " + toJson(errors));
 
     this.errors = errors;
   }
@@ -43,7 +43,7 @@ export class AuthorizationError extends HowdjuApiError {
   // TODO(26): remove BespokeValidationErrors
   errors: ModelErrors<any> | BespokeValidationErrors;
   constructor(errors: ModelErrors<any> | BespokeValidationErrors) {
-    super("(AuthorizationError)" + JSON.stringify(errors));
+    super("(AuthorizationError)" + toJson(errors));
 
     this.errors = errors;
   }
@@ -89,7 +89,7 @@ export class EntityConflictError extends HowdjuApiError {
   // TODO(26): remove BespokeValidationErrors
   errors: ModelErrors<any> | BespokeValidationErrors;
   constructor(errors: ModelErrors<any> | BespokeValidationErrors) {
-    super("(EntityConflictError)" + JSON.stringify(errors));
+    super("(EntityConflictError)" + toJson(errors));
 
     this.errors = errors;
   }
@@ -100,7 +100,7 @@ export class UserActionsConflictError extends HowdjuApiError {
   // TODO(26): remove BespokeValidationErrors
   errors: ModelErrors<any> | BespokeValidationErrors;
   constructor(errors: ModelErrors<any> | BespokeValidationErrors) {
-    super("(UserActionsConflictError)" + JSON.stringify(errors));
+    super("(UserActionsConflictError)" + toJson(errors));
 
     this.errors = errors;
   }

@@ -2,7 +2,7 @@ import Axios, { AxiosError, AxiosResponse, Cancel } from "axios";
 import { get, pick } from "lodash";
 import { CANCEL } from "redux-saga";
 
-import { HttpMethod, httpMethods } from "howdju-common";
+import { HttpMethod, httpMethods, toJson } from "howdju-common";
 
 import { logger } from "./logger";
 import {
@@ -75,7 +75,7 @@ const handleError = (error: Error | AxiosError | Cancel) => {
   if (Axios.isAxiosError(error)) {
     if (error.response) {
       throw newApiResponseError(
-        `Api error response ${JSON.stringify(error.response.data)}`,
+        `Api error response ${toJson(error.response.data)}`,
         identifierHeaders,
         error as AxiosResponseError
       );

@@ -2,7 +2,7 @@ const isObject = require("lodash/isObject");
 const map = require("lodash/map");
 const toString = require("lodash/toString");
 
-const toFlatJson = (obj) => JSON.stringify(obj);
+const { toJson } = require("howdju-common");
 
 /*
  There are three intended logging patterns:
@@ -22,7 +22,7 @@ const processArgs = (args, doUseCarriageReturns) => {
   for (const arg of args) {
     if (isObject(arg)) {
       if (hasInterleavedMessageAndData) {
-        messageParts.push(toFlatJson(arg));
+        messageParts.push(toJson(arg));
       }
       datas.push(arg);
     } else {
@@ -32,7 +32,7 @@ const processArgs = (args, doUseCarriageReturns) => {
         // If the args have interleaved strings and objects, then the objects' JSON should be included in the message
         // Add all the previously seen objects
 
-        const datasJson = map(datas, toFlatJson);
+        const datasJson = map(datas, toJson);
         const spliceArgs = [messageParts.length, 0].concat(datasJson);
         messageParts.splice.apply(messageParts, spliceArgs);
       }

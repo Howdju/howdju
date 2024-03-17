@@ -162,7 +162,6 @@ function runCommands(commands: ContentScriptCommand[]) {
 }
 
 function runCommand<T extends Exact<ContentScriptCommand, T>>(command: T) {
-  logger.trace(`difficult runCommand ${JSON.stringify({ command })}`);
   if ("postActionMessageToFrame" in command) {
     // TODO(38) remove any typecast
     forEach(command.postActionMessageToFrame, (value: any, key: any) => {
@@ -172,12 +171,6 @@ function runCommand<T extends Exact<ContentScriptCommand, T>>(command: T) {
         logger.error(`Unrecognized extensionFrame action: ${key}`);
         return;
       }
-      logger.trace(
-        `difficult postActionMessageToFrame ${JSON.stringify({
-          key,
-          value,
-        })}`
-      );
       postActionMessageToFrame(actionCreator(...(value as [any])));
     });
     return;
@@ -221,7 +214,6 @@ function routeRuntimeMessage(
       toggleSidebar();
       break;
     case "RUN_COMMANDS":
-      logger.trace(`difficult RUN_COMMANDS ${JSON.stringify({ message })}`);
       runCommands(message.payload.commands);
       break;
     default:
@@ -245,9 +237,6 @@ function annotateSelectionAndEdit() {
 
 function postActionMessageToFrame(action: actions.ExtensionFrameAction) {
   getOption("howdjuBaseUrl", (baseUrl) => {
-    logger.trace(
-      `difficult postActionMessageToFrame ${JSON.stringify({ action })}`
-    );
     doWhenFrameMessageHandlerReady((frameApi: FramePanelApi) => {
       frameApi.postMessage(
         {

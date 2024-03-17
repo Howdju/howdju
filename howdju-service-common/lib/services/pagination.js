@@ -7,7 +7,7 @@ const last = require("lodash/last");
 const map = require("lodash/map");
 const mapKeys = require("lodash/mapKeys");
 
-const { SortDirections } = require("howdju-common");
+const { SortDirections, toJson } = require("howdju-common");
 
 /** Store the sort continuation properties with single-letter representations to cut down on the size of the payload */
 const ContinuationTokenShortPropertyNames = {
@@ -151,7 +151,7 @@ exports.decodeContinuationToken = (continuationToken) => {
 };
 
 exports.encodeContinuationToken = (continuationInfo) =>
-  URLSafeBase64.encode(new Buffer(JSON.stringify(continuationInfo)));
+  URLSafeBase64.encode(new Buffer(toJson(continuationInfo)));
 
 exports.updateContinuationInfo = (sorts, lastEntity, filters) => {
   const newSorts = map(sorts, (sort) => {

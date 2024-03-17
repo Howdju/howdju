@@ -1,4 +1,4 @@
-import { TopicMessage } from "howdju-common";
+import { toJson, TopicMessage } from "howdju-common";
 
 import { UrlLocatorAutoConfirmationService } from "./UrlLocatorAutoConfirmationService";
 import { UrlsService } from "./UrlsService";
@@ -21,7 +21,7 @@ export class DevTopicMessageConsumer {
     const { type, params } = topicMessage;
     switch (type) {
       case "SEND_EMAIL":
-        console.log(`Received TopicMessage: ${JSON.stringify(topicMessage)}`);
+        console.log(`Received TopicMessage: ${toJson(topicMessage)}`);
         break;
       case "AUTO_CONFIRM_URL_LOCATOR": {
         const { urlLocatorId } = params;
