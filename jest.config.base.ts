@@ -1,4 +1,5 @@
 import type { Config } from "jest";
+import fs from "fs";
 
 /**
  * Our monorepo's base Jest config.
@@ -9,6 +10,13 @@ import type { Config } from "jest";
  * `__dirname` below to reference files from the workspace root.
  */
 
+const ignores = fs
+  .readFileSync(__dirname + "/babel-node-modules-opt-in.txt", "utf8")
+  .replace(/#.*\n/g, "")
+  .split("\n")
+  .filter(Boolean)
+  .join("|");
+
 const config: Config = {
   testRegex: ".*\\.test\\.[tj]sx?$",
   setupFiles: [`${__dirname}/jest/setup.js`],
@@ -17,9 +25,8 @@ const config: Config = {
     `${__dirname}/jest/setupAfterEnv.ts`,
   ],
   transformIgnorePatterns: [
-    // Include some extra stuff under node_modules in our babel transform
-    // What we add here should probably go into Babel's ignore pattern too (to be unignored).
-    "node_modules/(?!(@grrr/cookie-consent|@grrr/utils|nanoid|jsdom|strip-indent|normalize-url|text-fragments-polyfill|approx-string-match|is-absolute-url))",
+    // Ignore node_modules except for specific packages we must transform.
+    `node_modules/(?!(${ignores}))`,
   ],
   transform: {
     // This custom transform does:

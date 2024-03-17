@@ -2,6 +2,7 @@ import { assign } from "lodash";
 
 import {
   AppConfigProvider,
+  AsyncConfig,
   awsInit,
   AwsProvider,
   BaseProvider,
@@ -30,14 +31,14 @@ export class ApiProvider extends BaseProvider {
   // TODO(331) this appears to be unused.
   isProduction: boolean;
 
-  constructor(stage: string | undefined) {
+  constructor(stage: string | undefined, asyncConfig: Promise<AsyncConfig>) {
     super(stage);
 
     this.isProduction = this.getConfigVal("NODE_ENV") === "production";
 
     assign(this, loggerInit(this));
     assign(this, makeConfig(this as unknown as LoggerProvider));
-    assign(this, databaseInit(this as unknown as ConfigProvider));
+    assign(this, databaseInit(this as unknown as ConfigProvider, asyncConfig));
     assign(this, daosInitializer(this as unknown as DatabaseProvider));
     assign(this, validatorsInitializer(this as unknown as LoggerProvider));
     assign(this, awsInit(this as unknown as LoggerProvider));

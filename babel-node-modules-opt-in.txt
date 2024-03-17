@@ -1,0 +1,14 @@
+# Patterns matching node_modules dependencies that Babel and Jest should transform
+@grrr/cookie-consent
+@grrr/utils
+nanoid
+jsdom
+strip-indent
+normalize-url
+text-fragments-polyfill
+approx-string-match
+is-absolute-url
+# Because there is a node_modules in this path, we must we must also match it separately
+@smithy/middleware-retry/node_modules/uuid/dist/esm-browser
+# (match the included node_modules path separately)
+uuid/dist/esm-browser

@@ -5,6 +5,7 @@ export * from "./BaseProvider";
 export * from "./daosInit";
 export * from "./databaseInit";
 export * from "./loggerInit";
+export * from "./parameterStore";
 export * from "./searchersInit";
 export * from "./servicesInit";
 export * from "./TestProvider";

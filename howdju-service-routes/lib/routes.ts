@@ -70,7 +70,6 @@ import {
 
 export type ServiceRoutes = typeof serviceRoutes;
 export type ServiceRoute = ServiceRoutes[keyof ServiceRoutes];
-
 export const serviceRoutes = {
   /*
    * Search

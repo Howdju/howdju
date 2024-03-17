@@ -7,6 +7,7 @@ import {
   permissions as PERMISSIONS,
   Permission,
   AppProvider,
+  AsyncConfig,
 } from "howdju-service-common";
 
 import { ApiProvider } from "../src/init";
@@ -25,7 +26,11 @@ parser.add_argument("--groups", { help: "comma-delimited list" });
 parser.add_argument("--permissions", { help: "comma-delimited list" });
 const args = parser.parse_args();
 
-const appProvider = new ApiProvider(args.stage) as unknown as AppProvider;
+const appProvider = new ApiProvider(
+  args.stage,
+  // All config must come from env. vars.
+  Promise.resolve({} as AsyncConfig)
+) as unknown as AppProvider;
 
 const {
   usersService,
