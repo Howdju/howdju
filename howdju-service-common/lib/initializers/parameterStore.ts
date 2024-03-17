@@ -15,12 +15,13 @@ export type AsyncConfig = Record<
 >;
 
 export const DATABASE_CONNECTION_INFO = "database-connection-info";
+// Only call AWS in production or in tests where we have mocked the AWS connection.
+// Locally, config must come from env vars.
 const activeNodeEnvs = new Set(["production", "test"]);
 
 export async function getParameterStoreConfig(
   environment: string
 ): Promise<AsyncConfig> {
-  // Only call AWS in prouction. Otherwise config must come from env vars.
   if (!activeNodeEnvs.has(process.env.NODE_ENV || "")) {
     return {} as AsyncConfig;
   }
@@ -37,7 +38,7 @@ export async function getParameterStoreConfig(
       `Invalid Parameter Store parameters: ${response.InvalidParameters}`
     );
   }
-  if (!response.Parameters) {
+  if (!response.Parameters?.length) {
     throw new Error("No Parameter Store parameters");
   }
   const invalidParameters: Parameter[] = [];
@@ -53,6 +54,7 @@ export async function getParameterStoreConfig(
     try {
       value = JSON.parse(Value || "");
     } catch (error) {
+      // Note it's unsafe to log the value here, as it could contain secrets.
       logger.warn(
         `Failed to parse parameter store parameter ${Name} value as JSON (falling back to string)`
       );
@@ -68,6 +70,7 @@ export async function getParameterStoreConfig(
       `Invalid Parameter Store parameters (missing Name): ${invalidParameters}`
     );
   }
+  // Combine the pairs into a single object.
   return pairs.reduce((acc, cur) => ({ ...acc, ...cur }), {}) as AsyncConfig;
 }
 

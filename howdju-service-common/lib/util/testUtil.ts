@@ -18,7 +18,7 @@ export function makeTestDbConfig() {
   };
 }
 
-export function makeTestClientProvider(config: PoolConfig) {
+export function makeTestClientProvider(config: PoolConfig): PoolClientProvider {
   const pool = makePool(mockLogger, config);
   return {
     getClient: () => pool.connect(),

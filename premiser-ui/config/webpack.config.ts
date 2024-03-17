@@ -116,7 +116,7 @@ const baseWebpackConfig = {
         },
       },
       {
-        test: /node_modules\/(@grrr\/(cookie-consent|utils)|normalize-url|@smithy\/middleware-retry\/node_modules\/uuid\/dist\/esm-browser)/,
+        test: /node_modules\/(@grrr\/(cookie-consent|utils)|normalize-url)/,
         resolve: {
           // Allow cookie-consent's modules to import files without their extension
           fullySpecified: false,

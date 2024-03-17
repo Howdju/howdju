@@ -1,7 +1,7 @@
 import { toNumber } from "lodash";
 import { PoolConfig } from "pg";
 
-import { Database, makePool } from "../database";
+import { Database, makePool, PoolClientProvider } from "../database";
 import { ConfigProvider } from "./BaseProvider";
 import { AsyncConfig, DATABASE_CONNECTION_INFO } from "./parameterStore";
 
@@ -33,7 +33,7 @@ export function databaseInit(
     return makePool(provider.logger, { ...baseConfig, ...connectionInfo });
   });
 
-  const clientProvider = {
+  const clientProvider: PoolClientProvider = {
     getClient: async () => {
       const pool = await poolPromise;
       return pool.connect();
