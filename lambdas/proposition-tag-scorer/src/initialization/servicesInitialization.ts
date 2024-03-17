@@ -6,6 +6,7 @@ import {
 } from "howdju-service-common";
 
 import { logger } from "./loggerInitialization";
+
 import { database } from "./databaseInitialization";
 
 logger.debug("Initializing services");

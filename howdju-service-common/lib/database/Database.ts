@@ -1,4 +1,4 @@
-import { Pool, PoolClient, QueryResultRow, QueryResult } from "pg";
+import { PoolClient, QueryResultRow, QueryResult } from "pg";
 import moment from "moment";
 import isDate from "lodash/isDate";
 import map from "lodash/map";
@@ -30,6 +30,7 @@ const toUtc = (val: any) => {
   return val;
 };
 
+/** An interface exposed to transcations to run queries. */
 export interface TxnClient {
   query<R extends QueryResultRow>(
     queryName: string,
@@ -39,27 +40,67 @@ export interface TxnClient {
   ): Promise<QueryResult<R>>;
 }
 
-class TxnClientProxy implements TxnClient {
-  constructor(private client: PoolClient, private logger: Logger) {}
-  query<R extends QueryResultRow>(
+export interface PoolClientProvider {
+  /** gets a connected client from the provider's pool. */
+  getClient(): Promise<PoolClient>;
+  /** ends the provider's pool. */
+  close(): Promise<void>;
+}
+
+export class Database {
+  constructor(
+    private logger: Logger,
+    private clientProvider: PoolClientProvider
+  ) {}
+
+  private async getClient() {
+    return this.clientProvider.getClient();
+  }
+
+  private async queryClient<R extends QueryResultRow>(
+    client: PoolClient,
     queryName: string,
     sql: string,
     args?: any[],
     doArrayMode = false
   ): Promise<QueryResult<R>> {
-    return doQuery<R>(
-      this.client,
-      this.logger,
-      queryName,
-      sql,
-      args,
-      doArrayMode
-    );
-  }
-}
+    requireArgs({ queryName, sql });
 
-export class Database {
-  constructor(private logger: Logger, private pool: Pool) {}
+    const utcArgs = map(args, toUtc);
+    if (process.env.DEBUG_PRINT_DB_QUERIES) {
+      this.logger.silly(
+        `Database query: ${toJson({ queryName, sql, utcArgs })}`
+      );
+    }
+    const config = doArrayMode
+      ? {
+          text: sql,
+          values: utcArgs,
+          rowMode: "array",
+        }
+      : {
+          text: sql,
+          values: utcArgs,
+        };
+    let result;
+    try {
+      result = await client.query<R>(config);
+    } catch (e) {
+      // When Jest logs node-postgres DatabaseErrors, it doesn't show the stack trace, so we log it here.
+      // TODO(457) remove this log-and-rethrow
+      this.logger.error(`Query ${queryName} failed: ${e}`);
+      throw e;
+    }
+    result.rows = mapValuesDeep(result.rows, (v) =>
+      v === null ? undefined : v
+    );
+    // TODO(481) detect duplicate fields. Error in dev and log an error in prod.
+    if (process.env.DEBUG_PRINT_DB_QUERIES) {
+      const dbResult = omit(result, ["fields", "_parsers", "_types"]);
+      this.logger.silly(`Database result: ${toJson({ queryName, dbResult })}`);
+    }
+    return result;
+  }
 
   async transaction<R>(
     txnName: string,
@@ -67,25 +108,30 @@ export class Database {
     isolationMode: IsolationMode,
     callback: (client: TxnClient) => Promise<R>
   ): Promise<R> {
-    const pgClient = await this.pool.connect();
-    const txnClient = new TxnClientProxy(pgClient, this.logger);
+    const client = await this.getClient();
     try {
-      await txnClient.query(`txn.${txnName}.begin`, "begin");
-      await txnClient.query(
+      await this.queryClient(client, `txn.${txnName}.begin`, "begin");
+      await this.queryClient(
+        client,
         `txn.${txnName}.isolation`,
         `set transaction isolation level ${isolationLevel} ${isolationMode}`
       );
-      const res = await callback(txnClient);
-      await txnClient.query(`txn.${txnName}.commit`, "commit");
+      const queryClient = this.queryClient.bind(this);
+      const res = await callback({
+        query(queryName, sql, args, doArrayMode) {
+          return queryClient(client, queryName, sql, args, doArrayMode);
+        },
+      });
+      await this.queryClient(client, `txn.${txnName}.commit`, "commit");
       return res;
     } catch (e) {
       // When Jest logs node-postgres DatabaseErrors, it doesn't show the stack trace, so we log it here.
       // TODO(457) remove this log-and-rethrow
       this.logger.error(`Transaction ${txnName} failed: ${e}`);
-      await txnClient.query(`txn.${txnName}.rollback`, "rollback");
+      await this.queryClient(client, `txn.${txnName}.rollback`, "rollback");
       throw e;
     } finally {
-      pgClient.release();
+      client.release();
     }
   }
 
@@ -95,11 +141,10 @@ export class Database {
     args?: any[],
     doArrayMode = false
   ) {
-    const client = await this.pool.connect();
+    const client = await this.getClient();
     try {
-      return await doQuery<R>(
+      return await this.queryClient<R>(
         client,
-        this.logger,
         queryName,
         sql,
         args,
@@ -117,46 +162,4 @@ export class Database {
       )
     );
   }
-}
-
-async function doQuery<R extends QueryResultRow>(
-  client: PoolClient,
-  logger: Logger,
-  queryName: string,
-  sql: string,
-  args?: any[],
-  doArrayMode = false
-): Promise<QueryResult<R>> {
-  requireArgs({ queryName, sql });
-
-  const utcArgs = map(args, toUtc);
-  if (process.env.DEBUG_PRINT_DB_QUERIES) {
-    logger.silly(`Database query: ${toJson({ queryName, sql, utcArgs })}`);
-  }
-  const config = doArrayMode
-    ? {
-        text: sql,
-        values: utcArgs,
-        rowMode: "array",
-      }
-    : {
-        text: sql,
-        values: utcArgs,
-      };
-  let result;
-  try {
-    result = await client.query<R>(config);
-  } catch (e) {
-    // When Jest logs node-postgres DatabaseErrors, it doesn't show the stack trace, so we log it here.
-    // TODO(457) remove this log-and-rethrow
-    logger.error(`Query ${queryName} failed: ${e}`);
-    throw e;
-  }
-  result.rows = mapValuesDeep(result.rows, (v) => (v === null ? undefined : v));
-  // TODO(481) detect duplicate fields. Error in dev and log an error in prod.
-  if (process.env.DEBUG_PRINT_DB_QUERIES) {
-    const dbResult = omit(result, ["fields", "_parsers", "_types"]);
-    logger.silly(`Database result: ${toJson({ queryName, dbResult })}`);
-  }
-  return result;
 }

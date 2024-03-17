@@ -1,12 +1,15 @@
-import { Pool } from "pg";
-
 import { CreatePersorg, CreateProposition, utcNow } from "howdju-common";
 import { mockLogger } from "howdju-test-common";
 
 import { StatementsDao } from "./StatementsDao";
-import { Database, makePool } from "../database";
+import { Database, PoolClientProvider } from "../database";
 import TestHelper from "@/initializers/TestHelper";
-import { endPoolAndDropDb, initDb, makeTestDbConfig } from "@/util/testUtil";
+import {
+  endPoolAndDropDb,
+  initDb,
+  makeTestClientProvider,
+  makeTestDbConfig,
+} from "@/util/testUtil";
 import { makeTestProvider } from "@/initializers/TestProvider";
 import { PersorgsService, PropositionsService } from "..";
 
@@ -14,7 +17,7 @@ const dbConfig = makeTestDbConfig();
 
 describe("StatementsDao", () => {
   let dbName: string;
-  let pool: Pool;
+  let clientProvider: PoolClientProvider;
   let database: Database;
 
   let dao: StatementsDao;
@@ -24,8 +27,11 @@ describe("StatementsDao", () => {
   beforeEach(async () => {
     dbName = await initDb(dbConfig);
 
-    pool = makePool(mockLogger, { ...dbConfig, database: dbName });
-    database = new Database(mockLogger, pool);
+    clientProvider = makeTestClientProvider({
+      ...dbConfig,
+      database: dbName,
+    });
+    database = new Database(mockLogger, clientProvider);
 
     const provider = makeTestProvider(database);
 
@@ -35,7 +41,7 @@ describe("StatementsDao", () => {
     testHelper = provider.testHelper;
   });
   afterEach(async () => {
-    await endPoolAndDropDb(pool, dbConfig, dbName);
+    await endPoolAndDropDb(clientProvider, dbConfig, dbName);
   });
   describe("readStatementForId", () => {
     test("reads a statement for an ID", async () => {

@@ -22,31 +22,41 @@ import { AuthService } from "./AuthService";
 import {
   ApiConfig,
   Database,
-  makePool,
+  PoolClientProvider,
   RegistrationRequestsDao,
   UsersService,
 } from "..";
-import { endPoolAndDropDb, initDb, makeTestDbConfig } from "@/util/testUtil";
-import { Pool } from "pg";
+import {
+  endPoolAndDropDb,
+  initDb,
+  makeTestClientProvider,
+  makeTestDbConfig,
+  TestDatabaseQuerier,
+} from "@/util/testUtil";
 import { makeTestProvider } from "@/initializers/TestProvider";
 
 describe("RegistrationService", () => {
   const dbConfig = makeTestDbConfig();
-  let pool: Pool;
+  let clientProvider: PoolClientProvider;
+  let querier: TestDatabaseQuerier;
   let service: RegistrationService;
   let dbName: string;
   beforeEach(async () => {
     dbName = await initDb(dbConfig);
 
-    pool = makePool(mockLogger, { ...dbConfig, database: dbName });
-    const database = new Database(mockLogger, pool);
+    clientProvider = makeTestClientProvider({
+      ...dbConfig,
+      database: dbName,
+    });
+    const database = new Database(mockLogger, clientProvider);
+    querier = new TestDatabaseQuerier(clientProvider);
 
     const provider = makeTestProvider(database);
 
     service = provider.registrationService;
   });
   afterEach(async () => {
-    await endPoolAndDropDb(pool, dbConfig, dbName);
+    await endPoolAndDropDb(clientProvider, dbConfig, dbName);
   });
   describe("createRequest", () => {
     test("creates a valid request.", async () => {
@@ -62,7 +72,7 @@ describe("RegistrationService", () => {
       // Assert
       const {
         rows: [{ registration_code: registrationCode }],
-      } = await pool.query(
+      } = await querier.query(
         `select registration_code from registration_requests where email = '${email}'`
       );
       expect(await service.checkRequestForCode(registrationCode)).toEqual(
@@ -86,7 +96,7 @@ describe("RegistrationService", () => {
           { registration_code: registrationCode1 },
           { registration_code: registrationCode2 },
         ],
-      } = await pool.query(
+      } = await querier.query(
         `select registration_code from registration_requests where email = '${email}'`
       );
       expect(registrationCode1).not.toEqual(registrationCode2);

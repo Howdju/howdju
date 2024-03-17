@@ -1,22 +1,25 @@
 import type { SNS } from "aws-sdk";
 import { Context, SNSEvent, Callback } from "aws-lambda";
 
-import { AwsTopicMessageSender } from "howdju-service-common";
+import { AppProvider, AwsTopicMessageSender } from "howdju-service-common";
 import { mockLogger } from "howdju-test-common";
 
-import { Handler } from "./handler";
-import { provider } from "./provider";
+import { MessageHandler } from "./MessageHandler";
 
-const sendEmailSpy = jest
-  .spyOn(provider.emailService, "sendEmail")
-  .mockImplementation();
+const sendEmail = jest.fn();
 const TOPIC_ARN = "the-test-topic-arn";
+const provider = {
+  logger: mockLogger,
+  emailService: {
+    sendEmail,
+  },
+} as unknown as AppProvider;
 
 describe("handler", () => {
   it("handles a TopicMessageSender message", async () => {
     // Integration test of TopicMessageSender and handler
     const callback = jest.fn();
-    const handler = new Handler(provider);
+    const handler = new MessageHandler(provider);
     const mockSns = new MockSns(handler, callback);
     const topicMessageSender = new AwsTopicMessageSender(
       mockLogger,
@@ -33,15 +36,15 @@ describe("handler", () => {
 
     await topicMessageSender.sendMessage({ type: "SEND_EMAIL", params });
 
-    expect(sendEmailSpy).toHaveBeenCalledTimes(1);
-    expect(sendEmailSpy).toHaveBeenCalledWith(params);
+    expect(sendEmail).toHaveBeenCalledTimes(1);
+    expect(sendEmail).toHaveBeenCalledWith(params);
     expect(callback).toHaveBeenCalledTimes(1);
   });
 });
 
 class MockSns {
   constructor(
-    private readonly handler: Handler,
+    private readonly handler: MessageHandler,
     private readonly callback: Callback
   ) {}
 

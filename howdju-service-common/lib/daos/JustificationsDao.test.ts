@@ -1,7 +1,6 @@
 import { expect } from "@jest/globals";
 import { assign, omit, pick } from "lodash";
 import moment from "moment";
-import { Pool } from "pg";
 
 import {
   JustificationRef,
@@ -23,14 +22,19 @@ import {
 } from "howdju-test-common";
 
 import { JustificationsDao } from "./JustificationsDao";
-import { endPoolAndDropDb, initDb, makeTestDbConfig } from "@/util/testUtil";
+import {
+  endPoolAndDropDb,
+  initDb,
+  makeTestClientProvider,
+  makeTestDbConfig,
+} from "@/util/testUtil";
 import {
   Database,
-  makePool,
   PersorgsDao,
   PropositionsDao,
   StatementsService,
   PropositionCompoundsService,
+  PoolClientProvider,
 } from "..";
 import { makeTestProvider } from "@/initializers/TestProvider";
 import { CreateJustificationDataIn } from "./dataTypes";
@@ -38,7 +42,7 @@ import TestHelper from "@/initializers/TestHelper";
 
 describe("JustificationsDao", () => {
   const dbConfig = makeTestDbConfig();
-  let pool: Pool;
+  let clientProvider: PoolClientProvider;
   let dao: JustificationsDao;
   let dbName: string;
   let statementsService: StatementsService;
@@ -49,8 +53,11 @@ describe("JustificationsDao", () => {
   beforeEach(async () => {
     dbName = await initDb(dbConfig);
 
-    pool = makePool(mockLogger, { ...dbConfig, database: dbName });
-    const database = new Database(mockLogger, pool);
+    clientProvider = makeTestClientProvider({
+      ...dbConfig,
+      database: dbName,
+    });
+    const database = new Database(mockLogger, clientProvider);
 
     const provider = makeTestProvider(database);
 
@@ -62,7 +69,7 @@ describe("JustificationsDao", () => {
     propositionCompoundsService = provider.propositionCompoundsService;
   });
   afterEach(async () => {
-    await endPoolAndDropDb(pool, dbConfig, dbName);
+    await endPoolAndDropDb(clientProvider, dbConfig, dbName);
   });
 
   describe("createJustification", () => {

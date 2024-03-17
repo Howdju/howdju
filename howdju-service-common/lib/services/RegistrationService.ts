@@ -31,28 +31,14 @@ import { CreateRegistrationRequestData } from "../daos/dataTypes";
 import { randomBase64String } from "../crypto";
 
 export class RegistrationService {
-  logger: Logger;
-  config: ApiConfig;
-  topicMessageSender: TopicMessageSender;
-  usersService: UsersService;
-  authService: AuthService;
-  registrationRequestsDao: RegistrationRequestsDao;
-
   constructor(
-    logger: Logger,
-    config: ApiConfig,
-    topicMessageSender: TopicMessageSender,
-    usersService: UsersService,
-    authService: AuthService,
-    registrationRequestsDao: RegistrationRequestsDao
-  ) {
-    this.logger = logger;
-    this.config = config;
-    this.topicMessageSender = topicMessageSender;
-    this.usersService = usersService;
-    this.authService = authService;
-    this.registrationRequestsDao = registrationRequestsDao;
-  }
+    private logger: Logger,
+    private config: ApiConfig,
+    private topicMessageSender: TopicMessageSender,
+    private usersService: UsersService,
+    private authService: AuthService,
+    private registrationRequestsDao: RegistrationRequestsDao
+  ) {}
 
   /** Creates a registration request. */
   async createRequest(registrationRequest: CreateRegistrationRequest) {

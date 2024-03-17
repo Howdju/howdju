@@ -1,4 +1,3 @@
-import { Pool } from "pg";
 import { merge, toNumber } from "lodash";
 
 import {
@@ -12,8 +11,13 @@ import {
 } from "howdju-common";
 import { expectToBeSameMomentDeep, mockLogger } from "howdju-test-common";
 
-import { endPoolAndDropDb, initDb, makeTestDbConfig } from "@/util/testUtil";
-import { Database, makePool } from "../database";
+import {
+  endPoolAndDropDb,
+  initDb,
+  makeTestClientProvider,
+  makeTestDbConfig,
+} from "@/util/testUtil";
+import { Database, PoolClientProvider } from "../database";
 import { makeTestProvider } from "@/initializers/TestProvider";
 import TestHelper from "@/initializers/TestHelper";
 import { MediaExcerptsService } from "./MediaExcerptsService";
@@ -23,7 +27,7 @@ const dbConfig = makeTestDbConfig();
 
 describe("MediaExcerptsService", () => {
   let dbName: string;
-  let pool: Pool;
+  let clientProvider: PoolClientProvider;
 
   let service: MediaExcerptsService;
   let sourcesDao: SourcesDao;
@@ -32,8 +36,11 @@ describe("MediaExcerptsService", () => {
   beforeEach(async () => {
     dbName = await initDb(dbConfig);
 
-    pool = makePool(mockLogger, { ...dbConfig, database: dbName });
-    const database = new Database(mockLogger, pool);
+    clientProvider = makeTestClientProvider({
+      ...dbConfig,
+      database: dbName,
+    });
+    const database = new Database(mockLogger, clientProvider);
 
     const provider = makeTestProvider(database);
 
@@ -43,7 +50,7 @@ describe("MediaExcerptsService", () => {
     testHelper = provider.testHelper;
   });
   afterEach(async () => {
-    await endPoolAndDropDb(pool, dbConfig, dbName);
+    await endPoolAndDropDb(clientProvider, dbConfig, dbName);
   });
 
   describe("readOrCreateMediaExcerpt", () => {

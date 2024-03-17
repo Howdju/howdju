@@ -32,6 +32,7 @@ import {
   AppProvider,
   AwsLogger,
   configureHandlerContext,
+  getParameterStoreConfig,
 } from "howdju-service-common";
 
 import { routeRequest } from "./router";
@@ -290,16 +291,17 @@ function getOrCreateAppProvider(gatewayEvent: APIGatewayEvent) {
   let appProvider = appProviderByStage[stage];
   if (!appProvider) {
     const doWarn = !isEmpty(appProviderByStage);
+    const previousStages = keys(appProviderByStage);
 
+    const parameterStoreConfig = getParameterStoreConfig(stage);
     appProviderByStage[stage] = appProvider = new ApiProvider(
-      stage
+      stage,
+      parameterStoreConfig
     ) as unknown as AppProvider;
 
     if (doWarn) {
       appProvider.logger.warn(
-        `Created a provider for ${stage} in a lambda that already has providers for: ${keys(
-          appProviderByStage
-        )}`
+        `Created a provider for ${stage} in a lambda that already has providers for: ${previousStages}`
       );
     }
   }

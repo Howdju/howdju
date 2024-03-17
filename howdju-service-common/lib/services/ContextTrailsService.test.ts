@@ -1,9 +1,12 @@
-import { Pool } from "pg";
-
 import { ContextTrailItemInfo } from "howdju-common";
 import { mockLogger, expectToBeSameMomentDeep } from "howdju-test-common";
 
-import { endPoolAndDropDb, initDb, makeTestDbConfig } from "@/util/testUtil";
+import {
+  endPoolAndDropDb,
+  initDb,
+  makeTestClientProvider,
+  makeTestDbConfig,
+} from "@/util/testUtil";
 import {
   AuthService,
   ConflictError,
@@ -12,7 +15,7 @@ import {
   EntityNotFoundError,
   InvalidRequestError,
   JustificationsService,
-  makePool,
+  PoolClientProvider,
   PropositionCompoundsService,
   PropositionsService,
   UsersDao,
@@ -24,7 +27,7 @@ const dbConfig = makeTestDbConfig();
 
 describe("ContextTrailsService", () => {
   let dbName: string;
-  let pool: Pool;
+  let clientProvider: PoolClientProvider;
 
   let service: ContextTrailsService;
   let usersDao: UsersDao;
@@ -35,8 +38,11 @@ describe("ContextTrailsService", () => {
   beforeEach(async () => {
     dbName = await initDb(dbConfig);
 
-    pool = makePool(mockLogger, { ...dbConfig, database: dbName });
-    const database = new Database(mockLogger, pool);
+    clientProvider = makeTestClientProvider({
+      ...dbConfig,
+      database: dbName,
+    });
+    const database = new Database(mockLogger, clientProvider);
 
     const provider = makeTestProvider(database);
 
@@ -48,7 +54,7 @@ describe("ContextTrailsService", () => {
     justificationsService = provider.justificationsService;
   });
   afterEach(async () => {
-    await endPoolAndDropDb(pool, dbConfig, dbName);
+    await endPoolAndDropDb(clientProvider, dbConfig, dbName);
   });
   describe("readContextTrail", () => {
     test("throws InvalidRequestError for trail longer than 32", async () => {

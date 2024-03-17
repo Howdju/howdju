@@ -1,3 +1,11 @@
+var fs = require("fs");
+var ignores = fs
+  .readFileSync(__dirname + "/babel-node-modules-opt-in.txt", "utf8")
+  .replace(/#.*\n/g, "")
+  .split("\n")
+  .filter(Boolean)
+  .join("|");
+
 module.exports = {
   presets: [
     ["@babel/preset-env", { targets: { node: "current" } }],
@@ -5,8 +13,8 @@ module.exports = {
   ],
   ignore: [
     new RegExp(
-      // What we add here should probably go into Jest's transformIgnorePatterns too.
-      "/node_modules/(?!(@grrr/cookie-consent|@grrr/utils|nanoid|jsdom|strip-indent|normalize-url|text-fragments-polyfill|approx-string-match|is-absolute-url))"
+      // Ignore node_modules except for specific packages we must transform.
+      "/node_modules/(?!(" + ignores + "))"
     ),
   ],
   plugins: [

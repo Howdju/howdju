@@ -13,7 +13,7 @@ import { DatabaseProvider } from "./databaseInit";
 import { LoggerProvider } from "./loggerInit";
 import { AwsProvider } from "./awsInit";
 import TestHelper from "./TestHelper";
-import { AppProvider } from ".";
+import { AppConfigProvider, AppProvider } from ".";
 
 /**
  * A dependency locator for tests.
@@ -37,7 +37,10 @@ export class TestProvider {
 
     assign(this, daosInitializer(this as unknown as DatabaseProvider));
     assign(this, validatorsInitializer(this as unknown as LoggerProvider));
-    assign(this, servicesInitializer(this as unknown as AwsProvider));
+    assign(
+      this,
+      servicesInitializer(this as unknown as AwsProvider & AppConfigProvider)
+    );
     assign(this, searchersInitializer(this as unknown as ServicesProvider));
 
     const servicesProvider = this as unknown as ServicesProvider;

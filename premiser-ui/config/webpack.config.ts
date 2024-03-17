@@ -118,7 +118,8 @@ const baseWebpackConfig = {
       {
         test: /node_modules\/(@grrr\/(cookie-consent|utils)|normalize-url)/,
         resolve: {
-          fullySpecified: false, // Allow cookie-consent's modules to import files without their extension
+          // Allow cookie-consent's modules to import files without their extension
+          fullySpecified: false,
           // Support ES module extensions when resolving the file corresponding to an extensionless package
           // because cookie-consent uses .mjs
           extensions: [".mjs", "..."],

@@ -1,5 +1,3 @@
-import { Pool } from "pg";
-
 import {
   CreateJustification,
   CreateProposition,
@@ -10,17 +8,22 @@ import { mockLogger } from "howdju-test-common";
 import {
   Database,
   JustificationsService,
-  makePool,
   makeTestProvider,
+  PoolClientProvider,
   PropositionsService,
 } from "..";
-import { endPoolAndDropDb, initDb, makeTestDbConfig } from "@/util/testUtil";
+import {
+  endPoolAndDropDb,
+  initDb,
+  makeTestClientProvider,
+  makeTestDbConfig,
+} from "@/util/testUtil";
 import TestHelper from "@/initializers/TestHelper";
 
 describe("PropositionsService", () => {
   const dbConfig = makeTestDbConfig();
   let dbName: string;
-  let pool: Pool;
+  let clientProvider: PoolClientProvider;
 
   let service: PropositionsService;
   let testHelper: TestHelper;
@@ -28,8 +31,11 @@ describe("PropositionsService", () => {
   beforeEach(async () => {
     dbName = await initDb(dbConfig);
 
-    pool = makePool(mockLogger, { ...dbConfig, database: dbName });
-    const database = new Database(mockLogger, pool);
+    clientProvider = makeTestClientProvider({
+      ...dbConfig,
+      database: dbName,
+    });
+    const database = new Database(mockLogger, clientProvider);
 
     const provider = makeTestProvider(database);
 
@@ -38,7 +44,7 @@ describe("PropositionsService", () => {
     justificationsService = provider.justificationsService;
   });
   afterEach(async () => {
-    await endPoolAndDropDb(pool, dbConfig, dbName);
+    await endPoolAndDropDb(clientProvider, dbConfig, dbName);
   });
 
   describe("deleteProposition", () => {
