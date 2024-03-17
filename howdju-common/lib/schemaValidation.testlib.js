@@ -1,4 +1,3 @@
-const moment = require("moment");
 const { z } = require("zod");
 
 const {
@@ -18,10 +17,10 @@ export const doTests = (validate) => {
           email: "carl.gieringer@domain.com",
           shortName: "Carl",
           longName: "Gieringer",
-          acceptedTerms: moment(),
-          affirmedMajorityConsent: moment(),
-          affirmed13YearsOrOlder: moment(),
-          affirmedNotGdpr: moment(),
+          acceptedTerms: "2021-01-01T00:00:00Z",
+          affirmedMajorityConsent: "2021-01-01T00:00:00Z",
+          affirmed13YearsOrOlder: "2021-01-01T00:00:00Z",
+          affirmedNotGdpr: "2021-01-01T00:00:00Z",
         };
         expect(validate(schemaIds.user, user)).toEqual({
           isValid: true,
