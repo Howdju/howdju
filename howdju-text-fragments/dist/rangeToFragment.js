@@ -1349,10 +1349,10 @@
           }();
           var ctxClearTimeout = context.clearTimeout !== root.clearTimeout && context.clearTimeout, ctxNow = Date2 && Date2.now !== root.Date.now && Date2.now, ctxSetTimeout = context.setTimeout !== root.setTimeout && context.setTimeout;
           var nativeCeil = Math2.ceil, nativeFloor = Math2.floor, nativeGetSymbols = Object2.getOwnPropertySymbols, nativeIsBuffer = Buffer2 ? Buffer2.isBuffer : undefined2, nativeIsFinite = context.isFinite, nativeJoin = arrayProto.join, nativeKeys = overArg(Object2.keys, Object2), nativeMax = Math2.max, nativeMin = Math2.min, nativeNow = Date2.now, nativeParseInt = context.parseInt, nativeRandom = Math2.random, nativeReverse = arrayProto.reverse;
-          var DataView = getNative(context, "DataView"), Map2 = getNative(context, "Map"), Promise2 = getNative(context, "Promise"), Set2 = getNative(context, "Set"), WeakMap = getNative(context, "WeakMap"), nativeCreate = getNative(Object2, "create");
-          var metaMap = WeakMap && new WeakMap();
+          var DataView = getNative(context, "DataView"), Map2 = getNative(context, "Map"), Promise2 = getNative(context, "Promise"), Set2 = getNative(context, "Set"), WeakMap2 = getNative(context, "WeakMap"), nativeCreate = getNative(Object2, "create");
+          var metaMap = WeakMap2 && new WeakMap2();
           var realNames = {};
-          var dataViewCtorString = toSource(DataView), mapCtorString = toSource(Map2), promiseCtorString = toSource(Promise2), setCtorString = toSource(Set2), weakMapCtorString = toSource(WeakMap);
+          var dataViewCtorString = toSource(DataView), mapCtorString = toSource(Map2), promiseCtorString = toSource(Promise2), setCtorString = toSource(Set2), weakMapCtorString = toSource(WeakMap2);
           var symbolProto = Symbol2 ? Symbol2.prototype : undefined2, symbolValueOf = symbolProto ? symbolProto.valueOf : undefined2, symbolToString = symbolProto ? symbolProto.toString : undefined2;
           function lodash(value) {
             if (isObjectLike(value) && !isArray3(value) && !(value instanceof LazyWrapper)) {
@@ -3406,7 +3406,7 @@
             return result2;
           };
           var getTag = baseGetTag;
-          if (DataView && getTag(new DataView(new ArrayBuffer(1))) != dataViewTag || Map2 && getTag(new Map2()) != mapTag || Promise2 && getTag(Promise2.resolve()) != promiseTag || Set2 && getTag(new Set2()) != setTag || WeakMap && getTag(new WeakMap()) != weakMapTag) {
+          if (DataView && getTag(new DataView(new ArrayBuffer(1))) != dataViewTag || Map2 && getTag(new Map2()) != mapTag || Promise2 && getTag(Promise2.resolve()) != promiseTag || Set2 && getTag(new Set2()) != setTag || WeakMap2 && getTag(new WeakMap2()) != weakMapTag) {
             getTag = function(value) {
               var result2 = baseGetTag(value), Ctor = result2 == objectTag ? value.constructor : undefined2, ctorString = Ctor ? toSource(Ctor) : "";
               if (ctorString) {
@@ -10103,6 +10103,32 @@
     }
   });
 
+  // ../node_modules/decircular/index.js
+  function decircular(object) {
+    const seenObjects = /* @__PURE__ */ new WeakMap();
+    function internalDecircular(value, path = []) {
+      if (!(value !== null && typeof value === "object")) {
+        return value;
+      }
+      const existingPath = seenObjects.get(value);
+      if (existingPath) {
+        return `[Circular *${existingPath.join(".")}]`;
+      }
+      seenObjects.set(value, path);
+      const newValue = Array.isArray(value) ? [] : {};
+      for (const [key2, value2] of Object.entries(value)) {
+        newValue[key2] = internalDecircular(value2, [...path, key2]);
+      }
+      seenObjects.delete(value);
+      return newValue;
+    }
+    return internalDecircular(object);
+  }
+  var init_decircular = __esm({
+    "../node_modules/decircular/index.js"() {
+    }
+  });
+
   // ../howdju-common/lib/general.ts
   function mapValuesDeep(obj, fn2, options = { mapArrays: true }, key) {
     const { mapArrays } = options;
@@ -10178,18 +10204,6 @@
       return void 0;
     };
   }
-  function handleCircularReferences(replacer) {
-    const seen = /* @__PURE__ */ new WeakSet();
-    return (key, value) => {
-      if (typeof value === "object" && value !== null) {
-        if (seen.has(value)) {
-          return "[Circular]";
-        }
-        seen.add(value);
-      }
-      return replacer ? replacer(key, value) : value;
-    };
-  }
   function toSlug(text) {
     if (!text) {
       return text;
@@ -10234,6 +10248,7 @@
       import_lodash2 = __toESM(require_lodash());
       import_moment = __toESM(require_moment());
       init_is_absolute_url();
+      init_decircular();
       init_commonErrors();
       mapKeysDeep = (obj, fn2, parentKey = void 0) => {
         if ((0, import_lodash2.isArray)(obj)) {
@@ -10399,7 +10414,7 @@
         {}
       );
       toJson = function toJson2(val, replacer) {
-        return JSON.stringify(val, handleCircularReferences(replacer));
+        return JSON.stringify(decircular(val), replacer);
       };
       fromJson = function fromJson2(json) {
         return JSON.parse(json);
@@ -27729,8 +27744,8 @@
     "../node_modules/lodash/_WeakMap.js"(exports, module) {
       var getNative = require_getNative();
       var root = require_root();
-      var WeakMap = getNative(root, "WeakMap");
-      module.exports = WeakMap;
+      var WeakMap2 = getNative(root, "WeakMap");
+      module.exports = WeakMap2;
     }
   });
 
@@ -27741,7 +27756,7 @@
       var Map2 = require_Map();
       var Promise2 = require_Promise();
       var Set2 = require_Set();
-      var WeakMap = require_WeakMap();
+      var WeakMap2 = require_WeakMap();
       var baseGetTag = require_baseGetTag();
       var toSource = require_toSource();
       var mapTag = "[object Map]";
@@ -27754,9 +27769,9 @@
       var mapCtorString = toSource(Map2);
       var promiseCtorString = toSource(Promise2);
       var setCtorString = toSource(Set2);
-      var weakMapCtorString = toSource(WeakMap);
+      var weakMapCtorString = toSource(WeakMap2);
       var getTag = baseGetTag;
-      if (DataView && getTag(new DataView(new ArrayBuffer(1))) != dataViewTag || Map2 && getTag(new Map2()) != mapTag || Promise2 && getTag(Promise2.resolve()) != promiseTag || Set2 && getTag(new Set2()) != setTag || WeakMap && getTag(new WeakMap()) != weakMapTag) {
+      if (DataView && getTag(new DataView(new ArrayBuffer(1))) != dataViewTag || Map2 && getTag(new Map2()) != mapTag || Promise2 && getTag(Promise2.resolve()) != promiseTag || Set2 && getTag(new Set2()) != setTag || WeakMap2 && getTag(new WeakMap2()) != weakMapTag) {
         getTag = function(value) {
           var result = baseGetTag(value), Ctor = result == objectTag ? value.constructor : void 0, ctorString = Ctor ? toSource(Ctor) : "";
           if (ctorString) {
