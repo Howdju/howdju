@@ -1,6 +1,5 @@
 # Patterns matching node_modules dependencies that Babel and Jest should transform
 approx-string-match
-decircular
 @grrr/cookie-consent
 @grrr/utils
 is-absolute-url

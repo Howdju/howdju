@@ -221,11 +221,15 @@ describe("toJson", () => {
   test("handles circular references", () => {
     const obj: any = { a: 1, b: "2" };
     obj.c = { d: obj };
-    expect(toJson(obj)).toBe('{"a":1,"b":"2","c":{"d":"[Circular *]"}}');
+    expect(toJson(obj)).toBe('{"a":1,"b":"2","c":{"d":"[Circular]"}}');
   });
   test("does not consider all identical fields circular", () => {
     const child = { d: 3 };
     const obj: any = { a: child, b: child };
     expect(toJson(obj)).toBe('{"a":{"d":3},"b":{"d":3}}');
+  });
+  test("serializes moments as ISO strings", () => {
+    const obj: any = { a: moment.utc("2022-11-08T21:44:00") };
+    expect(toJson(obj)).toBe('{"a":"2022-11-08T21:44:00.000Z"}');
   });
 });

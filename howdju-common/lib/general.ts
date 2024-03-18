@@ -24,7 +24,6 @@ import {
 } from "lodash";
 import moment, { Moment, unitOfTime, Duration, TemplateFunction } from "moment";
 import isAbsoluteUrlLib from "is-absolute-url";
-import decircular from "decircular";
 
 import { newProgrammingError } from "./commonErrors";
 import { CamelCasedPropertiesDeep, MergeDeep } from "type-fest";
@@ -455,12 +454,38 @@ export const keysTo = (obj: { [k: string]: any }, val: any) =>
     {} as { [k: string]: typeof val }
   );
 
-export const toJson = function toJson(
-  val: any,
-  replacer?: (key: string, value: any) => any
-) {
-  return JSON.stringify(decircular(val), replacer);
-};
+export function toJson(val: any) {
+  const seen = new WeakSet();
+  return JSON.stringify(val, handleCircularReferences(seen));
+}
+
+function handleCircularReferences(seen: WeakSet<any>) {
+  return function (_key: string, value: any) {
+    if (value === null || typeof value !== "object") {
+      return value;
+    }
+
+    if (seen.has(value)) {
+      return "[Circular]";
+    }
+
+    if (value.toJSON) {
+      return value.toJSON();
+    }
+
+    seen.add(value);
+
+    const newValue: Record<string, any> = Array.isArray(value) ? [] : {};
+
+    for (const [key, val] of Object.entries(value)) {
+      newValue[key] = handleCircularReferences(seen)(key, val);
+    }
+
+    seen.delete(value);
+
+    return newValue;
+  };
+}
 
 export const fromJson = function fromJson(json: string) {
   return JSON.parse(json);
