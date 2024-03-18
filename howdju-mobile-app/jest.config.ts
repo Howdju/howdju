@@ -4,7 +4,6 @@ import { merge } from "lodash";
 import baseConfig from "../jest.config.base";
 const transformOptInPatterns = [
   "approx-string-match",
-  "decircular",
   "is-absolute-url",
   "(@|jest-)?react-native",
   "normalize-url",
