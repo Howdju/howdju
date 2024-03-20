@@ -1,11 +1,14 @@
 import axios from "axios";
 import { readFileSync } from "fs";
 import stripIndent from "strip-indent";
+import { AsyncConfig } from ".";
 
 import {
   generateTextFragmentUrlFromHtml,
   requestMediaExcerptInfo,
 } from "./requestMediaExcerptInfo";
+
+const asyncConfig = Promise.resolve({} as unknown as AsyncConfig);
 
 describe("requestMediaExcerptInfo", () => {
   it("returns MediaExcerptInfo", async () => {
@@ -20,6 +23,7 @@ describe("requestMediaExcerptInfo", () => {
 
     const info = await requestMediaExcerptInfo(
       "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC1280342/",
+      asyncConfig,
       quotation
     );
 

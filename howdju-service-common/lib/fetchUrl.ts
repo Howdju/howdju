@@ -4,6 +4,11 @@ import queryString from "query-string";
 
 import { isDefined, logger, newImpossibleError, toJson } from "howdju-common";
 import { DownstreamServiceError } from "./serviceErrors";
+import {
+  AsyncConfig,
+  ZEN_ROWS_API_KEY,
+  SCRAPING_ANT_API_KEY,
+} from "./initializers";
 
 const DIRECT_REQUEST_TIMEOUT = 3000;
 const ZEN_ROWS_REQUEST_TIMEOUT = 5000;
@@ -13,13 +18,18 @@ export interface FetchUrlResult {
   status: "SUCCESS" | "PARTIAL_SUCCESS" | "FAILURE";
 }
 
-export async function fetchUrl(url: string): Promise<string>;
+export async function fetchUrl(
+  url: string,
+  asyncConfig: Promise<AsyncConfig>
+): Promise<string>;
 export async function fetchUrl<R extends FetchUrlResult>(
   url: string,
+  asyncConfig: Promise<AsyncConfig>,
   test: (html: string) => R
 ): Promise<R>;
 export async function fetchUrl<R extends FetchUrlResult>(
   url: string,
+  asyncConfig: Promise<AsyncConfig>,
   test?: (html: string) => R
 ): Promise<R | string> {
   logger.info(`Requesting URL directly: ${url}`);
@@ -54,14 +64,15 @@ export async function fetchUrl<R extends FetchUrlResult>(
   let scrapingAntFetchResult: FetchResult | undefined = undefined;
   let scrapingAntTestResult: R | undefined = undefined;
 
-  if (!process.env.SCRAPING_ANT_API_KEY) {
+  const config = await asyncConfig;
+  if (!config[SCRAPING_ANT_API_KEY]) {
     logger.info(
       "ScrapingAnt API key is missing so we cannot retry the request."
     );
   } else {
     scrapingAntFetchResult = await fetchUrlWithScrapingAnt(
       url,
-      process.env.SCRAPING_ANT_API_KEY
+      config[SCRAPING_ANT_API_KEY]
     );
     if (
       "html" in scrapingAntFetchResult &&
@@ -92,12 +103,12 @@ export async function fetchUrl<R extends FetchUrlResult>(
   let zenRowsFetchResult: FetchResult | undefined = undefined;
   let zenRowsTestResult: R | undefined = undefined;
 
-  if (!process.env.ZEN_ROWS_API_KEY) {
+  if (!config[ZEN_ROWS_API_KEY]) {
     logger.info("ZenRows API key is missing so we cannot retry the request.");
   } else {
     zenRowsFetchResult = await fetchUrlWithZenRows(
       url,
-      process.env.ZEN_ROWS_API_KEY
+      config[ZEN_ROWS_API_KEY]
     );
     if (
       "html" in zenRowsFetchResult &&

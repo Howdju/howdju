@@ -13,7 +13,7 @@ import { DatabaseProvider } from "./databaseInit";
 import { LoggerProvider } from "./loggerInit";
 import { AwsProvider } from "./awsInit";
 import TestHelper from "./TestHelper";
-import { AppConfigProvider, AppProvider } from ".";
+import { AppConfigProvider, AppProvider, AsyncConfig } from ".";
 
 /**
  * A dependency locator for tests.
@@ -31,7 +31,7 @@ export class TestProvider {
   database: Database;
   topicMessageSender: TopicMessageSender;
 
-  constructor(database: Database) {
+  constructor(database: Database, asyncConfig: AsyncConfig) {
     this.database = database;
     this.topicMessageSender = new TestTopicMessageSender();
 
@@ -39,7 +39,10 @@ export class TestProvider {
     assign(this, validatorsInitializer(this as unknown as LoggerProvider));
     assign(
       this,
-      servicesInitializer(this as unknown as AwsProvider & AppConfigProvider)
+      servicesInitializer(
+        this as unknown as AwsProvider & AppConfigProvider,
+        Promise.resolve(asyncConfig)
+      )
     );
     assign(this, searchersInitializer(this as unknown as ServicesProvider));
 
@@ -56,8 +59,13 @@ export class TestProvider {
   }
 }
 
-export function makeTestProvider(database: Database) {
-  return new TestProvider(database) as unknown as AppProvider & {
+const DEFAULT_ASYNC_CONFIG = {} as unknown as AsyncConfig;
+
+export function makeTestProvider(
+  database: Database,
+  asyncConfig: AsyncConfig = DEFAULT_ASYNC_CONFIG
+) {
+  return new TestProvider(database, asyncConfig) as unknown as AppProvider & {
     testHelper: TestHelper;
   };
 }

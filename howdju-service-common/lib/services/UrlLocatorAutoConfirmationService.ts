@@ -4,13 +4,14 @@ import { Logger, toJson, utcNow, findTextInDoc } from "howdju-common";
 
 import { MediaExcerptsService } from "./MediaExcerptsService";
 import { UrlLocatorAutoConfirmationDao } from "../daos/UrlLocatorAutoConfirmationDao";
-import { EntityNotFoundError } from "..";
+import { AsyncConfig, EntityNotFoundError } from "..";
 import { generateTextFragmentUrlFromHtml } from "../requestMediaExcerptInfo";
 import { fetchUrl } from "../fetchUrl";
 
 export class UrlLocatorAutoConfirmationService {
   constructor(
     private readonly logger: Logger,
+    private readonly asyncConfig: Promise<AsyncConfig>,
     private readonly mediaExcerptsService: MediaExcerptsService,
     private readonly urlLocatorAutoConfirmationDao: UrlLocatorAutoConfirmationDao
   ) {}
@@ -33,7 +34,7 @@ export class UrlLocatorAutoConfirmationService {
 
     let html, errorMessage;
     try {
-      html = await fetchUrl(url);
+      html = await fetchUrl(url, this.asyncConfig);
     } catch (err) {
       if (err instanceof Error) {
         errorMessage = err.message;
