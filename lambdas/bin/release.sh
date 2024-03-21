@@ -6,6 +6,7 @@ script_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 node "${script_dir}"/../../bin/check-committed.mjs
 "${script_dir}"/../../bin/check-pushed.sh
+"${script_dir}"/../../bin/check-up-to-date.sh
 
 echo "Running checks…"
 yarn run check-format
