@@ -41,7 +41,10 @@ export class LambdaProvider extends BaseProvider {
     assign(this, awsInit(this as unknown as LoggerProvider));
     assign(
       this,
-      servicesInitializer(this as unknown as AwsProvider & AppConfigProvider)
+      servicesInitializer(
+        this as unknown as AwsProvider & AppConfigProvider,
+        asyncConfig
+      )
     );
     assign(this, searchersInitializer(this as unknown as ServicesProvider));
 

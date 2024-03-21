@@ -1,5 +1,6 @@
 import { TopicMessage } from "howdju-common";
 import { TestTopicMessageSender } from "howdju-test-common";
+import { AsyncConfig } from "..";
 
 import {
   AccountSettingsService,
@@ -52,7 +53,10 @@ export type ServicesProvider = ReturnType<typeof servicesInitializer> &
   AppConfigProvider;
 
 /** Initializes the services. */
-export function servicesInitializer(provider: AwsProvider & AppConfigProvider) {
+export function servicesInitializer(
+  provider: AwsProvider & AppConfigProvider,
+  asyncConfig: Promise<AsyncConfig>
+) {
   const devTopicQueue = [] as TopicMessage[];
   const topicMessageSender = makeTopicMessageSender(provider, devTopicQueue);
 
@@ -70,6 +74,7 @@ export function servicesInitializer(provider: AwsProvider & AppConfigProvider) {
 
   const writsService = new WritsService(actionsService, provider.writsDao);
   const canonicalUrlsService = new CanonicalUrlsService(
+    asyncConfig,
     provider.canonicalUrlsDao
   );
   const urlsService = new UrlsService(
@@ -192,6 +197,7 @@ export function servicesInitializer(provider: AwsProvider & AppConfigProvider) {
   const urlLocatorAutoConfirmationService =
     new UrlLocatorAutoConfirmationService(
       provider.logger,
+      asyncConfig,
       mediaExcerptsService,
       provider.urlLocatorAutoConfirmationDao
     );
@@ -270,6 +276,7 @@ export function servicesInitializer(provider: AwsProvider & AppConfigProvider) {
   );
 
   const mediaExcerptInfosService = new MediaExcerptInfosService(
+    asyncConfig,
     provider.mediaExcerptsDao
   );
   const emailService = new EmailService(provider.logger, provider.sesv2);

@@ -15,14 +15,17 @@ import {
 
 import { fetchUrl } from "./fetchUrl";
 import { runScriptAction } from "./runScriptAction";
+import { AsyncConfig } from ".";
 
 /** Given a URL and quotation from it, return anchor info for it */
 export async function requestMediaExcerptInfo(
   url: string,
+  asyncConfig: Promise<AsyncConfig>,
   quotation: string | undefined
 ): Promise<MediaExcerptInfo> {
   const { extractedQuotation, anchoredBibliographicInfo } = await fetchUrl(
     url,
+    asyncConfig,
     (html) => {
       const dom = new JSDOM(html, { url, runScripts: "outside-only" });
 
