@@ -109,3 +109,14 @@ variable "elasticsearch_snapshots_lambda_log_level" {
 variable "elasticsearch_snapshots_lambda_live_version" {
   default = 6
 }
+
+// The AWS provider default_tags cannot apply to autoscaling groups
+// (https://www.hashicorp.com/blog/default-tags-in-the-terraform-aws-provider)
+// So we store them here, too.
+variable "default_tags" {
+  default = {
+    Terraform = "true"
+  }
+  description = "Default Tags for all Terraform-managed AWS resources"
+  type        = map(string)
+}

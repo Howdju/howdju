@@ -70,9 +70,6 @@ resource "aws_iam_role" "message_handler_lambda" {
       },
     ]
   })
-  tags = {
-    Terraform = "true"
-  }
 }
 
 resource "aws_iam_policy" "ses_send_email" {

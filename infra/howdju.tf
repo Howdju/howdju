@@ -1,5 +1,8 @@
 provider "aws" {
   region = var.aws_region
+  default_tags {
+    tags = var.default_tags
+  }
 }
 
 data "aws_caller_identity" "current" {}
@@ -31,6 +34,7 @@ module "bastion" {
   bastion_record_name = "bastion.howdju.com."
   logs_bucket_name    = "howdju-bastion"
   subnet_ids          = data.aws_subnets.default.ids
+  tags                = var.default_tags
 }
 
 module "messages" {

@@ -13,8 +13,6 @@ module "bastion" {
   bastion_record_name          = var.bastion_record_name
   elb_subnets                  = var.subnet_ids
   auto_scaling_group_subnets   = var.subnet_ids
-  tags = {
-    "Terraform" : "true",
-  }
-  bastion_instance_count = var.instance_count
+  tags                         = var.tags
+  bastion_instance_count       = var.instance_count
 }

@@ -81,7 +81,6 @@ resource "aws_instance" "elasticstack" {
   tags = {
     Name                   = "elasticstack"
     ElasticsearchDiscovery = "elasticstack_esnode"
-    Terraform              = "true"
   }
 }
 
@@ -126,7 +125,6 @@ resource "aws_ebs_volume" "elasticstack" {
   type              = "gp2"
   tags = {
     Name      = "elasticstack-ebs"
-    Terraform = "true"
   }
 }
 
@@ -197,6 +195,5 @@ resource "aws_security_group" "elasticstack_instance" {
 
   tags = {
     Name      = "elasticstack-instance-sg"
-    Terraform = "true"
   }
 }

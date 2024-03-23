@@ -10,8 +10,7 @@ resource "aws_vpc" "default" {
 resource "aws_internet_gateway" "default" {
   vpc_id = aws_vpc.default.id
   tags = {
-    Name      = "default-igw"
-    Terraform = "true"
+    Name = "default-igw"
   }
 }
 
@@ -28,8 +27,7 @@ resource "aws_default_route_table" "default" {
   }
 
   tags = {
-    Name      = "default-rtb"
-    Terraform = "true"
+    Name = "default-rtb"
   }
 }
 
@@ -119,8 +117,7 @@ resource "aws_default_network_acl" "default" {
   }
 
   tags = {
-    Name      = "default-acl"
-    Terraform = "true"
+    Name = "default-acl"
   }
 }
 
@@ -157,8 +154,7 @@ resource "aws_security_group" "bastion" {
   }
 
   tags = {
-    Name      = "bastion-instance-sg"
-    Terraform = "true"
+    Name = "bastion-instance-sg"
   }
 }
 
@@ -177,8 +173,7 @@ resource "aws_lb" "default_private" {
   //  }
 
   tags = {
-    Name      = "default-private-lb"
-    Terraform = "true"
+    Name = "default-private-lb"
   }
 }
 
@@ -195,8 +190,7 @@ resource "aws_security_group" "default_private_lb" {
   }
 
   tags = {
-    Name      = "default-private-lb-sg"
-    Terraform = "true"
+    Name = "default-private-lb-sg"
   }
 }
 
