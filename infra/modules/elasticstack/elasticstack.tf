@@ -81,7 +81,6 @@ resource "aws_instance" "elasticstack" {
   tags = {
     Name                   = "elasticstack"
     ElasticsearchDiscovery = "elasticstack_esnode"
-    Terraform              = "true"
   }
 }
 
@@ -126,7 +125,6 @@ resource "aws_ebs_volume" "elasticstack" {
   type              = "gp2"
   tags = {
     Name      = "elasticstack-ebs"
-    Terraform = "true"
   }
 }
 
@@ -187,15 +185,15 @@ resource "aws_security_group" "elasticstack_instance" {
   }
 
   egress {
-    description = "allow all"
-    cidr_blocks = [module.constants.cidr_block_all]
-    protocol    = module.constants.protocol_all
-    from_port   = module.constants.port_all
-    to_port     = module.constants.port_all
+    description      = "allow all"
+    protocol         = module.constants.protocol_all
+    cidr_blocks      = [module.constants.cidr_block_ipv4_all]
+    ipv6_cidr_blocks = [module.constants.cidr_block_ipv6_all]
+    from_port        = module.constants.port_all
+    to_port          = module.constants.port_all
   }
 
   tags = {
     Name      = "elasticstack-instance-sg"
-    Terraform = "true"
   }
 }

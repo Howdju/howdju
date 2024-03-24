@@ -28,3 +28,7 @@ variable "instance_count" {
   default     = 1
   description = "The number of bastion instances for the auto-scaling group"
 }
+variable "tags" {
+  description = "Tags for all resources created by this module"
+  type        = map(string)
+}

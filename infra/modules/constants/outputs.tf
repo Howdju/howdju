@@ -38,11 +38,11 @@ output "port_all" {
   value = "0"
 }
 
-output "cidr_block_all" {
+output "cidr_block_ipv4_all" {
   value = "0.0.0.0/0"
 }
 
-output "cidr_block_v6_all" {
+output "cidr_block_ipv6_all" {
   value = "::/0"
 }
 
@@ -57,4 +57,3 @@ output "ephemeral_min_port" {
 output "ephemeral_max_port" {
   value = "60999"
 }
-

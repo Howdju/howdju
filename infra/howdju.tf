@@ -1,6 +1,8 @@
 provider "aws" {
-  region  = var.aws_region
-  profile = "premiser"
+  region = var.aws_region
+  default_tags {
+    tags = var.default_tags
+  }
 }
 
 data "aws_caller_identity" "current" {}
@@ -31,13 +33,16 @@ module "bastion" {
   hosted_zone_id      = data.aws_route53_zone.howdju.id
   bastion_record_name = "bastion.howdju.com."
   logs_bucket_name    = "howdju-bastion"
-  subnet_ids          = data.aws_subnet_ids.default.ids
+  subnet_ids          = data.aws_subnets.default.ids
+  tags                = var.default_tags
 }
 
 module "messages" {
-  source         = "./modules/messages"
-  aws_region     = var.aws_region
-  lambda_version = "1.1.0"
+  source                    = "./modules/messages"
+  aws_region                = var.aws_region
+  lambda_version            = "1.1.0"
+  lambda_security_group_ids = [aws_default_security_group.default.id]
+  lambda_subnet_ids         = [data.aws_subnet.default_private_subnet_b.id]
 }
 
 module "elasticstack" {
@@ -112,8 +117,7 @@ module "elasticsearch_snapshots" {
 
 // ECS instances require a public address to communicate with ECS
 resource "aws_eip" "elasticstack_instance" {
-  vpc = true
-
+  domain = "vpc"
   # should match instance_count of module elasticstack above
   count      = 0
   instance   = module.elasticstack.instance_ids[count.index]

@@ -3,9 +3,9 @@ resource "aws_lambda_function" "cloudwatch_logs_to_elasticsearch" {
   role              = aws_iam_role.cloudwatch_logs_to_elasticsearch.arn
   handler           = "index.handler"
   runtime           = "nodejs14.x"
-  s3_bucket         = data.aws_s3_bucket_object.lambda.bucket
-  s3_key            = data.aws_s3_bucket_object.lambda.key
-  s3_object_version = data.aws_s3_bucket_object.lambda.version_id
+  s3_bucket         = data.aws_s3_object.lambda.bucket
+  s3_key            = data.aws_s3_object.lambda.key
+  s3_object_version = data.aws_s3_object.lambda.version_id
   timeout           = var.lambda_timeout
   publish           = false
   vpc_config {
@@ -30,7 +30,7 @@ resource "aws_lambda_alias" "cloudwatch_logs_to_elasticsearch_live" {
   function_version = var.live_lambda_version
 }
 
-data "aws_s3_bucket_object" "lambda" {
+data "aws_s3_object" "lambda" {
   bucket = var.lambda_s3_bucket
   key    = var.lambda_s3_key
 }
@@ -103,4 +103,3 @@ resource "aws_iam_role_policy_attachment" "cloudwatch_logs_to_elasticsearch" {
   role       = aws_iam_role.cloudwatch_logs_to_elasticsearch.id
   policy_arn = data.aws_iam_policy.AWSLambdaVPCAccessExecutionRole.arn
 }
-

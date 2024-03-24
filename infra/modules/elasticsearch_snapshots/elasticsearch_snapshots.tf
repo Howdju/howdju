@@ -3,9 +3,9 @@ resource "aws_lambda_function" "elasticsearch_snapshots" {
   role              = aws_iam_role.elasticsearch_snapshots.arn
   handler           = "index.handler"
   runtime           = "nodejs14.x"
-  s3_bucket         = data.aws_s3_bucket_object.lambda_function_zip.bucket
-  s3_key            = data.aws_s3_bucket_object.lambda_function_zip.key
-  s3_object_version = data.aws_s3_bucket_object.lambda_function_zip.version_id
+  s3_bucket         = data.aws_s3_object.lambda_function_zip.bucket
+  s3_key            = data.aws_s3_object.lambda_function_zip.key
+  s3_object_version = data.aws_s3_object.lambda_function_zip.version_id
   timeout           = var.lambda_timeout
   publish           = false
   vpc_config {
@@ -28,7 +28,7 @@ resource "aws_lambda_alias" "elasticsearch_snapshots_live" {
   function_version = var.live_lambda_version
 }
 
-data "aws_s3_bucket_object" "lambda_function_zip" {
+data "aws_s3_object" "lambda_function_zip" {
   bucket = var.lambda_s3_bucket
   key    = var.lambda_s3_key
 }
@@ -62,4 +62,3 @@ resource "aws_iam_role_policy_attachment" "cloudwatch_logs_to_elasticsearch" {
   role       = aws_iam_role.elasticsearch_snapshots.id
   policy_arn = data.aws_iam_policy.AWSLambdaVPCAccessExecutionRole.arn
 }
-
