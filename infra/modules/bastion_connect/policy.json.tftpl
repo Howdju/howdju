@@ -1,0 +1,41 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+      {
+        "Sid": "EC2InstanceConnect",
+        "Effect": "Allow",
+        "Resource": "arn:aws:ec2:${aws_region}:${aws_account_id}:instance-connect-endpoint/eice-${eice_id}",
+        "Action": "ec2-instance-connect:OpenTunnel",
+        "Condition": {
+            "NumericEquals": {
+                "ec2-instance-connect:remotePort": "22"
+            },
+            "IpAddress": {
+                "ec2-instance-connect:privateIpAddress": [${subnet_address}]
+            }
+        }
+      },
+      {
+        "Sid": "SSHPublicKey",
+        "Effect": "Allow",
+        "Resource": [
+          "arn:aws:ec2:${aws_region}:${aws_account_id}:instance/${bastion_instance_id}"
+        ],
+        "Action": "ec2-instance-connect:SendSSHPublicKey",
+        "Condition": {
+          "StringEquals": {
+            "ec2:osuser": "ec2-user"
+          }
+        }
+      },
+      {
+        "Sid": "EC2Describe",
+        "Effect": "Allow",
+        "Resource": "*",
+        "Action": [
+            "ec2:DescribeInstances",
+            "ec2:DescribeInstanceConnectEndpoints"
+        ]
+      }
+  ]
+}

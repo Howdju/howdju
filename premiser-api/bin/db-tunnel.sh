@@ -1,11 +1,8 @@
 #!/usr/bin/env bash
 
-trap "exit" INT TERM
-trap "kill 0" EXIT
+set -e
 
-env=${1}
+# Sets up a tunnel between 5434 locally and port 5432 on RDS using an EC2 Instance Connect instance
+# as a bastion host.
 
-npm run db:tunnel &
-# The tunnel takes a few seconds to initialize
-sleep 10
-npm run db:tunnel:shell:${env}
+aws ec2-instance-connect ssh --instance-id $BASTION_INSTANCE_ID --local-forwarding 5434:$RDS_ADDRESS:5432

@@ -37,6 +37,24 @@ module "bastion" {
   tags                = var.default_tags
 }
 
+data "aws_ami" "bastion" {
+  most_recent = true
+  owners      = ["amazon"]
+  filter {
+    name   = "name"
+    values = ["al2023-ami-2023.*-arm64"]
+  }
+}
+
+module "bastion_connect" {
+  source         = "./modules/bastion_connect"
+  aws_region     = var.aws_region
+  aws_account_id = data.aws_caller_identity.current.account_id
+  vpc_id         = aws_vpc.default.id
+  instance_ami   = data.aws_ami.bastion.id
+  subnet_id      = data.aws_subnet.default_private_subnet_b.id
+}
+
 module "messages" {
   source                    = "./modules/messages"
   aws_region                = var.aws_region
