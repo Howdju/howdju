@@ -24,19 +24,6 @@ module "s3_backend" {
   source = "./modules/s3_backend"
 }
 
-module "bastion" {
-  source              = "./modules/bastion"
-  instance_count      = 1
-  aws_region          = var.aws_region
-  vpc_id              = aws_vpc.default.id
-  key_pair_name       = local.key_name_bastion
-  hosted_zone_id      = data.aws_route53_zone.howdju.id
-  bastion_record_name = "bastion.howdju.com."
-  logs_bucket_name    = "howdju-bastion"
-  subnet_ids          = data.aws_subnets.default.ids
-  tags                = var.default_tags
-}
-
 data "aws_ami" "bastion" {
   most_recent = true
   owners      = ["amazon"]
@@ -140,13 +127,4 @@ resource "aws_eip" "elasticstack_instance" {
   count      = 0
   instance   = module.elasticstack.instance_ids[count.index]
   depends_on = [aws_internet_gateway.default]
-}
-
-locals {
-  // The aws_key_pair resource is import-only and requires a public_key argument, which must be manually entered into
-  // the state file or Terraform will try to replace the key, which it can't.
-  // https://github.com/hashicorp/terraform-provider-aws/issues/1092
-  // Since our state is now stored in S3, and it's inconvenient to edit it manually, and because the only thing we need
-  // to reference is the key name, just use that directly.
-  key_name_bastion = "bastion"
 }
