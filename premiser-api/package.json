@@ -63,7 +63,7 @@
     "esbuild": "npm:^0.15.16",
     "eslint": "^8.27.0",
     "eslint-config-howdju": "workspace:eslint-config-howdju",
-    "express": "^4.17.3",
+    "express": "^4.19.2",
     "howdju-ops": "workspace:howdju-ops",
     "howdju-test-common": "workspace:howdju-test-common",
     "jest": "^29.3.1",
