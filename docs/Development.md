@@ -694,7 +694,7 @@ mfa_serial = arn:aws:iam::007899441171:mfa/username
 Logging in:
 
 ```shell
-aws-vault login username@howdju --duration 2h
+AWS_FEDERATION_TOKEN_TTL=6h aws-vault login username@howdju
 ```
 
 Running commands with your credentials:
