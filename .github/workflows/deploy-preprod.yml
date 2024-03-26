@@ -3,11 +3,9 @@ name: Deploy to preprod
 concurrency: preprod
 
 on:
-  # Run after the CI workflow has completed.
-  workflow_run:
-    workflows: ["CI"]
-    types: [completed]
-    branches: [master]
+  schedule:
+    # Run every day at 9:45 AM UTC
+    - cron: "45 9 * * *"
   workflow_dispatch:
 
 env:
