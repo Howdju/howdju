@@ -6,6 +6,7 @@ on:
   pull_request:
     branches: ["master"]
   schedule:
+    # Run hourly at 22 minutes past the hour
     - cron: "22 * * * *"
 
   # Allows you to run this workflow manually from the Actions tab
