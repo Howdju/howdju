@@ -17,8 +17,6 @@ env:
 
 jobs:
   deployment:
-    # Only deploy if CI succeeded or if it's a manual trigger.
-    if: ${{ github.event.workflow_run.conclusion == 'success' ||  github.event_name == 'workflow_dispatch' }}
     runs-on: ubuntu-latest
     environment: preprod
     steps:
