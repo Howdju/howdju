@@ -1,6 +1,16 @@
 import Bluebird from "bluebird";
 
-import { TagsService } from "./TagsService";
+import {
+  AuthToken,
+  isDomain,
+  isUrl,
+  MediaExcerptOut,
+  PersorgOut,
+  PropositionOut,
+  SourceOut,
+  TagOut,
+} from "howdju-common";
+
 import {
   MediaExcerptsSearcher,
   PersorgsNameSearcher,
@@ -8,9 +18,16 @@ import {
   SourceDescriptionSearcher,
 } from "../searchers";
 import { MediaExcerptsService } from "./MediaExcerptsService";
-import { AuthToken, isDomain, isUrl } from "howdju-common";
+import { TagsService } from "./TagsService";
 
 const MAX_EXCERPT_COUNT = 50;
+interface MainSearchResponse {
+  mediaExcerpts: MediaExcerptOut[];
+  persorgs: PersorgOut[];
+  propositions: PropositionOut[];
+  sources: SourceOut[];
+  tags: TagOut[];
+}
 
 export class MainSearchService {
   constructor(
@@ -22,7 +39,10 @@ export class MainSearchService {
     private persorgsNameSearcher: PersorgsNameSearcher
   ) {}
 
-  async search(authToken: AuthToken | undefined, searchText: string) {
+  async search(
+    authToken: AuthToken | undefined,
+    searchText: string
+  ): Promise<MainSearchResponse> {
     searchText = searchText.trim();
     if (!searchText) {
       return Bluebird.resolve({
