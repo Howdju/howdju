@@ -135,7 +135,6 @@ function ValidPropositionUsagesPage({ propositionId }: ValidProps) {
           />
         </SingleColumnGrid>
       )}
-
       <h2>Direct Statements</h2>
       <FlipGrid>
         {map(directStatements, (s) => {
@@ -155,7 +154,6 @@ function ValidPropositionUsagesPage({ propositionId }: ValidProps) {
           <CircularProgress id={`$justificationsSearchPage-Progress`} />
         </div>
       )}
-
       <h2>Indirect Statements</h2>
       <FlipGrid>
         {map(indirectStatements, (s) => {
@@ -175,7 +173,6 @@ function ValidPropositionUsagesPage({ propositionId }: ValidProps) {
           <CircularProgress id={`$justificationsSearchPage-Progress`} />
         </div>
       )}
-
       <h2>Justifications</h2>
       <FlipGrid>
         {map(justifications, (j) => {
@@ -196,10 +193,9 @@ function ValidPropositionUsagesPage({ propositionId }: ValidProps) {
         </div>
       )}
       <div>{fetchMoreJustificationsButton}</div>
-
       <h2>Appearances</h2>
       <FlipGrid>
-        {map(appearances, (a) => {
+        {appearances.map((a) => {
           const id = `appearance-card-${a.id}`;
           return (
             <GridCell key={id} {...appearanceCardColSpans}>
@@ -214,7 +210,6 @@ function ValidPropositionUsagesPage({ propositionId }: ValidProps) {
           <CircularProgress id={`appearances-progress`} />
         </div>
       )}
-
       <h2>PropositionCompounds</h2>
       <FlipGrid>
         {map(propositionCompounds, (pc) => {

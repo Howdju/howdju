@@ -3,7 +3,7 @@ import { schema } from "normalizr";
 
 import {
   AccountSettings,
-  AppearanceOut,
+  AppearanceView,
   ContextTrailItem,
   Domain,
   JustificationView,
@@ -329,7 +329,7 @@ export const accountSettingsSchema = new schema.Entity<AccountSettings>(
   "accountSettings"
 );
 
-export const appearanceSchema = new schema.Entity<AppearanceOut>(
+export const appearanceSchema = new schema.Entity<AppearanceView>(
   "appearances",
   {
     mediaExcerpt: mediaExcerptSchema,

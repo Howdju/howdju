@@ -36,6 +36,7 @@ import {
   Entity,
   CreatePropositionTagVote,
   PropositionRef,
+  AppearanceView,
 } from "howdju-common";
 
 import * as characters from "./characters";
@@ -241,6 +242,19 @@ export function extendContextTrailItems(
     contextTrailItems[contextTrailItems.length - 1]?.polarity
   );
   return concat(contextTrailItems, [trailItem]);
+}
+
+export function startContextTrailFromAppearance(
+  appearance: AppearanceView
+): ContextTrailItem[] {
+  return [
+    {
+      connectingEntityId: appearance.id,
+      polarity: "NEUTRAL",
+      connectingEntityType: "APPEARANCE",
+      connectingEntity: appearance,
+    },
+  ];
 }
 
 /** Information sufficient to reference a proposition in the UI. */

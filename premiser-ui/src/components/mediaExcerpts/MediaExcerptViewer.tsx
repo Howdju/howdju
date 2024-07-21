@@ -3,6 +3,7 @@ import { MaterialSymbol } from "react-material-symbols";
 import { Moment } from "moment";
 
 import {
+  ContextTrailItem,
   MediaExcerptView,
   toUrlWithFragmentFromAnchors,
   toUrlWithFragmentFromQuotation,
@@ -27,11 +28,13 @@ interface Props {
   id: string;
   mediaExcerpt: MediaExcerptView;
   showApparitionCount?: boolean;
+  contextTrailItems?: ContextTrailItem[];
 }
 
 export default function MediaExcerptViewer({
   mediaExcerpt,
   showApparitionCount = true,
+  contextTrailItems,
 }: Props) {
   const dispatch = useAppDispatch();
   const onClickUrlLocator =
@@ -69,7 +72,7 @@ export default function MediaExcerptViewer({
         </span>
       )}
       <Link
-        to={paths.mediaExcerpt(mediaExcerpt)}
+        to={paths.mediaExcerpt(mediaExcerpt, contextTrailItems)}
         title={`used in ${justificationBasisUsageCount} ${
           justificationBasisUsageCount === 1
             ? "justification"

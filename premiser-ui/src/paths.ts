@@ -144,8 +144,16 @@ class Paths {
   statementUsages = (statementId: EntityId) =>
     `/statement-usages?statementId=${statementId}`;
 
-  mediaExcerpt = (mediaExcerpt: PersistedEntity) =>
-    `/media-excerpts/${mediaExcerpt.id}`;
+  mediaExcerpt = (
+    mediaExcerpt: PersistedEntity,
+    contextTrailItems?: ContextTrailItem[]
+  ) => {
+    const query =
+      contextTrailItems && !isEmpty(contextTrailItems)
+        ? "?context-trail=" + serializeContextTrail(contextTrailItems)
+        : "";
+    return `/media-excerpts/${mediaExcerpt.id}${query}`;
+  };
   source = (source: SourceOut) =>
     `/sources/${source.id}/${toSlug(source.description)}`;
   submitMediaExcerpt = () => "/media-excerpts/new";
