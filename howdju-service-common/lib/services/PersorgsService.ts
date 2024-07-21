@@ -17,7 +17,6 @@ import {
   EntityNotFoundError,
   EntityTooOldToModifyError,
 } from "../serviceErrors";
-import { persorgSchema } from "./validationSchemas";
 import { PermissionsService } from "./PermissionsService";
 import { AuthService } from "./AuthService";
 import { EntityService } from "./EntityService";
@@ -40,7 +39,13 @@ export class PersorgsService extends EntityService<
     private readonly usersService: UsersService,
     private readonly persorgsDao: PersorgsDao
   ) {
-    super(persorgSchema, authService);
+    super(
+      {
+        createSchema: CreatePersorg,
+        updateSchema: UpdatePersorg,
+      },
+      authService
+    );
   }
 
   async readPersorgForId(persorgId: EntityId) {

@@ -13,7 +13,6 @@ import {
   StatementOut,
 } from "howdju-common";
 
-import { statementSchema } from "./validationSchemas";
 import { EntityService } from "./EntityService";
 import { AuthService } from "./AuthService";
 import {
@@ -41,7 +40,7 @@ export class StatementsService extends EntityService<
     private readonly propositionsService: PropositionsService,
     private readonly usersService: UsersService
   ) {
-    super(statementSchema, authService);
+    super({ createSchema: CreateStatement }, authService);
   }
 
   async readStatementForId(
