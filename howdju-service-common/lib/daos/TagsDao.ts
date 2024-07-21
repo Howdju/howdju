@@ -63,7 +63,7 @@ export class TagsDao {
       .then(mapSingle(this.logger, toTag, "tags", { tagName }));
   }
 
-  readTagsLikeName(tagName: string) {
+  readTagsLikeName(tagName: string): Promise<TagOut[]> {
     return this.database
       .query(
         "readTagsLikeName",

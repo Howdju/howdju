@@ -42,7 +42,7 @@ export class TagsService {
     return this.tagsDao.createTag(userId, tag, now);
   }
 
-  readTagsLikeTagName(tagName: string) {
+  readTagsLikeTagName(tagName: string): Promise<TagOut[]> {
     return this.tagsDao.readTagsLikeName(tagName);
   }
 }

@@ -19,6 +19,7 @@ import {
   Logger,
   EntityId,
   JustificationRootTargetType,
+  isDefined,
 } from "howdju-common";
 
 import { JustificationRow, EntityRowId } from "./dataTypes";
@@ -77,10 +78,15 @@ export function mapSingle<
   };
 }
 
-export const mapMany =
-  <T extends QueryResultRow, M extends RowMapper<T>>(mapper: M) =>
-  ({ rows }: { rows: T[] }) =>
-    map(rows, mapper);
+export function mapMany<
+  T extends QueryResultRow,
+  R extends Record<string, unknown>,
+  M extends RowMapper<T, undefined, R>
+>(mapper: M): (result: { rows: T[] }) => R[] {
+  return function mapManyMapper({ rows }: { rows: T[] }) {
+    return rows.map(mapper).filter(isDefined);
+  };
+}
 
 export const mapManyById =
   <
