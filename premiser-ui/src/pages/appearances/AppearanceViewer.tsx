@@ -3,7 +3,7 @@ import React from "react";
 import { AppearanceView, ContextTrailItem } from "howdju-common";
 
 import CreationInfo from "@/components/creationInfo/CreationInfo";
-import { combineIds, extendContextTrailItems } from "@/viewModels";
+import { combineIds, extendContextTrailItems, startContextTrailFromAppearance } from "@/viewModels";
 import PropositionEntityViewer from "@/PropositionEntityViewer";
 import MediaExcerptEntityViewer from "@/components/mediaExcerpts/MediaExcerptEntityViewer";
 
@@ -27,7 +27,7 @@ export default function AppearanceViewer({
         connectingEntityType: "APPEARANCE",
         connectingEntity: appearance,
       })
-    : undefined;
+    : startContextTrailFromAppearance(appearance);
   if (mode === "CONTEXT_TRAIL") {
     return (
       <div className="appearance-viewer">

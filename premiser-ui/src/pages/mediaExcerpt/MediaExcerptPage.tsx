@@ -44,6 +44,8 @@ import {
   DialogFooter,
 } from "@/components/dialog/Dialog";
 import SingleColumnGrid from "@/components/layout/SingleColumnGrid";
+import FocusValidatingContextTrail from "@/components/contextTrail/FocusValidatingContextTrail";
+import { PrimaryContextTrailProvider } from "@/components/contextTrail/PrimaryContextTrailProvider";
 
 interface MatchParams {
   mediaExcerptId: EntityId;
@@ -237,125 +239,142 @@ export default function MediaExcerptPage(props: Props) {
         <title>{title} — Howdju</title>
       </HowdjuHelmet>
       <h1>{title}</h1>
-      <SingleColumnGrid>
-        <MediaExcerptCard
-          id={combineIds(id, "media-excerpt-card")}
-          mediaExcerpt={mediaExcerpt}
-          menu={menu}
+      <PrimaryContextTrailProvider {...props}>
+        <FocusValidatingContextTrail
+          id="media-excerpt-page-context-trail"
+          focusEntityType="MEDIA_EXCERPT"
+          focusEntityId={mediaExcerptId}
         />
-      </SingleColumnGrid>
-      <MediaExcerptUsages mediaExcerptId={mediaExcerptId} />
-      <Dialog
-        id={combineIds(id, "add-url-locators-dialog")}
-        visible={isAddUrlLocatorsDialogVisible}
-        onRequestClose={hideAddUrlLocatorsDialog}
-        title="Add URL locators"
-      >
-        <DialogContent>
-          <CreateUrlLocatorsEditor
-            id="media-excerpt-page--create-url-locators-editor"
-            editorId={createUrlLocatorsEditorId}
-            showButtons={true}
-            submitButtonText="Add"
-            commitBehavior={
-              new CommitThenPutAction(
-                mediaExcerptPage.hideAddUrlLocatorsDialog()
-              )
-            }
-            cancelBehavior={
-              new CancelThenPutAction(
-                mediaExcerptPage.hideAddUrlLocatorsDialog()
-              )
-            }
+        <SingleColumnGrid>
+          <MediaExcerptCard
+            id={combineIds(id, "media-excerpt-card")}
+            mediaExcerpt={mediaExcerpt}
+            menu={menu}
           />
-        </DialogContent>
-      </Dialog>
-      <Dialog
-        id={combineIds(id, "delete-url-locators-dialog")}
-        visible={isDeleteUrlLocatorsDialogVisible}
-        onRequestClose={() => setIsDeleteUrlLocatorsDialogVisible(false)}
-        title="Delete URL locators"
-      >
-        <DialogContent>
-          <DeleteUrlLocatorsControl mediaExcerpt={mediaExcerpt} />
-        </DialogContent>
-        <DialogFooter>
-          <SolidButton
-            onClick={() => setIsDeleteUrlLocatorsDialogVisible(false)}
-          >
-            Close
-          </SolidButton>
-        </DialogFooter>
-      </Dialog>
-      <Dialog
-        id={combineIds(id, "add-citations-dialog")}
-        visible={isAddCitationsDialogVisible}
-        onRequestClose={hideAddCitationsDialog}
-        title="Add citations"
-      >
-        <DialogContent>
-          <CreateMediaExcerptCitationsEditor
-            id="media-excerpt-page--create-citations-editor"
-            editorId={createCitationsEditorId}
-            showButtons={true}
-            submitButtonText="Add"
-            commitBehavior={
-              new CommitThenPutAction(mediaExcerptPage.hideAddCitationsDialog())
-            }
-            cancelBehavior={
-              new CancelThenPutAction(mediaExcerptPage.hideAddCitationsDialog())
-            }
-          />
-        </DialogContent>
-      </Dialog>
-      <Dialog
-        id={combineIds(id, "delete-media-excerpt-citations-dialog")}
-        visible={isDeleteCitationsDialogVisible}
-        onRequestClose={() => setIsDeleteCitationsDialogVisible(false)}
-        title="Delete citations"
-      >
-        <DialogContent>
-          <DeleteMediaExcerptCitationsControl mediaExcerpt={mediaExcerpt} />
-        </DialogContent>
-        <DialogFooter>
-          <SolidButton onClick={() => setIsDeleteCitationsDialogVisible(false)}>
-            Close
-          </SolidButton>
-        </DialogFooter>
-      </Dialog>
-      <Dialog
-        id={combineIds(id, "add-speakers-dialog")}
-        visible={isAddSpeakersDialogVisible}
-        onRequestClose={hideAddSpeakersDialog}
-        title="Add speakers"
-      >
-        <DialogContent>
-          <CreateMediaExcerptSpeakersEditor
-            id={combineIds(id, "create-speakers-editor")}
-            editorId={createSpeakersEditorId}
-            showButtons={true}
-            submitButtonText="Add"
-            commitBehavior={
-              new CommitThenPutAction(mediaExcerptPage.hideAddSpeakersDialog())
-            }
-          />
-        </DialogContent>
-      </Dialog>
-      <Dialog
-        id={combineIds(id, "delete-speakers-dialog")}
-        visible={isDeleteSpeakersDialogVisible}
-        onRequestClose={() => setIsDeleteSpeakersDialogVisible(false)}
-        title="Delete speakers"
-      >
-        <DialogContent>
-          <DeleteMediaExcerptSpeakersControl mediaExcerpt={mediaExcerpt} />
-        </DialogContent>
-        <DialogFooter>
-          <SolidButton onClick={() => setIsDeleteSpeakersDialogVisible(false)}>
-            Close
-          </SolidButton>
-        </DialogFooter>
-      </Dialog>
+        </SingleColumnGrid>
+        <MediaExcerptUsages mediaExcerptId={mediaExcerptId} />
+        <Dialog
+          id={combineIds(id, "add-url-locators-dialog")}
+          visible={isAddUrlLocatorsDialogVisible}
+          onRequestClose={hideAddUrlLocatorsDialog}
+          title="Add URL locators"
+        >
+          <DialogContent>
+            <CreateUrlLocatorsEditor
+              id="media-excerpt-page--create-url-locators-editor"
+              editorId={createUrlLocatorsEditorId}
+              showButtons={true}
+              submitButtonText="Add"
+              commitBehavior={
+                new CommitThenPutAction(
+                  mediaExcerptPage.hideAddUrlLocatorsDialog()
+                )
+              }
+              cancelBehavior={
+                new CancelThenPutAction(
+                  mediaExcerptPage.hideAddUrlLocatorsDialog()
+                )
+              }
+            />
+          </DialogContent>
+        </Dialog>
+        <Dialog
+          id={combineIds(id, "delete-url-locators-dialog")}
+          visible={isDeleteUrlLocatorsDialogVisible}
+          onRequestClose={() => setIsDeleteUrlLocatorsDialogVisible(false)}
+          title="Delete URL locators"
+        >
+          <DialogContent>
+            <DeleteUrlLocatorsControl mediaExcerpt={mediaExcerpt} />
+          </DialogContent>
+          <DialogFooter>
+            <SolidButton
+              onClick={() => setIsDeleteUrlLocatorsDialogVisible(false)}
+            >
+              Close
+            </SolidButton>
+          </DialogFooter>
+        </Dialog>
+        <Dialog
+          id={combineIds(id, "add-citations-dialog")}
+          visible={isAddCitationsDialogVisible}
+          onRequestClose={hideAddCitationsDialog}
+          title="Add citations"
+        >
+          <DialogContent>
+            <CreateMediaExcerptCitationsEditor
+              id="media-excerpt-page--create-citations-editor"
+              editorId={createCitationsEditorId}
+              showButtons={true}
+              submitButtonText="Add"
+              commitBehavior={
+                new CommitThenPutAction(
+                  mediaExcerptPage.hideAddCitationsDialog()
+                )
+              }
+              cancelBehavior={
+                new CancelThenPutAction(
+                  mediaExcerptPage.hideAddCitationsDialog()
+                )
+              }
+            />
+          </DialogContent>
+        </Dialog>
+        <Dialog
+          id={combineIds(id, "delete-media-excerpt-citations-dialog")}
+          visible={isDeleteCitationsDialogVisible}
+          onRequestClose={() => setIsDeleteCitationsDialogVisible(false)}
+          title="Delete citations"
+        >
+          <DialogContent>
+            <DeleteMediaExcerptCitationsControl mediaExcerpt={mediaExcerpt} />
+          </DialogContent>
+          <DialogFooter>
+            <SolidButton
+              onClick={() => setIsDeleteCitationsDialogVisible(false)}
+            >
+              Close
+            </SolidButton>
+          </DialogFooter>
+        </Dialog>
+        <Dialog
+          id={combineIds(id, "add-speakers-dialog")}
+          visible={isAddSpeakersDialogVisible}
+          onRequestClose={hideAddSpeakersDialog}
+          title="Add speakers"
+        >
+          <DialogContent>
+            <CreateMediaExcerptSpeakersEditor
+              id={combineIds(id, "create-speakers-editor")}
+              editorId={createSpeakersEditorId}
+              showButtons={true}
+              submitButtonText="Add"
+              commitBehavior={
+                new CommitThenPutAction(
+                  mediaExcerptPage.hideAddSpeakersDialog()
+                )
+              }
+            />
+          </DialogContent>
+        </Dialog>
+        <Dialog
+          id={combineIds(id, "delete-speakers-dialog")}
+          visible={isDeleteSpeakersDialogVisible}
+          onRequestClose={() => setIsDeleteSpeakersDialogVisible(false)}
+          title="Delete speakers"
+        >
+          <DialogContent>
+            <DeleteMediaExcerptSpeakersControl mediaExcerpt={mediaExcerpt} />
+          </DialogContent>
+          <DialogFooter>
+            <SolidButton
+              onClick={() => setIsDeleteSpeakersDialogVisible(false)}
+            >
+              Close
+            </SolidButton>
+          </DialogFooter>
+        </Dialog>
+      </PrimaryContextTrailProvider>
     </div>
   );
 }

@@ -199,7 +199,7 @@ function ValidPropositionUsagesPage({ propositionId }: ValidProps) {
           const id = `appearance-card-${a.id}`;
           return (
             <GridCell key={id} {...appearanceCardColSpans}>
-              <AppearanceCard id={id} appearance={a} />
+              <AppearanceCard id={id} appearance={a} mode="CONTEXT_TRAIL" />
             </GridCell>
           );
         })}

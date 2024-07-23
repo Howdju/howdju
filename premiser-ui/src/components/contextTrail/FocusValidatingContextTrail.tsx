@@ -52,6 +52,12 @@ export default function FocusValidatingContextTrail({
     } as TrailConnectionNode
   );
 
+  if (!trailMatchesFocus) {
+    logger.error(
+      "The last context trail item did not match the focused entity."
+    );
+  }
+
   if (isInvalid || !trailMatchesFocus) {
     return <ErrorMessages errors={["The context trail was invalid"]} />;
   }

@@ -20,7 +20,7 @@ import { api } from "@/apiActions";
 import { RootState } from "@/setupStore";
 import { normalizationSchemaByEntityType } from "@/normalizationSchemas";
 
-interface Props extends RouteComponentProps {}
+interface Props extends Pick<RouteComponentProps, "location"> {}
 
 /**
  * Obtains the context trail from the query params and API for the PrimaryContextTrail context.

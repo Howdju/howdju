@@ -369,8 +369,9 @@ export const mainSearchResultSchema = {
 };
 
 export const normalizationSchemaByEntityType = {
-  JUSTIFICATION: justificationSchema,
   APPEARANCE: appearanceSchema,
+  JUSTIFICATION: justificationSchema,
+  MEDIA_EXCERPT: mediaExcerptSchema,
   PROPOSITION: propositionSchema,
   STATEMENT: statementSchema,
 } as const;

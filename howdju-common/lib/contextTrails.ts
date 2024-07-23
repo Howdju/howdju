@@ -98,7 +98,12 @@ export type TrailConnection =
 export type ConnectingEntityOut = ContextTrailItemOut["connectingEntity"];
 export type ConnectingEntity = ContextTrailItem["connectingEntity"];
 export type ConnectingEntityType = ContextTrailItem["connectingEntityType"];
-const focusEntityTypes = ["PROPOSITION", "STATEMENT", "APPEARANCE"] as const;
+const focusEntityTypes = [
+  "APPEARANCE",
+  "MEDIA_EXCERPT",
+  "PROPOSITION",
+  "STATEMENT",
+] as const;
 export type FocusEntityType = typeof focusEntityTypes[number];
 
 export const contextTrailTypeByShortcut = {
