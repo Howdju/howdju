@@ -10,7 +10,7 @@ import lowerCase from "lodash/lowerCase";
 import map from "lodash/map";
 import split from "lodash/split";
 import truncate from "lodash/truncate";
-import { clone, concat, reverse, TruncateOptions } from "lodash";
+import { clone, concat, isEmpty, reverse, TruncateOptions } from "lodash";
 
 import config from "./config";
 import {
@@ -37,6 +37,7 @@ import {
   CreatePropositionTagVote,
   PropositionRef,
   AppearanceView,
+  newProgrammingError,
 } from "howdju-common";
 
 import * as characters from "./characters";
@@ -233,6 +234,24 @@ export interface RootTargetInfo {
   rootTargetId: EntityId;
 }
 
+export function makeContextTrailItems(
+  contextTrailItems: ContextTrailItem[] | undefined,
+  connectingEntityInfo: ConnectingEntityInfo
+) {
+  if (contextTrailItems && !isEmpty(contextTrailItems)) {
+    return extendContextTrailItems(contextTrailItems, connectingEntityInfo);
+  }
+  const { connectingEntityType, connectingEntity } = connectingEntityInfo;
+  switch (connectingEntityType) {
+    case "APPEARANCE":
+      return startContextTrailFromAppearance(connectingEntity);
+    default:
+      throw newProgrammingError(
+        `Unsupported connectingEntityType for initial context trail: ${connectingEntityType}`
+      );
+  }
+}
+
 export function extendContextTrailItems(
   contextTrailItems: ContextTrailItem[],
   connectingEntityInfo: ConnectingEntityInfo
@@ -244,7 +263,7 @@ export function extendContextTrailItems(
   return concat(contextTrailItems, [trailItem]);
 }
 
-export function startContextTrailFromAppearance(
+function startContextTrailFromAppearance(
   appearance: AppearanceView
 ): ContextTrailItem[] {
   return [

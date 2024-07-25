@@ -51,10 +51,7 @@ class Paths {
       return "#";
     }
     const slugPath = !noSlug && slug ? "/" + slug : "";
-    const query =
-      contextTrailItems && !isEmpty(contextTrailItems)
-        ? "?context-trail=" + serializeContextTrail(contextTrailItems)
-        : "";
+    const query = createContextTrailQuery(contextTrailItems);
     const anchor = focusJustificationId
       ? `#justification-${focusJustificationId}`
       : "";
@@ -65,10 +62,7 @@ class Paths {
     contextTrailItems?: ContextTrailItem[],
     focusJustificationId?: EntityId
   ) => {
-    const query =
-      contextTrailItems && !isEmpty(contextTrailItems)
-        ? "?context-trail=" + serializeContextTrail(contextTrailItems)
-        : "";
+    const query = createContextTrailQuery(contextTrailItems);
     const anchor = focusJustificationId
       ? `#justification-${focusJustificationId}`
       : "";
@@ -148,10 +142,10 @@ class Paths {
     mediaExcerpt: PersistedEntity,
     contextTrailItems?: ContextTrailItem[]
   ) => {
-    const query =
-      contextTrailItems && !isEmpty(contextTrailItems)
-        ? "?context-trail=" + serializeContextTrail(contextTrailItems)
-        : "";
+    const query = createContextTrailQuery(contextTrailItems);
+    contextTrailItems && !isEmpty(contextTrailItems)
+      ? "?context-trail=" + serializeContextTrail(contextTrailItems)
+      : "";
     return `/media-excerpts/${mediaExcerpt.id}${query}`;
   };
   source = (source: SourceOut) =>
@@ -174,6 +168,14 @@ class Paths {
   faq = () => "/faq";
 
   tag = (tag: TagOut) => `/tags/${tag.id}/${toSlug(tag.name)}`;
+}
+
+function createContextTrailQuery(
+  contextTrailItems: ContextTrailItem[] | undefined
+): string {
+  return contextTrailItems && !isEmpty(contextTrailItems)
+    ? "?context-trail=" + serializeContextTrail(contextTrailItems)
+    : "";
 }
 
 export default new Paths();

@@ -143,6 +143,7 @@ function appearanceToCard(
 ) {
   return (
     <>
+      {/* TODO(684) split into MediaExcerptCard and AppearanceInfoCard ("has an appearance of") */}
       <AppearanceCard
         id={combineIds(id, "appearance", appearance.id)}
         style={{ width: "100%" }}

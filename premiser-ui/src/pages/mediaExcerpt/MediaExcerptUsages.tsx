@@ -18,7 +18,6 @@ import {
   justificationCardColSpans,
 } from "@/components/listEntities/ListEntitiesWidget";
 import { FlipGrid } from "@/components/layout/FlipGrid";
-import { startContextTrailFromAppearance } from "@/viewModels";
 
 interface Props {
   mediaExcerptId: EntityId;
@@ -99,14 +98,9 @@ export default function MediaExcerptUsages({ mediaExcerptId }: Props) {
       <FlipGrid>
         {appearances.map((a) => {
           const id = `appearance-card-${a.id}`;
-          const contextTrailItems = startContextTrailFromAppearance(a);
           return (
             <GridCell key={id} {...appearanceCardColSpans}>
-              <ApparitionCard
-                id={id}
-                appearance={a}
-                contextTrailItems={contextTrailItems}
-              />
+              <ApparitionCard id={id} appearance={a} />
             </GridCell>
           );
         })}
