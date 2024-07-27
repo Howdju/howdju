@@ -598,19 +598,19 @@
   // ../node_modules/lodash/identity.js
   var require_identity = __commonJS({
     "../node_modules/lodash/identity.js"(exports, module) {
-      function identity(value) {
+      function identity2(value) {
         return value;
       }
-      module.exports = identity;
+      module.exports = identity2;
     }
   });
 
   // ../node_modules/lodash/_castFunction.js
   var require_castFunction = __commonJS({
     "../node_modules/lodash/_castFunction.js"(exports, module) {
-      var identity = require_identity();
+      var identity2 = require_identity();
       function castFunction(value) {
-        return typeof value == "function" ? value : identity;
+        return typeof value == "function" ? value : identity2;
       }
       module.exports = castFunction;
     }
@@ -2138,7 +2138,7 @@
               return value;
             }
             if (value == null) {
-              return identity;
+              return identity2;
             }
             if (typeof value == "object") {
               return isArray3(value) ? baseMatchesProperty(value[0], value[1]) : baseMatches(value);
@@ -2276,7 +2276,7 @@
                 return iteratee2;
               });
             } else {
-              iteratees = [identity];
+              iteratees = [identity2];
             }
             var index = -1;
             iteratees = arrayMap(iteratees, baseUnary(getIteratee()));
@@ -2372,7 +2372,7 @@
             return result2;
           }
           function baseRest(func, start) {
-            return setToString(overRest(func, start, identity), func + "");
+            return setToString(overRest(func, start, identity2), func + "");
           }
           function baseSample(collection) {
             return arraySample(values2(collection));
@@ -2404,11 +2404,11 @@
             }
             return object;
           }
-          var baseSetData = !metaMap ? identity : function(func, data) {
+          var baseSetData = !metaMap ? identity2 : function(func, data) {
             metaMap.set(func, data);
             return func;
           };
-          var baseSetToString = !defineProperty ? identity : function(func, string) {
+          var baseSetToString = !defineProperty ? identity2 : function(func, string) {
             return defineProperty(func, "toString", {
               "configurable": true,
               "enumerable": false,
@@ -2457,7 +2457,7 @@
               }
               return high;
             }
-            return baseSortedIndexBy(array, value, identity, retHighest);
+            return baseSortedIndexBy(array, value, identity2, retHighest);
           }
           function baseSortedIndexBy(array, value, iteratee2, retHighest) {
             var low = 0, high = array == null ? 0 : array.length;
@@ -2613,7 +2613,7 @@
             return isArrayLikeObject(value) ? value : [];
           }
           function castFunction(value) {
-            return typeof value == "function" ? value : identity;
+            return typeof value == "function" ? value : identity2;
           }
           function castPath(value, object) {
             if (isArray3(value)) {
@@ -4963,7 +4963,7 @@
               value = nativeObjectToString.call(value);
             }
             result2[value] = key;
-          }, constant(identity));
+          }, constant(identity2));
           var invertBy = createInverter(function(result2, value, key) {
             if (value != null && typeof value.toString != "function") {
               value = nativeObjectToString.call(value);
@@ -5466,7 +5466,7 @@
           }
           var flow = createFlow();
           var flowRight = createFlow(true);
-          function identity(value) {
+          function identity2(value) {
             return value;
           }
           function iteratee(func) {
@@ -5590,19 +5590,19 @@
           }, 1);
           var floor = createRound("floor");
           function max(array) {
-            return array && array.length ? baseExtremum(array, identity, baseGt) : undefined2;
+            return array && array.length ? baseExtremum(array, identity2, baseGt) : undefined2;
           }
           function maxBy(array, iteratee2) {
             return array && array.length ? baseExtremum(array, getIteratee(iteratee2, 2), baseGt) : undefined2;
           }
           function mean(array) {
-            return baseMean(array, identity);
+            return baseMean(array, identity2);
           }
           function meanBy(array, iteratee2) {
             return baseMean(array, getIteratee(iteratee2, 2));
           }
           function min(array) {
-            return array && array.length ? baseExtremum(array, identity, baseLt) : undefined2;
+            return array && array.length ? baseExtremum(array, identity2, baseLt) : undefined2;
           }
           function minBy(array, iteratee2) {
             return array && array.length ? baseExtremum(array, getIteratee(iteratee2, 2), baseLt) : undefined2;
@@ -5615,7 +5615,7 @@
             return minuend - subtrahend;
           }, 0);
           function sum(array) {
-            return array && array.length ? baseSum(array, identity) : 0;
+            return array && array.length ? baseSum(array, identity2) : 0;
           }
           function sumBy(array, iteratee2) {
             return array && array.length ? baseSum(array, getIteratee(iteratee2, 2)) : 0;
@@ -5812,7 +5812,7 @@
           lodash.has = has;
           lodash.hasIn = hasIn;
           lodash.head = head2;
-          lodash.identity = identity;
+          lodash.identity = identity2;
           lodash.includes = includes;
           lodash.indexOf = indexOf2;
           lodash.inRange = inRange;
@@ -5982,7 +5982,7 @@
             };
           });
           LazyWrapper.prototype.compact = function() {
-            return this.filter(identity);
+            return this.filter(identity2);
           };
           LazyWrapper.prototype.find = function(predicate) {
             return this.filter(predicate).head();
@@ -10178,11 +10178,15 @@
       return void 0;
     };
   }
+  function toJsonWithReplacer(val, replacer) {
+    const seen = /* @__PURE__ */ new WeakSet();
+    return JSON.stringify(val, handleCircularReferences(seen, replacer));
+  }
   function toJson(val) {
     const seen = /* @__PURE__ */ new WeakSet();
     return JSON.stringify(val, handleCircularReferences(seen));
   }
-  function handleCircularReferences(seen) {
+  function handleCircularReferences(seen, replacer = import_lodash2.identity) {
     return function(_key, value) {
       if (value === null || typeof value !== "object") {
         return value;
@@ -10196,7 +10200,8 @@
       seen.add(value);
       const newValue = Array.isArray(value) ? [] : {};
       for (const [key, val] of Object.entries(value)) {
-        newValue[key] = handleCircularReferences(seen)(key, val);
+        const replaced = replacer(val);
+        newValue[key] = handleCircularReferences(seen, replacer)(key, replaced);
       }
       seen.delete(value);
       return newValue;
@@ -28295,7 +28300,7 @@
     "../node_modules/lodash/_baseIteratee.js"(exports, module) {
       var baseMatches = require_baseMatches();
       var baseMatchesProperty = require_baseMatchesProperty();
-      var identity = require_identity();
+      var identity2 = require_identity();
       var isArray3 = require_isArray();
       var property = require_property();
       function baseIteratee(value) {
@@ -28303,7 +28308,7 @@
           return value;
         }
         if (value == null) {
-          return identity;
+          return identity2;
         }
         if (typeof value == "object") {
           return isArray3(value) ? baseMatchesProperty(value[0], value[1]) : baseMatches(value);
@@ -28438,8 +28443,8 @@
     "../node_modules/lodash/_baseSetToString.js"(exports, module) {
       var constant = require_constant();
       var defineProperty = require_defineProperty();
-      var identity = require_identity();
-      var baseSetToString = !defineProperty ? identity : function(func, string) {
+      var identity2 = require_identity();
+      var baseSetToString = !defineProperty ? identity2 : function(func, string) {
         return defineProperty(func, "toString", {
           "configurable": true,
           "enumerable": false,
@@ -28489,11 +28494,11 @@
   // ../node_modules/lodash/_baseRest.js
   var require_baseRest = __commonJS({
     "../node_modules/lodash/_baseRest.js"(exports, module) {
-      var identity = require_identity();
+      var identity2 = require_identity();
       var overRest = require_overRest();
       var setToString = require_setToString();
       function baseRest(func, start) {
-        return setToString(overRest(func, start, identity), func + "");
+        return setToString(overRest(func, start, identity2), func + "");
       }
       module.exports = baseRest;
     }
@@ -32514,6 +32519,7 @@
     timestampFormatString: () => timestampFormatString,
     toEntries: () => toEntries,
     toJson: () => toJson,
+    toJsonWithReplacer: () => toJsonWithReplacer,
     toPlainTextContent: () => toPlainTextContent,
     toSingleLine: () => toSingleLine,
     toSlug: () => toSlug,
