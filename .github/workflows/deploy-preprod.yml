@@ -3,6 +3,10 @@ name: Deploy to preprod
 concurrency: preprod
 
 on:
+  workflow_run:
+    workflows: ["CI"]
+    types: [completed]
+    branches: [master]
   schedule:
     # Run every day at 9:45 AM UTC
     - cron: "45 9 * * *"
@@ -17,6 +21,10 @@ env:
 
 jobs:
   deployment:
+    # Only deploy if:
+    # - CI was based on a successful push or pull_request (to master) or
+    # - if it's a manual trigger.
+    if: ${{ (github.event.workflow_run.event == 'push' || github.event.workflow_run.event == 'pull_request') && github.event.workflow_run.conclusion == 'success' ||  github.event_name == 'workflow_dispatch' }}
     runs-on: ubuntu-latest
     environment: preprod
     steps:
