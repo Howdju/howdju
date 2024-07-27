@@ -1,5 +1,4 @@
 const isObject = require("lodash/isObject");
-const map = require("lodash/map");
 const toString = require("lodash/toString");
 
 const { toJson } = require("howdju-common");
@@ -32,7 +31,7 @@ const processArgs = (args, doUseCarriageReturns) => {
         // If the args have interleaved strings and objects, then the objects' JSON should be included in the message
         // Add all the previously seen objects
 
-        const datasJson = map(datas, toJson);
+        const datasJson = datas.map(toJson);
         const spliceArgs = [messageParts.length, 0].concat(datasJson);
         messageParts.splice.apply(messageParts, spliceArgs);
       }

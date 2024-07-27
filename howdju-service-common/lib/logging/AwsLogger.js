@@ -5,7 +5,7 @@ const join = require("lodash/join");
 const map = require("lodash/map");
 const mapValues = require("lodash/mapValues");
 
-const { utcTimestamp } = require("howdju-common");
+const { toJsonWithReplacer, utcTimestamp } = require("howdju-common");
 
 const { processArgs } = require("./processArgs");
 
@@ -91,7 +91,7 @@ const makeJsonLogArguments = function (logLevel, logLevelNumber, ...args) {
     logRecord["data"] = data;
   }
 
-  const logRecordJson = JSON.stringify(logRecord, jsonStringifyReplacer);
+  const logRecordJson = toJsonWithReplacer(logRecord, jsonStringifyReplacer);
   return [logRecordJson];
 };
 

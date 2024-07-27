@@ -21,6 +21,7 @@ import {
   reject,
   replace,
   trim,
+  identity,
 } from "lodash";
 import moment, { Moment, unitOfTime, Duration, TemplateFunction } from "moment";
 import isAbsoluteUrlLib from "is-absolute-url";
@@ -454,12 +455,20 @@ export const keysTo = (obj: { [k: string]: any }, val: any) =>
     {} as { [k: string]: typeof val }
   );
 
+export function toJsonWithReplacer(val: any, replacer: (val: any) => any) {
+  const seen = new WeakSet();
+  return JSON.stringify(val, handleCircularReferences(seen, replacer));
+}
+
 export function toJson(val: any) {
   const seen = new WeakSet();
   return JSON.stringify(val, handleCircularReferences(seen));
 }
 
-function handleCircularReferences(seen: WeakSet<any>) {
+function handleCircularReferences(
+  seen: WeakSet<any>,
+  replacer: (val: any) => any = identity
+) {
   return function (_key: string, value: any) {
     if (value === null || typeof value !== "object") {
       return value;
@@ -478,7 +487,8 @@ function handleCircularReferences(seen: WeakSet<any>) {
     const newValue: Record<string, any> = Array.isArray(value) ? [] : {};
 
     for (const [key, val] of Object.entries(value)) {
-      newValue[key] = handleCircularReferences(seen)(key, val);
+      const replaced = replacer(val);
+      newValue[key] = handleCircularReferences(seen, replacer)(key, replaced);
     }
 
     seen.delete(value);
