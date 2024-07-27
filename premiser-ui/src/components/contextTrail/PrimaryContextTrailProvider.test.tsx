@@ -13,7 +13,6 @@ import {
 } from "howdju-common";
 
 import {
-  makeRouteComponentProps,
   renderWithProviders,
   withFakeTimers,
   withMockServer,
@@ -57,11 +56,10 @@ describe("PrimaryContextTrailProvider", () => {
       })
     );
 
-    const history = createMemoryHistory();
-    const { location, match } = makeRouteComponentProps("submit", {
-      searchParams: {
-        "context-trail": serializeContextTrail(contextTrailInfos),
-      },
+    const history = createMemoryHistory({
+      initialEntries: [
+        `/any-path?context-trail=${serializeContextTrail(contextTrailInfos)}`,
+      ],
     });
 
     let contextValue: any;
@@ -72,11 +70,7 @@ describe("PrimaryContextTrailProvider", () => {
 
     // Act
     renderWithProviders(
-      <PrimaryContextTrailProvider
-        history={history}
-        location={location}
-        match={match}
-      >
+      <PrimaryContextTrailProvider>
         <PrimaryContextTrail.Consumer>
           {captureContextValue}
         </PrimaryContextTrail.Consumer>

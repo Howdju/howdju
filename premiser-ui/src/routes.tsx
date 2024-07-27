@@ -9,7 +9,6 @@ import { commonPaths, JustificationRootTargetTypes } from "howdju-common";
 import AboutPage from "@/pages/about/AboutPage";
 import PasswordResetConfirmationPage from "@/pages/passwordResetConfirmation/PasswordResetConfirmationPage";
 import PasswordResetRequestPage from "@/pages/passwordResetRequest/PasswordResetRequestPage";
-import { PrimaryContextTrailProvider } from "./components/contextTrail/PrimaryContextTrailProvider";
 import CreatePropositionPage from "./CreatePropositionPage";
 import { history } from "./history";
 import IconPage from "./IconPage";
@@ -97,12 +96,10 @@ const routesById = {
       exact
       path="/p/:rootTargetId/:slug?"
       render={(props) => (
-        <PrimaryContextTrailProvider {...props}>
-          <JustificationsPage
-            {...props}
-            rootTargetType={JustificationRootTargetTypes.PROPOSITION}
-          />
-        </PrimaryContextTrailProvider>
+        <JustificationsPage
+          {...props}
+          rootTargetType={JustificationRootTargetTypes.PROPOSITION}
+        />
       )}
     />
   ),

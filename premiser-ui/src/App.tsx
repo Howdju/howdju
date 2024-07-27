@@ -64,6 +64,7 @@ import NavTabs from "./NavTabs";
 
 import "./App.scss";
 import "./fonts.js";
+import { PrimaryContextTrailProvider } from "./components/contextTrail/PrimaryContextTrailProvider";
 
 class App extends Component<Props> {
   throttledOnWindowScroll: () => void;
@@ -464,7 +465,9 @@ class App extends Component<Props> {
               {navDrawer}
 
               <div id="page">
-                <Switch>{routes}</Switch>
+                <PrimaryContextTrailProvider>
+                  <Switch>{routes}</Switch>
+                </PrimaryContextTrailProvider>
               </div>
 
               <div id="footer">
