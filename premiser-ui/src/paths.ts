@@ -143,9 +143,6 @@ class Paths {
     contextTrailItems?: ContextTrailItem[]
   ) => {
     const query = createContextTrailQuery(contextTrailItems);
-    contextTrailItems && !isEmpty(contextTrailItems)
-      ? "?context-trail=" + serializeContextTrail(contextTrailItems)
-      : "";
     return `/media-excerpts/${mediaExcerpt.id}${query}`;
   };
   source = (source: SourceOut) =>
