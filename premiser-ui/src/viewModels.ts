@@ -243,6 +243,8 @@ export function makeContextTrailItems(
   }
   const { connectingEntityType, connectingEntity } = connectingEntityInfo;
   switch (connectingEntityType) {
+    case "JUSTIFICATION":
+      return extendContextTrailItems([], connectingEntityInfo);
     case "APPEARANCE":
       return startContextTrailFromAppearance(connectingEntity);
     default:
@@ -252,7 +254,7 @@ export function makeContextTrailItems(
   }
 }
 
-export function extendContextTrailItems(
+function extendContextTrailItems(
   contextTrailItems: ContextTrailItem[],
   connectingEntityInfo: ConnectingEntityInfo
 ): ContextTrailItem[] {

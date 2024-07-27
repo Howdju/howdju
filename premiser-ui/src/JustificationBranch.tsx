@@ -43,7 +43,7 @@ import { EditorTypes } from "./reducers/editors";
 import { RootState } from "./setupStore";
 import t from "./texts";
 import { OnClickJustificationWritQuoteUrl } from "./types";
-import { extendContextTrailItems } from "./viewModels";
+import { makeContextTrailItems } from "./viewModels";
 
 import "./JustificationBranch.scss";
 
@@ -69,7 +69,7 @@ function JustificationBranch({
   isCondensed = false,
   isUnCondensed = false,
   showBasisUrls,
-  contextTrailItems = [],
+  contextTrailItems,
   showStatusText,
   onClickWritQuoteUrl,
 }: Props) {
@@ -180,6 +180,11 @@ function JustificationBranch({
   const _isRootNegative = isRootNegative(justification);
 
   const doHideControls = !isOver;
+
+  const nextContextTrailItems = makeContextTrailItems(contextTrailItems, {
+    connectingEntityType: "JUSTIFICATION",
+    connectingEntity: justification,
+  });
 
   const menu = (
     <DropdownMenu
@@ -347,10 +352,6 @@ function JustificationBranch({
             return <div>Placeholder justification {j.id}</div>;
           }
           const id = `counter-justification-${j.id}-branch`;
-          const nextContextTrailItems = extendContextTrailItems(
-            contextTrailItems,
-            { connectingEntityType: "JUSTIFICATION", connectingEntity: j }
-          );
           return (
             <div id={id} key={id} className="counter-justification-branch">
               <ConnectedJustificationBranch
@@ -386,7 +387,7 @@ function JustificationBranch({
         showBasisUrls={showBasisUrls}
         showStatusText={showStatusText}
         menu={menu}
-        contextTrailItems={contextTrailItems}
+        contextTrailItems={nextContextTrailItems}
         actions={<div className="actions">{actions}</div>}
         onMouseOver={onBubbleMouseOver}
         onMouseLeave={onBubbleMouseLeave}

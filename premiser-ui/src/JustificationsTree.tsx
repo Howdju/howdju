@@ -14,7 +14,7 @@ import {
 import config from "./config";
 import JustificationBranch from "./JustificationBranch";
 import t, { ADD_JUSTIFICATION_CALL_TO_ACTION } from "./texts";
-import { combineIds, extendContextTrailItems } from "./viewModels";
+import { combineIds } from "./viewModels";
 import { ComponentId, OnClickJustificationWritQuoteUrl } from "./types";
 import { useAppSelector } from "./hooks";
 import { selectIsWindowNarrow } from "./selectors";
@@ -53,10 +53,6 @@ export default function JustificationsTree({
 }: Props) {
   function toBranch(j: JustificationView) {
     const treeId = combineIds(id, "justification-tree", j.id);
-    const nextContextTrailItems = extendContextTrailItems(contextTrailItems, {
-      connectingEntityType: "JUSTIFICATION",
-      connectingEntity: j,
-    });
     return (
       <FlipMoveWrapper key={treeId}>
         <JustificationBranch
@@ -67,7 +63,7 @@ export default function JustificationsTree({
           isUnCondensed={isUnCondensed}
           showBasisUrls={showBasisUrls}
           showStatusText={true}
-          contextTrailItems={nextContextTrailItems}
+          contextTrailItems={contextTrailItems}
           onClickWritQuoteUrl={onClickWritQuoteUrl}
         />
       </FlipMoveWrapper>
