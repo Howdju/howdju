@@ -14,6 +14,7 @@ import {
   decodeQueryStringObject,
   toSlug,
   toJson,
+  toJsonWithReplacer,
 } from "./general";
 
 describe("cleanWhitespace", () => {
@@ -231,5 +232,17 @@ describe("toJson", () => {
   test("serializes moments as ISO strings", () => {
     const obj: any = { a: moment.utc("2022-11-08T21:44:00") };
     expect(toJson(obj)).toBe('{"a":"2022-11-08T21:44:00.000Z"}');
+  });
+  test("serializes the items in a list when used in map", () => {
+    expect([1, "2"].map(toJson)).toEqual(["1", '"2"']);
+  });
+});
+describe("toJsonWithReplacer", () => {
+  test("stringifies an object, replacing values", () => {
+    expect(
+      toJsonWithReplacer({ a: 1, b: "3" }, (_key, value) =>
+        value === 1 ? 2 : value
+      )
+    ).toBe('{"a":2,"b":"3"}');
   });
 });
