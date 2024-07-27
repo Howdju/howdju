@@ -21,7 +21,6 @@ import {
   reject,
   replace,
   trim,
-  identity,
 } from "lodash";
 import moment, { Moment, unitOfTime, Duration, TemplateFunction } from "moment";
 import isAbsoluteUrlLib from "is-absolute-url";
@@ -455,7 +454,19 @@ export const keysTo = (obj: { [k: string]: any }, val: any) =>
     {} as { [k: string]: typeof val }
   );
 
-export function toJsonWithReplacer(val: any, replacer: (val: any) => any) {
+/**
+ * Converts a value to a JSON string using a replacer function.
+ *
+ * Handles circular references.
+ *
+ * @param val the val to convert to JSON
+ * @param replacer should behave similarily to JSON.stringify's replacer (https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify#the_replacer_parameter)
+ * @returns
+ */
+export function toJsonWithReplacer(
+  val: any,
+  replacer: (key: string, val: any) => any
+) {
   const seen = new WeakSet();
   return JSON.stringify(val, handleCircularReferences(seen, replacer));
 }
@@ -467,7 +478,7 @@ export function toJson(val: any) {
 
 function handleCircularReferences(
   seen: WeakSet<any>,
-  replacer: (val: any) => any = identity
+  replacer?: (key: string, val: any) => any
 ) {
   return function (_key: string, value: any) {
     if (value === null || typeof value !== "object") {
@@ -487,7 +498,7 @@ function handleCircularReferences(
     const newValue: Record<string, any> = Array.isArray(value) ? [] : {};
 
     for (const [key, val] of Object.entries(value)) {
-      const replaced = replacer(val);
+      const replaced = replacer ? replacer(key, val) : val;
       newValue[key] = handleCircularReferences(seen, replacer)(key, replaced);
     }
 
