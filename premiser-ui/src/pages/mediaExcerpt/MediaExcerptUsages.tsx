@@ -1,6 +1,5 @@
 import React, { UIEvent, useEffect } from "react";
 import isEmpty from "lodash/isEmpty";
-import map from "lodash/map";
 import { GridCell } from "@react-md/utils";
 
 import { EntityId } from "howdju-common";
@@ -11,7 +10,7 @@ import {
 } from "../../normalizationSchemas";
 import JustificationCard from "../../JustificationCard";
 import { useAppDispatch, useAppSelector, useAppEntitySelector } from "@/hooks";
-import AppearanceCard from "../appearances/AppearanceCard";
+import ApparitionCard from "../appearances/ApparitionCard";
 import page from "./mediaExcerptUsagesSlice";
 import FetchMoreButton from "@/components/button/FetchMoreButton";
 import {
@@ -97,11 +96,11 @@ export default function MediaExcerptUsages({ mediaExcerptId }: Props) {
 
       <h1>Appearances</h1>
       <FlipGrid>
-        {map(appearances, (a) => {
+        {appearances.map((a) => {
           const id = `appearance-card-${a.id}`;
           return (
             <GridCell key={id} {...appearanceCardColSpans}>
-              <AppearanceCard id={id} appearance={a} />
+              <ApparitionCard id={id} appearance={a} />
             </GridCell>
           );
         })}

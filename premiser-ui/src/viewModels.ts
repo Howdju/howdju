@@ -10,7 +10,7 @@ import lowerCase from "lodash/lowerCase";
 import map from "lodash/map";
 import split from "lodash/split";
 import truncate from "lodash/truncate";
-import { clone, concat, reverse, TruncateOptions } from "lodash";
+import { clone, concat, isEmpty, reverse, TruncateOptions } from "lodash";
 
 import config from "./config";
 import {
@@ -36,6 +36,8 @@ import {
   Entity,
   CreatePropositionTagVote,
   PropositionRef,
+  AppearanceView,
+  newProgrammingError,
 } from "howdju-common";
 
 import * as characters from "./characters";
@@ -232,7 +234,27 @@ export interface RootTargetInfo {
   rootTargetId: EntityId;
 }
 
-export function extendContextTrailItems(
+export function makeContextTrailItems(
+  contextTrailItems: ContextTrailItem[] | undefined,
+  connectingEntityInfo: ConnectingEntityInfo
+) {
+  if (contextTrailItems && !isEmpty(contextTrailItems)) {
+    return extendContextTrailItems(contextTrailItems, connectingEntityInfo);
+  }
+  const { connectingEntityType, connectingEntity } = connectingEntityInfo;
+  switch (connectingEntityType) {
+    case "JUSTIFICATION":
+      return extendContextTrailItems([], connectingEntityInfo);
+    case "APPEARANCE":
+      return startContextTrailFromAppearance(connectingEntity);
+    default:
+      throw newProgrammingError(
+        `Unsupported connectingEntityType for initial context trail: ${connectingEntityType}`
+      );
+  }
+}
+
+function extendContextTrailItems(
   contextTrailItems: ContextTrailItem[],
   connectingEntityInfo: ConnectingEntityInfo
 ): ContextTrailItem[] {
@@ -241,6 +263,19 @@ export function extendContextTrailItems(
     contextTrailItems[contextTrailItems.length - 1]?.polarity
   );
   return concat(contextTrailItems, [trailItem]);
+}
+
+function startContextTrailFromAppearance(
+  appearance: AppearanceView
+): ContextTrailItem[] {
+  return [
+    {
+      connectingEntityId: appearance.id,
+      polarity: "NEUTRAL",
+      connectingEntityType: "APPEARANCE",
+      connectingEntity: appearance,
+    },
+  ];
 }
 
 /** Information sufficient to reference a proposition in the UI. */

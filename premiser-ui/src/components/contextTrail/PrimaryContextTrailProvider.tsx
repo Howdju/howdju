@@ -1,7 +1,7 @@
-import React, { createContext, PropsWithChildren } from "react";
+import React, { createContext, ReactNode } from "react";
 import queryString from "query-string";
 import { isArray, isEmpty, map, some } from "lodash";
-import { RouteComponentProps } from "react-router";
+import { useLocation } from "react-router";
 import { Location } from "history";
 import useDeepCompareEffect from "use-deep-compare-effect";
 import { denormalize } from "normalizr";
@@ -20,15 +20,15 @@ import { api } from "@/apiActions";
 import { RootState } from "@/setupStore";
 import { normalizationSchemaByEntityType } from "@/normalizationSchemas";
 
-interface Props extends RouteComponentProps {}
-
 /**
  * Obtains the context trail from the query params and API for the PrimaryContextTrail context.
  */
 export function PrimaryContextTrailProvider({
-  location,
   children,
-}: PropsWithChildren<Props>) {
+}: {
+  children: ReactNode;
+}) {
+  const location = useLocation();
   const { infos, hasInvalidInfos } =
     contextTrailItemInfosFromLocation(location);
 
