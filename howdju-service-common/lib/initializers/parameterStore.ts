@@ -1,11 +1,13 @@
 import {
   SSMClient,
   GetParametersCommand,
+  DescribeParametersCommand,
   Parameter,
 } from "@aws-sdk/client-ssm";
 import { PoolConfig } from "pg";
 
 import { logger } from "howdju-common";
+import { groupBy } from "lodash";
 
 const client = new SSMClient();
 
@@ -30,13 +32,18 @@ export async function getParameterStoreConfig(
     return {} as AsyncConfig;
   }
 
+  const parameterNames = [
+    `/${environment}/${DATABASE_CONNECTION_INFO}`,
+    `/${environment}/${SCRAPING_ANT_API_KEY}`,
+    `/${environment}/${ZEN_ROWS_API_KEY}`,
+  ];
+
+  // GetParametersCommand throws for missing parameters, so filter out the missing ones.
+  const extantParameterNames = await getExtantParameterNames(parameterNames);
+
   const response = await client.send(
     new GetParametersCommand({
-      Names: [
-        `/${environment}/${DATABASE_CONNECTION_INFO}`,
-        `/${environment}/${SCRAPING_ANT_API_KEY}`,
-        `/${environment}/${ZEN_ROWS_API_KEY}`,
-      ],
+      Names: extantParameterNames,
       WithDecryption: true,
     })
   );
@@ -80,6 +87,28 @@ export async function getParameterStoreConfig(
   }
   // Combine the pairs into a single object.
   return pairs.reduce((acc, cur) => ({ ...acc, ...cur }), {}) as AsyncConfig;
+}
+
+async function getExtantParameterNames(
+  parameterNames: string[]
+): Promise<string[]> {
+  const response = await client.send(
+    new DescribeParametersCommand({
+      ParameterFilters: [{ Key: "Name", Values: parameterNames }],
+    })
+  );
+  const foundParameterNames = new Set(
+    response.Parameters?.map((parameter) => parameter.Name) || []
+  );
+  const results = groupBy(parameterNames, (name) =>
+    foundParameterNames.has(name)
+  );
+  if (results.false?.length) {
+    logger.warn(
+      `Missing Parameter Store parameters: ${results.false.join(", ")}`
+    );
+  }
+  return results.true || [];
 }
 
 function extractName(fullName: string) {
