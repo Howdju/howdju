@@ -47,9 +47,9 @@ export default function PropositionViewer({
       {" "}
       as{" "}
       {createdAsInfo.href ? (
-        <Link to={createdAsInfo.href}>a {createdAsInfo.type}</Link>
+        <Link to={createdAsInfo.href}>{createdAsInfo.description}</Link>
       ) : (
-        `a ${createdAsInfo.type}`
+        createdAsInfo.description
       )}
     </span>
   ) : null;
@@ -136,17 +136,17 @@ function makeCreatedAsInfo(proposition: PropositionOut) {
   switch (proposition.createdAs.type) {
     case "QUESTION":
       return {
-        type: "question",
+        description: "a question",
         href: undefined,
       };
     case "STATEMENT":
       return {
-        type: "statement",
+        descripion: "a statement",
         href: typeId ? paths.statement(typeId) : undefined,
       };
     case "APPEARANCE":
       return {
-        type: "appearance",
+        description: "an appearance",
         href: typeId ? paths.appearance(typeId) : undefined,
       };
   }
