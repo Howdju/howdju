@@ -4,7 +4,7 @@ import { JustificationView } from "howdju-common";
 
 import { api } from "@/actions";
 import ListEntitiesWidget, {
-  justificationCardColSpans
+  justificationCardColSpans,
 } from "@/components/listEntities/ListEntitiesWidget";
 import JustificationCard from "@/JustificationCard";
 import { justificationsSchema } from "@/normalizationSchemas";

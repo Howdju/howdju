@@ -17,7 +17,7 @@ import {
   PropositionCompoundRef,
   PropositionOut,
   PropositionRef,
-  UrlRef
+  UrlRef,
 } from "howdju-common";
 
 import ContextTrail from "@/components/contextTrail/ContextTrail";

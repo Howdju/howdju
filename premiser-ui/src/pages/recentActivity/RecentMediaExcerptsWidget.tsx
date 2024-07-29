@@ -4,7 +4,7 @@ import { MediaExcerptOut } from "howdju-common";
 
 import { api } from "@/actions";
 import ListEntitiesWidget, {
-  mediaExcerptCardColSpans
+  mediaExcerptCardColSpans,
 } from "@/components/listEntities/ListEntitiesWidget";
 import MediaExcerptCard from "@/components/mediaExcerpts/MediaExcerptCard";
 import { mediaExcerptsSchema } from "@/normalizationSchemas";

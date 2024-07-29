@@ -4,7 +4,7 @@ import { AppearanceOut } from "howdju-common";
 
 import { api } from "@/actions";
 import ListEntitiesWidget, {
-  appearanceCardColSpans
+  appearanceCardColSpans,
 } from "@/components/listEntities/ListEntitiesWidget";
 import { appearancesSchema } from "@/normalizationSchemas";
 import AppearanceCard from "@/pages/appearances/AppearanceCard";

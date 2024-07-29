@@ -4,7 +4,7 @@ import { PropositionOut } from "howdju-common";
 
 import { api } from "@/actions";
 import ListEntitiesWidget, {
-  propositionCardColSpans
+  propositionCardColSpans,
 } from "@/components/listEntities/ListEntitiesWidget";
 import { propositionsSchema } from "@/normalizationSchemas";
 import PropositionCard from "@/PropositionCard";
