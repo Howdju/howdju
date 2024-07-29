@@ -35,6 +35,7 @@ import {
   mediaExcerptCardColSpans,
   statementCardColSpans,
 } from "@/components/listEntities/ListEntitiesWidget";
+import { Page } from "@/components/layout/Page";
 
 const id = "persorg-page";
 const editorId = "persorgPageEditorId";
@@ -138,7 +139,7 @@ export default function PersorgPage(props: Props) {
   );
 
   return (
-    <div>
+    <Page>
       <Helmet>
         <title>{title} — Howdju</title>
       </Helmet>
@@ -194,6 +195,6 @@ export default function PersorgPage(props: Props) {
           </GridCell>
         ))}
       </FlipGrid>
-    </div>
+    </Page>
   );
 }

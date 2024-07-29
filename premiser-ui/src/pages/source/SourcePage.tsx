@@ -24,6 +24,7 @@ import FetchMoreButton from "@/components/button/FetchMoreButton";
 import SingleColumnGrid from "@/components/layout/SingleColumnGrid";
 import { mediaExcerptCardColSpans } from "@/components/listEntities/ListEntitiesWidget";
 import { FlipGrid } from "@/components/layout/FlipGrid";
+import { Page } from "@/components/layout/Page";
 
 const id = "source-page";
 const editorId = "sourcePageEditorId";
@@ -121,7 +122,7 @@ export default function SourcePage(props: Props) {
     />
   );
   return (
-    <div id={id}>
+    <Page id={id}>
       <Helmet>
         <title>{title} — Howdju</title>
       </Helmet>
@@ -164,6 +165,6 @@ export default function SourcePage(props: Props) {
           />
         </GridCell>
       </FlipGrid>
-    </div>
+    </Page>
   );
 }

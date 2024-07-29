@@ -12,6 +12,7 @@ import HowdjuHelmet from "@/Helmet";
 import ErrorMessages from "@/ErrorMessages";
 import MediaExcerptEditor from "@/editors/MediaExcerptEditor";
 import SingleColumnGrid from "@/components/layout/SingleColumnGrid";
+import { Page } from "@/components/layout/Page";
 
 const id = "submit-media-excerpt";
 export const editorType = "MEDIA_EXCERPT";
@@ -41,7 +42,7 @@ export default function SubmitMediaExcerptPage() {
   }
 
   return (
-    <div>
+    <Page>
       <HowdjuHelmet>
         <title>Submit Media Excerpt — Howdju</title>
       </HowdjuHelmet>
@@ -55,7 +56,7 @@ export default function SubmitMediaExcerptPage() {
           submitButtonText="Create"
         />
       </SingleColumnGrid>
-    </div>
+    </Page>
   );
 }
 

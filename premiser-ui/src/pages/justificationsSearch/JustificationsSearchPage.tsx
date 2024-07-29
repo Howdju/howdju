@@ -17,6 +17,7 @@ import { extractFilters, extractIncludeUrls } from "./queryStringExtraction";
 import FetchMoreButton from "@/components/button/FetchMoreButton";
 import { largeCardColSpans } from "@/components/listEntities/ListEntitiesWidget";
 import { FlipGrid } from "@/components/layout/FlipGrid";
+import { Page } from "@/components/layout/Page";
 
 const fetchCount = 20;
 
@@ -79,7 +80,7 @@ export default function JustificationsSearchPage() {
   );
 
   return (
-    <div>
+    <Page>
       <h1>Justifications</h1>
 
       {filtersList && (
@@ -109,6 +110,6 @@ export default function JustificationsSearchPage() {
         <CircularProgress id={`$justificationsSearchPage-Progress`} />
       )}
       {fetchMoreButton}
-    </div>
+    </Page>
   );
 }

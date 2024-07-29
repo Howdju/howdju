@@ -10,6 +10,7 @@ import WritQuoteCard from "@/WritQuoteCard";
 import { useAppSelector } from "@/hooks";
 import { CircularProgress } from "@/components/progress/CircularProgress";
 import SingleColumnGrid from "@/components/layout/SingleColumnGrid";
+import { Page } from "@/components/layout/Page";
 
 const id = "WritQuotePage";
 type Params = {
@@ -37,13 +38,13 @@ const WritQuotePage = () => {
     <WritQuoteCard id={id} writQuote={writQuote} showUrls={true} />
   );
   return (
-    <div>
+    <Page>
       <HowdjuHelmet>
         <title>{`WritQuote: &ldquo;${writQuote?.title}&rdquo; — Howdju`}</title>
       </HowdjuHelmet>
       <h1>{writQuote?.title}</h1>
       <SingleColumnGrid>{writQuote ? viewer : progress}</SingleColumnGrid>
-    </div>
+    </Page>
   );
 };
 export default WritQuotePage;

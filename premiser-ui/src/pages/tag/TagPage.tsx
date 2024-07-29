@@ -15,6 +15,7 @@ import { useAppDispatch, useAppSelector } from "@/hooks";
 import { CircularProgress } from "@/components/progress/CircularProgress";
 import { FlipGrid } from "@/components/layout/FlipGrid";
 import { propositionCardColSpans } from "@/components/listEntities/ListEntitiesWidget";
+import { Page } from "@/components/layout/Page";
 
 interface MatchParams {
   tagId: EntityId;
@@ -44,7 +45,7 @@ export default function TagPage(props: Props) {
   const title = `Propositions tagged with ${characters.leftDoubleQuote}${tagName}${characters.rightDoubleQuote}`;
 
   return (
-    <div id="tag-page">
+    <Page id="tag-page">
       <Helmet>
         <title>{title} — Howdju</title>
       </Helmet>
@@ -65,6 +66,6 @@ export default function TagPage(props: Props) {
       {isFetching && (
         <CircularProgress id="tagged-propositions-page--progress" />
       )}
-    </div>
+    </Page>
   );
 }

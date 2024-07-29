@@ -31,6 +31,7 @@ import {
   statementCardColSpans,
 } from "@/components/listEntities/ListEntitiesWidget";
 import { FlipGrid } from "@/components/layout/FlipGrid";
+import { Page } from "@/components/layout/Page";
 
 const pageId = "proposition-usages-page";
 const fetchCount = 20;
@@ -125,7 +126,7 @@ function ValidPropositionUsagesPage({ propositionId }: ValidProps) {
   );
 
   return (
-    <div>
+    <Page>
       <h1>Proposition Usages</h1>
       {proposition && (
         <SingleColumnGrid>
@@ -229,6 +230,6 @@ function ValidPropositionUsagesPage({ propositionId }: ValidProps) {
           <CircularProgress id={`proposition-compounds-progress`} />
         </div>
       )}
-    </div>
+    </Page>
   );
 }

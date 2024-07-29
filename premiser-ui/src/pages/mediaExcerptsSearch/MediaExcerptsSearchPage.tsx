@@ -17,6 +17,7 @@ import { mediaExcerptsSchema } from "@/normalizationSchemas";
 import FetchMoreButton from "@/components/button/FetchMoreButton";
 import { mediaExcerptCardColSpans } from "@/components/listEntities/ListEntitiesWidget";
 import { FlipGrid } from "@/components/layout/FlipGrid";
+import { Page } from "@/components/layout/Page";
 
 const fetchCount = 20;
 
@@ -63,7 +64,7 @@ export default function MediaExcerptsSearchPage() {
   );
 
   return (
-    <div>
+    <Page>
       <h1>MediaExcerpts</h1>
 
       {filtersList && (
@@ -90,7 +91,7 @@ export default function MediaExcerptsSearchPage() {
         </div>
       )}
       <div>{fetchMoreButton}</div>
-    </div>
+    </Page>
   );
 }
 
