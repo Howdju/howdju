@@ -20,6 +20,7 @@ import page from "./factCheckPageSlice";
 import { CircularProgress } from "@/components/progress/CircularProgress";
 import { appearanceCardColSpans } from "@/components/listEntities/ListEntitiesWidget";
 import { FlipGrid } from "@/components/layout/FlipGrid";
+import { Page } from "@/components/layout/Page";
 
 /**
  * A page displaying Appearances that are part of a FactCheck.
@@ -92,7 +93,7 @@ function ValidParamsFactCheckPage({
   }
 
   return (
-    <div>
+    <Page>
       <HowdjuHelmet>
         <title>{title} — Howdju</title>
       </HowdjuHelmet>
@@ -128,6 +129,6 @@ function ValidParamsFactCheckPage({
           </GridCell>
         ))}
       </FlipGrid>
-    </div>
+    </Page>
   );
 }

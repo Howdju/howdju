@@ -2,13 +2,13 @@ import React, { HTMLAttributes } from "react";
 
 import { MediaExcerptOut } from "howdju-common";
 
+import { api } from "@/actions";
 import ListEntitiesWidget, {
   mediaExcerptCardColSpans,
-} from "./components/listEntities/ListEntitiesWidget";
-import { api } from "./actions";
-import { mediaExcerptsSchema } from "./normalizationSchemas";
-import MediaExcerptCard from "./components/mediaExcerpts/MediaExcerptCard";
-import { ComponentId } from "./types";
+} from "@/components/listEntities/ListEntitiesWidget";
+import MediaExcerptCard from "@/components/mediaExcerpts/MediaExcerptCard";
+import { mediaExcerptsSchema } from "@/normalizationSchemas";
+import { ComponentId } from "@/types";
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
   id: ComponentId;

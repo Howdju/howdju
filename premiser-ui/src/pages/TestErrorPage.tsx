@@ -1,13 +1,14 @@
-import React, { ChangeEvent, MouseEvent, useState } from "react";
 import { NativeSelect } from "@react-md/form";
-
-import { Card, CardActions, CardContent } from "@/components/card/Card";
-import SingleLineTextArea from "@/components/text/SingleLineTextArea";
-import * as sentry from "./sentry";
-import { PropertyChanges } from "./types";
-import { toString } from "lodash";
 import { SeverityLevel } from "@sentry/browser";
-import OutlineButton from "./components/button/OutlineButton";
+import { toString } from "lodash";
+import React, { ChangeEvent, MouseEvent, useState } from "react";
+
+import OutlineButton from "@/components/button/OutlineButton";
+import { Card, CardActions, CardContent } from "@/components/card/Card";
+import { Page } from "@/components/layout/Page";
+import SingleLineTextArea from "@/components/text/SingleLineTextArea";
+import * as sentry from "@/sentry";
+import { PropertyChanges } from "@/types";
 
 const LEVELS = [
   {
@@ -63,35 +64,37 @@ export default function TestErrorPage() {
 
   const { message, level } = state;
   return (
-    <Card title="Test error">
-      <CardContent>
-        <SingleLineTextArea
-          id="message"
-          name="message"
-          value={message}
-          required
-          onPropertyChange={onMessageChange}
-        />
-        <NativeSelect
-          id="level"
-          label="Level"
-          value={level}
-          onChange={onLevelChange}
-          children={LEVELS.map((level) => (
-            <option key={level.value} value={level.value}>
-              {level.label}
-            </option>
-          ))}
-        />
-      </CardContent>
-      <CardActions>
-        <OutlineButton disabled={!message} onClick={onCreateError}>
-          Create test error
-        </OutlineButton>
-        <OutlineButton disabled={!message} onClick={onCreateMessage}>
-          Create test message
-        </OutlineButton>
-      </CardActions>
-    </Card>
+    <Page>
+      <Card title="Test error">
+        <CardContent>
+          <SingleLineTextArea
+            id="message"
+            name="message"
+            value={message}
+            required
+            onPropertyChange={onMessageChange}
+          />
+          <NativeSelect
+            id="level"
+            label="Level"
+            value={level}
+            onChange={onLevelChange}
+            children={LEVELS.map((level) => (
+              <option key={level.value} value={level.value}>
+                {level.label}
+              </option>
+            ))}
+          />
+        </CardContent>
+        <CardActions>
+          <OutlineButton disabled={!message} onClick={onCreateError}>
+            Create test error
+          </OutlineButton>
+          <OutlineButton disabled={!message} onClick={onCreateMessage}>
+            Create test message
+          </OutlineButton>
+        </CardActions>
+      </Card>
+    </Page>
   );
 }

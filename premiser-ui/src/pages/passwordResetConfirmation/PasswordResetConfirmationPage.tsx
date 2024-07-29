@@ -21,6 +21,7 @@ import { combineIds } from "@/viewModels";
 import SolidButton from "@/components/button/SolidButton";
 import { push } from "connected-react-router";
 import SingleColumnGrid from "@/components/layout/SingleColumnGrid";
+import { Page } from "@/components/layout/Page";
 
 export default function PasswordResetConfirmationPage() {
   const location = useLocation();
@@ -95,7 +96,7 @@ function ValidPasswordResetConfirmationPage({
   );
 
   return (
-    <div id="password-reset-confirmation-page">
+    <Page id="password-reset-confirmation-page">
       <Helmet>
         <title>Password Reset — Howdju</title>
       </Helmet>
@@ -113,7 +114,7 @@ function ValidPasswordResetConfirmationPage({
           </CardContent>
         </Card>
       </SingleColumnGrid>
-    </div>
+    </Page>
   );
 }
 

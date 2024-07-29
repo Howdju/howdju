@@ -2,14 +2,14 @@ import React, { HTMLAttributes } from "react";
 
 import { JustificationView } from "howdju-common";
 
+import { api } from "@/actions";
 import ListEntitiesWidget, {
   justificationCardColSpans,
-} from "./components/listEntities/ListEntitiesWidget";
-import JustificationCard from "./JustificationCard";
-import t from "./texts";
-import { api } from "./actions";
-import { justificationsSchema } from "./normalizationSchemas";
-import { ComponentId } from "./types";
+} from "@/components/listEntities/ListEntitiesWidget";
+import JustificationCard from "@/JustificationCard";
+import { justificationsSchema } from "@/normalizationSchemas";
+import t from "@/texts";
+import { ComponentId } from "@/types";
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
   id: ComponentId;

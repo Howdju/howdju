@@ -3,6 +3,7 @@
 exports[`RegistrationConfirmationPage shows error message for duplicate username 1`] = `
 <div>
   <div
+    class="page"
     id="register-page"
   >
     <div
@@ -437,6 +438,7 @@ exports[`RegistrationConfirmationPage shows error message for duplicate username
 exports[`RegistrationConfirmationPage shows error message for missing registration code 1`] = `
 <div>
   <div
+    class="page"
     id="register-page"
   >
     <div
@@ -477,6 +479,7 @@ exports[`RegistrationConfirmationPage shows error message for missing registrati
 exports[`RegistrationConfirmationPage shows form 1`] = `
 <div>
   <div
+    class="page"
     id="register-page"
   >
     <div
@@ -900,6 +903,7 @@ exports[`RegistrationConfirmationPage shows form 1`] = `
 exports[`RegistrationConfirmationPage shows success message upon confirmation. 1`] = `
 <div>
   <div
+    class="page"
     id="register-page"
   >
     <div

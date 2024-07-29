@@ -1,34 +1,34 @@
-import React, { Component, FormEvent } from "react";
 import { goBack } from "connected-react-router";
 import { get } from "lodash";
+import React, { Component, FormEvent } from "react";
 import { connect, ConnectedProps } from "react-redux";
 
 import { Credentials, makeCredentials } from "howdju-common";
 
-import { CircularProgress } from "@/components/progress/CircularProgress";
-import { Card, CardContent, CardActions } from "@/components/card/Card";
 import {
   api,
   editors,
   mapActionCreatorGroupToDispatchToProps,
   ui,
-} from "./actions";
-import config from "./config";
-import EmailField from "./components/text/EmailTextField";
-import Helmet from "./Helmet";
-import PasswordField from "./components/text/PasswordField";
-import { EditorTypes } from "./reducers/editors";
-import { selectAuthEmail } from "./selectors";
-import { RootState } from "./setupStore";
-import { PropertyChanges } from "./types";
-import CancelButton from "./editors/CancelButton";
-import SolidButton from "./components/button/SolidButton";
-import OutlineButton from "./components/button/OutlineButton";
-import ErrorMessages from "./ErrorMessages";
-import { makeErrorPropCreator } from "./modelErrorMessages";
-import paths from "./paths";
-import { Page } from "./components/layout/Page";
-import SingleColumnGrid from "./components/layout/SingleColumnGrid";
+} from "@/actions";
+import OutlineButton from "@/components/button/OutlineButton";
+import SolidButton from "@/components/button/SolidButton";
+import { Card, CardActions, CardContent } from "@/components/card/Card";
+import { Page } from "@/components/layout/Page";
+import SingleColumnGrid from "@/components/layout/SingleColumnGrid";
+import { CircularProgress } from "@/components/progress/CircularProgress";
+import EmailField from "@/components/text/EmailTextField";
+import PasswordField from "@/components/text/PasswordField";
+import config from "@/config";
+import CancelButton from "@/editors/CancelButton";
+import ErrorMessages from "@/ErrorMessages";
+import Helmet from "@/Helmet";
+import { makeErrorPropCreator } from "@/modelErrorMessages";
+import paths from "@/paths";
+import { EditorTypes } from "@/reducers/editors";
+import { selectAuthEmail } from "@/selectors";
+import { RootState } from "@/setupStore";
+import { PropertyChanges } from "@/types";
 
 interface OwnProps {
   authEmail: string | undefined;

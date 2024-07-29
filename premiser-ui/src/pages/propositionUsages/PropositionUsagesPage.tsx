@@ -18,8 +18,8 @@ import StatementCard from "../../StatementCard";
 import { combineIds } from "../../viewModels";
 import JustificationCard from "../../JustificationCard";
 import { useAppDispatch, useAppEntitySelector, useAppSelector } from "@/hooks";
-import ErrorPage from "@/ErrorPage";
-import AppearanceCard from "../appearances/AppearanceCard";
+import ErrorPage from "@/pages/ErrorPage";
+import AppearanceCard from "@/pages/appearances/AppearanceCard";
 import PropositionCompoundCard from "@/PropositionCompoundCard";
 import PropositionCard from "@/PropositionCard";
 import FetchMoreButton from "@/components/button/FetchMoreButton";
@@ -31,6 +31,7 @@ import {
   statementCardColSpans,
 } from "@/components/listEntities/ListEntitiesWidget";
 import { FlipGrid } from "@/components/layout/FlipGrid";
+import { Page } from "@/components/layout/Page";
 
 const pageId = "proposition-usages-page";
 const fetchCount = 20;
@@ -125,7 +126,7 @@ function ValidPropositionUsagesPage({ propositionId }: ValidProps) {
   );
 
   return (
-    <div>
+    <Page>
       <h1>Proposition Usages</h1>
       {proposition && (
         <SingleColumnGrid>
@@ -229,6 +230,6 @@ function ValidPropositionUsagesPage({ propositionId }: ValidProps) {
           <CircularProgress id={`proposition-compounds-progress`} />
         </div>
       )}
-    </div>
+    </Page>
   );
 }

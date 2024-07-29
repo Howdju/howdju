@@ -27,6 +27,7 @@ import { useAppDispatch, useAppSelector } from "@/hooks";
 import RegistrationConfirmationEditor from "./RegistrationConfirmationEditor";
 import SolidButton from "@/components/button/SolidButton";
 import SingleColumnGrid from "@/components/layout/SingleColumnGrid";
+import { Page } from "@/components/layout/Page";
 
 const editorId = "registration-confirmation-page";
 const editorType = EditorTypes.REGISTRATION_CONFIRMATION;
@@ -151,7 +152,7 @@ export default function RegistrationConfirmationPage() {
 }
 
 const makePage = (subtitle: string | undefined, cardContents: JSX.Element) => (
-  <div id="register-page">
+  <Page id="register-page">
     <Helmet>
       <title>Complete Registration — Howdju</title>
     </Helmet>
@@ -160,7 +161,7 @@ const makePage = (subtitle: string | undefined, cardContents: JSX.Element) => (
         <CardContent>{cardContents}</CardContent>
       </Card>
     </SingleColumnGrid>
-  </div>
+  </Page>
 );
 
 const subtitleByRegistrationErrorCode = {

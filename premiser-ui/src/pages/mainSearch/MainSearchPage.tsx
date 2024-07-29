@@ -29,6 +29,7 @@ import {
   propositionCardColSpans,
 } from "@/components/listEntities/ListEntitiesWidget";
 import { FlipGrid } from "@/components/layout/FlipGrid";
+import { Page } from "@/components/layout/Page";
 
 export default function MainSearchPage() {
   const location = useLocation();
@@ -58,7 +59,7 @@ export default function MainSearchPage() {
   const noResults = <div>No results.</div>;
 
   return (
-    <div id="main-search-page">
+    <Page id="main-search-page">
       <h1>Search results for: &ldquo;{searchText}&rdquo;</h1>
       {isFetching && loading}
 
@@ -114,7 +115,7 @@ export default function MainSearchPage() {
         ))}
       </FlipGrid>
       {!isFetching && mediaExcerpts.length < 1 && noResults}
-    </div>
+    </Page>
   );
 }
 

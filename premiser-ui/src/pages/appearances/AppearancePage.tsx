@@ -19,6 +19,7 @@ import { FontIcon } from "@react-md/icon";
 import { flows } from "@/actions";
 import app from "@/app/appSlice";
 import SingleColumnGrid from "@/components/layout/SingleColumnGrid";
+import { Page } from "@/components/layout/Page";
 
 interface MatchParams {
   appearanceId: EntityId;
@@ -143,7 +144,7 @@ export default function AppearancePage(props: Props) {
   ) : undefined;
 
   return (
-    <div>
+    <Page>
       <HowdjuHelmet>
         <title>{title} — Howdju</title>
       </HowdjuHelmet>
@@ -165,6 +166,6 @@ export default function AppearancePage(props: Props) {
       ) : (
         <CircularProgress id="appearance-page--progress" />
       )}
-    </div>
+    </Page>
   );
 }

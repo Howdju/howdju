@@ -3,6 +3,7 @@
 exports[`CreatePropositionPage (with fake timers) renders correctly with query params 1`] = `
 <div>
   <div
+    class="page"
     id="edit-proposition-justification-page"
   >
     <form>

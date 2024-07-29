@@ -12,7 +12,7 @@ import {
 } from "howdju-common";
 import { InferResponseBody, serviceRoutes } from "howdju-service-routes";
 
-import RecentPropositionsWidget from "@/RecentPropositionsWidget";
+import RecentPropositionsWidget from "@/pages/recentActivity/RecentPropositionsWidget";
 import {
   renderWithProviders,
   withFakeTimers,

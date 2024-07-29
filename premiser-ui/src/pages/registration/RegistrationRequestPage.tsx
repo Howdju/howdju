@@ -17,6 +17,7 @@ import { useAppDispatch, useAppSelector } from "@/hooks";
 import RegistrationRequestEditor from "./RegistrationRequestEditor";
 import SolidButton from "@/components/button/SolidButton";
 import SingleColumnGrid from "@/components/layout/SingleColumnGrid";
+import { Page } from "@/components/layout/Page";
 
 const editorId = "registration-request-page";
 const editorType = EditorTypes.REGISTRATION_REQUEST;
@@ -80,7 +81,7 @@ export default function RegistrationRequestPage() {
   );
 
   return (
-    <div id="register-page">
+    <Page id="register-page">
       <Helmet>
         <title>Request Registration — Howdju</title>
       </Helmet>
@@ -89,6 +90,6 @@ export default function RegistrationRequestPage() {
           {isSubmitted ? submissionMessage : form}
         </Card>
       </SingleColumnGrid>
-    </div>
+    </Page>
   );
 }

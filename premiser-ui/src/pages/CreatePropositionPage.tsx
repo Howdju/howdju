@@ -34,8 +34,8 @@ import {
   makeCreateMediaExcerptSpeakerInput,
 } from "howdju-common";
 
-import Helmet from "./Helmet";
-import { editors, flows } from "./actions";
+import Helmet from "@/Helmet";
+import { editors, flows } from "@/actions";
 import t, {
   ADD_JUSTIFICATION_TO_CREATE_PROPOSITION,
   CREATE_JUSTIFICATION_SUBMIT_BUTTON_LABEL,
@@ -45,36 +45,37 @@ import t, {
   CREATE_PROPOSITION_SUBMIT_BUTTON_TITLE,
   CREATE_PROPOSITION_TITLE,
   JUSTIFICATION_TITLE,
-} from "./texts";
+} from "@/texts";
 import {
   combineIds,
   combineNames,
   combineSuggestionsKeys,
   array,
-} from "./viewModels";
+} from "@/viewModels";
 import JustificationEditorFields from "@/editors/JustificationEditorFields";
-import PropositionEditorFields from "./PropositionEditorFields";
-import { EditorState, EditorTypes } from "./reducers/editors";
+import PropositionEditorFields from "@/PropositionEditorFields";
+import { EditorState, EditorTypes } from "@/reducers/editors";
 import TagsControl from "@/components/tags/TagsControl";
-import { logger } from "./logger";
-import PersorgEditorFields from "./PersorgEditorFields";
-import EntityViewer from "./EntityViewer";
-import { CreatePropositionPageMode, PropertyChanges } from "./types";
-import { CreateJustifiedSentenceConfig } from "./sagas/editors/editorCommitEditSaga";
+import { logger } from "@/logger";
+import PersorgEditorFields from "@/PersorgEditorFields";
+import EntityViewer from "@/EntityViewer";
+import { CreatePropositionPageMode, PropertyChanges } from "@/types";
+import { CreateJustifiedSentenceConfig } from "@/sagas/editors/editorCommitEditSaga";
 import {
   EditorFieldsActionCreator,
   noopEditorDispatch,
   validateEditorEntity,
-} from "./editors/withEditor";
-import SubmitButton from "./editors/SubmitButton";
-import { toCompatibleTagVotes } from "./util";
+} from "@/editors/withEditor";
+import SubmitButton from "@/editors/SubmitButton";
+import { toCompatibleTagVotes } from "@/util";
 import { toCreatePersorgInput } from "howdju-client-common";
-import { useAppDispatch, useAppSelector } from "./hooks";
+import { useAppDispatch, useAppSelector } from "@/hooks";
 import useDeepCompareEffect from "use-deep-compare-effect";
 import TextButton from "@/components/button/TextButton";
 import IconButton from "@/components/button/IconButton";
 import { Grid } from "@react-md/utils";
-import SingleColumnGrid from "./components/layout/SingleColumnGrid";
+import SingleColumnGrid from "@/components/layout/SingleColumnGrid";
+import { Page } from "@/components/layout/Page";
 
 const titleTextKeyByMode = {
   [CreatePropositionPageMode.CREATE_PROPOSITION]: CREATE_PROPOSITION_TITLE,
@@ -319,7 +320,7 @@ export default function CreatePropositionPage({ mode, location }: Props) {
     ? toCompatibleTagVotes(propositionTagVotes)
     : [];
   return (
-    <div id="edit-proposition-justification-page">
+    <Page id="edit-proposition-justification-page">
       <Helmet>
         <title>{title} — Howdju</title>
       </Helmet>
@@ -482,6 +483,6 @@ export default function CreatePropositionPage({ mode, location }: Props) {
           </Card>
         </SingleColumnGrid>
       </form>
-    </div>
+    </Page>
   );
 }

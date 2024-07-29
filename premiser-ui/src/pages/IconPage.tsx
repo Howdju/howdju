@@ -1,11 +1,12 @@
 import React from "react";
 import { MaterialSymbol } from "react-material-symbols";
 
-import Helmet from "./Helmet";
+import { Page } from "@/components/layout/Page";
+import Helmet from "@/Helmet";
 
 export default function IconPage() {
   return (
-    <div>
+    <Page>
       <Helmet>
         <title>Icons — Howdju</title>
       </Helmet>
@@ -167,6 +168,6 @@ export default function IconPage() {
       <i className="material-icons">star_border</i>
       <i className="material-icons">star</i>
       <i className="material-icons">radio_button_checked</i>
-    </div>
+    </Page>
   );
 }

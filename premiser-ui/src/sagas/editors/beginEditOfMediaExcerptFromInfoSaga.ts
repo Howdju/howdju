@@ -3,7 +3,10 @@ import { put, takeEvery } from "typed-redux-saga";
 import { CreateMediaExcerptInput, MediaExcerptInfo } from "howdju-common";
 
 import { editors, flows, goto } from "../../actions";
-import { editorType, editorId } from "@/pages/SubmitMediaExcerptPage";
+import {
+  editorType,
+  editorId,
+} from "@/pages/submitMediaExcerpt/SubmitMediaExcerptPage";
 
 export function* beginEditOfMediaExcerptFromInfo() {
   yield* takeEvery(

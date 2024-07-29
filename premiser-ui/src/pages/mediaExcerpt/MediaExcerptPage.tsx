@@ -44,6 +44,7 @@ import {
   DialogFooter,
 } from "@/components/dialog/Dialog";
 import SingleColumnGrid from "@/components/layout/SingleColumnGrid";
+import { Page } from "@/components/layout/Page";
 
 interface MatchParams {
   mediaExcerptId: EntityId;
@@ -232,7 +233,7 @@ export default function MediaExcerptPage(props: Props) {
     return <div id={id}>Media Excerpt not found.</div>;
   }
   return (
-    <div id={id}>
+    <Page id={id}>
       <HowdjuHelmet>
         <title>{title} — Howdju</title>
       </HowdjuHelmet>
@@ -356,6 +357,6 @@ export default function MediaExcerptPage(props: Props) {
           </SolidButton>
         </DialogFooter>
       </Dialog>
-    </div>
+    </Page>
   );
 }

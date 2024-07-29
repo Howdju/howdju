@@ -16,6 +16,7 @@ import { combineIds } from "@/viewModels";
 import ErrorMessages from "@/ErrorMessages";
 import SolidButton from "@/components/button/SolidButton";
 import SingleColumnGrid from "@/components/layout/SingleColumnGrid";
+import { Page } from "@/components/layout/Page";
 
 const id = "password-reset-request-page";
 
@@ -65,7 +66,7 @@ export default function PasswordResetRequestPage() {
   ) : undefined;
 
   return (
-    <div id="password-reset-page">
+    <Page id="password-reset-page">
       <Helmet>
         <title>Request Password Reset — Howdju</title>
       </Helmet>
@@ -78,7 +79,7 @@ export default function PasswordResetRequestPage() {
           </CardContent>
         </Card>
       </SingleColumnGrid>
-    </div>
+    </Page>
   );
 }
 

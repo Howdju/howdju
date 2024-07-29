@@ -1,9 +1,10 @@
 import React from "react";
 
-import RecentPropositionsWidget from "./RecentPropositionsWidget";
+import { Page } from "@/components/layout/Page";
+import RecentAppearancesWidget from "./RecentAppearancesWidget";
 import RecentJustificationsWidget from "./RecentJustificationsWidget";
 import RecentMediaExcerptsWidget from "./RecentMediaExcerptsWidget";
-import RecentAppearancesWidget from "./RecentAppearancesWidget";
+import RecentPropositionsWidget from "./RecentPropositionsWidget";
 
 const recentPropositionsWidgetId =
   "RecentActivityPage.recentPropositionsWidgetId";
@@ -16,7 +17,7 @@ const recentJustificationsWidgetId =
 
 export default function RecentActivityPage() {
   return (
-    <div>
+    <Page>
       <h1>Recent propositions</h1>
       <RecentPropositionsWidget
         id="recent-activity-page-propositions"
@@ -40,6 +41,6 @@ export default function RecentActivityPage() {
         id="recent-activity-page-justifications"
         widgetId={recentJustificationsWidgetId}
       />
-    </div>
+    </Page>
   );
 }

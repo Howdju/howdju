@@ -21,14 +21,14 @@ import {
 } from "howdju-common";
 
 import ContextTrail from "@/components/contextTrail/ContextTrail";
-import JustificationBranch from "./JustificationBranch";
-import paths from "./paths";
-import PropositionCard from "./PropositionCard";
-import { combineIds } from "./viewModels";
-import TreePolarity from "./components/TreePolarity";
+import MediaExcerptCard from "@/components/mediaExcerpts/MediaExcerptCard";
+import TreePolarity from "@/components/TreePolarity";
+import JustificationBranch from "@/JustificationBranch";
+import paths from "@/paths";
+import PropositionCard from "@/PropositionCard";
+import { combineIds } from "@/viewModels";
 
 import "./LandingPage.scss";
-import MediaExcerptCard from "./components/mediaExcerpts/MediaExcerptCard";
 
 export default class LandingPage extends Component {
   render() {
