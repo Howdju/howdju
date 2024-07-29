@@ -1,10 +1,11 @@
 import React, { Component } from "react";
 
-import { Card, CardContent } from "@/components/card/Card";
 import SolidButton from "@/components/button/SolidButton";
-import Helmet from "./Helmet";
-import { showPrivacyConsentDialog } from "./cookieConsent";
-import SingleColumnGrid from "./components/layout/SingleColumnGrid";
+import { Card, CardContent } from "@/components/card/Card";
+import { Page } from "@/components/layout/Page";
+import SingleColumnGrid from "@/components/layout/SingleColumnGrid";
+import { showPrivacyConsentDialog } from "@/cookieConsent";
+import Helmet from "@/Helmet";
 
 /**
  * A page where a user an access their privacy settings. Provided so that there is a URL to navigate directly to
@@ -17,7 +18,7 @@ export default class PrivacySettingsPage extends Component {
 
   render() {
     return (
-      <div>
+      <Page>
         <Helmet>
           <title>Privacy Settings — Howdju</title>
         </Helmet>
@@ -30,7 +31,7 @@ export default class PrivacySettingsPage extends Component {
             </CardContent>
           </Card>
         </SingleColumnGrid>
-      </div>
+      </Page>
     );
   }
 }

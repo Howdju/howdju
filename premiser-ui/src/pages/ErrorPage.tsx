@@ -1,5 +1,6 @@
 import React from "react";
-import SingleColumnGrid from "./components/layout/SingleColumnGrid";
+
+import SingleColumnGrid from "@/components/layout/SingleColumnGrid";
 
 interface Props {
   message: string;

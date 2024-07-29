@@ -1,11 +1,11 @@
-import React from "react";
 import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { createMemoryHistory } from "history";
-import { rest } from "msw";
 import { merge } from "lodash";
 import moment from "moment";
+import { rest } from "msw";
 import { pathToRegexp } from "path-to-regexp";
+import React from "react";
 
 import {
   brandedParse,

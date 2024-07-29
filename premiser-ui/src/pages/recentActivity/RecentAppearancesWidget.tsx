@@ -2,13 +2,13 @@ import React, { HTMLAttributes } from "react";
 
 import { AppearanceOut } from "howdju-common";
 
+import { api } from "@/actions";
 import ListEntitiesWidget, {
-  appearanceCardColSpans,
-} from "./components/listEntities/ListEntitiesWidget";
-import { api } from "./actions";
-import { appearancesSchema } from "./normalizationSchemas";
-import AppearanceCard from "./pages/appearances/AppearanceCard";
-import { ComponentId } from "./types";
+  appearanceCardColSpans
+} from "@/components/listEntities/ListEntitiesWidget";
+import { appearancesSchema } from "@/normalizationSchemas";
+import AppearanceCard from "@/pages/appearances/AppearanceCard";
+import { ComponentId } from "@/types";
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
   id: ComponentId;

@@ -1,7 +1,8 @@
 @import "~@react-md/utils/dist/_variables";
-@import "./flatui-colors";
-@import "./tree";
-@import "./grid";
+
+@import "@/flatui-colors";
+@import "@/tree";
+@import "@/grid";
 
 $section-margin: 1em;
 $banner-padding: 3em;

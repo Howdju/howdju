@@ -2,14 +2,14 @@ import React, { HTMLAttributes } from "react";
 
 import { PropositionOut } from "howdju-common";
 
+import { api } from "@/actions";
 import ListEntitiesWidget, {
-  propositionCardColSpans,
-} from "./components/listEntities/ListEntitiesWidget";
-import PropositionCard from "./PropositionCard";
-import t from "./texts";
-import { api } from "./actions";
-import { propositionsSchema } from "./normalizationSchemas";
-import { ComponentId } from "./types";
+  propositionCardColSpans
+} from "@/components/listEntities/ListEntitiesWidget";
+import { propositionsSchema } from "@/normalizationSchemas";
+import PropositionCard from "@/PropositionCard";
+import t from "@/texts";
+import { ComponentId } from "@/types";
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
   id: ComponentId;
