@@ -1,0 +1,21 @@
+import dynamic from "next/dynamic";
+/** A component for an unimplemented feature. */
+export function FeatureComponent({ issueId, children }) {
+  const issueLink = issueId ? <span>(
+    <a href={`https://github.com/Howdju/howdju/issues/${issueId}`}>
+      #{issueId}
+    </a>)</span> : null;
+  const abbrTitle = issueId ? `Future feature (#${issueId})` : "Future feature";
+  return (
+    <span>
+      <abbr title={abbrTitle}>{children}</abbr> {issueLink}
+    </span>
+  );
+}
+export const Feature = dynamic(
+  () => Promise.resolve(FeatureComponent),
+  {
+    ssr: false,
+    loading: () => <span>[enable JavaScript to see the feature]</span>,
+  }
+);

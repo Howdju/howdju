@@ -1,0 +1,122 @@
+# Howdju's Features
+
+import { Feature } from "../../components/Feature.mdx";
+
+This page gives an overview of Howdju's features.
+
+## Pages
+
+### Justifications page
+
+The justifications page is a single place to see the reasons for and against
+a particular thing being true.
+
+The justification page has a single focused entity, which is the subject of truth.
+Under the focused entity are two columns: on the left are justifications
+supporting the truth of the focused entity and on the right are justifications
+against.
+
+The focused entity has an optional [ContextTrail](#contextrail) showing how The
+user navigated to the page.
+
+#### Sorting
+
+Justifications are currently sorted using a global sum of the votes for and
+against.
+
+### Recent activity page
+
+The recent activity page shows all entities ordered by descending creation time.
+
+In the future I'd like to combine recent activity into a single feed, consolidating
+entities that subsume each other (i.e. only show a single appearance and not the Appearance,
+Proposition, and MediaExcerpt separately.)
+
+### Main search page
+
+Supported search types:
+
+- Full-text: if you enter regular text, the search will be over full-text of all supported entities.
+- URL: will search MediaExcerpts for those associated with the URL.
+- domain: will search MediaExcerpts for those associated with a URL ending with the domain.
+
+### Explore page
+
+A quick way to see all tags and URL domains used anywhere in Howdju.
+
+### Persorg page
+
+- See all of a [Persorg](/concepts/persorgs)'s statements
+- <Feature>Track speaker reputation/credibility</Feature>
+
+## Components
+
+### ContextTrail
+
+The ContextTrail shows the entities visited to arrive at the currently focused
+entity. Links that users share include the ContextTrail.
+
+The ContextTrail helps users to keep track of their navigation. Contrast this
+feature with [two-dimensional maps](/design/comparisons#two-dimensional-maps)
+which achieve this context using a two-dimensional space.
+
+#### ContextTrail history
+
+The <Feature>ContextTrailHistory</Feature> shows the user's recent ContextTrails
+to help them move between deep contexts. It might operate like a stack (push/pop/switch)
+
+### Tags
+
+Tags provide a way to relate content by themes that are not immediately obvious
+from their content. Users can discover tags by searching or by finding them
+attached to content they are already viewing. Clicking on the tag shows the
+user other related content.
+
+## Behaviors
+
+### Notifications
+
+<Feature issueId="480">Notifications</Feature> alert users about interesting events on
+Howdju.
+
+### Text fragment link support
+
+MediaExcerpts having quotations will construct text fragment links from the quotation
+and URL. Clicking on these links in supported browsers scrolls directly to the
+quotation on the page.
+
+### Preferred phrasing
+
+These two features will contribute to both charitable discourse and incremental
+refinement:
+
+- [Preferred-phrasing
+  CounterJustifiations](/concepts/justifications#preferred-phrasing-counterjustification)
+- <Feature>Preferred-phrasing Proposition Relation</Feature>
+
+### Evidence nudges
+
+<Feature>Evidence Distance</Feature> is a metric quantifying both the number and
+distance from a Proposition to justifications based on MediaExcerpts. In the
+future the metric may include the quality of the evidence.
+
+The <Feature>Vetting Metric</Feature> quantifies how many people who disagree with
+an entity have viewed it. It is a proxy to understand whether the absence of
+contradictory content is indicative that contradictory content does not exist.
+
+# Clients
+
+- Browser extension
+- Mobile app
+
+## Visibility
+
+Howdju shows the creator for most entities. Therefore most content users create
+on Howdju is attributable to them. Votes are generally not attributable to their
+creators. The exceptions to this are:
+
+- When there is just one vote on an entity, Howdju currently does not obfuscate
+  the vote count and so it could be inferred to the creator of the content.
+- Howdju is exploring Fact Checks which use a User's vote on a MediaExcerpt
+  locator to determine inclusion in the Fact Check. This approach implicitly
+  exposes the users vote on the locator to other users.

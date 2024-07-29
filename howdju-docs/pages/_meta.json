@@ -3,8 +3,11 @@
   "introduction": "",
   "design": "",
   "concepts": "",
+  "faq": "FAQ",
   "background": "",
   "organization": "",
+  "principles": "",
+  "policies": "",
   "community": {
     "title": "Community",
     "type": "menu",
@@ -34,21 +37,5 @@
         "newWindow": true
       }
     }
-  },
-  "principles": {
-    "title": "Principles",
-    "type": "page",
-    "href": "/principles"
-  },
-  "policies": "",
-  "policies_page": {
-    "title": "Policies",
-    "type": "page",
-    "href": "/policies"
-  },
-  "faq": {
-    "title": "FAQ",
-    "type": "page",
-    "href": "/faq"
   }
 }
