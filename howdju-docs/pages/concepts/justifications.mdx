@@ -110,34 +110,35 @@ where the basis of the justification must be an example of the target.
 
 ## Polarities
 
-A Polarity is a permanent feature of a Justification. If a user wants to create
-an otherwise identical Justification with a different polarity, they must
-create a new Justification.
-
-Polarity choices are:
+A Justification's polarity indicates whether the basis makes the target true,
+false, or niether. Possibly Polarity values are:
 
 - Positive
 - Negative
 - <Feature issueId="33">Neutral</Feature>
 
-The meaning of a Polarity is target-specific.
-
-Meanings:
+The meaning of a Polarity is target-specific:
 
 | Target | Positive Meaning | Neutral meaning | Negative meaning |
 | --- | --- | --- | --- |
 | Proposition | The proposition is true | The proposition is neither true nor false | The proposition is false |
+| Appearance | The apparition appears at the MediaExcerpt | N/A | The apparition does not appear at the Media Excerpt |
 | Relation | The relation holds | N/A | The relation does not hold |
 
+A Polarity is a permanent feature of a Justification. If a user wants to create
+an otherwise identical Justification with a different polarity, they must
+create a new Justification.
 
 ## Strengths
 
-A Justification's <Feature issueId="692">Strength</Feature> indicates the weight
-that the Justification creator or someone voting on it attributes to its basis
-to
+A Justification's <Feature issueId="692">Strength</Feature> indicates how
+thoroughly a Justification's basis proves the polarity about the target. Strengths
+have two possible values:
 
-- Conclusive
-- Contributory
+- Conclusive: the justification's basis is sufficient to prove the polarity about
+  the target.
+- Contributory: the justification's basis makes the polarity more likely about
+  the target, but does not prove it.
 
 The creator of a Justification provides an initial Strength. Justification voters
 can vote with a non-default strength from a dropdown. The default strength presented
