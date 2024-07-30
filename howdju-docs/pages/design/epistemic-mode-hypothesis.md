@@ -15,5 +15,5 @@ This table summarizes this hypothesis:
 | Uncredible      | Critical       | Fact check             | Paraphrase to a proposition |
 
 See [this section comparing MediaExcerpt-based justifications to
-Appearances](/concepts/justifications#mediaexcerpt-based-justifications-vs-appearances)
+Appearances](/concepts/justifications#media-excerpt-based-justifications-vs-appearances)
 for a practical outcome of this hypothesis.
