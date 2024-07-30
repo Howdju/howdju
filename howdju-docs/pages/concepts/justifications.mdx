@@ -1,15 +1,11 @@
 # Justifications
 
-A justification is when one thing makes another thing more likely to be valid or true. A
-justification represents a user’s intention to express or a belief in a relationship between a basis
-and an target. The basis is the starting point and the target is the conclusion arrived at by
-inference.
+import { Feature } from "../../components/Feature.mdx";
 
-Justifications represent a grounded implication of the truth of some target. One type of target is a
-proposition: the justification represents reasons for believing that the proposition is true or
-false. The basis may be external evidence or other propositions on the platform.
+A justification is something that makes another thing more likely either to be true or false.
 
-Justifications are the foundation of knowledge construction.
+Justifications are the foundation of knowledge construction because they represent deriving
+knowledge (the justification's target) based upon existing knowledge (the justification's basis.)
 
 ## Components
 
@@ -18,9 +14,32 @@ A Justification is technically a relation between a `basis` and a `target`. The
 which about which truth is being proven. The Justification's `polarity` determines the direction
 of the Justification is arguing for.
 
+## Target types
+
+Howdju currently supports one type of Justification, with others planned.
+
+### Proposition
+
+Proposition Justifications provide reasons for believing in the truth of a
+Proposition.
+
+### Appearance
+
+<Feature>Appearance Justifications</Feature> provide reasons for interpreting a
+[MediaExcerpt](/concepts/media-excerpts) as an appearance of its Apparition.
+
+### Relation
+
+<Feature>Relation Justifications</Feature> provide reasons for believing that a
+[Relation](/concepts/relations) holds between two other entities. The types of
+the entities and the meaning of the Relation depend on the specific type of
+Relation.
+
+## Basis types
+
 Justifications can have one of two bases: MediaExcerpts or PropositionCompounds.
 
-## MediaExcerpt-based Justifications
+### MediaExcerpt-based Justifications
 
 A MediaExcerpt-based Justification argues for or against the truth of its target based upon a
 reference to an external Source. MediaExcerpt-based Justifications are similar to when online
@@ -31,7 +50,7 @@ Howdju's MediaExcerpt-based Justifications improve on 'implication by hyperlink'
 recording the excerpt of the source that the Justification creator intended to provide the evidence.
 This explicitness speeds up readers review of the Justification.
 
-### MediaExcerpt-based Justifications vs. Appearances
+#### MediaExcerpt-based Justifications vs. Appearances
 
 It would have been possible to omit MediaExcerpt-based Justifications and to have only
 PropositionCompound-based justifications and Appearances. This approach would have required users to
@@ -39,15 +58,19 @@ create very precisely worded Appearances so that they could then use them in the
 
 Howdju wanted to support people who were in a constructive mindset ("I trust this source and/or
 speaker, and therefore I believe it to imply the truth of the proposition") rather than forcing them
-into a critical mindset. This design decision is to allow these users the convenience of quickly
-adding the inferences into Howdju that they are observing as they read.
+into a critical mindset. See [the Epistemic Mode Hypothesis](/design/epistemic-mode-hypthesis) for
+background.
+
+This design decision is to allow these users the convenience of quickly
+adding the inferences into Howdju that they are observing as they read. Do you sometimes experience
+an inferential leap while reading a source you trust? I.e. "if this is true, which it probably is,
+then it is good evidence for this other thing".
 
 Howdju is designed to facilitate criticism of these MediaExcerpt-based Justifications when users
-create Appearances at the MediaExcerpt and disprove the truth of those appearing Propositions.
+create Appearances at the MediaExcerpt and <Feature issueId="694">disprove the truth of those
+appearing Propositions.</Feature>
 
-Inferential leap.
-
-## PropositionCompound-based Justifications
+### PropositionCompound-based Justifications
 
 PropositionCompound-based justifications are like arguments in propositional logic. The Propositions
 in the compound (the "atoms") should, combined with the knowledge and judgment of the reader,
@@ -59,9 +82,82 @@ Justification:
 - Sufficient: taken together, the truth of the atoms proves the Justification
 - Necessary: removing any atom would defeat the inferential power of the Justification
 
+### Example-based Justifications
+
+<Feature issueId="168">Example-based justifications</Feature> are a special type
+of Justification handling the case where one or more examples of a target are given
+to imply the Justification's truth valence.
+
+- At most one example-based justification per target per polarity.
+- User's vote independently on the Justification and the Examples.
+
+A vote for an Example means "this is an example that contributes to my belief in
+the justification's polarity on the target." A vote against an example means "this
+is not an example that contributes to my belief in the justification's polarity on the target".
+That may mean that the user disagrees that the example is a valid example or just
+that it is not one that contributes to a conclusion.
+
+A vote for the justification means:
+
+- Positive: the examples I have voted on and/or seen convinced me to conclude
+  the justification's polarity about the target.
+- Negative: the examples I have voted on and/or seen have not convienced me to
+  conclude the justification's polarity about the target. The user may
+  optionally receive <Feature issueId="480">[notifications](/design/features#notifications)</Feature> for new examples.
+
+Example-based justifications are a sub-type of a contributory justification
+where the basis of the justification must be an example of the target.
+
+## Polarities
+
+A Justification's polarity indicates whether the basis makes the target true,
+false, or niether. Possibly Polarity values are:
+
+- Positive
+- Negative
+- <Feature issueId="33">Neutral</Feature>
+
+The meaning of a Polarity is target-specific:
+
+| Target | Positive Meaning | Neutral meaning | Negative meaning |
+| --- | --- | --- | --- |
+| Proposition | The proposition is true | The proposition is neither true nor false | The proposition is false |
+| Appearance | The apparition appears at the MediaExcerpt | N/A | The apparition does not appear at the Media Excerpt |
+| Relation | The relation holds | N/A | The relation does not hold |
+
+A Polarity is a permanent feature of a Justification. If a user wants to create
+an otherwise identical Justification with a different polarity, they must
+create a new Justification.
+
+## Strengths
+
+A Justification's <Feature issueId="692">Strength</Feature> indicates how
+thoroughly a Justification's basis proves the polarity about the target. Strengths
+have two possible values:
+
+- Conclusive: the justification's basis is sufficient to prove the polarity about
+  the target.
+- Contributory: the justification's basis makes the polarity more likely about
+  the target, but does not prove it.
+
+The creator of a Justification provides an initial Strength. Justification voters
+can vote with a non-default strength from a dropdown. The default strength presented
+to the user is a function of the user's inferred beliefs compared to the inferred
+beliefs of users who have voted on the Justification and the weight those voters
+selected.
+
 ## CounterJustifications
 
 A Justification can target another Justification and is called counter-Justification. The
 counter-Justification does not target the basis of the Justification directly. Instead, a
 counter-Justification defeats its target Justification in the particular context where the target
 Justificatcion appears.
+
+### Preferred-phrasing CounterJustification
+
+A CounterJustification focusing on a Proposition may have
+<Feature issueId="528">a special basis type of "preferred phrasing"</Feature>.
+The basis type indicates that while the countered justification may be effective
+on the current Proposition's phrasing, it loses strength against the proposed
+alternative Proposition. This feature enables redirecting attention to a
+steelman.

@@ -1,254 +1,97 @@
 # Design
 
-This page describes the goals of Howdju's functionality, how specific features
-achieve those goals. It also compares Howdju to other well-known platforms to
-explain the benefit of its particular design.
+This page describes Howdju's intended qualities and use cases.
 
 ## Intended qualities
 
-Howdju’s intended qualities are:
+Howdju's intended qualities are:
 
-- Convenience: make it easy to input and to access information
-- Consolidation: prevent duplication and collect related things together
-- Context: empower users with the information they need to evaluate the information.
-
-### Features
-
-Specific features embodying these qualities are:
-
-- One-step submission of evidence:
-
-  - Browser extension
-  - Mobile app
-  - Text fragment link support
-
-- Convenient viewing of evidence in-context
-
-  The same three tools enable quickly viewing a
-  [MediaExcerpt](/concepts/media-excerpts) in context.
-
-- Consolidate equivalent entities and connect related ones
-
-  - Propositions
-  - Justifications
-
-- Sort content
-
-  - Global voting
-  - With plans to cluster users and rank content according to representativeness
-    across clusters
-
-- Track speaker reputation/credibility
+- Convenient: it's easy to input and to access information
+- Consolidated: duplicate things are merged and related things are adjacent
+- Contextualized: accept and present relevant context empowering users to evaluate the information.
+- Charitable: nudge users towards [charitable
+  discourse](https://en.wikipedia.org/wiki/Principle_of_charity)
+- Incremental: allow users to refine their own and others' content (while
+  preserving the history.)
 
 ## Use cases
 
-- Bookmark meaning
+Howdju's functionality can be thought of as breaking down into four use cases.
+The first use case is foundational because most of the others build on top of it.
+The next two are "primary" in the sense that they are the use cases Howdju is
+most focused on supporting. And the last one "refinines" the content of the
+"primary" use cases.
 
-  When you create a [MediaExcerpt](/concepts/media-excerpts), you do more than
-  bookmark a URL. You save a quotation, a URL, and optionally a speaker and a
-  source.
+- Foundational
+  - Excerpting: capturing speech in context
+- Primary
+  - Concluding: deriving conclusions from sources a user finds credible
+  - Critiquing: fact checking claims from sources a user finds uncredible
+- Refining
+  - Analyzing: further analyzing the truth of conclusions or critiques.
 
-  If you create an Appearance or [Justification](/concepts/justifications) using
-  the [MediaExcerpt](/concepts/media-excerpts), you are now saving the meaning
-  of what was said.
+Excerpting is foundational and the other two use-cases build off of it.
+Concluding and critiquing build on top of excerpting. Whether a user engages
+in concluding or critiquing of a source relates to Howdju's
+[epistemic mode hypothesis](/design/epistemic-mode-hypothesis).
 
-- Critique sources
+### Excerpting
 
-  Create [Appearances](/concepts/appearances) in a [Source](/concepts/sources)
-  and then add [Justification](/concepts/justifications) to the
-  [Proposition](/concepts/propositions) to decide whether the Source's claims
-  are credible.
+*Bookmark meaning*
 
-- Summarize sources
+When you create a [MediaExcerpt](/concepts/media-excerpts), you do more than
+bookmark a URL. You bookmark a particular excerpt (quotation) from that URL and
+optionally associate a speaker and a bibliographic source with the excerpt.
 
-  Create [Appearances](/concepts/appearances) in a [Source](/concepts/sources)
-  and then use the Appearances' [Propositions](/concepts/propositions) to
-  [Justify](/concepts/justifications) Propositions that summarize the thinking
-  or arguments in sections of the source. If the source explicitly states or
-  implies the conclusions, you can mark these summaries with Appearances of the
-  conclusions.
+When you go further and create an [Appearance](/concepts/appearances) or
+[Justification](/concepts/justifications) using the MediaExcerpt, you are now
+bookmarking your interpretion of the meaning of what was said.
 
-- Analyze argument
+While this use-case has standalone utility (e.g. for rediscovering an excerpt
+from a source later by searching for your interpretation), it is also a foundation
+for the other use cases.
 
-  Create a proposition and then add [Justification](/concepts/justifications) to
-  it from various sources to decide whether it's true, false, or maybe unknown.
+### Concluding
 
-## Comparison to well-known platforms
+Use a [MediaExcerpt](/concepts/media-excerpts) as the basis of a
+[Justification](/concepts/justifications) to conclude a
+[Proposition](/concepts/propositions). This creates evidence-based knowledge
+that you can share with others.
+Notifications of others' [analysis](#analyzing) will further inform you about
+the correctness of your conclusion.
 
-The following sections compare Howdju to well known platforms that provide a
-crowdsourced fact checking role even though they were not initially or
-explicitly designed to do so.
+### Critiquing
 
-### Wikipedia
+*Fact checking*
 
-Howdju is like Wikipedia in that it focuses on facts and evidence. Howdju is
-more like reddit or Stackoverflow in terms of the process it uses to accept and
-present facts and evidence.
+Add [Justifications](/concepts/justifications) to an [Appearance's](/concepts/appearances)
+[Proposition](/concepts/propositions) to analyze the credibility of the Source's claims.
 
-Wikipedia pages have a single representation at any time that is the result of a
-highly moderated consensus. Some pages are even locked, preventing ordinary
-users from making any contributions.
+### Analyzing
 
-Howdju users do not require consensus to create content or to present it.
-instead consensus on Howdju contributes to the relative ranking of content.
-Users can create a new Proposition at any time, can add their own justifications
-to other's Proposoitions, can add Appearances to other's Propositions, etc.
-Users can share views of their own content and other users can contribute to
-that content directly.
+Add [Justifications](/concepts/justifications) to existing [Proposition](/concepts/propositions)
+to further analyze their truth.
 
-Compare that with Wikipedia where, although you can share a link to a previous
-version of a page you wrote, if your contribution was reverted by a moderator,
-no one can contribute on top of your content since it will contain the same
-content that the moderator originally reverted, and they will revert it again.
+Note that while it is possible to analyze Propositions apart from any evidentiary context,
+Howdju [nudges users](/design/features#evidence-nudges) towards evidence-based knowledge.
 
-### Reddit
+## Summarizing
 
-Howdju is inspired by Reddit's threading model, but Howdju does not accept free
-form text, links, and media. Howdju content is focused on claims and evidence,
-and so has a more restrictive data model. Howdju also splits threads into two
-sides: one for Pro justifications and one for Con justifications.
+Summarizing is a fifth potential use-case under the heading of "refinement", but
+Howdju's functionality currently does not focus on it.
 
-Reddit's distributed totalitarian moderation model was initially highly
-successful, but has been deteriorating in recent years. Subreddit moderators now
-ban users who express even mildly contrarian views, creating information silos /
-"filter bubbles".
+- Create one or more [Appearances](/concepts/appearances) in a [Source](/concepts/sources)
+- use the Appearances' [Propositions](/concepts/propositions) to
+[Justify](/concepts/justifications) new Propositions that summarize the thinking
+or arguments in sections of the source.
+- Create new Appearances for the summarizing Propositions where the source explicitly states or
+implies the conclusions.
 
-### Twitter
+## Going deeper
 
-Similar to Reddit, Twitter accepts free form text, link, and media and has no
-domain primitives for claim or evidence.
+To learn more you can visit:
 
-Twitter's Community Notes (formerly Birdwatch) provide a crowdsourced fact
-checking layer on top of Twitter's content. Community notes have two major
-drawbacks:
-
-1. Only a single Community Note can appear on a Tweet.
-
-   This limitation prevents alternative or complementary Notes from appearing on
-   the same Tweet. This limitation means that a single Community Note must try
-   to encompass all of the most important feedback on a Tweet, which is
-   especially challenging since Notes have the same length limitations as Tweets
-   (at least for non-premium subscribers.)
-
-2. It is not possible to respond to a Community Note.
-
-   This limitation means that if a Community Note is approved, no important
-   rebuttal or contradicting context can be added to note. This also means that
-   there is limited opportunity to incrementally improve a Community Note
-   through feedback.
-
-### Quora
-
-Quora questions and answers are closer to Howdju's Propositions and
-Justifications than Wikipedia pages: they allow multiple concurrent alternative
-responses to a question. But the Q&A data model is inferior to Propositions and
-Justifications for consolidating similar claims. Quora has no special domain
-model for evidence or for factchecking sources.
-
-### Stackoverflow
-
-Stackoverflow has a simple structured domain model and very strong documentation
-and community norms around acceptable content. Its gamification contributes to
-healthy participation with minimal detraction, and its privilege-based
-moderation and elected moderators are effective. Its meta community provides a
-mostly productive way for users to communicate about content and moderation.
-
-Stackoverflow relies upon aggressive manual moderation to remove duplicate
-content and does not intentionally tolerate similar questions that differ based
-on subtle nuanced wording differences.
-
-Stackoverflow (and the more generic Stackexchange technology) has no features
-geared directly to facts and evidence. There is a Stackexchange dedicated to
-critiquing claims
-([skeptic.stackexchange.com](https://skeptics.stackexchange.com)), but it has
-very strict rules for its answers, forbidding answers that synthesize sources or
-perform novel mathematical calculations. E.g. see [this
-answer](https://skeptics.meta.stackexchange.com/a/2925/47976) and [this
-answer](https://skeptics.meta.stackexchange.com/a/2930/47976).
-
-The problem with forbidding these types of answers is that sometimes those
-answers are what people are thinking or alluding to in their communications
-without coming out and specifying them. Since people frequently form beliefs
-based on 'common sense' and 'mental mathematical estimation', the skeptics
-stackexchange does its community a disservice by forbidding these types of
-answers.
-
-The problem, however, may not be the community's, but the tool's: Stackexchange
-only allows two levels of threading, and the second level is inferior to the
-first: Questions, Answers, and Comments. This limitation means that an answer
-based on invalid assumptions or reasoning is only open to critique through the
-comments, which are not sorted by vote and offer a poorer UX compared to
-Answers.
-
-Howdju's assumption is that it is better for people to share their reasoning
-explicitly, even if it is invalid, because then it is amenable to critique.
-Howdju's recursive domain model (Propositions are the targets of Justifications,
-which contain Propositions, which can be the targets of more Justifications,
-etc.) allows critique of such content.
-
-### Lobste.rs
-
-While perhaps not as well known as HackerNews, I admire Lobste.rs transparent
-moderation history and its invite structure.
-
-## Comparisons to similar projects
-
-The following sections compare Howdju to other crowdsourced argument mapping or
-fact checking projects.
-
-### Kialo
-
-* Cannot reuse claims
-* Limited evidence handling
-
-### Two dimensional maps
-
-Examples:
-
-* ponder.wiki
-* debatemap.app
-
-Two dimensional maps are useful for providing users quick visual context for a
-larger argument. They work best for closed participant argument mapping because
-the branching factor is relatively low and the relevance of the content to each
-participant is high.
-
-An open participation platform must handle an influx of new inexperienced users
-who may duplicate content or create low quality content. One mandatory response
-to this is education of community norms and moderation. But moderation doesn't
-scale well, and it takes time for users to internalize community norms.
-
-Howdju's two column approach provides a natural experience to exploring the
-arguments for and against a claim. As users explore lower ranked items in one
-column, the other can remain in place with the top-ranked content.
-
-An influx of new content will be ranked below existing quality content, but also
-immediately acessible to users to rank via infinite scrolling through the
-columns. This helps ensure that new content is crowd moderated.
-
-### Rating claims directly
-
-Some tools allow users to explicitly rate claims' truthfulness. This approach
-allows users to engage in expressive voting, where they vote for something
-because they already believe it rather than because they have found a justified
-reason for believing it.
-
-Howdju instead asks users to vote on the Justifications of Propositions. While
-no system that scores a value based on user input is immune to manipulation,
-this design encourages users both to focus on why they believe something rather
-than what they already believe, forces them to expend the effort to add (or at
-least find) a justification if they want to support a Proposition, and it helps
-users who want to argue against the proposition to understand what the best
-arguments are of those who believe in the Proposition.
-
-## Visibility
-
-Howdju shows the creator for most entities. Therefore most content users create
-on Howdju is attributable to them. Votes are generally not attributable to their
-creators. The exceptions to this are:
-
-- When there is just one vote on an entity, Howdju currently does not obfuscate
-  the vote count and so it could be inferred to the creator of the content.
-- Howdju is exploring Fact Checks which use a User's vote on a MediaExcerpt
-  locator to determine inclusion in the Fact Check. This approach implicitly
-  exposes the users vote on the locator to other users.
+- [The features page](/design/features) to see how Howdju's specific features
+  serve these use-cases.
+- [The comparison page](/design/comparisons) to understand how Howdju compares to
+  other platforms.

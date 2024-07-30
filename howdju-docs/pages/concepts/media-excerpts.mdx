@@ -1,25 +1,56 @@
-# Media Excerpts
+# MediaExcerpts
 
-Media Excerpts are references to a part of some media external to Howdju. They have local
-represenatations and remote locators:
+Media Excerpts are references to a part of some media external to Howdju. Their
+primary purpose is in [Appearances](/concepts/appearances) where they anchor
+a Howdju entity with a specific part of an external Source. They also have
+standalone utility for 'highlighting' a specific quote from a webpage or book.
 
-- Local representations allow users to assess the evidentiary quality of the excerpt without leaving Howdju.
-- Remote locators allow users to access the excerpt in its original context.
+MediaExcerpts unlock:
+
+- Analyzing the meaning of contextualized speech
+  - Debating what a speaker intended to mean
+  - Analyzing the truth of the underlying meaning
+- Semantic search and clustering
+  - Rediscover this context by searching for the meaning you interpreted to it.
+  - Find related thought appearing in different contexts
+
+A MediaExcerpt's components:
+
+- Quotation
+- URL(s)
+- Citation(s)
+- Speakers
+
+A MediaExcerpt's components serve two purposes:
+
+- Local representation: allows users to evaluate the evidentiary
+  quality of an excerpt without leaving Howdju
+- Remote location: allows users to find and view the excerpt in its original context.
+
+## Quotation
+
+The MediaExcerpt's quotation is the specific part of the source the user intended to reference.
+
+## URL
+
+The URL is the online location where the MediaExcerpt can be found.
 
 ## Citations
 
-Citations are remote locators that use bibliographic source citations to locate excerpts.
-They enable locating material which may not be available online or which the user may not know how
-to find online.
+Citations are bibliographic information. They enable MediaExcerpts of offline
+sources. Their information also provides context to users.
 
 Citations consist of a Source and an optional Pincite.
 
 ### Sources
 
-Sources are like bibliographic sources that would appear in a research paper. They have a textual
-description, which is MLA-like except that it omits the authors.
+Sources are bibliographic information similar to what someone would include in
+an academic paper when citing another authority. Howdju recommends an MLA-like
+style except omitting the authors since those correspond to [speakers](#speakers).
 
-Source's vs. Source containers
+- Title (the specific name of the article)
+- Publication (i.e. the name of the newspaper, journal, etc.)
+- Publication date
 
 ### Pincites
 
@@ -33,8 +64,6 @@ Examples of Pincites include:
 
 ## Speakers
 
-A MediaExcept may be associated with one or more speakers.
-
-### Persorgs
-
-Persorgs are something capable of making speech: a natural person or an organization.
+Users may associate one or more speakers with a MediaExcept to indicate the
+[Persorg(s)](/concepts/persorgs) that are directly responsible for the speech in
+the MediaExcerpt.
