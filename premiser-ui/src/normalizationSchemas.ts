@@ -6,6 +6,7 @@ import {
   AppearanceView,
   ContextTrailItem,
   Domain,
+  DomAnchor,
   JustificationView,
   JustificationVote,
   MediaExcerptCitationIdentifier,
@@ -38,6 +39,7 @@ import {
 } from "howdju-common";
 
 import { applyCustomizations, momentConversion } from "./normalizationUtil";
+import { hashString } from "./util";
 
 export const userSchema = new schema.Entity<UserOut>("users");
 export const usersSchema = new schema.Array(userSchema);
@@ -176,10 +178,31 @@ export const sourceExcerptParaphraseSchema =
 export const urlSchema = new schema.Entity<UrlOut>("urls");
 export const urlsSchema = new schema.Array(urlSchema);
 
+export const domAnchorSchema = new schema.Entity<DomAnchor>(
+  "domAnchors",
+  {},
+  {
+    idAttribute: domAnchorKey,
+  }
+);
+
+function domAnchorKey(anchor: DomAnchor) {
+  return [
+    anchor.urlLocatorId,
+    anchor.startOffset,
+    anchor.endOffset,
+    hashString(anchor.prefixText),
+    hashString(anchor.exactText),
+    hashString(anchor.suffixText),
+  ].join("-");
+}
+export const domAnchorsSchema = new schema.Array(domAnchorSchema);
+
 export const urlLocatorSchema = new schema.Entity<UrlLocatorOut>(
   "urlLocators",
   {
     url: urlSchema,
+    anchors: domAnchorsSchema,
   },
   {
     processStrategy: (value) =>
