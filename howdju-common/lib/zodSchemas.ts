@@ -708,10 +708,11 @@ export const MediaExcerpt = Entity.extend({
    * Potential additional fields:
    *
    * Text-based:
-   *  - focusText: a part of quotation that is the substance of the excerpt, while the rest of
+   *  - focusText: a part of the quotation that is the substance of the excerpt, while the rest of
    *    quotation provides additional context. The focusText must appear within the quotation.
-   *  - contextText: text that encompasses the focusText to provie additional context, but which
-   *    does not convey the substance of the excerpt.
+   *    (See #703)
+   *  - contextText: text that encompasses the focusText to provide additional context, but which
+   *    does not convey the substance of the excerpt. (See #703)
    *  - description: a textual description of non-textual content. Like an img alt text. (How do
    *    users provite signal for an inaccurate description? The more literal the localRep, the less
    *    possibility for interpretation.)
@@ -734,7 +735,8 @@ export const MediaExcerpt = Entity.extend({
      *
      * Users may use this field either for focusText or for contextText (as described above.) It's
      * an open question how we would migrate this field to a focusText/contextText split if we
-     * decided to do that.
+     * decided to do that. Probably it would make sense to allow focusText to be empty and treat
+     * existing quotation as the contextText. (See #703)
      *
      * For textual media, this text must appear in the media. For audio and video media, this
      * text must be a transcription of the speech that appears in the media.
