@@ -30,13 +30,32 @@ const updateFunctionCode = (functionName, functionCodeZipPath) => {
     lambda.updateFunctionCode(params, (err, data) => {
       if (err) throw err;
 
-      logger.info("Uploaded Lambda Function", {
-        functionName,
-        codeSha256: data["CodeSha256"],
+      ensureLambdaFunctionIsActive(functionName, new Date(), () => {
+        logger.info("Uploaded Lambda Function", {
+          functionName,
+          codeSha256: data["CodeSha256"],
+        });
       });
     });
   });
 };
+
+function ensureLambdaFunctionIsActive(functionName, startTimestamp, callback) {
+  // Throw if 1 minute has passed
+  if (new Date() - startTimestamp > 60 * 1000) {
+    throw new Error("Lambda function update timed out");
+  }
+  lambda.getFunction({ FunctionName: functionName }, (err, data) => {
+    if (err) throw err;
+    if (data["Configuration"]["State"] === "Active") {
+      callback();
+    } else {
+      setTimeout(() => {
+        ensureLambdaFunctionIsActive(functionName, startTimestamp, callback);
+      }, 1000);
+    }
+  });
+}
 
 const publishVersion = (functionName, description = null) => {
   if (!description) {
