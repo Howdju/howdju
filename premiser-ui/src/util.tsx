@@ -1,7 +1,5 @@
 import React, { ChangeEvent, ChangeEventHandler } from "react";
-import { get, isArray } from "lodash";
-import queryString from "query-string";
-import { Location } from "history";
+import { get } from "lodash";
 
 import {
   isDefined,
@@ -13,7 +11,6 @@ import {
 import { MenuDivider } from "@/components/menu/MenuDivider";
 import config from "./config";
 import { OnPropertyChangeCallback } from "./types";
-import { newInvalidUrlError } from "./uiErrors";
 
 export const isWindowNarrow = () => {
   return window.innerWidth < config.ui.narrowBreakpoint;
@@ -139,19 +136,6 @@ export function toTextFieldOnChangeCallback(
     const val = transform ? transform(event.target.value) : event.target.value;
     onPropertyChange({ [name]: val });
   };
-}
-
-export function getQueryParam(
-  location: Location,
-  name: string
-): string | undefined {
-  const value = get(queryString.parse(location.search), name);
-  if (isArray(value)) {
-    throw newInvalidUrlError(
-      `Parameter ${name} must appear at most once in the URL.`
-    );
-  }
-  return value || undefined;
 }
 
 export function toCompatibleTagVotes(
