@@ -37,6 +37,7 @@ import {
   mediaExcerptSpeakerKey,
   propositionTagVoteSchema,
   domainSchema,
+  domAnchorSchema,
 } from "@/normalizationSchemas";
 import { MergeDeep } from "type-fest";
 
@@ -91,6 +92,7 @@ export const initialState = {
   appearances: {} as SchemaEntityState<typeof appearanceSchema>,
   contextTrailItems: {} as SchemaEntityState<typeof contextTrailItemSchema>,
   domains: {} as SchemaEntityState<typeof domainSchema>,
+  domAnchors: {} as SchemaEntityState<typeof domAnchorSchema>,
   justifications: {} as SchemaEntityState<
     typeof justificationSchema,
     {
@@ -174,7 +176,7 @@ const slice = createSlice({
           return;
         }
         const payload = action.payload as unknown as ApiErrorPayload;
-        // If a proposition is not found (e.g., another user deleted it), then remove it.
+        // If a statement is not found (e.g., another user deleted it), then remove it.
         if (payload.httpStatusCode === httpStatusCodes.NOT_FOUND) {
           const { rootTargetId } = action.meta.requestMeta;
           delete state.statements[rootTargetId];
@@ -548,8 +550,8 @@ export function deepMerge<T1, T2>(x: Partial<T1>, y: Partial<T2>): T1 & T2 {
 }
 
 export const deepMergeOptions: DeepMergeOptions = {
-  // Overwrite arrays. This prevents us from merging arrays of objects, but since we store our
-  // entities normalized, most objects we care about merging will be top-level entities.
+  // Union arrays so that we deduplicate related entity IDs. (The default behavior is to
+  // concatenate arrays elements.)
   arrayMerge: (targetArray, sourceArray, _options) =>
     union(targetArray, sourceArray),
   // Don't copy the properties of Moment objects (or else we lose their methods.)
