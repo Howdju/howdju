@@ -47,6 +47,10 @@ function ensureLambdaFunctionIsActive(functionName, startTimestamp, callback) {
   }
   lambda.getFunction({ FunctionName: functionName }, (err, data) => {
     if (err) throw err;
+    logger.info("Lambda getFunction data:", {
+      functionName,
+      data,
+    });
     if (data["Configuration"]["State"] === "Active") {
       callback();
     } else {
