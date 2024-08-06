@@ -47,13 +47,20 @@ function ensureLambdaFunctionIsActive(functionName, startTimestamp, callback) {
   }
   lambda.getFunction({ FunctionName: functionName }, (err, data) => {
     if (err) throw err;
-    logger.info("Lambda getFunction data:", {
+    logger.info("Lambda getFunction Configuration:", {
       functionName,
-      data,
+      Configuration: data["Configuration"],
     });
-    if (data["Configuration"]["State"] === "Active") {
+    if (
+      data["Configuration"]["State"] === "Active" &&
+      data["Configuration"]["LastUpdateStatus"] === "Successful"
+    ) {
+      logger.info("Lambda function is active, proceeding", { functionName });
       callback();
     } else {
+      logger.info("Lambda function is not yet active, retrying", {
+        functionName,
+      });
       setTimeout(() => {
         ensureLambdaFunctionIsActive(functionName, startTimestamp, callback);
       }, 1000);
