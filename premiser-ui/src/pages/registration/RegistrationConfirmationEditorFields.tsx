@@ -125,17 +125,11 @@ export default function RegistrationConfirmationEditorFields({
         label={
           <div>
             I have read and agree to the{" "}
-            <a
-              href={paths.userAgreement()}
-              className="text-link"
-            >
+            <a href={paths.userAgreement()} className="text-link">
               User Agreement
             </a>{" "}
             and the{" "}
-            <a
-              href={paths.privacyPolicy()}
-              className="text-link"
-            >
+            <a href={paths.privacyPolicy()} className="text-link">
               Privacy Policy
             </a>
             .
