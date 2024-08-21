@@ -72,9 +72,7 @@ export default {
         </div>
         <p className="mt-6 text-xs">
           ©{' '}
-          <a href="https://nextra.site" target="_blank">
-            Carl Gieringer
-          </a>{' '}
+          Carl Gieringer{' '}
           {new Date().getFullYear()}.
         </p>
       </div>

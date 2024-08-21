@@ -255,8 +255,6 @@ exports[`RegistrationConfirmationPage shows error message for duplicate username
                       <a
                         class="text-link"
                         href="https://docs.howdju.com/policies/user-agreement"
-                        rel="noreferrer"
-                        target="_blank"
                       >
                         User Agreement
                       </a>
@@ -266,8 +264,6 @@ exports[`RegistrationConfirmationPage shows error message for duplicate username
                       <a
                         class="text-link"
                         href="https://docs.howdju.com/policies/privacy-policy"
-                        rel="noreferrer"
-                        target="_blank"
                       >
                         Privacy Policy
                       </a>
@@ -393,7 +389,7 @@ exports[`RegistrationConfirmationPage shows error message for duplicate username
                       <a
                         class="text-link"
                         href="https://github.com/Howdju/howdju/issues/24"
-                        rel="noreferrer"
+                        rel="noopener noreferrer"
                         target="_blank"
                       >
                         Github issue #24
@@ -719,8 +715,6 @@ exports[`RegistrationConfirmationPage shows form 1`] = `
                       <a
                         class="text-link"
                         href="https://docs.howdju.com/policies/user-agreement"
-                        rel="noreferrer"
-                        target="_blank"
                       >
                         User Agreement
                       </a>
@@ -730,8 +724,6 @@ exports[`RegistrationConfirmationPage shows form 1`] = `
                       <a
                         class="text-link"
                         href="https://docs.howdju.com/policies/privacy-policy"
-                        rel="noreferrer"
-                        target="_blank"
                       >
                         Privacy Policy
                       </a>
@@ -857,7 +849,7 @@ exports[`RegistrationConfirmationPage shows form 1`] = `
                       <a
                         class="text-link"
                         href="https://github.com/Howdju/howdju/issues/24"
-                        rel="noreferrer"
+                        rel="noopener noreferrer"
                         target="_blank"
                       >
                         Github issue #24

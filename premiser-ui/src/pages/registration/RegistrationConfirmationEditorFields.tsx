@@ -125,21 +125,11 @@ export default function RegistrationConfirmationEditorFields({
         label={
           <div>
             I have read and agree to the{" "}
-            <a
-              href={paths.userAgreement()}
-              target="_blank"
-              rel="noreferrer"
-              className="text-link"
-            >
+            <a href={paths.userAgreement()} className="text-link">
               User Agreement
             </a>{" "}
             and the{" "}
-            <a
-              href={paths.privacyPolicy()}
-              target="_blank"
-              rel="noreferrer"
-              className="text-link"
-            >
+            <a href={paths.privacyPolicy()} className="text-link">
               Privacy Policy
             </a>
             .
@@ -186,7 +176,7 @@ export default function RegistrationConfirmationEditorFields({
             General Data Protection Regulation (GDPR). (See{" "}
             <a
               target="_blank"
-              rel="noreferrer"
+              rel="noopener noreferrer"
               className="text-link"
               href="https://github.com/Howdju/howdju/issues/24"
             >
