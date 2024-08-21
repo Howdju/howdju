@@ -1,9 +1,10 @@
 import { useRouter } from 'next/router'
 import { useConfig } from 'nextra-theme-docs'
+import { GoogleAnalytics } from '@next/third-parties/google'
 
 // https://github.com/shuding/nextra/blob/main/docs/theme.config.tsx
 // https://github.com/shuding/nextra/blob/main/examples/swr-site/theme.config.tsx
-export default {
+const config = {
   project: {
     link: 'https://github.com/Howdju/howdju'
   },
@@ -81,3 +82,4 @@ export default {
     )
   }
 }
+export default config;
