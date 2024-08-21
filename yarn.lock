@@ -7790,18 +7790,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@next/third-parties@npm:^14.2.5":
-  version: 14.2.5
-  resolution: "@next/third-parties@npm:14.2.5"
-  dependencies:
-    third-party-capital: "npm:1.0.20"
-  peerDependencies:
-    next: ^13.0.0 || ^14.0.0
-    react: ^18.2.0
-  checksum: c3ff237d9d3abb1ef5f0be278e25c60725d89b26a78d0380560e67f2943700da9feb93ea63b3974219a24018829d600953da3bc7cacb1daaa19d36079b7894f5
-  languageName: node
-  linkType: hard
-
 "@nicolo-ribaudo/chokidar-2@npm:2.1.8-no-fsevents":
   version: 2.1.8-no-fsevents
   resolution: "@nicolo-ribaudo/chokidar-2@npm:2.1.8-no-fsevents"
@@ -10376,6 +10364,13 @@ __metadata:
   dependencies:
     "@types/node": "npm:*"
   checksum: d076bb61f45d0fc42dee496ef8b1c2f8742e15d5e47e90e20d0243386e426c04d4efd408a48875ab432f7960b4ce3414db20ed0fbbfc7bcc89d84e574f6e045a
+  languageName: node
+  linkType: hard
+
+"@types/gtag.js@npm:^0.0.20":
+  version: 0.0.20
+  resolution: "@types/gtag.js@npm:0.0.20"
+  checksum: 5582c540adaec49e0fdf308e0d9921397257c34371b2d0d5acb00e3775aa1aa44e2b19b2ede4cd8ca1eba1df2e3f54aee56eb82ab147846036d6460e4993c8db
   languageName: node
   linkType: hard
 
@@ -21843,8 +21838,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "howdju-docs@workspace:howdju-docs"
   dependencies:
-    "@next/third-parties": "npm:^14.2.5"
     "@svgr/webpack": "npm:^8.1.0"
+    "@types/gtag.js": "npm:^0.0.20"
     eslint: "npm:^8.49.0"
     eslint-config-next: "npm:^14.0.1"
     next: "npm:^13"
@@ -34859,13 +34854,6 @@ __metadata:
   dependencies:
     any-promise: "npm:^1.0.0"
   checksum: 486e1283a867440a904e36741ff1a177faa827cf94d69506f7e3ae4187b9afdf9ec368b3d8da225c192bfe2eb943f3f0080594156bf39f21b57cd1411e2e7f6d
-  languageName: node
-  linkType: hard
-
-"third-party-capital@npm:1.0.20":
-  version: 1.0.20
-  resolution: "third-party-capital@npm:1.0.20"
-  checksum: 40e2531b428a21f05531fc62ef82859c0071211eff09588baf75d4b525096bbdb4f93e17e2d538849db8d4fc3cceb074933d7be59fddc26f86718fbbe852a97f
   languageName: node
   linkType: hard
 

@@ -1,6 +1,5 @@
 import { useRouter } from 'next/router'
 import { useConfig } from 'nextra-theme-docs'
-import { GoogleAnalytics } from '@next/third-parties/google'
 
 // https://github.com/shuding/nextra/blob/main/docs/theme.config.tsx
 // https://github.com/shuding/nextra/blob/main/examples/swr-site/theme.config.tsx
@@ -23,7 +22,7 @@ const config = {
   toc: {
     backToTop: true,
   },
-  head: () => {
+  head: function Head() {
     const { asPath, defaultLocale, locale } = useRouter()
     const { frontMatter } = useConfig()
     const url =
