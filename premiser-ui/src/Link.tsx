@@ -16,6 +16,7 @@ export default function Link(props: LinkProps) {
   const linkProps = {} as Partial<ReactRouterLinkProps>;
   if (newWindow) {
     linkProps.target = "_blank";
+    linkProps.rel = "noopener noreferrer";
   }
   return (
     <ReactRouterLink {...rest} {...linkProps}>
