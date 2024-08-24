@@ -10367,6 +10367,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/gtag.js@npm:^0.0.20":
+  version: 0.0.20
+  resolution: "@types/gtag.js@npm:0.0.20"
+  checksum: 5582c540adaec49e0fdf308e0d9921397257c34371b2d0d5acb00e3775aa1aa44e2b19b2ede4cd8ca1eba1df2e3f54aee56eb82ab147846036d6460e4993c8db
+  languageName: node
+  linkType: hard
+
 "@types/hammerjs@npm:^2.0.36":
   version: 2.0.41
   resolution: "@types/hammerjs@npm:2.0.41"
@@ -21832,6 +21839,7 @@ __metadata:
   resolution: "howdju-docs@workspace:howdju-docs"
   dependencies:
     "@svgr/webpack": "npm:^8.1.0"
+    "@types/gtag.js": "npm:^0.0.20"
     eslint: "npm:^8.49.0"
     eslint-config-next: "npm:^14.0.1"
     next: "npm:^13"

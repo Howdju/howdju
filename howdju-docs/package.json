@@ -19,6 +19,7 @@
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
+    "@types/gtag.js": "^0.0.20",
     "remark-smartypants": "^2.0.0"
   }
 }

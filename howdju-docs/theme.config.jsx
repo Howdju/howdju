@@ -3,7 +3,7 @@ import { useConfig } from 'nextra-theme-docs'
 
 // https://github.com/shuding/nextra/blob/main/docs/theme.config.tsx
 // https://github.com/shuding/nextra/blob/main/examples/swr-site/theme.config.tsx
-export default {
+const config = {
   project: {
     link: 'https://github.com/Howdju/howdju'
   },
@@ -22,7 +22,7 @@ export default {
   toc: {
     backToTop: true,
   },
-  head: () => {
+  head: function Head() {
     const { asPath, defaultLocale, locale } = useRouter()
     const { frontMatter } = useConfig()
     const url =
@@ -79,3 +79,4 @@ export default {
     )
   }
 }
+export default config;

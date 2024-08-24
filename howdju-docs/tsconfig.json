@@ -1,0 +1,27 @@
+{
+  "extends": "../tsconfig.json",
+  // These settings primarily affect the IDE (VS Code) and esbuild'ing of our
+  // build scripts. Babel controls the TypeScript transpilation and is
+  // configured in the webpack.config and Babel configs.
+  "compilerOptions": {
+    "jsx": "preserve",
+    "lib": [
+      "DOM"
+    ],
+    "paths": {
+      // Support project-relative imports
+      "@/*": [
+        "./src/*"
+      ]
+    },
+    "forceConsistentCasingInFileNames": true,
+    "incremental": true,
+    "module": "esnext",
+    "isolatedModules": true
+  },
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx"
+  ]
+}
