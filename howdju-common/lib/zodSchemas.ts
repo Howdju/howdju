@@ -1155,8 +1155,9 @@ export type ContentReportRef = z.infer<typeof ContentReportRef>;
 export const UrlLocatorRef = Entity.required().brand<EntityName<UrlLocator>>();
 export type UrlLocatorRef = z.infer<typeof UrlLocatorRef>;
 
-export const MediaExcerptRef =
-  Entity.required().brand<EntityName<MediaExcerpt>>();
+export const MediaExcerptRef = Entity.required()
+  .passthrough()
+  .brand<EntityName<MediaExcerpt>>();
 export type MediaExcerptRef = z.output<typeof MediaExcerptRef>;
 
 export const SourceRef = Entity.required().brand<EntityName<Source>>();
@@ -1494,7 +1495,7 @@ export const CreateJustification: z.ZodType<CreateJustification> = z.lazy(() =>
       }),
       z.object({
         type: z.literal("MEDIA_EXCERPT"),
-        entity: z.union([CreateMediaExcerpt, MediaExcerptRef]),
+        entity: z.union([MediaExcerptRef, CreateMediaExcerpt]),
       }),
       z.object({
         type: z.literal("SOURCE_EXCERPT"),
