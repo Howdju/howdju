@@ -1156,6 +1156,7 @@ export const UrlLocatorRef = Entity.required().brand<EntityName<UrlLocator>>();
 export type UrlLocatorRef = z.infer<typeof UrlLocatorRef>;
 
 export const MediaExcerptRef = Entity.required()
+  // TODO(#718) remove passthrough
   .passthrough()
   .brand<EntityName<MediaExcerpt>>();
 export type MediaExcerptRef = z.output<typeof MediaExcerptRef>;
