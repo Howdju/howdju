@@ -1,6 +1,6 @@
 import moment from "moment";
 import { urlString } from "./zodRefinements";
-import { Justification, Persorg } from "./zodSchemas";
+import { CreateJustification, Justification, Persorg } from "./zodSchemas";
 
 describe("Justification schema", () => {
   test("recognizes valid proposition compound based justification", () => {
@@ -46,6 +46,125 @@ describe("Justification schema", () => {
     const result = Justification.parse(justification);
 
     expect(result).toEqual(justification);
+  });
+});
+
+describe("CreateJustification schema", () => {
+  test("parses a MediaExcerpt basis lacking an ID", () => {
+    const createJustification: CreateJustification = {
+      id: "0",
+      target: {
+        type: "PROPOSITION",
+        entity: {
+          id: "1",
+          text: "the target text",
+        },
+      },
+      polarity: "POSITIVE",
+      basis: {
+        type: "MEDIA_EXCERPT",
+        entity: {
+          localRep: {
+            quotation: "the-quotation",
+          },
+          locators: {
+            urlLocators: [
+              {
+                url: {
+                  id: "the-url-id",
+                  url: "https://data.cdc.gov/",
+                },
+                anchors: [],
+              },
+            ],
+          },
+          citations: [
+            {
+              source: {
+                description:
+                  "“Some Data Page” Centers for Disease Control and Prevention",
+                id: "the-source-id",
+              },
+            },
+          ],
+          speakers: [
+            {
+              persorg: {
+                isOrganization: true,
+                name: "United States Centers for Disease Control and Prevention (CDC)",
+                knownFor: "",
+                websiteUrl: "https://www.cdc.gov/",
+                wikipediaUrl:
+                  "https://en.wikipedia.org/wiki/Centers_for_Disease_Control_and_Prevention",
+              },
+            },
+          ],
+        },
+      },
+    };
+
+    const result = CreateJustification.parse(createJustification);
+
+    expect(result).toEqual(createJustification);
+  });
+  test("parses a MediaExcerpt basis having both ID and other fields", () => {
+    const createJustification: CreateJustification = {
+      id: "0",
+      target: {
+        type: "PROPOSITION",
+        entity: {
+          id: "1",
+          text: "the target text",
+        },
+      },
+      polarity: "POSITIVE",
+      basis: {
+        type: "MEDIA_EXCERPT",
+        entity: {
+          // MediaExcerpt has both an ID and other fields
+          id: "the-media-excerpt-id",
+          localRep: {
+            quotation: "the-quotation",
+          },
+          locators: {
+            urlLocators: [
+              {
+                url: {
+                  id: "the-url-id",
+                  url: "https://data.cdc.gov/",
+                },
+                anchors: [],
+              },
+            ],
+          },
+          citations: [
+            {
+              source: {
+                description:
+                  "“Some Data Page” Centers for Disease Control and Prevention",
+                id: "the-source-id",
+              },
+            },
+          ],
+          speakers: [
+            {
+              persorg: {
+                isOrganization: true,
+                name: "United States Centers for Disease Control and Prevention (CDC)",
+                knownFor: "",
+                websiteUrl: "https://www.cdc.gov/",
+                wikipediaUrl:
+                  "https://en.wikipedia.org/wiki/Centers_for_Disease_Control_and_Prevention",
+              },
+            },
+          ],
+        },
+      },
+    };
+
+    const result = CreateJustification.parse(createJustification);
+
+    expect(result).toEqual(createJustification);
   });
 });
 

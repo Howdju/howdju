@@ -36,7 +36,15 @@ export function databaseInit(
   const clientProvider: PoolClientProvider = {
     getClient: async () => {
       const pool = await poolPromise;
-      return pool.connect();
+      try {
+        return await pool.connect();
+      } catch (e) {
+        provider.logger.error(
+          "Failed to connect to PG pool. Is Postgres running?",
+          e
+        );
+        throw e;
+      }
     },
     close: async () => {
       const pool = await poolPromise;
