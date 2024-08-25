@@ -19105,7 +19105,7 @@
       AccountSettingsRef = Entity.required().brand();
       ContentReportRef = Entity.required().brand();
       UrlLocatorRef = Entity.required().brand();
-      MediaExcerptRef = Entity.required().brand();
+      MediaExcerptRef = Entity.required().passthrough().brand();
       SourceRef = Entity.required().brand();
       CreateWritQuoteInput = Entity.extend({
         quoteText: WritQuote.shape.quoteText,
@@ -19244,7 +19244,7 @@
             }),
             mod.object({
               type: mod.literal("MEDIA_EXCERPT"),
-              entity: mod.union([CreateMediaExcerpt, MediaExcerptRef])
+              entity: mod.union([MediaExcerptRef, CreateMediaExcerpt])
             }),
             mod.object({
               type: mod.literal("SOURCE_EXCERPT"),
