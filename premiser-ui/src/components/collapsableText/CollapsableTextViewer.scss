@@ -1,3 +1,24 @@
 .collapsable-text-ellipsis {
   font-weight: bold;
 }
+
+.collapsible-text-viewer {
+  table {
+    border-collapse: collapse;
+  }
+
+  th {
+    font-weight: bold;
+    border-bottom: 1px solid #666;
+  }
+
+  table,
+  th,
+  td {
+    padding: 8px;
+  }
+
+  tr:nth-child(even) {
+    background-color: #f2f2f2;
+  }
+}

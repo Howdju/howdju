@@ -1,13 +1,12 @@
 import React, { useState, HTMLAttributes } from "react";
+import Markdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import cn from "classnames";
 
 import { truncateText } from "@/viewModels";
 import TextButton from "../button/TextButton";
 
 import "./CollapsableTextViewer.scss";
-
-// two or more line breaks will indicate a paragraph
-const paragraphBreak = /(\r\n|\n|\r){2,}/g;
-const onlyWhitespace = /^\s*$/;
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
   text: string | undefined;
@@ -18,16 +17,16 @@ interface Props extends HTMLAttributes<HTMLDivElement> {
 export default function CollapsableTextViewer({
   text,
   truncateLength = 256,
+  className,
   ...rest
 }: Props) {
   const [isExpanded, setIsExpanded] = useState(false);
 
   const isTextLong = (text?.length ?? 0) > truncateLength;
-  const displayText =
+  const truncatedText =
     !isTextLong || isExpanded
       ? text
       : truncateText(text, { omission: "", length: truncateLength });
-  const paragraphs = makeParagraphs(displayText);
 
   const expandEllipsis = (
     <span
@@ -39,27 +38,18 @@ export default function CollapsableTextViewer({
   );
 
   return (
-    <div {...rest}>
-      <div>
-        {paragraphs?.map((para, i) => {
-          const key = `quote-text-para-${i}`;
-          if (isTextLong && !isExpanded && i === paragraphs.length - 1) {
-            return (
-              <p key={key}>
-                {para} {expandEllipsis}
-              </p>
-            );
-          }
-          return <p key={key}>{para}</p>;
-        })}
-      </div>
+    <div className={cn("collapsible-text-viewer", className)} {...rest}>
+      <Markdown remarkPlugins={[remarkGfm]}>{truncatedText || ""}</Markdown>
       {isTextLong && !isExpanded && (
-        <TextButton
-          className="text-expand-toggle"
-          onClick={() => setIsExpanded(true)}
-        >
-          More
-        </TextButton>
+        <>
+          {expandEllipsis}
+          <TextButton
+            className="text-expand-toggle"
+            onClick={() => setIsExpanded(true)}
+          >
+            More
+          </TextButton>
+        </>
       )}
       {isTextLong && isExpanded && (
         <TextButton
@@ -71,10 +61,4 @@ export default function CollapsableTextViewer({
       )}
     </div>
   );
-}
-
-function makeParagraphs(quote: string | undefined) {
-  return quote
-    ?.split(paragraphBreak)
-    .filter((para) => !onlyWhitespace.test(para));
 }

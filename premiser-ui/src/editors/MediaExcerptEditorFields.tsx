@@ -17,10 +17,10 @@ import { EditorType } from "@/reducers/editors";
 import { editors } from "@/actions";
 import { EditorId } from "@/types";
 import UrlLocatorsEditorFields from "./UrlLocatorsEditorFields";
-
-import "./MediaExcerptEditorFields.scss";
 import { MediaExcerptCitationsEditorFields } from "./MediaExcerptCitationsEditorFields";
 import { MediaExcerptSpeakersEditorFields } from "./MediaExcerptSpeakersEditorFields";
+
+import "./MediaExcerptEditorFields.scss";
 
 interface Props
   extends EntityEditorFieldsProps<"mediaExcerpt", CreateMediaExcerptInput> {
@@ -89,7 +89,10 @@ export default function MediaExcerptEditorFields(props: Props) {
         onPropertyChange={onPropertyChange}
         onBlur={onBlur}
         onSubmit={onSubmit}
-        messageProps={errorProps((me) => me.localRep.quotation)}
+        messageProps={{
+          helpMessage: "Supports markdown syntax (paragraphs and tables)",
+          ...errorProps((me) => me.localRep.quotation),
+        }}
       />
 
       {mediaExcerpt.locators && (

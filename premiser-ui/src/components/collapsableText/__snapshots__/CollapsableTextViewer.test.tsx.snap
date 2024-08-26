@@ -1,0 +1,50 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`CollapsableTextViewer renders text containing markdown 1`] = `
+<div>
+  <div
+    class="collapsible-text-viewer"
+  >
+    <p>
+      paragraph 1
+    </p>
+    
+
+    <p>
+      paragraph 2
+    </p>
+    
+
+    <table>
+      <thead>
+        <tr>
+          <th>
+            table
+          </th>
+          <th>
+            header
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            cell1
+          </td>
+          <td>
+            cell2
+          </td>
+        </tr>
+        <tr>
+          <td>
+            cell3
+          </td>
+          <td>
+            cell4
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+`;
