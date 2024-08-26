@@ -19,13 +19,13 @@ export function databaseInit(
     password: provider.getConfigVal("DB_PASSWORD"),
     host: provider.getConfigVal("DB_HOST"),
     port: toNumber(provider.getConfigVal("DB_PORT", "5432")),
-    max: toNumber(provider.getConfigVal("DB_POOL_MAX_CLIENTS", "10")),
-    idleTimeoutMillis: toNumber(
-      provider.getConfigVal("DB_CLIENT_TIMEOUT", "3000")
-    ),
     connectionTimeoutMillis: toNumber(
       provider.getConfigVal("DB_CLIENT_CONNECT_TIMEOUT", "5000")
     ),
+    idleTimeoutMillis: toNumber(
+      provider.getConfigVal("DB_CLIENT_TIMEOUT", "3000")
+    ),
+    max: toNumber(provider.getConfigVal("DB_POOL_MAX_CLIENTS", "10")),
   };
 
   const poolPromise = asyncConfig.then((config) => {
@@ -36,15 +36,7 @@ export function databaseInit(
   const clientProvider: PoolClientProvider = {
     getClient: async () => {
       const pool = await poolPromise;
-      try {
-        return await pool.connect();
-      } catch (e) {
-        provider.logger.error(
-          "Failed to connect to PG pool. Is Postgres running?",
-          e
-        );
-        throw e;
-      }
+      return pool.connect();
     },
     close: async () => {
       const pool = await poolPromise;
