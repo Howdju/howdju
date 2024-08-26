@@ -16646,6 +16646,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"dedent@npm:^1.5.3":
+  version: 1.5.3
+  resolution: "dedent@npm:1.5.3"
+  peerDependencies:
+    babel-plugin-macros: ^3.1.0
+  peerDependenciesMeta:
+    babel-plugin-macros:
+      optional: true
+  checksum: e5277f6268f288649503125b781a7b7a2c9b22d011139688c0b3619fe40121e600eb1f077c891938d4b2428bdb6326cc3c77a763e4b1cc681bd9666ab1bad2a1
+  languageName: node
+  linkType: hard
+
 "deep-equal@npm:^1.0.1":
   version: 1.1.1
   resolution: "deep-equal@npm:1.1.1"
@@ -30464,6 +30476,7 @@ __metadata:
     css-loader: "npm:^5.2.0"
     css-minimizer-webpack-plugin: "npm:^4.2.1"
     debug: "npm:^4.3.1"
+    dedent: "npm:^1.5.3"
     deepmerge: "npm:^4.3.1"
     dns-sync: "npm:^0.2.1"
     dompurify: "npm:^2.2.9"

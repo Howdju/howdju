@@ -1,14 +1,39 @@
 # Patterns matching node_modules dependencies that Babel and Jest should transform
 approx-string-match
+bail
+ccount
+comma-separated-tokens
+decode-named-character-reference
+# (match the included node_modules path in mdast-util-find-and-replace separately)
+escape-string-regexp
 @grrr/cookie-consent
 @grrr/utils
+hast-util-whitespace
 is-absolute-url
+is-plain-obj
 jsdom
+markdown-table
+mdast-util-.+
+# Because there is a node_modules in this path, we must also match it separately
+mdast-util-find-and-replace/node_modules/escape-string-regexp
+micromark
 nanoid
 normalize-url
-# Because there is a node_modules in this path, we must we must also match it separately
+property-information
+react-markdown
+# Because there is a node_modules in this path, we must also match it separately
+react-markdown/node_modules/vfile
+remark-.+
+# Because there is a node_modules in this path, we must also match it separately
 @smithy/middleware-retry/node_modules/uuid/dist/esm-browser
+space-separated-tokens
 strip-indent
 text-fragments-polyfill
+trim-lines
+trough
+unist-util-.+
+unified
 # (match the included node_modules path in @smithy/middleware-retry separately)
 uuid/dist/esm-browser
+# (match the included node_modules path in react-markdown separately)
+vfile
