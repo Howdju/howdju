@@ -163,7 +163,7 @@ certification on your part. Refer to our CONTRIBUTORS guide for details.
 You can amend an existing commit to have the DCO like:
 
 ```sh
-git commit --amend --no-edit -signoff
+git commit --amend --no-edit --signoff
 ```
 
 You can amend multiple parent commits to have the DCO like:
