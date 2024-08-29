@@ -11,7 +11,7 @@
     "debugger": "react-devtools",
     "fix-format": "yarn run lint --fix && yarn run prettier --write .",
     "install-pods": "npx pod-install",
-    "ios": "react-native run-ios --simulator='iPhone 14'",
+    "ios": "react-native run-ios --simulator='iPhone 15'",
     "ios-release": "react-native run-ios --configuration Release",
     "ios-release-device": "react-native run-ios --configuration Release --device ${0}",
     "lint": "eslint --ignore-path=.gitignore .",

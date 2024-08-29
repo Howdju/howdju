@@ -25,7 +25,8 @@ export function BrowserScreen({ items }: { items: ShareDataItem[] }) {
 
   const [canGoBack, setCanGoBack] = useState(false);
   const [canGoForward, setCanGoForward] = useState(false);
-  const [currentUrl, setCurrentUrl] = useState(undefined as string | undefined);
+  const [browserUrl, setBrowserUrl] = useState(undefined as string | undefined);
+  const [displayUrl, setDisplayUrl] = useState(undefined as string | undefined);
 
   function goBackward() {
     webViewRef.current?.goBack();
@@ -37,13 +38,13 @@ export function BrowserScreen({ items }: { items: ShareDataItem[] }) {
     webViewRef.current?.reload();
   }
   async function shareCurrentUrl() {
-    if (!currentUrl) {
+    if (!browserUrl) {
       logger.warn("Cannot share current URL because it is missing.");
       return;
     }
     try {
       const result = await Share.share({
-        message: currentUrl,
+        message: browserUrl,
       });
       logger.log({ shareResult: result });
     } catch (error: any) {
@@ -52,6 +53,18 @@ export function BrowserScreen({ items }: { items: ShareDataItem[] }) {
   }
 
   const authority = useContext(HowdjuSiteAuthority);
+
+  function setBothUrls(url: string) {
+    setBrowserUrl(url);
+    setDisplayUrl(url);
+  }
+
+  function submitDisplayUrl(url: string) {
+    if (!url.startsWith("http")) {
+      url = `https://${url}`;
+    }
+    setBothUrls(url);
+  }
 
   // Set the currentUrl whenever the share items change. Otherwise don't change it and allow
   // navigation to occur without interfering.
@@ -62,7 +75,7 @@ export function BrowserScreen({ items }: { items: ShareDataItem[] }) {
     const newCurrentUrl = items.length
       ? inferSubmitUrl(authority, items)
       : makeRecentActivityUrl(authority);
-    setCurrentUrl(newCurrentUrl);
+    setBothUrls(newCurrentUrl);
   }, [authority, items]);
   // Don't display the webview until we have a currentUrl because it requires a
   // valid URL to render and if we pass a placeholder it can enter an infinite
@@ -72,7 +85,8 @@ export function BrowserScreen({ items }: { items: ShareDataItem[] }) {
       ref={(wv) => {
         webViewRef.current = wv;
       }}
-      source={{ uri: currentUrl }}
+      source={{ uri: browserUrl }}
+      allowsbackforwardnavigationgestures={true}
       onError={({ nativeEvent }) => {
         logger.error("WebView error: ", nativeEvent);
       }}
@@ -86,7 +100,7 @@ export function BrowserScreen({ items }: { items: ShareDataItem[] }) {
         logger.debug(`WebView onNavigationStateChange: ${toJson(navState)}`);
         setCanGoBack(navState.canGoBack);
         setCanGoForward(navState.canGoForward);
-        setCurrentUrl(navState.url);
+        setDisplayUrl(navState.url);
       }}
       onLoadStart={({ nativeEvent }) => {
         logger.debug(`WebView onLoadStart: ${toJson(nativeEvent)}`);
@@ -99,7 +113,7 @@ export function BrowserScreen({ items }: { items: ShareDataItem[] }) {
         if ("navigationType" in nativeEvent) {
           const { mainDocumentURL } = nativeEvent;
           if (mainDocumentURL) {
-            setCurrentUrl(mainDocumentURL);
+            setDisplayUrl(mainDocumentURL);
           }
         }
       }}
@@ -119,9 +133,17 @@ export function BrowserScreen({ items }: { items: ShareDataItem[] }) {
     <View style={[styles.container, safeArea]}>
       {webView}
       <TextInput
-        value={currentUrl}
-        disabled={true}
+        value={displayUrl}
+        onChangeText={setDisplayUrl}
+        onSubmitEditing={({ nativeEvent: { text } }) => submitDisplayUrl(text)}
         accessibilityLabel="Current URL"
+        autoCorrect={false}
+        autoCapitalize="none"
+        clearButtonMode="while-editing"
+        keyboardType="url"
+        returnKeyType="go"
+        placeholder="Enter URL"
+        placeholderTextColor={"#666"}
       />
       <Appbar style={{ justifyContent: "space-evenly" }}>
         <Appbar.Action
