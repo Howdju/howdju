@@ -6,7 +6,7 @@
     "android": "react-native run-android",
     "android-release": "react-native run-android --variant release",
     "bundle": "react-native webpack-bundle",
-    "check": "typecheck && lint && check-format && test",
+    "check": "yarn run typecheck && yarn run lint && yarn run check-format && yarn run test",
     "check-format": "yarn run prettier --check .",
     "debugger": "react-devtools",
     "fix-format": "yarn run lint --fix && yarn run prettier --write .",

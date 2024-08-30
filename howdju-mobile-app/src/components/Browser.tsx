@@ -22,7 +22,7 @@ type UpdateStateAfterCancelMessage = {
   url: string;
   historyState?: { canGoBack: boolean; canGoForward: boolean };
 };
-type Message = UpdateStateAfterCancel;
+type Message = UpdateStateAfterCancelMessage;
 
 interface BrowserProps extends WebViewProps {
   url: string | undefined;

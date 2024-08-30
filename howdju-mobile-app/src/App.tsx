@@ -93,7 +93,9 @@ const App = (): JSX.Element => {
                     },
                   }}
                 >
-                  {(props) => <BrowserScreen {...props} shareDataItems={shareDataItems} />}
+                  {(props) => (
+                    <BrowserScreen {...props} shareDataItems={shareDataItems} />
+                  )}
                 </Tab.Screen>
                 <Tab.Screen
                   name="ShareDebug"
