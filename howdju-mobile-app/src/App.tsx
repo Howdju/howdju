@@ -47,7 +47,7 @@ const App = (): JSX.Element => {
     };
   }, [handleShare]);
 
-  const items = shareResponse?.items;
+  const shareDataItems = shareResponse?.items;
   const extraData = shareResponse?.extraData as Record<string, unknown>;
   const isDark = useColorScheme() === "dark";
   const theme = isDark ? darkTheme : lightTheme;
@@ -93,7 +93,7 @@ const App = (): JSX.Element => {
                     },
                   }}
                 >
-                  {(props) => <BrowserScreen {...props} items={items} />}
+                  {(props) => <BrowserScreen {...props} shareDataItems={shareDataItems} />}
                 </Tab.Screen>
                 <Tab.Screen
                   name="ShareDebug"
@@ -113,7 +113,7 @@ const App = (): JSX.Element => {
                   {(props) => (
                     <ShareDebugScreen
                       {...props}
-                      items={items}
+                      items={shareDataItems}
                       extraData={extraData}
                     />
                   )}

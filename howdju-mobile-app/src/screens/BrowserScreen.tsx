@@ -1,9 +1,7 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
-import { WebView } from "react-native-webview";
+import React, { useContext } from "react";
 import type { ShareDataItem } from "react-native-share-menu";
-import { Alert, Share, StyleSheet, View } from "react-native";
-import { Appbar, TextInput } from "react-native-paper";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { URL } from "react-native-url-polyfill";
+import useDeepCompareEffect from "use-deep-compare-effect";
 
 import { toJson } from "howdju-common";
 
@@ -11,82 +9,56 @@ import { inferSubmitUrl } from "@/services/submitUrls";
 import logger from "@/logger";
 import { makeRecentActivityUrl } from "@/services/urls";
 import { HowdjuSiteAuthority } from "@/contexts";
+import Browser from "@/components/Browser";
 
-export function BrowserScreen({ items }: { items: ShareDataItem[] }) {
-  const webViewRef = useRef<WebView | null>(null);
+export function BrowserScreen({
+  shareDataItems,
+}: {
+  shareDataItems: ShareDataItem[];
+}) {
+  const howdjuSiteAuthority = useContext(HowdjuSiteAuthority);
 
-  const insets = useSafeAreaInsets();
-  const safeArea = {
-    paddingTop: insets.top,
-    // bottom is handled by the parent container.
-    paddingLeft: insets.left,
-    paddingRight: insets.right,
-  };
+  const [url, setUrl] = React.useState(undefined as string | undefined);
 
-  const [canGoBack, setCanGoBack] = useState(false);
-  const [canGoForward, setCanGoForward] = useState(false);
-  const [browserUrl, setBrowserUrl] = useState(undefined as string | undefined);
-  const [displayUrl, setDisplayUrl] = useState(undefined as string | undefined);
-
-  function goBackward() {
-    webViewRef.current?.goBack();
-  }
-  function goForward() {
-    webViewRef.current?.goForward();
-  }
-  function refresh() {
-    webViewRef.current?.reload();
-  }
-  async function shareCurrentUrl() {
-    if (!browserUrl) {
-      logger.warn("Cannot share current URL because it is missing.");
+  // Initialize the URL any time the authority or share items change.
+  useDeepCompareEffect(() => {
+    if (!howdjuSiteAuthority) {
       return;
     }
-    try {
-      const result = await Share.share({
-        message: browserUrl,
-      });
-      logger.log({ shareResult: result });
-    } catch (error: any) {
-      Alert.alert(error.message);
+    if (shareDataItems.length) {
+      // Regardless of whether the authority or the share items changed, if
+      // there are changed share items, we should navigate to consume them.
+      setUrl(inferSubmitUrl(howdjuSiteAuthority, shareDataItems));
+    } else if (!url || isHowdjuUrl(url)) {
+      // Otherwise, only navigate if we have no URL or are already on a Howdju URL.
+      setUrl(makeRecentActivityUrl(howdjuSiteAuthority));
     }
-  }
+  }, [howdjuSiteAuthority, shareDataItems]);
 
-  const authority = useContext(HowdjuSiteAuthority);
-
-  function setBothUrls(url: string) {
-    setBrowserUrl(url);
-    setDisplayUrl(url);
-  }
-
-  function submitDisplayUrl(url: string) {
-    if (!url.startsWith("http")) {
-      url = `https://${url}`;
-    }
-    setBothUrls(url);
-  }
-
-  // Set the currentUrl whenever the share items change. Otherwise don't change it and allow
-  // navigation to occur without interfering.
-  useEffect(() => {
-    if (!authority) {
-      return;
-    }
-    const newCurrentUrl = items.length
-      ? inferSubmitUrl(authority, items)
-      : makeRecentActivityUrl(authority);
-    setBothUrls(newCurrentUrl);
-  }, [authority, items]);
-  // Don't display the webview until we have a currentUrl because it requires a
-  // valid URL to render and if we pass a placeholder it can enter an infinite
-  // loop as the callbacks interfere with each other.
-  const webView = !currentUrl ? null : (
-    <WebView
-      ref={(wv) => {
-        webViewRef.current = wv;
+  return (
+    <Browser
+      url={url}
+      onUrlChange={(url) => setUrl(url)}
+      onNavigationStateChange={(navState) => {
+        logger.debug(`WebView onNavigationStateChange: ${toJson(navState)}`);
       }}
-      source={{ uri: browserUrl }}
-      allowsbackforwardnavigationgestures={true}
+      onLoadStart={({ nativeEvent }) => {
+        logger.debug(`WebView onLoadStart: ${toJson(nativeEvent)}`);
+      }}
+      onLoadProgress={({ nativeEvent: { progress } }) => {
+        logger.debug(`WebView onLoadProgress: ${toJson({ progress })}`);
+      }}
+      onLoadEnd={({ nativeEvent }) => {
+        logger.debug(`WebView onLoadEnd: ${toJson(nativeEvent)}`);
+      }}
+      onMessage={({ nativeEvent: { data } }) => {
+        logger.debug(`WebView onMessage: ${data}`);
+      }}
+      onContentProcessDidTerminate={({ nativeEvent }) => {
+        logger.warn(
+          `Content process terminated, reloading ${toJson(nativeEvent)}`
+        );
+      }}
       onError={({ nativeEvent }) => {
         logger.error("WebView error: ", nativeEvent);
       }}
@@ -96,83 +68,19 @@ export function BrowserScreen({ items }: { items: ShareDataItem[] }) {
       onRenderProcessGone={({ nativeEvent }) => {
         logger.error("WebView Crashed: ", nativeEvent.didCrash);
       }}
-      onNavigationStateChange={(navState) => {
-        logger.debug(`WebView onNavigationStateChange: ${toJson(navState)}`);
-        setCanGoBack(navState.canGoBack);
-        setCanGoForward(navState.canGoForward);
-        setDisplayUrl(navState.url);
-      }}
-      onLoadStart={({ nativeEvent }) => {
-        logger.debug(`WebView onLoadStart: ${toJson(nativeEvent)}`);
-      }}
-      onLoadProgress={({ nativeEvent }) => {
-        logger.debug(`WebView onLoadProgress: ${toJson(nativeEvent)}`);
-      }}
-      onLoadEnd={({ nativeEvent }) => {
-        logger.debug(`WebView onLoadEnd: ${toJson(nativeEvent)}`);
-        if ("navigationType" in nativeEvent) {
-          const { mainDocumentURL } = nativeEvent;
-          if (mainDocumentURL) {
-            setDisplayUrl(mainDocumentURL);
-          }
-        }
-      }}
-      onContentProcessDidTerminate={({ nativeEvent }) => {
-        logger.warn(
-          `Content process terminated, reloading ${toJson(nativeEvent)}`
-        );
-        if (!webViewRef.current) {
-          logger.error("Unable to reload webview because it is missing.");
-          return;
-        }
-        webViewRef.current.reload();
-      }}
     />
-  );
-  return (
-    <View style={[styles.container, safeArea]}>
-      {webView}
-      <TextInput
-        value={displayUrl}
-        onChangeText={setDisplayUrl}
-        onSubmitEditing={({ nativeEvent: { text } }) => submitDisplayUrl(text)}
-        accessibilityLabel="Current URL"
-        autoCorrect={false}
-        autoCapitalize="none"
-        clearButtonMode="while-editing"
-        keyboardType="url"
-        returnKeyType="go"
-        placeholder="Enter URL"
-        placeholderTextColor={"#666"}
-      />
-      <Appbar style={{ justifyContent: "space-evenly" }}>
-        <Appbar.Action
-          icon="arrow-left"
-          onPress={() => goBackward()}
-          disabled={!canGoBack}
-          accessibilityLabel="Browser go back"
-        />
-        <Appbar.Action
-          icon="arrow-right"
-          onPress={() => goForward()}
-          disabled={!canGoForward}
-          accessibilityLabel="Browser go forward"
-        />
-        <Appbar.Action
-          icon="refresh"
-          onPress={() => refresh()}
-          accessibilityLabel="Refresh browser"
-        />
-        <Appbar.Action icon="share" onPress={() => void shareCurrentUrl()} />
-      </Appbar>
-    </View>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-});
+function isHowdjuUrl(url: string | undefined) {
+  if (!url) {
+    return false;
+  }
+  const urlObject = new URL(url);
+  return (
+    urlObject.hostname === "howdju.com" ||
+    urlObject.hostname.endsWith(".howdju.com")
+  );
+}
 
 export default BrowserScreen;
