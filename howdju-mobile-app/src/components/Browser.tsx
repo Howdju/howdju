@@ -60,7 +60,7 @@ export function Browser({
   // Whether the WebView is currently loading a page. Determines whether to show
   // the progress bar.
   const [isLoading, setIsLoading] = useState(true);
-  // The progress of the current page load, from 0 to 1.
+  // The progress of the current page load, from 0 to 100.
   const [loadProgress, setLoadProgress] = useState(0);
   // These three states help infer whether a user can go back from a canceled
   // load.
