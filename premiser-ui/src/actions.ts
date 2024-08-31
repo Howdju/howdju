@@ -421,10 +421,3 @@ export const autocompletes = {
     (suggestionsKey: SuggestionsKey) => ({ suggestionsKey })
   ),
 };
-
-export const errors = {
-  logError: createAction("ERRORS/LOG_ERROR", ({ error }: { error: Error }) => ({
-    error,
-  })),
-  clearLoggedErrors: createAction("ERRORS/CLEAR_LOGGED_ERRORS"),
-};

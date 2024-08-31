@@ -1,6 +1,6 @@
 import { put, call, select } from "typed-redux-saga";
 import cloneDeep from "lodash/cloneDeep";
-import isEmpty from "lodash/isEmpty";
+import { isEmpty, pick } from "lodash";
 
 import { FetchHeaders, RequestOptions, sendRequest } from "../api";
 import { selectAuthToken } from "../selectors";
@@ -8,6 +8,7 @@ import { callApiResponse } from "../apiActions";
 import { tryWaitOnRehydrate } from "./appSagas";
 import { pageLoadId, getSessionStorageId } from "../identifiers";
 import * as customHeaderKeys from "../customHeaderKeys";
+import { logger } from "../logger";
 
 export type FetchInit = Omit<RequestOptions, "endpoint">;
 
@@ -28,9 +29,25 @@ export function* callApi(
     const responseAction = callApiResponse(responseData);
     return yield* put(responseAction);
   } catch (error) {
+    logApiError(error, endpoint);
     const responseAction = callApiResponse(error);
     return yield* put(responseAction);
   }
+}
+
+function logApiError(error: unknown, endpoint: string) {
+  if (!(error instanceof Error)) {
+    logger.warn(
+      `logApiError called with non-Error object. Type: ${typeof error}`
+    );
+    return;
+  }
+  const identifierKeys = pick(error, customHeaderKeys.identifierKeys);
+  const options = { extra: { endpoint } };
+  if (!isEmpty(identifierKeys)) {
+    options.extra = { ...options.extra, ...identifierKeys };
+  }
+  logger.exception(error, options);
 }
 
 function* constructHeaders(fetchInit: FetchInit) {

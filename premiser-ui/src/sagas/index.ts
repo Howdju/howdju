@@ -40,7 +40,6 @@ import {
   redirectToLoginWhenUnauthenticated,
   redirectUnauthenticatedUserToLoginOnPagesNeedingAuthentication,
 } from "./flowSagas";
-import { logErrors } from "./logErrorsSaga";
 import { cancelResourceApiCalls, resourceApiCalls } from "./resourceApiSagas";
 
 export default () =>
@@ -56,7 +55,6 @@ export default () =>
     checkAuthExpirationOnRehydrate(),
     checkAuthExpirationPeriodically(),
     checkAuthExpiration(),
-    logErrors(),
 
     configureAfterLogin(),
     configureAfterRehydrate(),
