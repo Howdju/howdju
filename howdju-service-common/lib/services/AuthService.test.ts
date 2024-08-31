@@ -11,7 +11,7 @@ import { Database, PoolClientProvider } from "../database";
 import { makeTestProvider } from "@/initializers/TestProvider";
 import TestHelper from "@/initializers/TestHelper";
 import { AuthService } from "./AuthService";
-import { AuthDao, UnauthenticatedError } from "..";
+import { AuthDao, ReauthenticationRequiredError } from "..";
 
 const dbConfig = makeTestDbConfig();
 
@@ -48,10 +48,13 @@ describe("AuthService", () => {
       const { id: userId } = user;
       const password = "123456-is-the-password-to-my-luggage";
       await service.createOrUpdatePasswordAuthForUserId(userId, password);
-      const result = await service.login({ email: user.email, password });
+      const { authRefreshToken } = await service.login({
+        email: user.email,
+        password,
+      });
 
       const { authToken, authTokenExpiration } = await service.refreshAuth(
-        result.authRefreshToken
+        authRefreshToken
       );
 
       expect(authToken).toBeDefined();
@@ -71,7 +74,7 @@ describe("AuthService", () => {
       );
 
       await expect(service.refreshAuth(authRefreshToken)).rejects.toThrow(
-        UnauthenticatedError
+        ReauthenticationRequiredError
       );
     });
   });

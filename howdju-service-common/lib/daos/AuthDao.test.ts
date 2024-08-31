@@ -1,5 +1,5 @@
 import { momentAdd, utcNow } from "howdju-common";
-import { mockLogger } from "howdju-test-common";
+import { expectToBeSameMomentDeep, mockLogger } from "howdju-test-common";
 
 import {
   endPoolAndDropDb,
@@ -54,7 +54,7 @@ describe("AuthDao", () => {
 
       const result = await dao.readAuthRefreshToken(authRefreshToken);
 
-      expect(result).toEqual({ userId, expires });
+      expect(result).toEqual(expectToBeSameMomentDeep({ userId, expires }));
     });
   });
 });

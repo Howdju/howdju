@@ -76,7 +76,9 @@ export class UsersDao {
       rows: [row],
     } = await this.database.query<UserRow>(
       "readUserForId",
-      "select * from users join user_external_ids using (user_id) where user_id = $1 and deleted is null",
+      `select *
+       from users left outer join user_external_ids using (user_id)
+       where user_id = $1 and deleted is null`,
       [userId]
     );
     return toUser(row);

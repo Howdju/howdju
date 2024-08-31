@@ -404,7 +404,6 @@ const defaultEditorActions = {
               apiErrorCodes.USER_ACTIONS_CONFLICT,
               apiErrorCodes.UNAUTHORIZED,
             ],
-            // TODO?
             get(responseBody, "errorCode")
           )
         ) {
