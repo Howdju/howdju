@@ -110,7 +110,7 @@ import { SuggestionsKey, WidgetId } from "./types";
 import { HttpStatusCode } from "axios";
 import { TagPropositionVote } from "./viewModels";
 
-// TODO(113) type response.error as an Error when we remove redux-actions conventions
+// TODO(#113) type response.error as an Error when we remove redux-actions conventions
 export type ApiActionCreator<
   Args extends any[],
   Route extends ServiceRoute,
@@ -1607,7 +1607,7 @@ export const api = {
         url,
         quotation,
       },
-      // TODO(482) remove normalizationSchema once we can figure out how to type it.
+      // TODO(#482) remove normalizationSchema once we can figure out how to type it.
       normalizationSchema: { mediaExcerptInfo: nullSchema },
     })
   ),

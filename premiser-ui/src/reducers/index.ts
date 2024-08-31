@@ -30,7 +30,6 @@ import auth from "./auth";
 import autocompletes from "./autocompletes";
 import editors from "./editors";
 import entities from "./entities";
-import errors from "./errors";
 import privacyConsent from "./privacyConsent";
 
 const widgets = combineReducers({
@@ -46,7 +45,6 @@ export default (history: History) =>
     createAppearancePage,
     editors,
     entities,
-    errors,
     explorePage,
     factCheckPage,
     justificationsPage,

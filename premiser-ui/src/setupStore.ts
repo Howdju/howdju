@@ -64,12 +64,10 @@ export const setupStore = (
             // The normalization schemas are convenient to have, but non-serializable. We could also
             // include a string identifier/descriptor of the normalization schema and look it up
             // when we need it.
-            // TODO(154) remove these ignores
+            // TODO(#154) remove these ignores
             "payload.normalizationSchema",
             "meta.normalizationSchema",
             "payload.itemFactory",
-            // TODO(472) remove once we remove error-logging Saga.
-            "errors.loggedErrors",
             /payload\.apiAction\.payload\.normalizationSchema\.*/,
             /payload\.meta\.normalizationSchema\.[^.]+/,
             "payload.mediaExcerpt.created",

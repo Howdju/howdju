@@ -15,8 +15,6 @@ export const selectUserExternalIds = (
   state: RootState,
   defaultValue: Partial<UserExternalIds>
 ) => state.auth.user?.externalIds || defaultValue;
-export const selectLoggedErrors = (state: RootState) =>
-  state.errors.loggedErrors;
 export const selectIsWindowNarrow = (state: RootState) =>
   state.app.isWindowNarrow;
 export const selectAuthToken = (state: RootState) => state.auth.authToken;
