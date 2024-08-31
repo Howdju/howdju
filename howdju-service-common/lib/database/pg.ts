@@ -26,6 +26,10 @@ export function makePool(logger: Logger, config: PoolConfig) {
     PgTypeOids.TIMESTAMP,
     makeTimestampToUtcMomentParser(logger)
   );
+  pg.types.setTypeParser(
+    PgTypeOids.TIMESTAMPTZ,
+    makeTimestampToUtcMomentParser(logger)
+  );
   const pool = new pg.Pool(config);
   pool.on("error", (err, _client) =>
     logger.error("database pool error", { err })

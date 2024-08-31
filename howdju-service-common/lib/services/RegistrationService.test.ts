@@ -220,7 +220,7 @@ describe("RegistrationService", () => {
       const {
         user: userOut,
         authToken: authTokenOut,
-        expires: expiresOut,
+        authTokenExpiration: expiresOut,
       } = await service.confirmRegistrationAndLogin(
         createRegistrationConfirmation
       );

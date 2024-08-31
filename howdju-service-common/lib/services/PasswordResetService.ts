@@ -113,11 +113,19 @@ export class PasswordResetService {
       passwordResetRequest.email,
       newPassword
     );
-    const { authToken, expires } = await this.authService.createAuthToken(
+    const {
+      authToken,
+      authTokenExpiration,
+      authRefreshToken,
+      authRefreshTokenExpiration,
+    } = await this.authService.createAuthToken(user, now);
+    return {
       user,
-      now
-    );
-    return { user, authToken, expires };
+      authToken,
+      authTokenExpiration,
+      authRefreshToken,
+      authRefreshTokenExpiration,
+    };
   }
 
   private checkRequestValidity(

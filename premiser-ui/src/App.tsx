@@ -13,7 +13,7 @@ import { Switch } from "react-router";
 import { Link } from "react-router-dom";
 
 import { actions, inIframe } from "howdju-client-common";
-import { isTruthy } from "howdju-common";
+import { isTruthy, utcNow } from "howdju-common";
 
 import app from "@/app/appSlice";
 import { MenuItem, MenuItemLink } from "@/components/menu/Menu";
@@ -52,8 +52,8 @@ import NavTabs from "./NavTabs";
 import paths from "./paths";
 import routes from "./routes";
 import {
-  selectAuthEmail,
-  selectAuthToken,
+  selectAuthEmail as selectLoginEmail,
+  selectAuthRefreshExpiration,
   selectPrivacyConsent,
 } from "./selectors";
 import sentryInit from "./sentryInit";
@@ -282,15 +282,20 @@ class App extends Component<Props> {
   render() {
     const {
       authEmail,
-      hasAuthToken,
+      authRefreshExpiration,
       isNavDrawerVisible,
       isMobileSiteDisabled,
     } = this.props;
 
+    const isLoginExpired = utcNow().isBefore(authRefreshExpiration);
     const authEmailDiv = (
       <div>
-        <b>{authEmail}</b>
-        {hasAuthToken || (
+        <b
+          title={`Login expires ${authRefreshExpiration.fromNow()} (${authRefreshExpiration})`}
+        >
+          {authEmail}
+        </b>
+        {isLoginExpired || (
           <div>
             <em>login expired</em>
           </div>
@@ -356,7 +361,7 @@ class App extends Component<Props> {
       />,
     ];
 
-    if (authEmail || hasAuthToken) {
+    if (authEmail) {
       // Authenticated users can access their settings
       navItems.push(
         <MenuItemLink
@@ -400,7 +405,7 @@ class App extends Component<Props> {
         );
       }
     }
-    if (authEmail || hasAuthToken) {
+    if (authEmail) {
       navItems.push(
         <MenuItem
           key="logout"
@@ -502,14 +507,14 @@ class App extends Component<Props> {
 
 const mapStateToProps = (state: RootState) => {
   const { app } = state;
-  const authEmail = selectAuthEmail(state);
-  const hasAuthToken = isTruthy(selectAuthToken(state));
+  const authEmail = selectLoginEmail(state);
+  const authRefreshExpiration = selectAuthRefreshExpiration(state);
   const privacyConsentState = selectPrivacyConsent(state);
   const { isMobileSiteDisabled, isNavDrawerVisible } = app;
 
   return {
     authEmail,
-    hasAuthToken,
+    authRefreshExpiration,
     isNavDrawerVisible,
     isMobileSiteDisabled,
     privacyConsentState,

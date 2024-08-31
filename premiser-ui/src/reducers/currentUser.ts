@@ -2,35 +2,38 @@ import { matchActions } from "@/reducerUtils";
 import { createReducer } from "@reduxjs/toolkit";
 import { Moment } from "moment";
 
-import { AuthToken } from "howdju-common";
+import { User } from "howdju-common";
 
 import { api } from "../actions";
 
 const initialState = {
-  authToken: undefined as AuthToken | undefined,
-  authTokenExpiration: undefined as Moment | undefined,
-  authRefreshTokenExpiration: undefined as Moment | undefined,
+  details: undefined as User | undefined,
+  authRefreshExpiration: undefined as Moment | undefined,
 };
 
 export default createReducer(initialState, (builder) => {
   builder.addCase(api.logout.response, () => initialState);
+  builder.addCase(api.refreshAuth.response, (state, action) => {
+    if (action.error) {
+      return initialState;
+    }
+    return state;
+  });
   builder.addMatcher(
     matchActions(
       api.login.response,
       api.confirmRegistration.response,
-      api.confirmPasswordReset.response,
-      api.refreshAuth.response
+      api.confirmPasswordReset.response
     ),
     (state, action) => {
       if (action.error) {
         return initialState;
       }
-      const { authToken, authTokenExpiration } = action.payload;
-      return {
-        ...state,
-        authToken,
-        authTokenExpiration,
-      };
+      const {
+        user: details,
+        authRefreshTokenExpiration: authRefreshExpiration,
+      } = action.payload;
+      return { ...state, details, authRefreshExpiration };
     }
   );
 });

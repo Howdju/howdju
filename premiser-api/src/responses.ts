@@ -8,10 +8,11 @@ interface ResponseArgs extends HandlerResult {
   callback: ApiCallback;
 }
 
-export const ok = ({ callback, body = {}, headers }: ResponseArgs) =>
+export const ok = ({ callback, body = {}, headers, cookies }: ResponseArgs) =>
   callback({
     httpStatusCode: httpStatusCodes.OK,
     headers,
+    cookies,
     body,
   });
 export const noContent = (

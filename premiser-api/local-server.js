@@ -37,7 +37,13 @@ app.use("/api/*", function (req, res) {
 
   const context = {};
 
-  const callback = (error, response) => {
+  // Introduce artificial latency
+  setTimeout(
+    () => handler(event, context, sendResponse),
+    parseInt(process.env.LOCAL_API_SERVER_ARTIFICIAL_LATENCY_MS)
+  );
+
+  function sendResponse(error, response) {
     if (error) {
       console.error("Server error", error);
       res.status(500);
@@ -45,19 +51,20 @@ app.use("/api/*", function (req, res) {
       return;
     }
 
-    const { statusCode, headers, body } = response;
+    const { statusCode, headers, multiValueHeaders, body } = response;
     if (headers) {
-      res.set(headers);
+      res.header(headers);
+    }
+    if (multiValueHeaders) {
+      Object.entries(multiValueHeaders).forEach(([key, values]) => {
+        for (const value of values) {
+          res.header(key, value);
+        }
+      });
     }
     res.status(statusCode);
     res.send(body);
-  };
-
-  // Introduce artificial latency
-  setTimeout(
-    () => handler(event, context, callback),
-    parseInt(process.env.LOCAL_API_SERVER_ARTIFICIAL_LATENCY_MS)
-  );
+  }
 });
 
 module.exports.app = app;

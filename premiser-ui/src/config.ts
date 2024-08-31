@@ -12,7 +12,36 @@ const config = {
   commitEditThenViewResponseTimeoutMs: 5000,
   transientHideDelay: 1500,
   authExpirationCheckFrequencyMs: 30 * 1000,
-  reduxPersistWhitelist: ["auth", "ui.isMobileSiteDisabled"],
+  redux: {
+    persistLetlist: ["currentUser", "ui.isMobileSiteDisabled"],
+    ignoredActionPaths: [
+      // The normalization schemas are convenient to have, but non-serializable. We could also
+      // include a string identifier/descriptor of the normalization schema and look it up
+      // when we need it.
+      // TODO(#154) remove these ignores
+      "payload.normalizationSchema",
+      "meta.normalizationSchema",
+      "payload.itemFactory",
+      // TODO(#472) remove once we remove error-logging Saga.
+      "errors.loggedErrors",
+      /payload\.apiAction\.payload\.normalizationSchema\.*/,
+      /payload\.meta\.normalizationSchema\.[^.]+/,
+      "payload.mediaExcerpt.created",
+      /payload\.mediaExcerpt\.locators\.urlLocators\.\d+\.created/,
+      /payload\.mediaExcerpt\.locators\.urlLocators\.\d+\.autoConfirmationStatus\.(earliest|latest)(Not)?FoundAt/,
+      "payload.urlLocator.created",
+      /payload\.urlLocator\.autoConfirmationStatus\.(earliest|latest)(Not)?FoundAt/,
+      "payload.reactMdAddMessage",
+    ],
+    ignoredPaths: [
+      // TODO(#484) figure out how to handle timestamps in a way that is acceptable to redux.
+      /entities\.mediaExcerpts\.[^.]+\.created/,
+      /entities\.mediaExcerptCitations\.[^.]+\.created/,
+      /entities\.mediaExcerptSpeakers\.[^.]+\.created/,
+      /entities\.urlLocators\.[^.]+\.created/,
+      /entities\.urlLocators.[^.]+\.autoConfirmationStatus\.(earliest|latest)(Not)?FoundAt/,
+    ],
+  },
   reduxDevtoolsExtension: {
     doTrace: true,
     traceLimit: 25,

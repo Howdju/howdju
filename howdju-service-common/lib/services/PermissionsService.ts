@@ -2,7 +2,7 @@ import { AuthToken, EntityId, makeModelErrors, User } from "howdju-common";
 
 import { Permission } from "../permissions";
 import { PermissionsDao, UserPermissionsDao } from "../daos";
-import { AuthenticationError, AuthorizationError } from "../serviceErrors";
+import { AuthorizationError, UnauthenticatedError } from "../serviceErrors";
 
 export class PermissionsService {
   constructor(
@@ -18,7 +18,7 @@ export class PermissionsService {
       await this.permissionsDao.getUserIdWithPermission(authToken, permission);
 
     if (!userId) {
-      throw new AuthenticationError();
+      throw new UnauthenticatedError();
     }
     if (!hasPermission) {
       throw new AuthorizationError(

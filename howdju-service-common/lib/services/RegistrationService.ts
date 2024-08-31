@@ -113,11 +113,19 @@ export class RegistrationService {
       registrationConfirmation,
       now
     );
-    const { authToken, expires } = await this.authService.createAuthToken(
+    const {
+      authToken,
+      authTokenExpiration,
+      authRefreshToken,
+      authRefreshTokenExpiration,
+    } = await this.authService.createAuthToken(user, now);
+    return {
       user,
-      now
-    );
-    return { user, authToken, expires };
+      authToken,
+      authTokenExpiration,
+      authRefreshToken,
+      authRefreshTokenExpiration,
+    };
   }
 
   /** Returns whether the registration should continue */

@@ -10,8 +10,7 @@ import {
 } from "howdju-common";
 import {
   AppProvider,
-  AuthenticationError,
-  AuthorizationError,
+  AuthorizationError as UnauthorizedError,
   ConflictError,
   DownstreamServiceError,
   EntityConflictError,
@@ -21,9 +20,11 @@ import {
   InvalidLoginError,
   InvalidRequestError,
   NoMatchingRouteError,
+  ReauthenticationRequiredError,
   RegistrationAlreadyConsumedError,
   RegistrationExpiredError,
   RequestValidationError,
+  UnauthenticatedError,
   UserActionsConflictError,
   UserIsInactiveError,
 } from "howdju-service-common";
@@ -55,7 +56,7 @@ export async function routeRequest(
     const { route, routedRequest } = selectRoute(appProvider, request);
     if ("authToken" in route.request.schema.shape) {
       if (!request.authToken) {
-        throw new AuthenticationError("Must send auth token");
+        throw new UnauthenticatedError("Must send auth token");
       }
       await appProvider.authService.readUserIdForAuthToken(request.authToken);
     }
@@ -113,7 +114,15 @@ export async function routeRequest(
         callback,
         body: { errorCode: apiErrorCodes.ROUTE_NOT_FOUND },
       });
-    } else if (err instanceof AuthenticationError) {
+    } else if (err instanceof ReauthenticationRequiredError) {
+      return unauthenticated({
+        callback,
+        body: {
+          errorCode: apiErrorCodes.REAUTHENTICATION_REQUIRED,
+          message: err.message,
+        },
+      });
+    } else if (err instanceof UnauthenticatedError) {
       return unauthenticated({ callback });
     } else if (err instanceof InvalidLoginError) {
       return badRequest({
@@ -122,11 +131,11 @@ export async function routeRequest(
           errorCode: apiErrorCodes.INVALID_LOGIN_CREDENTIALS,
         },
       });
-    } else if (err instanceof AuthorizationError) {
+    } else if (err instanceof UnauthorizedError) {
       return unauthorized({
         callback,
         body: {
-          errorCode: apiErrorCodes.AUTHORIZATION_ERROR,
+          errorCode: apiErrorCodes.UNAUTHORIZED,
           errors: err.errors,
         },
       });

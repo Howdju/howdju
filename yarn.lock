@@ -10198,6 +10198,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/cookie@npm:^0":
+  version: 0.6.0
+  resolution: "@types/cookie@npm:0.6.0"
+  checksum: b883348d5bf88695fbc2c2276b1c49859267a55cae3cf11ea1dccc1b3be15b466e637ce3242109ba27d616c77c6aa4efe521e3d557110b4fdd9bc332a12445c2
+  languageName: node
+  linkType: hard
+
 "@types/cookie@npm:^0.4.1":
   version: 0.4.1
   resolution: "@types/cookie@npm:0.4.1"
@@ -15467,7 +15474,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cookie@npm:0.6.0":
+"cookie@npm:0.6.0, cookie@npm:^0.6.0":
   version: 0.6.0
   resolution: "cookie@npm:0.6.0"
   checksum: c1f8f2ea7d443b9331680598b0ae4e6af18a618c37606d1bbdc75bec8361cce09fe93e727059a673f2ba24467131a9fb5a4eec76bb1b149c1b3e1ccb268dc583
@@ -30335,6 +30342,7 @@ __metadata:
     "@types/argparse": "npm:^2.0.10"
     "@types/aws-lambda": "npm:^8.10.110"
     "@types/bluebird": "npm:^3.5.38"
+    "@types/cookie": "npm:^0"
     "@types/source-map-support": "npm:^0.5.6"
     "@types/uuid": "npm:^9.0.0"
     argparse: "npm:^2.0.1"
@@ -30343,6 +30351,7 @@ __metadata:
     aws-sdk: "npm:^2.918.0"
     bluebird: "npm:^3.5.0"
     body-parser: "npm:^1.17.1"
+    cookie: "npm:^0.6.0"
     cross-env: "npm:^7.0.3"
     debug: "npm:^4.3.1"
     dns-sync: "npm:^0.2.1"

@@ -37,7 +37,9 @@ export class RequestValidationError extends HowdjuApiError {}
 export class ConflictError extends HowdjuApiError {}
 
 /** The user tried to do something that requires being logged in, but the user isn't logged in */
-export class AuthenticationError extends HowdjuApiError {}
+export class UnauthenticatedError extends HowdjuApiError {}
+
+export class ReauthenticationRequiredError extends HowdjuApiError {}
 
 export class AuthorizationError extends HowdjuApiError {
   // TODO(26): remove BespokeValidationErrors

@@ -3,7 +3,7 @@
 --
 
 -- Dumped from database version 12.5 (Debian 12.5-1.pgdg100+1)
--- Dumped by pg_dump version 14.9 (Homebrew)
+-- Dumped by pg_dump version 14.11 (Homebrew)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -163,6 +163,39 @@ CREATE SEQUENCE public.appearances_appearance_id_seq
 --
 
 ALTER SEQUENCE public.appearances_appearance_id_seq OWNED BY public.appearances.appearance_id;
+
+
+--
+-- Name: auth_refresh_tokens; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.auth_refresh_tokens (
+    auth_refresh_token_id bigint NOT NULL,
+    user_id bigint NOT NULL,
+    auth_refresh_token text NOT NULL,
+    created timestamp with time zone NOT NULL,
+    expires timestamp with time zone NOT NULL,
+    deleted timestamp with time zone
+);
+
+
+--
+-- Name: auth_refresh_tokens_auth_refresh_token_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.auth_refresh_tokens_auth_refresh_token_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: auth_refresh_tokens_auth_refresh_token_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.auth_refresh_tokens_auth_refresh_token_id_seq OWNED BY public.auth_refresh_tokens.auth_refresh_token_id;
 
 
 --
@@ -1499,6 +1532,13 @@ ALTER TABLE ONLY public.appearances ALTER COLUMN appearance_id SET DEFAULT nextv
 
 
 --
+-- Name: auth_refresh_tokens auth_refresh_token_id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.auth_refresh_tokens ALTER COLUMN auth_refresh_token_id SET DEFAULT nextval('public.auth_refresh_tokens_auth_refresh_token_id_seq'::regclass);
+
+
+--
 -- Name: content_reports content_report_id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -1707,6 +1747,22 @@ ALTER TABLE ONLY public.writs ALTER COLUMN writ_id SET DEFAULT nextval('public.c
 
 ALTER TABLE ONLY public.appearances
     ADD CONSTRAINT appearances_pkey PRIMARY KEY (appearance_id);
+
+
+--
+-- Name: auth_refresh_tokens auth_refresh_tokens_auth_refresh_token_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.auth_refresh_tokens
+    ADD CONSTRAINT auth_refresh_tokens_auth_refresh_token_key UNIQUE (auth_refresh_token);
+
+
+--
+-- Name: auth_refresh_tokens auth_refresh_tokens_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.auth_refresh_tokens
+    ADD CONSTRAINT auth_refresh_tokens_pkey PRIMARY KEY (auth_refresh_token_id);
 
 
 --
@@ -2246,6 +2302,14 @@ ALTER TABLE ONLY public.appearances
 
 ALTER TABLE ONLY public.appearances
     ADD CONSTRAINT appearances_proposition_id_fkey FOREIGN KEY (proposition_id) REFERENCES public.propositions(proposition_id);
+
+
+--
+-- Name: auth_refresh_tokens auth_refresh_tokens_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.auth_refresh_tokens
+    ADD CONSTRAINT auth_refresh_tokens_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(user_id);
 
 
 --

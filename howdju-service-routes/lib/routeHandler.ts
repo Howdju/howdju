@@ -1,16 +1,19 @@
-import { AuthToken } from "howdju-common";
-import { AppProvider } from "howdju-service-common";
 import { z } from "zod";
+
+import { AuthToken } from "howdju-common";
+import { AppProvider, Cookie } from "howdju-service-common";
 
 interface CommonRequest {
   // Any request may include authToken, and handlers may use it to customize the response for the
   // user. Use Authed to require the authToken.
   authToken: AuthToken | undefined;
+  authRefreshToken: AuthToken | undefined;
 }
 
 export interface HandlerResult {
   body?: Record<string, any>;
   headers?: Record<string, string>;
+  cookies?: [Cookie];
 }
 
 /**

@@ -33,10 +33,30 @@ export type ContinuationToken = string;
 /**
  *  A token authorizing clients to take actions as users.
  *
- * Clients must keep this secret, they must expire them before too long, and
- * we must enforce the expirations server-side.
+ * Clients must:
+ *
+ *  - not persist them
+ *  - keep them secret
+ *  - expire them on the order of several hours to 1 day
+ *
+ * The server must also enforce expirations that are not client-based.
  */
 export type AuthToken = string;
+
+/**
+ * A token that can be used to refresh an {@link AuthToken}.
+ *
+ * Clients should persist these securely. An example of acceptable storage is a
+ * secure, HTTP-only cookie.
+ *
+ * Clients must:
+ *
+ *  - keep them secret
+ *  - expire them on the order of several days to 1 month.
+ *
+ * The server must also enforce expirations that are not client-based.
+ */
+export type AuthRefreshToken = string;
 
 /**
  * A timestamp .

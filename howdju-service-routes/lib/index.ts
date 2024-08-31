@@ -4,6 +4,7 @@ export * from "./routes";
 export * from "./routeTypeHelpers";
 export type {
   Authed,
+  AuthRefreshRequest,
   Body,
   PathParams,
   QueryStringParams,

@@ -2,10 +2,13 @@ import bcrypt from "bcryptjs";
 import { Moment } from "moment";
 
 import {
+  AuthRefreshToken,
   AuthToken,
   Credentials,
   EntityId,
   EntityTypes,
+  momentAdd,
+  newImpossibleError,
   UserRef,
   utcNow,
 } from "howdju-common";
@@ -14,7 +17,7 @@ import {
   EntityNotFoundError,
   UserIsInactiveError,
   InvalidLoginError,
-  AuthenticationError,
+  ReauthenticationRequiredError,
 } from "../serviceErrors";
 import { HashType, HashTypes } from "../hashTypes";
 import { ApiConfig, AuthDao, UsersDao } from "..";
@@ -70,25 +73,49 @@ export class AuthService {
   }
 
   async readUserIdForAuthToken(authToken: AuthToken) {
-    if (!authToken) {
-      throw new AuthenticationError();
-    }
     const userId = await this.readOptionalUserIdForAuthToken(authToken);
 
     if (!userId) {
-      throw new AuthenticationError("Auth token is invalid");
+      throw new EntityNotFoundError("AUTH_TOKEN");
     }
     return userId;
   }
 
-  createAuthToken(user: UserRef, now: Moment) {
+  async createAuthToken(user: UserRef, now: Moment) {
     const authToken = randomBase64String(32);
-    const expires = now.clone();
-    expires.add(this.config.authTokenDuration);
+    const authTokenExpiration = momentAdd(now, this.config.authTokenDuration);
 
-    return this.authDao
-      .insertAuthToken(user.id, authToken, now, expires)
-      .then(() => ({ authToken, expires }));
+    await this.authDao.insertAuthToken(
+      user.id,
+      authToken,
+      now,
+      authTokenExpiration
+    );
+    const { authRefreshToken, authRefreshTokenExpiration } =
+      await this.createAuthRefreshToken(user, now);
+
+    return {
+      authToken,
+      authTokenExpiration,
+      authRefreshToken,
+      authRefreshTokenExpiration,
+    };
+  }
+
+  async createAuthRefreshToken(user: UserRef, now: Moment) {
+    const authRefreshToken = randomBase64String(32);
+    const authRefreshTokenExpiration = momentAdd(
+      now,
+      this.config.authRefreshTokenDuration
+    );
+
+    await this.authDao.createAuthRefreshToken(
+      user.id,
+      authRefreshToken,
+      now,
+      authRefreshTokenExpiration
+    );
+    return { authRefreshToken, authRefreshTokenExpiration };
   }
 
   createOrUpdatePasswordAuthForUserId(userId: EntityId, password: string) {
@@ -163,19 +190,64 @@ export class AuthService {
       throw new UserIsInactiveError(user.id);
     }
     const now = utcNow();
-    const [{ authToken, expires }] = await Promise.all([
+    const [
+      {
+        authToken,
+        authTokenExpiration,
+        authRefreshToken,
+        authRefreshTokenExpiration,
+      },
+    ] = await Promise.all([
       this.createAuthToken(user, now),
       this.updateLastLogin(user, now),
     ]);
     return {
       user,
       authToken,
-      expires,
+      authTokenExpiration,
+      authRefreshToken,
+      authRefreshTokenExpiration,
     };
   }
 
-  logout(authToken: AuthToken) {
-    return this.authDao.deleteAuthToken(authToken);
+  async refreshAuth(authRefreshToken: AuthRefreshToken) {
+    const result = await this.authDao.readAuthRefreshToken(authRefreshToken);
+    if (!result) {
+      throw new EntityNotFoundError("AUTH_REFRESH_TOKEN", authRefreshToken);
+    }
+    const { userId, expires } = result;
+    if (expires.isBefore(utcNow())) {
+      throw new ReauthenticationRequiredError(
+        "Auth refresh token has expired. Please reauthenticate."
+      );
+    }
+
+    const user = await this.usersDao.readUserForId(userId);
+    if (!user) {
+      throw newImpossibleError(
+        `User not found for id ${userId} despite having a valid auth refresh token. Referential integrity should prevent this.`
+      );
+    }
+    if (!user.isActive) {
+      throw new UserIsInactiveError(user.id);
+    }
+    const now = utcNow();
+    const [{ authToken, authTokenExpiration }] = await Promise.all([
+      this.createAuthToken(user, now),
+      this.updateLastLogin(user, now),
+    ]);
+    return {
+      user,
+      authToken,
+      authTokenExpiration,
+    };
+  }
+
+  async logout(authToken: AuthToken, authRefreshToken: AuthRefreshToken) {
+    await Promise.all([
+      this.authDao.deleteAuthToken(authToken),
+      this.authDao.deleteAuthRefreshToken(authRefreshToken),
+    ]);
   }
 
   private updateLastLogin(user: UserRef, now: Moment) {

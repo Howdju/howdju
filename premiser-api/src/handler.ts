@@ -9,15 +9,9 @@ import {
   APIGatewayEvent,
   APIGatewayProxyResult,
 } from "aws-lambda";
-import concat from "lodash/concat";
-import get from "lodash/get";
-import isEmpty from "lodash/isEmpty";
-import join from "lodash/join";
-import keys from "lodash/keys";
-import pick from "lodash/pick";
-import some from "lodash/some";
+import cookieLib from "cookie";
+import { concat, get, isEmpty, join, keys, pick, some, toLower } from "lodash";
 import sourceMapSupport from "source-map-support";
-import toLower from "lodash/toLower";
 import { v4 as uuidv4 } from "uuid";
 
 sourceMapSupport.install();
@@ -33,6 +27,8 @@ import {
   AppProvider,
   AwsLogger,
   configureHandlerContext,
+  cookieNames,
+  Cookie,
   getParameterStoreConfig,
 } from "howdju-service-common";
 
@@ -49,6 +45,7 @@ const allowedHeaders = concat(
     headerKeys.CONTENT_ENCODING,
     headerKeys.CONTENT_TYPE,
     headerKeys.SENTRY_TRACE,
+    headerKeys.COOKIE,
   ],
   customHeaderKeys.identifierKeys
 );
@@ -74,12 +71,12 @@ export function handler(
     appProvider.logger.silly({ gatewayContext, gatewayEvent });
 
     const request = makeRequest(appProvider, gatewayEvent, requestIdentifiers);
-    const respond = makeGatewayResponder(
+    const respondCallback = makeGatewayRespondCallback(
       appProvider,
       gatewayEvent,
       gatewayCallback
     );
-    return routeRequest(request, appProvider, respond).catch((err) => {
+    return routeRequest(request, appProvider, respondCallback).catch((err) => {
       appProvider.logger.error("uncaught error after routeEvent", { err });
       gatewayCallback(err);
     });
@@ -94,11 +91,13 @@ function makeGatewayResult(
   {
     httpStatusCode,
     headers = {},
+    cookies,
     body,
     origin,
   }: {
     httpStatusCode: HttpStatusCode;
     headers: AllowedHeaders | undefined;
+    cookies?: [Cookie];
     body: any;
     origin: string | undefined;
   }
@@ -107,16 +106,14 @@ function makeGatewayResult(
     origin && origin in appProvider.allowedOrigins
       ? appProvider.allowedOrigins[origin]
       : "none";
-  headers = Object.assign({}, headers, {
-    "Access-Control-Allow-Origin": allowedOrigin,
-    "Access-Control-Allow-Headers": join(allowedHeaders, ","),
-    "Access-Control-Allow-Credentials": "true",
-    "Access-Control-Allow-Methods": "GET,POST,PUT,DELETE",
-    "Cache-Control": "no-cache, no-store, must-revalidate",
-    Expires: "0",
-    Pragma: "no-cache",
-    Vary: headerKeys.ORIGIN,
-  });
+  headers = Object.assign(
+    {},
+    headers,
+    makeCorsHeaders(allowedOrigin, allowedHeaders)
+  );
+  const multiValueHeaders = cookies
+    ? { "Set-Cookie": makeCookiesHeader(cookies) }
+    : undefined;
   const filteredHeaders = filterDefined(headers);
   if (httpStatusCode === httpStatusCodes.UNAUTHORIZED) {
     // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/WWW-Authenticate
@@ -138,6 +135,7 @@ function makeGatewayResult(
   const response = {
     statusCode: httpStatusCode || httpStatusCodes.ERROR,
     headers: filteredHeaders,
+    multiValueHeaders,
     body: bodyJson,
   };
 
@@ -173,6 +171,15 @@ function extractAuthToken(appProvider: AppProvider, event: APIGatewayEvent) {
   return authorizationHeader.substring(authorizationHeaderPrefix.length);
 }
 
+function extractAuthRefreshToken(event: APIGatewayEvent) {
+  const cookieHeader = getHeaderValue(event.headers, headerKeys.COOKIE);
+  if (!cookieHeader) {
+    return undefined;
+  }
+  const cookies = cookieLib.parse(cookieHeader);
+  return cookies[cookieNames.AUTH_REFRESH_TOKEN];
+}
+
 function parseBody(appProvider: AppProvider, event: APIGatewayEvent) {
   // TODO throw error if cant' support content-type.  handle application/form?
   // example: 'content-type':'application/json;charset=UTF-8',
@@ -188,16 +195,22 @@ function parseBody(appProvider: AppProvider, event: APIGatewayEvent) {
   }
 }
 
-function makeGatewayResponder(
+function makeGatewayRespondCallback(
   appProvider: AppProvider,
   gatewayEvent: APIGatewayEvent,
   gatewayCallback: APIGatewayProxyCallback
 ): (...args: Parameters<ApiCallback>) => ReturnType<APIGatewayProxyCallback> {
-  return function gatewayResponder({ httpStatusCode, headers, body }) {
+  return function gatewayRespondCallback({
+    httpStatusCode,
+    headers,
+    cookies,
+    body,
+  }) {
     const origin = getHeaderValue(gatewayEvent.headers, headerKeys.ORIGIN);
     const result = makeGatewayResult(appProvider, {
       httpStatusCode,
       headers,
+      cookies,
       body,
       origin,
     });
@@ -251,6 +264,7 @@ function makeRequest(
 ): Request {
   return {
     authToken: extractAuthToken(appProvider, gatewayEvent),
+    authRefreshToken: extractAuthRefreshToken(gatewayEvent),
     requestIdentifiers,
     clientIdentifiers: {
       sessionStorageId: getHeaderValue(
@@ -307,4 +321,32 @@ function getOrCreateAppProvider(gatewayEvent: APIGatewayEvent) {
     }
   }
   return appProvider;
+}
+
+function makeCorsHeaders(allowedOrigin: string, allowedHeaders: string[]) {
+  return {
+    "Access-Control-Allow-Origin": allowedOrigin,
+    "Access-Control-Allow-Headers": join(allowedHeaders, ","),
+    "Access-Control-Allow-Credentials": "true",
+    "Access-Control-Allow-Methods": "GET,POST,PUT,DELETE",
+    "Cache-Control": "no-cache, no-store, must-revalidate",
+    Expires: "0",
+    Pragma: "no-cache",
+    Vary: headerKeys.ORIGIN,
+  };
+}
+
+function makeCookiesHeader(cookies: [Cookie]) {
+  return cookies.map((cookie) => makeCookieHeader(cookie));
+}
+
+function makeCookieHeader(cookie: Cookie) {
+  return cookieLib.serialize(cookie.name, cookie.value, {
+    domain: cookie.domain,
+    path: cookie.path,
+    expires: cookie.expires.toDate(),
+    secure: cookie.secure,
+    sameSite: cookie.sameSite,
+    httpOnly: cookie.httpOnly,
+  });
 }

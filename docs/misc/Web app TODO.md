@@ -185,10 +185,6 @@ Followed all directions here: https://web.archive.org/web/20201020180006/https:/
 
   - move out configuration
 
-- Security
-  - Add an HttpOnly, Secure cookie so that authentication can't be taken off site (no XSS can steal all the credentials
-    necessary to make a change. Keep the local storage token as that prevents CSRF - the attacker needs a script on teh page
-    to read that.)
 - Support hidden source maps?
   - https://docs.sentry.io/learn/cli/releases/#upload-source-maps
 
@@ -210,6 +206,7 @@ Improvements to propositions trail:
   - https://stackoverflow.com/a/39507279/39396
 
 - local env has production sentry env?
+
   - This occurs when we deploy to production while serving dev. The deployment replaces index.html
 
 - While researching these old propositions, it's really annoying not to be able to know where the citations are hidden.

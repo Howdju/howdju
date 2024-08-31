@@ -1,7 +1,7 @@
 import { get, toString } from "lodash";
 import { Moment } from "moment";
 
-import { AuthToken, EntityId, utcNow } from "howdju-common";
+import { AuthRefreshToken, AuthToken, EntityId, utcNow } from "howdju-common";
 
 import { toUserHash } from "./orm";
 import { Database, UserHashRow } from "..";
@@ -94,6 +94,55 @@ export class AuthDao {
       [userId, authToken, created, expires]
     );
     return get(row, "auth_token");
+  }
+
+  async createAuthRefreshToken(
+    userId: EntityId,
+    authRefreshToken: AuthRefreshToken,
+    created: Moment,
+    expires: Moment
+  ) {
+    const {
+      rows: [row],
+    } = await this.database.query(
+      "insertAuthRefreshToken",
+      `insert into auth_refresh_tokens
+       (user_id, auth_refresh_token, created, expires)
+       values ($1, $2, $3, $4)
+       returning auth_refresh_token`,
+      [userId, authRefreshToken, created, expires]
+    );
+    return row.auth_refresh_token;
+  }
+
+  async readAuthRefreshToken(authRefreshToken: AuthRefreshToken) {
+    const {
+      rows: [row],
+    } = await this.database.query(
+      "readAuthRefreshToken",
+      `select user_id, expires
+       from auth_refresh_tokens
+       where auth_refresh_token = $1`,
+      [authRefreshToken]
+    );
+    if (!row) {
+      return undefined;
+    }
+    const { user_id: userId, expires } = row;
+    return { userId, expires };
+  }
+
+  async deleteAuthRefreshToken(authRefreshToken: AuthRefreshToken) {
+    const {
+      rows: [row],
+    } = await this.database.query(
+      "deleteAuthRefreshToken",
+      `delete from auth_refresh_tokens
+       where auth_refresh_token = $1
+       returning user_id`,
+      [authRefreshToken]
+    );
+    return row?.user_id;
   }
 
   async deleteAuthToken(authToken: AuthToken) {

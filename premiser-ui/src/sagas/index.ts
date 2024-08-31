@@ -12,16 +12,12 @@ import * as appSagas from "../app/appSagas";
 import * as justificationsPageSagas from "../pages/justifications/justificationPageSagas";
 import * as justificationsSearchPageSagas from "../pages/justificationsSearch/justificationsSearchPageSagas";
 import { sendPageView } from "./analyticsSagas";
-import {
-  checkAuthExpiration,
-  checkAuthExpirationOnRehydrate,
-  checkAuthExpirationPeriodically,
-  flagRehydrate,
-} from "./appSagas";
+import { flagRehydrate } from "./appSagas";
 import {
   configureAfterLogin,
   configureAfterLogout,
   configureAfterRehydrate,
+  refreshAuthAfterRehydrate,
 } from "./configureSagas";
 import { beginEditOfMediaExcerptFromInfo } from "./editors/beginEditOfMediaExcerptFromInfoSaga";
 import { commitEditorThenView } from "./editors/commitEditorThenViewSaga";
@@ -33,7 +29,6 @@ import { postExtensionMessages } from "./extensionSagas";
 import {
   apiActionOnSuccess,
   apiActionOnSuccessResponse,
-  clearAuthTokenWhenUnauthorized,
   goTo,
   redirectAfterLogin,
   redirectHomeFromMissingRootTarget,
@@ -52,15 +47,11 @@ export default () =>
     cancelResourceApiCalls(),
 
     flagRehydrate(),
-    checkAuthExpirationOnRehydrate(),
-    checkAuthExpirationPeriodically(),
-    checkAuthExpiration(),
 
     configureAfterLogin(),
     configureAfterRehydrate(),
     configureAfterLogout(),
-
-    clearAuthTokenWhenUnauthorized(),
+    refreshAuthAfterRehydrate(),
 
     goTo(),
     redirectToLoginWhenUnauthenticated(),

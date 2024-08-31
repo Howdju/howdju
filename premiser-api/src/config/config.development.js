@@ -9,4 +9,5 @@ const corsAllowOrigin = [
 module.exports = {
   contentReportNotificationEmails: ["dev-content-report-recipient@test.com"],
   corsAllowOrigin,
+  authRefreshCookie: { isSecure: false },
 };

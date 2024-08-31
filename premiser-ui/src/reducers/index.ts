@@ -27,6 +27,7 @@ import { app } from "../app/appSlice";
 import { mainSearch } from "../components/mainSearchBox/mainSearchBoxSlice";
 import { mainSearchPage } from "../pages/mainSearch/mainSearchPageSlice";
 import auth from "./auth";
+import currentUser from "./currentUser";
 import autocompletes from "./autocompletes";
 import editors from "./editors";
 import entities from "./entities";
@@ -43,6 +44,7 @@ export default (history: History) =>
     auth,
     autocompletes,
     createAppearancePage,
+    currentUser,
     editors,
     entities,
     explorePage,
