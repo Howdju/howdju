@@ -1,32 +1,43 @@
-import { api, app } from "../actions";
-import { AuthToken, DatetimeString, User } from "howdju-common";
-import { createReducer } from "@reduxjs/toolkit";
 import { matchActions } from "@/reducerUtils";
+import { createReducer } from "@reduxjs/toolkit";
+import { Moment } from "moment";
+
+import { AuthToken } from "howdju-common";
+
+import { api } from "../actions";
 
 const initialState = {
-  authToken: null as AuthToken | null,
-  authTokenExpiration: null as DatetimeString | null,
-  user: null as User | null,
+  authToken: undefined as AuthToken | undefined,
+  authTokenExpiration: undefined as Moment | undefined,
 };
 
 export default createReducer(initialState, (builder) => {
-  builder.addCase(api.logout.response, () => initialState);
-  builder.addCase(app.clearAuthToken, (state) => {
-    state.authToken = null;
-    state.authTokenExpiration = null;
+  builder.addCase(api.logout.response, (state, action) => {
+    if (action.error) {
+      return state;
+    }
+    return initialState;
   });
   builder.addMatcher(
     matchActions(
       api.login.response,
       api.confirmRegistration.response,
-      api.confirmPasswordReset.response
+      api.confirmPasswordReset.response,
+      api.refreshAuth.response
     ),
     (state, action) => {
       if (action.error) {
-        return initialState;
+        return {
+          ...initialState,
+          authRefreshTokenExpiration: action.payload.authRefreshTokenExpiration,
+        };
       }
-      const { authToken, expires: authTokenExpiration, user } = action.payload;
-      return { ...state, authToken, authTokenExpiration, user };
+      const { authToken, authTokenExpiration } = action.payload;
+      return {
+        ...state,
+        authToken,
+        authTokenExpiration,
+      };
     }
   );
 });

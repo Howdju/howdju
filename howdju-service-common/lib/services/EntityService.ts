@@ -13,11 +13,7 @@ import {
   PersistedEntity,
 } from "howdju-common";
 
-import {
-  AuthenticationError,
-  AuthorizationError,
-  EntityValidationError,
-} from "../serviceErrors";
+import { EntityValidationError, UnauthenticatedError } from "../serviceErrors";
 import { translateJoiToZodFormattedError } from "./joiErrors";
 import { AuthService } from "./AuthService";
 import { isJoiSchema } from "./joiValidation";
@@ -62,7 +58,7 @@ export abstract class EntityService<
     }
     // If the entity lacks an ID, then it is an attempt to create.
     if (!("id" in entity) && !authToken) {
-      throw new AuthenticationError("Must be logged in to create.");
+      throw new UnauthenticatedError("Must be logged in to create.");
     }
 
     return await this.doReadOrCreate(value, userId, now);
@@ -79,10 +75,8 @@ export abstract class EntityService<
     authToken: AuthToken | undefined
   ): Promise<UpdateOut> {
     if (!authToken) {
-      throw new AuthorizationError(
-        makeModelErrors<UpdateOut>((e) =>
-          e("Unauthenticated users may not update entities.")
-        )
+      throw new UnauthenticatedError(
+        "Unauthenticated users may not update entities."
       );
     }
     if (!entity.id) {

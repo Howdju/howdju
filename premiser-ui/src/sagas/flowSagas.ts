@@ -4,9 +4,10 @@ import { LOCATION_CHANGE, push, replace } from "connected-react-router";
 import ExpiryMap from "expiry-map";
 
 import {
+  apiErrorCodes,
   httpStatusCodes,
   newProgrammingError,
-  utcNowIsAfter,
+  utcNow,
 } from "howdju-common";
 
 import t, {
@@ -15,12 +16,17 @@ import t, {
 } from "../texts";
 import paths from "../paths";
 import {
-  selectAuthTokenExpiration,
+  selectAuthRefreshTokenExpiration,
   selectLoginRedirectLocation,
 } from "../selectors";
-import { api, app, flows, goto } from "../actions";
+import { api, flows, goto } from "../actions";
 import appSliceActions from "../app/appSlice";
-import { allApiResponseActions, callApiResponse } from "../apiActions";
+import {
+  allApiResponseActions,
+  CallApiErrorResponsePayload,
+  callApiResponse,
+  isApiResponseErrorAction,
+} from "../apiActions";
 import { history } from "../history";
 import { isActivePath } from "../routes";
 import { tryWaitOnRehydrate } from "./appSagas";
@@ -70,25 +76,18 @@ export function* redirectToLoginWhenUnauthenticated() {
   yield* takeEvery(
     callApiResponse,
     function* redirectToLoginWhenUnauthenticatedWorker(action) {
-      if (action.error) {
-        const { httpStatusCode } = action.payload;
-        if (httpStatusCode === httpStatusCodes.UNAUTHORIZED) {
+      if (isApiResponseErrorAction(action)) {
+        const {
+          httpStatusCode,
+          body: { errorCode },
+        } = action.payload;
+        if (
+          httpStatusCode === httpStatusCodes.UNAUTHORIZED &&
+          (errorCode === apiErrorCodes.UNAUTHENTICATED ||
+            errorCode === apiErrorCodes.REAUTHENTICATION_REQUIRED)
+        ) {
           const routerLocation = history.location;
           yield* put(goto.login(routerLocation));
-        }
-      }
-    }
-  );
-}
-
-export function* clearAuthTokenWhenUnauthorized() {
-  yield* takeEvery(
-    callApiResponse,
-    function* clearAuthTokenWhenUnauthorizedWorker(action) {
-      if (action.error) {
-        const { httpStatusCode } = action.payload;
-        if (httpStatusCode === httpStatusCodes.UNAUTHORIZED) {
-          yield* put(app.clearAuthToken());
         }
       }
     }
@@ -176,10 +175,12 @@ export function* redirectHomeFromMissingRootTarget() {
       // Try to determine whether we are on the page for a proposition that was not found
       if (action.error) {
         // TODO(#113) this is really awkward to cast the payload only when it is an error.
-        const payload = action.payload as ReturnType<
-          typeof callApiResponse
-        >["payload"];
-        if (payload.httpStatusCode === httpStatusCodes.NOT_FOUND) {
+        const payload =
+          action.payload as unknown as CallApiErrorResponsePayload;
+        if (
+          "httpStatusCode" in payload &&
+          payload.httpStatusCode === httpStatusCodes.NOT_FOUND
+        ) {
           const routerLocation = history.location;
           const { rootTargetId } = action.meta.requestMeta;
 
@@ -216,12 +217,10 @@ export function* redirectUnauthenticatedUserToLoginOnPagesNeedingAuthentication(
     LOCATION_CHANGE,
     function* redirectUnauthenticatedUserToLoginOnPagesNeedingAuthenticationWorker() {
       yield* tryWaitOnRehydrate();
-      const authTokenExpiration = yield* select(selectAuthTokenExpiration);
-      const isExpired = (dateTimeString: string) =>
-        utcNowIsAfter(dateTimeString);
+      const authExpiration = yield* select(selectAuthRefreshTokenExpiration);
       const isAuthenticated =
-        authTokenExpiration && !isExpired(authTokenExpiration);
-      // TODO(247) infer auth requirement from routes
+        authExpiration && !utcNow().isBefore(authExpiration);
+      // TODO(#247) infer auth requirement from routes
       const doesPathRequireAuthentication = some(
         [
           "submitMediaExcerpt",

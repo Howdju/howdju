@@ -13,7 +13,7 @@ import {
 } from "howdju-common";
 
 import {
-  AuthorizationError,
+  UnauthorizedError,
   EntityNotFoundError,
   EntityTooOldToModifyError,
 } from "../serviceErrors";
@@ -113,7 +113,7 @@ export class PersorgsService extends EntityService<
       "EDIT_ANY_ENTITY"
     );
     if (!hasPermission && persorg.creator && userId !== persorg.creator.id) {
-      throw new AuthorizationError(
+      throw new UnauthorizedError(
         makeModelErrors<UpdatePersorg>((p) =>
           p({
             message: "Lack permission to edit other users' persorgs",
@@ -174,7 +174,7 @@ export class PersorgsService extends EntityService<
     }
 
     if (persorg.creatorUserId !== userId) {
-      throw new AuthorizationError(
+      throw new UnauthorizedError(
         makeModelErrors<PersorgOut>((e) =>
           e("Only a Persorg's creator may edit it.")
         )

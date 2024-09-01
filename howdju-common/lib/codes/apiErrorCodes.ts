@@ -1,21 +1,25 @@
 /** Explain why a particular HTTP Status occurred */
 export const apiErrorCodes = {
-  /** The request lacks authentication credentials */
-  UNAUTHENTICATED: "UNAUTHENTICATED",
-
   /** The data submitted was invalid */
   VALIDATION_ERROR: "VALIDATION_ERROR",
 
   /** The client sent an invalid request. The response should explain what was invalid. */
   INVALID_REQUEST: "INVALID_REQUEST",
 
-  AUTHENTICATION_ERROR: "AUTHENTICATION_ERROR",
+  /** The request lacks authentication credentials, but the requested resource requires them. */
+  UNAUTHENTICATED: "UNAUTHENTICATED",
+
+  /** The client's auth token has expired. They can try to refresh it. */
+  AUTHENTICATION_EXPIRED: "AUTHENTICATION_EXPIRED",
+
+  /** The principle authenticated by the request lacks authority to perform the action */
+  UNAUTHORIZED: "UNAUTHORIZED",
+
+  /** The clients auth refresh token has expired. They must reathenticate. */
+  REAUTHENTICATION_REQUIRED: "REAUTHENTICATION_REQUIRED",
 
   /** The user tried to login with invalid login credentials */
   INVALID_LOGIN_CREDENTIALS: "INVALID_LOGIN_CREDENTIALS",
-
-  /** The principle authenticated by the request lacks authority to perform the action */
-  AUTHORIZATION_ERROR: "AUTHORIZATION_ERROR",
 
   /** The user account is inactive.  Should only respond with this if the correct password was provided */
   USER_IS_INACTIVE_ERROR: "USER_IS_INACTIVE_ERROR",

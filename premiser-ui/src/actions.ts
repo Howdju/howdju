@@ -34,11 +34,6 @@ import { ViewableEditorType } from "./sagas/editors/commitEditorThenViewSaga";
 
 export { str } from "./actionHelpers";
 
-export const app = {
-  clearAuthToken: createAction("APP/CLEAR_AUTH_TOKEN"),
-  checkAuthExpiration: createAction("APP/CHECK_AUTH_EXPIRATION"),
-};
-
 export {
   mapActionCreatorGroupToDispatchToProps,
   combineActions,

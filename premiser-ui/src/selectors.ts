@@ -1,5 +1,8 @@
-import { EntityId, UserExternalIds } from "howdju-common";
 import { denormalize, schema, Schema } from "normalizr";
+import moment from "moment";
+
+import { EntityId, UserExternalIds } from "howdju-common";
+
 import { EditorType } from "./reducers/editors";
 import { RootState } from "./setupStore";
 import { EditorId } from "./types";
@@ -14,14 +17,15 @@ export const selectLoginRedirectLocation = (state: RootState) =>
 export const selectUserExternalIds = (
   state: RootState,
   defaultValue: Partial<UserExternalIds>
-) => state.auth.user?.externalIds || defaultValue;
+) => state.currentUser.details?.externalIds || defaultValue;
 export const selectIsWindowNarrow = (state: RootState) =>
   state.app.isWindowNarrow;
 export const selectAuthToken = (state: RootState) => state.auth.authToken;
-export const selectAuthTokenExpiration = (state: RootState) =>
-  state.auth.authTokenExpiration;
-export const selectUser = (state: RootState) => state.auth.user;
-export const selectAuthEmail = (state: RootState) => state.auth.user?.email;
+export const selectAuthRefreshTokenExpiration = (state: RootState) =>
+  moment.utc(state.currentUser.authRefreshTokenExpiration);
+export const selectUser = (state: RootState) => state.currentUser.details;
+export const selectAuthEmail = (state: RootState) =>
+  state.currentUser.details?.email;
 export const selectDidCheckRegistration = (state: RootState) =>
   state.registrationConfirmationPage.didCheckRegistration;
 export const selectRegistrationEmail = (state: RootState) =>

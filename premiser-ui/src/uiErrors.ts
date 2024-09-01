@@ -1,7 +1,12 @@
 import join from "lodash/join";
 import map from "lodash/map";
 
-import { isCustomError, newCustomError } from "howdju-common";
+import {
+  apiErrorCodes,
+  httpStatusCodes,
+  isCustomError,
+  newCustomError,
+} from "howdju-common";
 import { EditorType } from "./reducers/editors";
 import { EditorId } from "./types";
 import { AxiosError } from "axios";
@@ -47,6 +52,15 @@ export type ApiResponseError = ReturnType<typeof newApiResponseError>;
 
 export function isApiResponseError(val: Error): val is ApiResponseError {
   return isCustomError(val) && val.errorType === "API_RESPONSE_ERROR";
+}
+
+export function isAuthenticationExpiredError(error: unknown) {
+  return (
+    error instanceof Error &&
+    isApiResponseError(error) &&
+    error.httpStatusCode === httpStatusCodes.UNAUTHORIZED &&
+    error.body.errorCode === apiErrorCodes.AUTHENTICATION_EXPIRED
+  );
 }
 
 export const newApiResponseError = (

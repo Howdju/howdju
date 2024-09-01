@@ -46,6 +46,7 @@ import { OnClickJustificationWritQuoteUrl } from "./types";
 import { makeContextTrailItems } from "./viewModels";
 
 import "./JustificationBranch.scss";
+import { formatTimestampForDisplay } from "./util";
 
 interface OwnProps {
   justification: JustificationView;
@@ -247,7 +248,7 @@ function JustificationBranch({
     ? moment(justification.created).fromNow()
     : "";
   const created = justification.created
-    ? moment(justification.created).format(config.humanDateTimeFormat)
+    ? formatTimestampForDisplay(justification.created)
     : "";
   const creatorName = get(justification, "creator.longName");
   const creatorNameDescription = (creatorName && ` by ${creatorName}`) || "";

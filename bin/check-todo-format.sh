@@ -6,7 +6,7 @@ target=${2:-}
 
 # Equivalent for the whole repo:
 #  egrep --exclude=check-todo-format\.sh --exclude-dir=node_modules --exclude-dir=dist --exclude-dir=coverage --exclude-dir=Pods --exclude-dir=\.git -RI '\bTODO\b' . | egrep -v '\bTODO\((\d+,?)+\)'
-output=$(git diff $base $target ':(exclude)bin/check-todo-format.sh' ':(exclude).github/workflows/ci.yml' ':(exclude)howdju-text-fragments/dist/*')
+output=$(git diff $base $target ':(exclude)bin/check-todo-format.sh' ':(exclude).github/workflows/ci.yml' ':(exclude)howdju-text-fragments/dist/*' ':(exclude)docs/misc/Web app TODO.md')
 
 if [[ $? -ne 0 ]]; then
  echo Error getting diff for TODO check

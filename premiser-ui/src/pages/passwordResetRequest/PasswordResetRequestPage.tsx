@@ -36,6 +36,7 @@ export default function PasswordResetRequestPage() {
     <PasswordResetRequestEditor
       id={combineIds(id, "editor")}
       editorId={editorId}
+      submitButtonText="Request Password Reset"
     />
   );
   const { duration, errorCode } = useAppSelector(

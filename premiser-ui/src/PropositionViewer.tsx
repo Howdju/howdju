@@ -3,15 +3,15 @@ import { Link } from "react-router-dom";
 import cn from "classnames";
 import moment from "moment";
 import { get } from "lodash";
+import { MaterialSymbol } from "react-material-symbols";
 
 import { ContextTrailItem, EntityId, PropositionOut } from "howdju-common";
 
 import paths from "./paths";
-import config from "./config";
 import JustificationCountViewer from "./JustificationCountViewer";
 import { useAppDispatch } from "./hooks";
 import propositionAppearancesDialog from "@/components/propositionAppearancesDialog/propositionAppearancesDialogSlice";
-import { MaterialSymbol } from "react-material-symbols";
+import { formatTimestampForDisplay } from "./util";
 
 interface Props {
   id: EntityId;
@@ -37,7 +37,7 @@ export default function PropositionViewer({
 
   const age = proposition.created ? moment(proposition.created).fromNow() : "";
   const created = proposition.created
-    ? moment(proposition.created).format(config.humanDateTimeFormat)
+    ? formatTimestampForDisplay(proposition.created)
     : "";
   const creatorName = get(proposition, "creator.longName");
   const creatorNameDescription = (creatorName && ` by ${creatorName}`) || "";

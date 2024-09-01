@@ -57,7 +57,7 @@ import { permissions } from "../permissions";
 import {
   RequestValidationError,
   EntityTooOldToModifyError,
-  AuthorizationError,
+  UnauthorizedError,
   EntityNotFoundError,
 } from "../serviceErrors";
 import { prefixErrorPath } from "../util";
@@ -321,7 +321,7 @@ export class JustificationsService extends EntityService<
     if (!hasPermission) {
       const creatorUserId = get(justification, "creator.id");
       if (!creatorUserId || userId !== creatorUserId) {
-        throw new AuthorizationError(
+        throw new UnauthorizedError(
           makeModelErrors<Justification>((j) =>
             j({
               message: "Cannot delete other user's justifications.",

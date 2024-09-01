@@ -13,7 +13,7 @@ import { Switch } from "react-router";
 import { Link } from "react-router-dom";
 
 import { actions, inIframe } from "howdju-client-common";
-import { isTruthy } from "howdju-common";
+import { isTruthy, utcNow } from "howdju-common";
 
 import app from "@/app/appSlice";
 import { MenuItem, MenuItemLink } from "@/components/menu/Menu";
@@ -53,13 +53,19 @@ import paths from "./paths";
 import routes from "./routes";
 import {
   selectAuthEmail,
+  selectAuthRefreshTokenExpiration,
   selectAuthToken,
   selectPrivacyConsent,
 } from "./selectors";
 import sentryInit from "./sentryInit";
 import { RootState } from "./setupStore";
 import { startPersisting, stopPersisting } from "./store";
-import { isDevice, isScrollPastBottom, isScrollPastTop } from "./util";
+import {
+  formatMomentForDisplay,
+  isDevice,
+  isScrollPastBottom,
+  isScrollPastTop,
+} from "./util";
 import WindowMessageHandler from "./WindowMessageHandler";
 import { PrimaryContextTrailProvider } from "./components/contextTrail/PrimaryContextTrailProvider";
 
@@ -282,15 +288,21 @@ class App extends Component<Props> {
   render() {
     const {
       authEmail,
-      hasAuthToken,
+      authRefreshTokenExpiration,
       isNavDrawerVisible,
       isMobileSiteDisabled,
     } = this.props;
 
+    const isLoginExpired = utcNow().isAfter(authRefreshTokenExpiration);
+    const expirationVerb = isLoginExpired ? "expired" : "expires";
     const authEmailDiv = (
-      <div>
+      <div
+        title={`Login ${expirationVerb} ${authRefreshTokenExpiration.fromNow()} (${formatMomentForDisplay(
+          authRefreshTokenExpiration
+        )})`}
+      >
         <b>{authEmail}</b>
-        {hasAuthToken || (
+        {isLoginExpired && (
           <div>
             <em>login expired</em>
           </div>
@@ -356,7 +368,7 @@ class App extends Component<Props> {
       />,
     ];
 
-    if (authEmail || hasAuthToken) {
+    if (authEmail) {
       // Authenticated users can access their settings
       navItems.push(
         <MenuItemLink
@@ -400,7 +412,7 @@ class App extends Component<Props> {
         );
       }
     }
-    if (authEmail || hasAuthToken) {
+    if (authEmail) {
       navItems.push(
         <MenuItem
           key="logout"
@@ -503,12 +515,14 @@ class App extends Component<Props> {
 const mapStateToProps = (state: RootState) => {
   const { app } = state;
   const authEmail = selectAuthEmail(state);
-  const hasAuthToken = isTruthy(selectAuthToken(state));
+  const hasAuthToken = !!selectAuthToken(state);
+  const authRefreshTokenExpiration = selectAuthRefreshTokenExpiration(state);
   const privacyConsentState = selectPrivacyConsent(state);
   const { isMobileSiteDisabled, isNavDrawerVisible } = app;
 
   return {
     authEmail,
+    authRefreshTokenExpiration,
     hasAuthToken,
     isNavDrawerVisible,
     isMobileSiteDisabled,

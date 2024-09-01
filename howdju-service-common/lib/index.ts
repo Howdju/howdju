@@ -13,6 +13,7 @@ momentDurationFormatSetup(moment);
 
 export * from "./awsHandlers";
 export * from "./config";
+export * from "./cookies";
 export * from "./daos";
 export * from "./database";
 export * from "./initializers";

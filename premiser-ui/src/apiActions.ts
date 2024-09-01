@@ -54,6 +54,7 @@ import {
   MediaExcerptCitationOut,
   MediaExcerptSpeakerOut,
   CreateMediaExcerptSpeakersInput,
+  ApiErrorCode,
 } from "howdju-common";
 import {
   InferPathParams,
@@ -397,22 +398,52 @@ interface SearchQueryStringParams {
 
 const defaultSorts = `created=${SortDirections.DESCENDING}`;
 
+// Created by newApiResponseError.
+export type ApiErrorResponsePayload = {
+  errorType: "API_RESPONSE_ERROR";
+  message: string;
+  sourceError: Error;
+  httpStatusCode: HttpStatusCode;
+  body: {
+    errorCode: ApiErrorCode;
+  };
+};
+/**
+ * A callApiResponse payload may be a local error (e.g. network) or it
+ * can be a response from the API.
+ */
+export type CallApiErrorResponsePayload =
+  | {
+      errorType: Omit<UiErrorType, "API_RESPONSE_ERROR">;
+      message: string;
+      sourceError: Error;
+    }
+  | ApiErrorResponsePayload;
+
 export const callApiResponse = createAction(
   "CALL_API_RESPONSE",
   (result) => result
-) as ActionCreatorWithPreparedPayload<
-  unknown[], // Args
-  // Payload
-  {
-    // this is only present when the payload is an error and it comes from CustomError
-    errorType?: UiErrorType;
-    // this is only present when the payload is an error created by newApiResponseError.
-    httpStatusCode?: HttpStatusCode;
-  },
-  string, // Type
-  boolean, // Error
-  unknown // Meta
->;
+) as
+  | ActionCreatorWithPreparedPayload<
+      unknown[], // Args
+      CallApiErrorResponsePayload, // Payload
+      string, // Type
+      true, // Error
+      unknown // Meta
+    >
+  | ActionCreatorWithPreparedPayload<
+      unknown[], // Args
+      unknown, // Payload
+      string, // Type
+      false, // Error
+      unknown // Meta
+    >;
+
+export function isApiResponseErrorAction(
+  action: ReturnType<typeof callApiResponse>
+): action is PayloadAction<ApiErrorResponsePayload, string, unknown, boolean> {
+  return action.error && action.payload.errorType === "API_RESPONSE_ERROR";
+}
 
 /** Actions that directly result in API calls */
 export const api = {
@@ -1079,7 +1110,16 @@ export const api = {
     body: { credentials },
     normalizationSchema: { user: userSchema },
   })),
-  logout: apiActionCreator("LOGOUT", serviceRoutes.logout, () => ({})),
+  logout: apiActionCreator("LOGOUT", serviceRoutes.logout, () => ({
+    normalizationSchema: {},
+  })),
+  refreshAuth: apiActionCreator(
+    "REFRESH_AUTH",
+    serviceRoutes.refreshAuth,
+    () => ({
+      normalizationSchema: { user: userSchema },
+    })
+  ),
 
   requestPasswordReset: apiActionCreator(
     "REQUEST_PASSWORD_RESET",

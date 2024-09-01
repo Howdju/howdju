@@ -1,10 +1,8 @@
 import { split, toNumber } from "lodash";
-import { Moment } from "moment";
 import { z } from "zod";
 
 import {
   AppearanceSearchFilterKeys,
-  AuthToken,
   ContinuationToken,
   CreateAccountSettings,
   CreateAppearance,
@@ -35,6 +33,7 @@ import {
   JustificationSearchFilters,
   JustificationVoteOut,
   MediaExcerptSearchFilterKeys,
+  momentSubtract,
   newUnimplementedError,
   parseContextTrail,
   PasswordResetConfirmation,
@@ -46,13 +45,14 @@ import {
   UpdateProposition,
   UpdateSource,
   UpdateWritQuote,
-  UserOut,
+  utcNow,
   WritOut,
   WritQuote,
   WritQuoteOut,
 } from "howdju-common";
 import {
   AppProvider,
+  createAuthRefreshCookie,
   EntityNotFoundError,
   InvalidLoginError,
   InvalidRequestError,
@@ -62,6 +62,7 @@ import {
 import { handler } from "./routeHandler";
 import {
   Authed,
+  AuthRefreshRequest,
   Body,
   EmptyRequest,
   PathParams,
@@ -70,6 +71,9 @@ import {
 
 export type ServiceRoutes = typeof serviceRoutes;
 export type ServiceRoute = ServiceRoutes[keyof ServiceRoutes];
+
+/** Sentinel value handlers can return to send a noContent response */
+export const noContentResponseSentinel = new Object();
 
 export const serviceRoutes = {
   /*
@@ -328,7 +332,7 @@ export const serviceRoutes = {
     path: "propositions/:propositionId",
     method: httpMethods.PUT,
     request: handler(
-      Body({ proposition: UpdateProposition }).merge(Authed),
+      Authed.merge(Body({ proposition: UpdateProposition })),
       async (
         appProvider: AppProvider,
         { authToken, body: { proposition: updateProposition } }
@@ -348,7 +352,7 @@ export const serviceRoutes = {
     path: "propositions/:propositionId",
     method: httpMethods.DELETE,
     request: handler(
-      PathParams("propositionId").merge(Authed),
+      Authed.merge(PathParams("propositionId")),
       async (
         appProvider: AppProvider,
         { authToken, pathParams: { propositionId } }
@@ -370,7 +374,7 @@ export const serviceRoutes = {
     path: "statements",
     method: httpMethods.POST,
     request: handler(
-      Body({ statement: CreateStatement }).merge(Authed),
+      Authed.merge(Body({ statement: CreateStatement })),
       async (
         appProvider: AppProvider,
         { authToken, body: { statement: inStatement } }
@@ -1371,13 +1375,28 @@ export const serviceRoutes = {
       Body({ credentials: Credentials }),
       async (appProvider: AppProvider, { body: { credentials } }) => {
         try {
-          const { user, authToken, expires } =
-            (await appProvider.authService.login(credentials)) as {
-              user: UserOut;
-              authToken: AuthToken;
-              expires: Moment;
-            };
-          return { body: { user, authToken, expires } };
+          const {
+            user,
+            authToken,
+            authTokenExpiration,
+            authRefreshToken,
+            authRefreshTokenExpiration,
+          } = await appProvider.authService.login(credentials);
+          return {
+            body: {
+              user,
+              authToken,
+              authTokenExpiration,
+              authRefreshTokenExpiration,
+            },
+            cookies: [
+              createAuthRefreshCookie(
+                authRefreshToken,
+                authRefreshTokenExpiration,
+                appProvider.appConfig.authRefreshCookie.isSecure
+              ),
+            ],
+          };
         } catch (err) {
           if (err instanceof EntityNotFoundError) {
             // Hide EntityNotFoundError to prevent someone from learning that an email does or does not correspond to an account
@@ -1388,13 +1407,55 @@ export const serviceRoutes = {
       }
     ),
   },
+  refreshAuth: {
+    path: "refresh-auth",
+    method: httpMethods.GET,
+    request: handler(
+      AuthRefreshRequest,
+      async (appProvider: AppProvider, { authRefreshToken }) => {
+        const {
+          user,
+          authToken,
+          authTokenExpiration,
+          authRefreshTokenExpiration,
+        } = await appProvider.authService.refreshAuth(authRefreshToken);
+        return {
+          body: {
+            user,
+            authToken,
+            authTokenExpiration,
+            authRefreshTokenExpiration,
+          },
+          cookies: [
+            createAuthRefreshCookie(
+              authRefreshToken,
+              authRefreshTokenExpiration,
+              appProvider.appConfig.authRefreshCookie.isSecure
+            ),
+          ],
+        };
+      }
+    ),
+  },
   logout: {
     path: "logout",
     method: httpMethods.POST,
     request: handler(
-      Authed,
-      async (appProvider: AppProvider, { authToken }) => {
-        await appProvider.authService.logout(authToken);
+      EmptyRequest,
+      async (appProvider: AppProvider, { authToken, authRefreshToken }) => {
+        if (authToken === undefined && authRefreshToken === undefined) {
+          return noContentResponseSentinel;
+        }
+        await appProvider.authService.logout(authToken, authRefreshToken);
+        return {
+          cookies: [
+            createAuthRefreshCookie(
+              "",
+              momentSubtract(utcNow(), { days: 1 }),
+              appProvider.appConfig.authRefreshCookie.isSecure
+            ),
+          ],
+        };
       }
     ),
   },
@@ -1442,11 +1503,30 @@ export const serviceRoutes = {
         appProvider: AppProvider,
         { body: { passwordResetConfirmation } }
       ) => {
-        const { user, authToken, expires } =
-          (await appProvider.passwordResetService.resetPasswordAndLogin(
-            passwordResetConfirmation
-          )) as { user: UserOut; authToken: AuthToken; expires: Moment };
-        return { body: { user, authToken, expires } };
+        const {
+          user,
+          authToken,
+          authTokenExpiration,
+          authRefreshToken,
+          authRefreshTokenExpiration,
+        } = await appProvider.passwordResetService.resetPasswordAndLogin(
+          passwordResetConfirmation
+        );
+        return {
+          body: {
+            user,
+            authToken,
+            authTokenExpiration,
+            authRefreshTokenExpiration,
+          },
+          cookies: [
+            createAuthRefreshCookie(
+              authRefreshToken,
+              authRefreshTokenExpiration,
+              appProvider.appConfig.authRefreshCookie.isSecure
+            ),
+          ],
+        };
       }
     ),
   },
@@ -1490,14 +1570,33 @@ export const serviceRoutes = {
         appProvider: AppProvider,
         { body: { registrationConfirmation } }
       ) => {
-        const { user, authToken, expires } = (await prefixErrorPath(
+        const {
+          user,
+          authToken,
+          authTokenExpiration,
+          authRefreshToken,
+          authRefreshTokenExpiration,
+        } = await prefixErrorPath(
           appProvider.registrationService.confirmRegistrationAndLogin(
             registrationConfirmation
           ),
           "registrationConfirmation"
-        )) as { user: UserOut; authToken: AuthToken; expires: Moment };
-
-        return { body: { user, authToken, expires } };
+        );
+        return {
+          body: {
+            user,
+            authToken,
+            authTokenExpiration,
+            authRefreshTokenExpiration,
+          },
+          cookies: [
+            createAuthRefreshCookie(
+              authRefreshToken,
+              authRefreshTokenExpiration,
+              appProvider.appConfig.authRefreshCookie.isSecure
+            ),
+          ],
+        };
       }
     ),
   },

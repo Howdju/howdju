@@ -6,8 +6,8 @@ import moment from "moment";
 import { WritOut } from "howdju-common";
 
 import paths from "./paths";
-import config from "./config";
 import { ComponentId } from "./types";
+import { formatTimestampForDisplay } from "./util";
 
 interface Props {
   id: ComponentId;
@@ -24,9 +24,7 @@ export default function WritViewer({
   ...rest
 }: Props) {
   const age = writ.created ? moment(writ.created).fromNow() : "";
-  const created = writ.created
-    ? moment(writ.created).format(config.humanDateTimeFormat)
-    : "";
+  const created = writ.created ? formatTimestampForDisplay(writ.created) : "";
 
   return (
     <div {...rest} id={id} className={cn(className, "writ-viewer")}>

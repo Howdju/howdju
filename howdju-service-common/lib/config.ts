@@ -1,12 +1,14 @@
 import moment from "moment";
 
 export const baseConfig = {
+  authRefreshCookie: { isSecure: true },
   auth: {
     bcrypt: {
       saltRounds: 10,
     },
   },
-  authTokenDuration: { days: 30 },
+  authTokenDuration: { hours: 2 },
+  authRefreshTokenDuration: { days: 90 },
   contentReportNotificationEmails: [] as string[],
   corsAllowOrigin: [] as string[],
   /** Whether to prevent responses that indicate whether an email has been registered with the system */

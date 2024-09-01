@@ -17,4 +17,5 @@ module.exports = {
     "http://d1fcdpsoaaf9i6.cloudfront.net",
     "https://d1fcdpsoaaf9i6.cloudfront.net",
   ],
+  authRefreshCookie: { isSecure: true },
 };

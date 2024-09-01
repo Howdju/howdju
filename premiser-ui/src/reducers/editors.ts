@@ -402,7 +402,7 @@ const defaultEditorActions = {
               apiErrorCodes.VALIDATION_ERROR,
               apiErrorCodes.ENTITY_CONFLICT,
               apiErrorCodes.USER_ACTIONS_CONFLICT,
-              apiErrorCodes.AUTHORIZATION_ERROR,
+              apiErrorCodes.UNAUTHORIZED,
             ],
             get(responseBody, "errorCode")
           )

@@ -1,9 +1,6 @@
-import moment from "moment";
-import { delay, put, race, select, take, takeEvery } from "typed-redux-saga";
+import { delay, race, take, takeEvery } from "typed-redux-saga";
 import { REHYDRATE } from "redux-persist/lib/constants";
 
-import { app } from "../actions";
-import { selectAuthTokenExpiration } from "../selectors";
 import config from "../config";
 import { logger } from "../logger";
 
@@ -13,12 +10,6 @@ let isRehydrated = false;
 export function* flagRehydrate() {
   yield* takeEvery(REHYDRATE, function* flagRehydrateWorker() {
     isRehydrated = true;
-  });
-}
-
-export function* checkAuthExpirationOnRehydrate() {
-  yield* takeEvery(REHYDRATE, function* checkAuthExpirationOnRehydrateWorker() {
-    yield* put(app.checkAuthExpiration());
   });
 }
 
@@ -37,26 +28,4 @@ export function* tryWaitOnRehydrate() {
       logger.error("Unknown rehydrate race condition");
     }
   }
-}
-
-export function* checkAuthExpirationPeriodically() {
-  while (true) {
-    yield* put(app.checkAuthExpiration());
-    yield* delay(config.authExpirationCheckFrequencyMs);
-  }
-}
-
-export function* checkAuthExpiration() {
-  yield* takeEvery(
-    app.checkAuthExpiration,
-    function* checkAuthExpirationWorker() {
-      const authTokenExpiration = yield* select(selectAuthTokenExpiration);
-      if (
-        authTokenExpiration &&
-        moment.utc().isAfter(moment.utc(authTokenExpiration))
-      ) {
-        yield* put(app.clearAuthToken());
-      }
-    }
-  );
 }

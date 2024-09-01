@@ -68,11 +68,11 @@ export class UsersService {
     if (!user) {
       throw new EntityNotFoundError(EntityTypes.USER, email);
     }
-    const [user_1] = await Promise.all([
-      user,
-      this.authService.createOrUpdatePasswordAuthForUserId(user.id, password),
-    ]);
-    return user_1;
+    await this.authService.createOrUpdatePasswordAuthForUserId(
+      user.id,
+      password
+    );
+    return user;
   }
 
   async createRegisteredUser(

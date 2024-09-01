@@ -113,11 +113,19 @@ export class PasswordResetService {
       passwordResetRequest.email,
       newPassword
     );
-    const { authToken, expires } = await this.authService.createAuthToken(
+    const {
+      authToken,
+      authTokenExpiration,
+      authRefreshToken,
+      authRefreshTokenExpiration,
+    } = await this.authService.createAuthAndRefreshToken(user, now);
+    return {
       user,
-      now
-    );
-    return { user, authToken, expires };
+      authToken,
+      authTokenExpiration,
+      authRefreshToken,
+      authRefreshTokenExpiration,
+    };
   }
 
   private checkRequestValidity(
@@ -155,9 +163,10 @@ export class PasswordResetService {
     passwordResetCode: string,
     duration: Duration
   ) {
-    const confirmationUrl = `${
-      this.config.uiAuthority
-    }${commonPaths.confirmPasswordReset()}?passwordResetCode=${passwordResetCode}`;
+    const confirmationUrlObj = new URL(this.config.uiAuthority);
+    confirmationUrlObj.pathname = commonPaths.confirmPasswordReset();
+    confirmationUrlObj.searchParams.set("passwordResetCode", passwordResetCode);
+    const confirmationUrl = confirmationUrlObj.toString();
     const durationText = duration.format(this.config.durationFormatTemplate, {
       trim: this.config.durationFormatTrim,
     });
@@ -170,7 +179,8 @@ export class PasswordResetService {
       <br/>
       Howdju received a password reset request for this email address.<br/>
       <br/>
-      <a href="${confirmationUrl}">Click here to reset your password.</a><br/>
+      <a href="${confirmationUrl}">Click here to reset your password.</a> If this text is not clickable,
+      open this link to reset your password:<br/>
       <br/>
       ${confirmationUrl}<br/>
       <br/>
@@ -180,7 +190,7 @@ export class PasswordResetService {
       bodyText: outdent`
       Hello,
 
-      Howdju received a password reset request for this email address.  Click here to reset your password:
+      Howdju received a password reset request for this email address.  Open this link to reset your password:
 
       ${confirmationUrl}
 

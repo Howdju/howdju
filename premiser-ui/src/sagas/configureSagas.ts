@@ -1,10 +1,14 @@
-import { takeEvery, select } from "typed-redux-saga";
+import { takeEvery, select, put } from "typed-redux-saga";
 import { REHYDRATE } from "redux-persist/lib/constants";
 
 import * as sentry from "../sentry";
 import analytics from "../analytics";
-import { selectUserExternalIds } from "../selectors";
+import {
+  selectAuthRefreshTokenExpiration,
+  selectUserExternalIds,
+} from "../selectors";
 import { api } from "../actions";
+import { utcNow } from "howdju-common";
 
 export function* configureAfterLogin() {
   yield* takeEvery(
@@ -48,5 +52,19 @@ export function* configureAfterRehydrate() {
       sentry.setUserContext(sentryId);
     }
     analytics.identify(externalIds);
+  });
+}
+
+export function* refreshAuthAfterRehydrate() {
+  yield* takeEvery(REHYDRATE, function* configureAfterRehydrateWorker() {
+    const authRefreshTokenExpiration = yield* select(
+      selectAuthRefreshTokenExpiration
+    );
+    if (
+      authRefreshTokenExpiration &&
+      utcNow().isBefore(authRefreshTokenExpiration)
+    ) {
+      yield* put(api.refreshAuth());
+    }
   });
 }

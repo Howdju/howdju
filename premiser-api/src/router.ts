@@ -10,8 +10,7 @@ import {
 } from "howdju-common";
 import {
   AppProvider,
-  AuthenticationError,
-  AuthorizationError,
+  UnauthorizedError,
   ConflictError,
   DownstreamServiceError,
   EntityConflictError,
@@ -21,18 +20,26 @@ import {
   InvalidLoginError,
   InvalidRequestError,
   NoMatchingRouteError,
+  ReauthenticationRequiredError,
   RegistrationAlreadyConsumedError,
   RegistrationExpiredError,
   RequestValidationError,
+  UnauthenticatedError,
   UserActionsConflictError,
   UserIsInactiveError,
+  createAuthRefreshCookie,
 } from "howdju-service-common";
-import { serviceRoutes } from "howdju-service-routes";
+import {
+  ServiceRoute,
+  serviceRoutes,
+  noContentResponseSentinel,
+} from "howdju-service-routes";
 
 import {
   badRequest,
   conflict,
   error,
+  noContent,
   notFound,
   ok,
   unauthenticated,
@@ -53,12 +60,7 @@ export async function routeRequest(
 
   try {
     const { route, routedRequest } = selectRoute(appProvider, request);
-    if ("authToken" in route.request.schema.shape) {
-      if (!request.authToken) {
-        throw new AuthenticationError("Must send auth token");
-      }
-      await appProvider.authService.readUserIdForAuthToken(request.authToken);
-    }
+    await ensureValidAuthToken(appProvider, route, request);
 
     const parseResult = route.request.schema
       // Allow props like authToken to go through even if not explicitly in the schema.
@@ -70,6 +72,9 @@ export async function routeRequest(
         appProvider,
         parseResult.data as any
       );
+      if (result === noContentResponseSentinel) {
+        return noContent(appProvider, { callback });
+      }
       return ok({ callback, ...result });
     }
     return badRequest({
@@ -113,7 +118,24 @@ export async function routeRequest(
         callback,
         body: { errorCode: apiErrorCodes.ROUTE_NOT_FOUND },
       });
-    } else if (err instanceof AuthenticationError) {
+    } else if (err instanceof ReauthenticationRequiredError) {
+      const { authRefreshTokenExpiration } = err;
+      return unauthenticated({
+        callback,
+        body: {
+          errorCode: apiErrorCodes.REAUTHENTICATION_REQUIRED,
+          message: err.message,
+          authRefreshTokenExpiration,
+        },
+        cookies: [
+          createAuthRefreshCookie(
+            "",
+            authRefreshTokenExpiration,
+            appProvider.appConfig.authRefreshCookie.isSecure
+          ),
+        ],
+      });
+    } else if (err instanceof UnauthenticatedError) {
       return unauthenticated({ callback });
     } else if (err instanceof InvalidLoginError) {
       return badRequest({
@@ -122,11 +144,11 @@ export async function routeRequest(
           errorCode: apiErrorCodes.INVALID_LOGIN_CREDENTIALS,
         },
       });
-    } else if (err instanceof AuthorizationError) {
+    } else if (err instanceof UnauthorizedError) {
       return unauthorized({
         callback,
         body: {
-          errorCode: apiErrorCodes.AUTHORIZATION_ERROR,
+          errorCode: apiErrorCodes.UNAUTHORIZED,
           errors: err.errors,
         },
       });
@@ -271,4 +293,22 @@ export function selectRoute(appProvider: AppProvider, request: Request) {
   }
 
   throw new NoMatchingRouteError();
+}
+
+async function ensureValidAuthToken(
+  appProvider: AppProvider,
+  route: ServiceRoute,
+  request: Request
+): Promise<void> {
+  if (
+    !("authToken" in route.request.schema.shape) ||
+    route.request.schema.shape.authToken.isOptional()
+  ) {
+    return;
+  }
+  if (request.authToken) {
+    await appProvider.authService.readUserIdForAuthToken(request.authToken);
+  } else {
+    throw new UnauthenticatedError("Must send auth token");
+  }
 }

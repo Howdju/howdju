@@ -18,13 +18,13 @@ import {
   makeTestDbConfig,
 } from "@/util/testUtil";
 import {
-  AuthenticationError,
   Database,
   EntityNotFoundError,
   EntityValidationError,
   JustificationsService,
   PoolClientProvider,
   PropositionCompoundsService,
+  UnauthenticatedError,
   WritQuotesService,
 } from "..";
 import { makeTestProvider } from "@/initializers/TestProvider";
@@ -359,7 +359,7 @@ describe("JustificationsService", () => {
       const authToken = undefined as unknown as string;
       await expect(
         service.readOrCreate(createJustification, authToken)
-      ).rejects.toBeInstanceOf(AuthenticationError);
+      ).rejects.toBeInstanceOf(UnauthenticatedError);
     });
     test("raises a validation error if the justification is invalid", async () => {
       // Arrange

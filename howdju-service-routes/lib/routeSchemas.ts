@@ -17,6 +17,11 @@ export const Authed = z.object({
 });
 export type Authed = z.infer<typeof Authed>;
 
+export const AuthRefreshRequest = z.object({
+  authRefreshToken: z.string(),
+});
+export type AuthRefreshRequest = z.infer<typeof AuthRefreshRequest>;
+
 /**
  * A request schema mixin for routes receiving path parameters.
  *

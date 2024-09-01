@@ -48,7 +48,7 @@ export const setupStore = (
     {
       key: "root",
       storage,
-      whitelist: config.reduxPersistWhitelist,
+      whitelist: config.redux.persistLetList,
     },
     rootReducer
   ) as RootReducer;
@@ -60,31 +60,8 @@ export const setupStore = (
         // https://redux-toolkit.js.org/usage/usage-guide#working-with-non-serializable-data
         serializableCheck: {
           ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
-          ignoredActionPaths: [
-            // The normalization schemas are convenient to have, but non-serializable. We could also
-            // include a string identifier/descriptor of the normalization schema and look it up
-            // when we need it.
-            // TODO(#154) remove these ignores
-            "payload.normalizationSchema",
-            "meta.normalizationSchema",
-            "payload.itemFactory",
-            /payload\.apiAction\.payload\.normalizationSchema\.*/,
-            /payload\.meta\.normalizationSchema\.[^.]+/,
-            "payload.mediaExcerpt.created",
-            /payload\.mediaExcerpt\.locators\.urlLocators\.\d+\.created/,
-            /payload\.mediaExcerpt\.locators\.urlLocators\.\d+\.autoConfirmationStatus\.(earliest|latest)(Not)?FoundAt/,
-            "payload.urlLocator.created",
-            /payload\.urlLocator\.autoConfirmationStatus\.(earliest|latest)(Not)?FoundAt/,
-            "payload.reactMdAddMessage",
-          ],
-          ignoredPaths: [
-            // TODO(484) figure out how to handle timestamps in a way that is acceptable to redux.
-            /entities\.mediaExcerpts\.[^.]+\.created/,
-            /entities\.mediaExcerptCitations\.[^.]+\.created/,
-            /entities\.mediaExcerptSpeakers\.[^.]+\.created/,
-            /entities\.urlLocators\.[^.]+\.created/,
-            /entities\.urlLocators.[^.]+\.autoConfirmationStatus\.(earliest|latest)(Not)?FoundAt/,
-          ],
+          ignoredActionPaths: config.redux.ignoredActionPaths,
+          ignoredPaths: config.redux.ignoredPaths,
         },
       }).concat([routerMiddleware(history), sagaMiddleware]),
     devTools:

@@ -8,10 +8,11 @@ interface ResponseArgs extends HandlerResult {
   callback: ApiCallback;
 }
 
-export const ok = ({ callback, body = {}, headers }: ResponseArgs) =>
+export const ok = ({ callback, body = {}, headers, cookies }: ResponseArgs) =>
   callback({
     httpStatusCode: httpStatusCodes.OK,
     headers,
+    cookies,
     body,
   });
 export const noContent = (
@@ -32,10 +33,12 @@ export const notFound = ({ callback, body }: ResponseArgs) =>
   });
 export const unauthenticated = ({
   callback,
+  cookies,
   body = { errorCode: apiErrorCodes.UNAUTHENTICATED },
 }: ResponseArgs) =>
   callback({
     httpStatusCode: httpStatusCodes.UNAUTHORIZED,
+    cookies,
     body,
   });
 export const unauthorized = ({ callback, body }: ResponseArgs) =>
