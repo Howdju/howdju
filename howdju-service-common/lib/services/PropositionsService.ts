@@ -43,7 +43,7 @@ import {
   RequestValidationError,
   EntityConflictError,
   UserActionsConflictError,
-  AuthorizationError,
+  UnauthorizedError,
   EntityTooOldToModifyError,
 } from "../serviceErrors";
 import {
@@ -334,7 +334,7 @@ export class PropositionsService {
     if (!hasPermission) {
       const creatorUserId = get(proposition, "creator.id");
       if (!creatorUserId || userId !== creatorUserId) {
-        throw new AuthorizationError(
+        throw new UnauthorizedError(
           makeModelErrors<any>((a) =>
             a("Cannot delete other users' propositions.")
           )

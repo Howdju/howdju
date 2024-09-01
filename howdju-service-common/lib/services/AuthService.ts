@@ -85,24 +85,20 @@ export class AuthService {
     const authToken = randomBase64String(32);
     const authTokenExpiration = momentAdd(now, this.config.authTokenDuration);
 
-    await this.authDao.insertAuthToken(
+    await this.authDao.createAuthToken(
       user.id,
       authToken,
       now,
       authTokenExpiration
     );
-    const { authRefreshToken, authRefreshTokenExpiration } =
-      await this.createAuthRefreshToken(user, now);
 
     return {
       authToken,
       authTokenExpiration,
-      authRefreshToken,
-      authRefreshTokenExpiration,
     };
   }
 
-  async createAuthRefreshToken(user: UserRef, now: Moment) {
+  private async createAuthRefreshToken(user: UserRef, now: Moment) {
     const authRefreshToken = randomBase64String(32);
     const authRefreshTokenExpiration = momentAdd(
       now,
@@ -198,11 +194,28 @@ export class AuthService {
         authRefreshTokenExpiration,
       },
     ] = await Promise.all([
-      this.createAuthToken(user, now),
+      this.createAuthAndRefreshToken(user, now),
       this.updateLastLogin(user, now),
     ]);
     return {
       user,
+      authToken,
+      authTokenExpiration,
+      authRefreshToken,
+      authRefreshTokenExpiration,
+    };
+  }
+
+  async createAuthAndRefreshToken(user: UserRef, now: Moment) {
+    const [
+      { authToken, authTokenExpiration },
+      { authRefreshToken, authRefreshTokenExpiration },
+    ] = await Promise.all([
+      this.createAuthToken(user, now),
+      this.createAuthRefreshToken(user, now),
+      this.updateLastLogin(user, now),
+    ]);
+    return {
       authToken,
       authTokenExpiration,
       authRefreshToken,
@@ -234,7 +247,6 @@ export class AuthService {
     const now = utcNow();
     const [{ authToken, authTokenExpiration }] = await Promise.all([
       this.createAuthToken(user, now),
-      this.updateLastLogin(user, now),
     ]);
     return {
       user,

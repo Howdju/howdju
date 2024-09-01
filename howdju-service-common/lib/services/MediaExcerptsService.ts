@@ -33,7 +33,7 @@ import { UrlsService } from "./UrlsService";
 import { UserIdent } from "./types";
 import {
   ApiConfig,
-  AuthorizationError,
+  UnauthorizedError,
   EntityNotFoundError,
   EntityTooOldToModifyError,
   PermissionsService,
@@ -681,7 +681,7 @@ export class MediaExcerptsService {
     }
 
     if (creatorUserId !== userId) {
-      throw new AuthorizationError(
+      throw new UnauthorizedError(
         makeModelErrors<any>((e) =>
           e(`Only a ${entityName}'s creator may edit it.`)
         )

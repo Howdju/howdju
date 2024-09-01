@@ -20,7 +20,7 @@ import {
 } from "./patterns";
 import {
   ApiConfig,
-  AuthorizationError,
+  UnauthorizedError,
   EntityNotFoundError,
   EntityTooOldToModifyError,
 } from "..";
@@ -128,7 +128,7 @@ export class SourcesService {
     }
 
     if (source.creatorUserId !== userId) {
-      throw new AuthorizationError(
+      throw new UnauthorizedError(
         makeModelErrors<UpdateSource>((e) =>
           e("Only a Source's creator may edit it.")
         )

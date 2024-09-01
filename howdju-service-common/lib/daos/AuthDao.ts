@@ -80,7 +80,7 @@ export class AuthDao {
     return toUserHash(rows[0]);
   }
 
-  async insertAuthToken(
+  async createAuthToken(
     userId: EntityId,
     authToken: AuthToken,
     created: Moment,
@@ -122,7 +122,7 @@ export class AuthDao {
       "readAuthRefreshToken",
       `select user_id, expires
        from auth_refresh_tokens
-       where auth_refresh_token = $1`,
+       where auth_refresh_token = $1 and deleted is null`,
       [authRefreshToken]
     );
     if (!row) {
@@ -137,12 +137,13 @@ export class AuthDao {
       rows: [row],
     } = await this.database.query(
       "deleteAuthRefreshToken",
-      `delete from auth_refresh_tokens
+      `update auth_refresh_tokens
+       set deleted = now()
        where auth_refresh_token = $1
-       returning user_id`,
+       returning auth_refresh_token_id`,
       [authRefreshToken]
     );
-    return row?.user_id;
+    return row?.auth_refresh_token_id;
   }
 
   async deleteAuthToken(authToken: AuthToken) {

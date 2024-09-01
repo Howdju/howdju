@@ -9,7 +9,6 @@ import { api } from "../actions";
 const initialState = {
   authToken: undefined as AuthToken | undefined,
   authTokenExpiration: undefined as Moment | undefined,
-  authRefreshTokenExpiration: undefined as Moment | undefined,
 };
 
 export default createReducer(initialState, (builder) => {

@@ -15,14 +15,14 @@ import MediaExcerptCitationViewer from "./MediaExcerptCitationViewer";
 import paths from "@/paths";
 import Link from "@/Link";
 import CreationInfo from "../creationInfo/CreationInfo";
-import config from "../../config";
 import { useAppDispatch } from "@/hooks";
 import { makeExtensionHighlightOnClickUrlLocatorCallback } from "@/extensionCallbacks";
 import { OnClickUrlLocator } from "@/types";
 import mediaExcerptApparitionsDialog from "../mediaExcerptApparitionsDialog/mediaExcerptApparitionsDialogSlice";
+import MediaExcerptSpeakerViewer from "./MediaExcerptSpeakerViewer";
+import { formatMomentForDisplay } from "@/util";
 
 import "./MediaExcerptViewer.scss";
-import MediaExcerptSpeakerViewer from "./MediaExcerptSpeakerViewer";
 
 interface Props {
   id: string;
@@ -216,8 +216,8 @@ function toConfirmationStatus(urlLocator: UrlLocatorView) {
 
 function toTimeDescription(earlierMoment: Moment, laterMoment: Moment) {
   return !earlierMoment.isSame(laterMoment)
-    ? `between ${earlierMoment.format(
-        config.humanDateTimeFormat
-      )} and ${laterMoment.format(config.humanDateTimeFormat)}`
-    : `at ${earlierMoment.format(config.humanDateTimeFormat)}`;
+    ? `between ${formatMomentForDisplay(
+        earlierMoment
+      )} and ${formatMomentForDisplay(laterMoment)}`
+    : `at ${formatMomentForDisplay(earlierMoment)}`;
 }

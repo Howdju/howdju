@@ -203,8 +203,15 @@ describe("RegistrationService", () => {
 
       const authToken = "the-auth-token";
       const authTokenExpiration = momentAdd(utcNow(), [1, "minute"]);
+      const authRefreshToken = "the-auth-refresh-token";
+      const authRefreshTokenExpiration = momentAdd(utcNow(), [1, "minute"]);
       const authService = {
-        createAuthToken: sinon.fake.returns({ authToken, authTokenExpiration }),
+        createAuthAndRefreshToken: sinon.fake.returns({
+          authToken,
+          authTokenExpiration,
+          authRefreshToken,
+          authRefreshTokenExpiration,
+        }),
       };
 
       const service = new RegistrationService(
@@ -221,6 +228,8 @@ describe("RegistrationService", () => {
         user: userOut,
         authToken: authTokenOut,
         authTokenExpiration: authTokenExpirationOut,
+        authRefreshToken: authRefreshTokenOut,
+        authRefreshTokenExpiration: authRefreshTokenExpirationOut,
       } = await service.confirmRegistrationAndLogin(
         createRegistrationConfirmation
       );
@@ -228,6 +237,10 @@ describe("RegistrationService", () => {
       expect(userOut).toBe(userIn);
       expect(authTokenOut).toBe(authToken);
       expect(authTokenExpirationOut).toBeSameMoment(authTokenExpiration);
+      expect(authRefreshTokenOut).toBe(authRefreshToken);
+      expect(authRefreshTokenExpirationOut).toBeSameMoment(
+        authRefreshTokenExpiration
+      );
       sinon.assert.calledWith(
         registrationRequestsDao.consumeForCode,
         createRegistrationConfirmation.registrationCode

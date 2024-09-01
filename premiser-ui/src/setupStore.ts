@@ -48,7 +48,7 @@ export const setupStore = (
     {
       key: "root",
       storage,
-      whitelist: config.redux.persistLetlist,
+      whitelist: config.redux.persistLetList,
     },
     rootReducer
   ) as RootReducer;

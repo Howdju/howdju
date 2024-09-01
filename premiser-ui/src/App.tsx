@@ -52,14 +52,19 @@ import NavTabs from "./NavTabs";
 import paths from "./paths";
 import routes from "./routes";
 import {
-  selectAuthEmail as selectLoginEmail,
+  selectAuthEmail,
   selectAuthRefreshExpiration,
   selectPrivacyConsent,
 } from "./selectors";
 import sentryInit from "./sentryInit";
 import { RootState } from "./setupStore";
 import { startPersisting, stopPersisting } from "./store";
-import { isDevice, isScrollPastBottom, isScrollPastTop } from "./util";
+import {
+  formatMomentForDisplay,
+  isDevice,
+  isScrollPastBottom,
+  isScrollPastTop,
+} from "./util";
 import WindowMessageHandler from "./WindowMessageHandler";
 import { PrimaryContextTrailProvider } from "./components/contextTrail/PrimaryContextTrailProvider";
 
@@ -291,7 +296,9 @@ class App extends Component<Props> {
     const authEmailDiv = (
       <div>
         <b
-          title={`Login expires ${authRefreshExpiration.fromNow()} (${authRefreshExpiration})`}
+          title={`Login expires ${authRefreshExpiration.fromNow()} (${formatMomentForDisplay(
+            authRefreshExpiration
+          )})`}
         >
           {authEmail}
         </b>
@@ -507,7 +514,7 @@ class App extends Component<Props> {
 
 const mapStateToProps = (state: RootState) => {
   const { app } = state;
-  const authEmail = selectLoginEmail(state);
+  const authEmail = selectAuthEmail(state);
   const authRefreshExpiration = selectAuthRefreshExpiration(state);
   const privacyConsentState = selectPrivacyConsent(state);
   const { isMobileSiteDisabled, isNavDrawerVisible } = app;

@@ -38,6 +38,26 @@ describe("AuthDao", () => {
   afterEach(async () => {
     await endPoolAndDropDb(clientProvider, dbConfig, dbName);
   });
+
+  describe("createAuthRefreshToken", () => {
+    test("cannot create duplicate auth refresh tokens", async () => {
+      const { user } = await testHelper.makeUser();
+      const { id: userId } = user;
+      const authRefreshToken = "the-auth-refresh-token";
+      const created = utcNow();
+      const expires = momentAdd(utcNow(), { days: 1 });
+      await dao.createAuthRefreshToken(
+        userId,
+        authRefreshToken,
+        created,
+        expires
+      );
+
+      await expect(
+        dao.createAuthRefreshToken(userId, authRefreshToken, created, expires)
+      ).rejects.toThrow("duplicate key value violates unique constraint");
+    });
+  });
   describe("readAuthRefreshToken", () => {
     test("can read an auth refresh token", async () => {
       const { user } = await testHelper.makeUser();
@@ -55,6 +75,26 @@ describe("AuthDao", () => {
       const result = await dao.readAuthRefreshToken(authRefreshToken);
 
       expect(result).toEqual(expectToBeSameMomentDeep({ userId, expires }));
+    });
+  });
+  describe("deleteAuthRefreshToken", () => {
+    test("cannot read a deleted auth refresh token", async () => {
+      const { user } = await testHelper.makeUser();
+      const { id: userId } = user;
+      const authRefreshToken = "the-auth-refresh-token";
+      const created = utcNow();
+      const expires = momentAdd(utcNow(), { days: 1 });
+      await dao.createAuthRefreshToken(
+        userId,
+        authRefreshToken,
+        created,
+        expires
+      );
+
+      await dao.deleteAuthRefreshToken(authRefreshToken);
+
+      const result = await dao.readAuthRefreshToken(authRefreshToken);
+      expect(result).toBeUndefined();
     });
   });
 });

@@ -6,7 +6,7 @@ export const apiErrorCodes = {
   /** The client sent an invalid request. The response should explain what was invalid. */
   INVALID_REQUEST: "INVALID_REQUEST",
 
-  /** The request lacks authentication credentials */
+  /** The request lacks authentication credentials, but the requested resource requires them. */
   UNAUTHENTICATED: "UNAUTHENTICATED",
 
   /** The client's auth token has expired. They can try to refresh it. */

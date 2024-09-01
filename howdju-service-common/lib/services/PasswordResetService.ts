@@ -118,7 +118,7 @@ export class PasswordResetService {
       authTokenExpiration,
       authRefreshToken,
       authRefreshTokenExpiration,
-    } = await this.authService.createAuthToken(user, now);
+    } = await this.authService.createAuthAndRefreshToken(user, now);
     return {
       user,
       authToken,

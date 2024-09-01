@@ -11,11 +11,11 @@ import {
 } from "howdju-common";
 
 import { CircularProgress } from "@/components/progress/CircularProgress";
-import config from "./config";
 import JustificationCountViewer from "./JustificationCountViewer";
 import paths from "./paths";
 import { combineIds, describeRootTarget } from "./viewModels";
 import { ComponentId } from "./types";
+import { formatTimestampForDisplay } from "./util";
 
 interface Props {
   id: ComponentId;
@@ -41,7 +41,7 @@ export default function StatementViewer({
 
   const age = statement.created ? moment(statement.created).fromNow() : "";
   const created = statement.created
-    ? moment(statement.created).format(config.humanDateTimeFormat)
+    ? formatTimestampForDisplay(statement.created)
     : "";
   const creatorName = get(statement, "creator.longName");
   const creatorNameDescription = (creatorName && ` by ${creatorName}`) || "";

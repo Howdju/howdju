@@ -59,7 +59,7 @@ export function* refreshAuthAfterRehydrate() {
   yield* takeEvery(REHYDRATE, function* configureAfterRehydrateWorker() {
     const authRefreshExpiration = yield* select(selectAuthRefreshExpiration);
     if (authRefreshExpiration && utcNow().isBefore(authRefreshExpiration)) {
-      yield put(api.refreshAuth());
+      yield* put(api.refreshAuth());
     }
   });
 }

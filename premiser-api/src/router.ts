@@ -10,7 +10,7 @@ import {
 } from "howdju-common";
 import {
   AppProvider,
-  AuthorizationError as UnauthorizedError,
+  UnauthorizedError,
   ConflictError,
   DownstreamServiceError,
   EntityConflictError,
@@ -28,7 +28,7 @@ import {
   UserActionsConflictError,
   UserIsInactiveError,
 } from "howdju-service-common";
-import { serviceRoutes } from "howdju-service-routes";
+import { ServiceRoute, serviceRoutes } from "howdju-service-routes";
 
 import {
   badRequest,
@@ -54,12 +54,7 @@ export async function routeRequest(
 
   try {
     const { route, routedRequest } = selectRoute(appProvider, request);
-    if ("authToken" in route.request.schema.shape) {
-      if (!request.authToken) {
-        throw new UnauthenticatedError("Must send auth token");
-      }
-      await appProvider.authService.readUserIdForAuthToken(request.authToken);
-    }
+    await ensureValidAuthToken(appProvider, route, request);
 
     const parseResult = route.request.schema
       // Allow props like authToken to go through even if not explicitly in the schema.
@@ -280,4 +275,22 @@ export function selectRoute(appProvider: AppProvider, request: Request) {
   }
 
   throw new NoMatchingRouteError();
+}
+
+async function ensureValidAuthToken(
+  appProvider: AppProvider,
+  route: ServiceRoute,
+  request: Request
+): Promise<void> {
+  if (
+    !("authToken" in route.request.schema.shape) ||
+    route.request.schema.shape.authToken.isOptional()
+  ) {
+    return;
+  }
+  if (request.authToken) {
+    await appProvider.authService.readUserIdForAuthToken(request.authToken);
+  } else {
+    throw new UnauthenticatedError("Must send auth token");
+  }
 }

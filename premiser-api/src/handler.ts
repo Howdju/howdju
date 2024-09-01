@@ -112,7 +112,7 @@ function makeGatewayResult(
     makeCorsHeaders(allowedOrigin, allowedHeaders)
   );
   const multiValueHeaders = cookies
-    ? { "Set-Cookie": makeCookiesHeader(cookies) }
+    ? { [headerKeys.SET_COOKIE]: makeCookiesHeader(cookies) }
     : undefined;
   const filteredHeaders = filterDefined(headers);
   if (httpStatusCode === httpStatusCodes.UNAUTHORIZED) {
@@ -325,14 +325,14 @@ function getOrCreateAppProvider(gatewayEvent: APIGatewayEvent) {
 
 function makeCorsHeaders(allowedOrigin: string, allowedHeaders: string[]) {
   return {
-    "Access-Control-Allow-Origin": allowedOrigin,
-    "Access-Control-Allow-Headers": join(allowedHeaders, ","),
-    "Access-Control-Allow-Credentials": "true",
-    "Access-Control-Allow-Methods": "GET,POST,PUT,DELETE",
-    "Cache-Control": "no-cache, no-store, must-revalidate",
-    Expires: "0",
-    Pragma: "no-cache",
-    Vary: headerKeys.ORIGIN,
+    [headerKeys.ACCESS_CONTROL_ALLOW_ORIGIN]: allowedOrigin,
+    [headerKeys.ACCESS_CONTROL_ALLOW_HEADERS]: join(allowedHeaders, ","),
+    [headerKeys.ACCESS_CONTROL_ALLOW_CREDENTIALS]: "true",
+    [headerKeys.ACCESS_CONTROL_ALLOW_METHODS]: "GET,POST,PUT,DELETE",
+    [headerKeys.CACHE_CONTROL]: "no-cache, no-store, must-revalidate",
+    [headerKeys.EXPIRES]: "0",
+    [headerKeys.PRAGMA]: "no-cache",
+    [headerKeys.VARY]: headerKeys.ORIGIN,
   };
 }
 

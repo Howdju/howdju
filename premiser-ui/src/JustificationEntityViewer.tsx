@@ -11,7 +11,6 @@ import {
 import EntityViewer from "./EntityViewer";
 import JustificationRootTargetViewer from "./JustificationRootTargetViewer";
 import JustificationChatBubble from "./JustificationChatBubble";
-import config from "./config";
 import { combineIds, combineSuggestionsKeys, isCounter } from "./viewModels";
 import {
   ComponentId,
@@ -20,6 +19,7 @@ import {
 } from "./types";
 import { RootTargetProps } from "./JustificationRootTargetViewer";
 import IconButton from "./components/button/IconButton";
+import { formatTimestampForDisplay } from "./util";
 
 interface Props {
   id: ComponentId;
@@ -58,7 +58,7 @@ export default function JustificationEntityViewer({
     ? moment(justification.created).fromNow()
     : "";
   const created = justification.created
-    ? moment(justification.created).format(config.humanDateTimeFormat)
+    ? formatTimestampForDisplay(justification.created)
     : "";
 
   const expander = onExpandCounterAncestors && (

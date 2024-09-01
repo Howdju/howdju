@@ -41,7 +41,7 @@ export class UnauthenticatedError extends HowdjuApiError {}
 
 export class ReauthenticationRequiredError extends HowdjuApiError {}
 
-export class AuthorizationError extends HowdjuApiError {
+export class UnauthorizedError extends HowdjuApiError {
   // TODO(26): remove BespokeValidationErrors
   errors: ModelErrors<any> | BespokeValidationErrors;
   constructor(errors: ModelErrors<any> | BespokeValidationErrors) {

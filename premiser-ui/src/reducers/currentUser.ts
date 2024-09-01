@@ -12,7 +12,12 @@ const initialState = {
 };
 
 export default createReducer(initialState, (builder) => {
-  builder.addCase(api.logout.response, () => initialState);
+  builder.addCase(api.logout.response, (state, action) => {
+    if (action.error) {
+      return state;
+    }
+    return initialState;
+  });
   builder.addCase(api.refreshAuth.response, (state, action) => {
     if (action.error) {
       return initialState;
@@ -27,7 +32,7 @@ export default createReducer(initialState, (builder) => {
     ),
     (state, action) => {
       if (action.error) {
-        return initialState;
+        return state;
       }
       const {
         user: details,

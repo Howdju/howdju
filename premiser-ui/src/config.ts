@@ -13,7 +13,7 @@ const config = {
   transientHideDelay: 1500,
   authExpirationCheckFrequencyMs: 30 * 1000,
   redux: {
-    persistLetlist: ["currentUser", "ui.isMobileSiteDisabled"],
+    persistLetList: ["currentUser", "ui.isMobileSiteDisabled"],
     ignoredActionPaths: [
       // The normalization schemas are convenient to have, but non-serializable. We could also
       // include a string identifier/descriptor of the normalization schema and look it up

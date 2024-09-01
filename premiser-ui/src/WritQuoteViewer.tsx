@@ -10,11 +10,11 @@ import { extractDomain, UrlOut, WritQuoteOut } from "howdju-common";
 
 import { truncateWritQuoteText, isTextLong } from "./viewModels";
 import * as characters from "./characters";
-import config from "./config";
 import paths from "./paths";
 
 import "./WritQuoteViewer.scss";
 import TextButton from "./components/button/TextButton";
+import { formatTimestampForDisplay } from "./util";
 
 export type OnClickWritQuoteUrl = (
   event: MouseEvent,
@@ -58,7 +58,7 @@ export default function WritQuoteViewer({
 
   const age = writQuote.created ? moment(writQuote.created).fromNow() : "";
   const created = writQuote.created
-    ? moment(writQuote.created).format(config.humanDateTimeFormat)
+    ? formatTimestampForDisplay(writQuote.created)
     : "";
 
   // TODO(38) use CollapsibleTextViewer or delete this component?

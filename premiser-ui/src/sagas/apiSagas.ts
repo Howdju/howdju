@@ -33,7 +33,7 @@ export function* callApi(
       return yield* put(responseAction);
     } catch (error) {
       if (isAuthenticationExpiredError(error) && authRefreshAttemptNumber < 1) {
-        yield put(api.refreshAuth());
+        yield* put(api.refreshAuth());
         authRefreshAttemptNumber += 1;
         continue;
       }
