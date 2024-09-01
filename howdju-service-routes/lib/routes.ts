@@ -72,6 +72,9 @@ import {
 export type ServiceRoutes = typeof serviceRoutes;
 export type ServiceRoute = ServiceRoutes[keyof ServiceRoutes];
 
+/** Sentinel value handlers can return to send a noContent response */
+export const noContentResponseSentinel = new Object();
+
 export const serviceRoutes = {
   /*
    * Search
@@ -1410,9 +1413,27 @@ export const serviceRoutes = {
     request: handler(
       AuthRefreshRequest,
       async (appProvider: AppProvider, { authRefreshToken }) => {
-        const { user, authToken, authTokenExpiration } =
-          await appProvider.authService.refreshAuth(authRefreshToken);
-        return { body: { user, authToken, authTokenExpiration } };
+        const {
+          user,
+          authToken,
+          authTokenExpiration,
+          authRefreshTokenExpiration,
+        } = await appProvider.authService.refreshAuth(authRefreshToken);
+        return {
+          body: {
+            user,
+            authToken,
+            authTokenExpiration,
+            authRefreshTokenExpiration,
+          },
+          cookies: [
+            createAuthRefreshCookie(
+              authRefreshToken,
+              authRefreshTokenExpiration,
+              appProvider.appConfig.authRefreshCookie.isSecure
+            ),
+          ],
+        };
       }
     ),
   },
@@ -1420,8 +1441,11 @@ export const serviceRoutes = {
     path: "logout",
     method: httpMethods.POST,
     request: handler(
-      Authed.merge(AuthRefreshRequest),
+      EmptyRequest,
       async (appProvider: AppProvider, { authToken, authRefreshToken }) => {
+        if (authToken === undefined && authRefreshToken === undefined) {
+          return noContentResponseSentinel;
+        }
         await appProvider.authService.logout(authToken, authRefreshToken);
         return {
           cookies: [
@@ -1559,7 +1583,12 @@ export const serviceRoutes = {
           "registrationConfirmation"
         );
         return {
-          body: { user, authToken, expires: authTokenExpiration },
+          body: {
+            user,
+            authToken,
+            authTokenExpiration,
+            authRefreshTokenExpiration,
+          },
           cookies: [
             createAuthRefreshCookie(
               authRefreshToken,

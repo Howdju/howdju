@@ -4,7 +4,7 @@ import { REHYDRATE } from "redux-persist/lib/constants";
 import * as sentry from "../sentry";
 import analytics from "../analytics";
 import {
-  selectAuthRefreshExpiration,
+  selectAuthRefreshTokenExpiration,
   selectUserExternalIds,
 } from "../selectors";
 import { api } from "../actions";
@@ -57,8 +57,13 @@ export function* configureAfterRehydrate() {
 
 export function* refreshAuthAfterRehydrate() {
   yield* takeEvery(REHYDRATE, function* configureAfterRehydrateWorker() {
-    const authRefreshExpiration = yield* select(selectAuthRefreshExpiration);
-    if (authRefreshExpiration && utcNow().isBefore(authRefreshExpiration)) {
+    const authRefreshTokenExpiration = yield* select(
+      selectAuthRefreshTokenExpiration
+    );
+    if (
+      authRefreshTokenExpiration &&
+      utcNow().isBefore(authRefreshTokenExpiration)
+    ) {
       yield* put(api.refreshAuth());
     }
   });

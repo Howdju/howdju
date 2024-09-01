@@ -33,10 +33,12 @@ export const notFound = ({ callback, body }: ResponseArgs) =>
   });
 export const unauthenticated = ({
   callback,
+  cookies,
   body = { errorCode: apiErrorCodes.UNAUTHENTICATED },
 }: ResponseArgs) =>
   callback({
     httpStatusCode: httpStatusCodes.UNAUTHORIZED,
+    cookies,
     body,
   });
 export const unauthorized = ({ callback, body }: ResponseArgs) =>

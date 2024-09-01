@@ -27,13 +27,19 @@ import {
   UnauthenticatedError,
   UserActionsConflictError,
   UserIsInactiveError,
+  createAuthRefreshCookie,
 } from "howdju-service-common";
-import { ServiceRoute, serviceRoutes } from "howdju-service-routes";
+import {
+  ServiceRoute,
+  serviceRoutes,
+  noContentResponseSentinel,
+} from "howdju-service-routes";
 
 import {
   badRequest,
   conflict,
   error,
+  noContent,
   notFound,
   ok,
   unauthenticated,
@@ -66,6 +72,9 @@ export async function routeRequest(
         appProvider,
         parseResult.data as any
       );
+      if (result === noContentResponseSentinel) {
+        return noContent(appProvider, { callback });
+      }
       return ok({ callback, ...result });
     }
     return badRequest({
@@ -110,12 +119,21 @@ export async function routeRequest(
         body: { errorCode: apiErrorCodes.ROUTE_NOT_FOUND },
       });
     } else if (err instanceof ReauthenticationRequiredError) {
+      const { authRefreshTokenExpiration } = err;
       return unauthenticated({
         callback,
         body: {
           errorCode: apiErrorCodes.REAUTHENTICATION_REQUIRED,
           message: err.message,
+          authRefreshTokenExpiration,
         },
+        cookies: [
+          createAuthRefreshCookie(
+            "",
+            authRefreshTokenExpiration,
+            appProvider.appConfig.authRefreshCookie.isSecure
+          ),
+        ],
       });
     } else if (err instanceof UnauthenticatedError) {
       return unauthenticated({ callback });

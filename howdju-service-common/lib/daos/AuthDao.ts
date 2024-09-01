@@ -115,7 +115,9 @@ export class AuthDao {
     return row.auth_refresh_token;
   }
 
-  async readAuthRefreshToken(authRefreshToken: AuthRefreshToken) {
+  async readAuthRefreshToken(
+    authRefreshToken: AuthRefreshToken
+  ): Promise<{ userId: EntityId; expires: Moment } | undefined> {
     const {
       rows: [row],
     } = await this.database.query(

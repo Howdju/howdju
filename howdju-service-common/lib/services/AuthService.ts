@@ -228,10 +228,11 @@ export class AuthService {
     if (!result) {
       throw new EntityNotFoundError("AUTH_REFRESH_TOKEN", authRefreshToken);
     }
-    const { userId, expires } = result;
-    if (expires.isBefore(utcNow())) {
+    const { userId, expires: authRefreshTokenExpiration } = result;
+    if (authRefreshTokenExpiration.isBefore(utcNow())) {
       throw new ReauthenticationRequiredError(
-        "Auth refresh token has expired. Please reauthenticate."
+        "Auth refresh token has expired. Please reauthenticate.",
+        authRefreshTokenExpiration
       );
     }
 
@@ -252,13 +253,19 @@ export class AuthService {
       user,
       authToken,
       authTokenExpiration,
+      authRefreshTokenExpiration,
     };
   }
 
-  async logout(authToken: AuthToken, authRefreshToken: AuthRefreshToken) {
+  async logout(
+    authToken: AuthToken | undefined,
+    authRefreshToken: AuthRefreshToken | undefined
+  ) {
     await Promise.all([
-      this.authDao.deleteAuthToken(authToken),
-      this.authDao.deleteAuthRefreshToken(authRefreshToken),
+      authToken ? this.authDao.deleteAuthToken(authToken) : undefined,
+      authRefreshToken
+        ? this.authDao.deleteAuthRefreshToken(authRefreshToken)
+        : undefined,
     ]);
   }
 

@@ -16,7 +16,7 @@ import t, {
 } from "../texts";
 import paths from "../paths";
 import {
-  selectAuthRefreshExpiration,
+  selectAuthRefreshTokenExpiration,
   selectLoginRedirectLocation,
 } from "../selectors";
 import { api, flows, goto } from "../actions";
@@ -217,7 +217,7 @@ export function* redirectUnauthenticatedUserToLoginOnPagesNeedingAuthentication(
     LOCATION_CHANGE,
     function* redirectUnauthenticatedUserToLoginOnPagesNeedingAuthenticationWorker() {
       yield* tryWaitOnRehydrate();
-      const authExpiration = yield* select(selectAuthRefreshExpiration);
+      const authExpiration = yield* select(selectAuthRefreshTokenExpiration);
       const isAuthenticated =
         authExpiration && !utcNow().isBefore(authExpiration);
       // TODO(#247) infer auth requirement from routes

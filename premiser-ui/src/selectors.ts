@@ -21,8 +21,8 @@ export const selectUserExternalIds = (
 export const selectIsWindowNarrow = (state: RootState) =>
   state.app.isWindowNarrow;
 export const selectAuthToken = (state: RootState) => state.auth.authToken;
-export const selectAuthRefreshExpiration = (state: RootState) =>
-  moment.utc(state.currentUser.authRefreshExpiration);
+export const selectAuthRefreshTokenExpiration = (state: RootState) =>
+  moment.utc(state.currentUser.authRefreshTokenExpiration);
 export const selectUser = (state: RootState) => state.currentUser.details;
 export const selectAuthEmail = (state: RootState) =>
   state.currentUser.details?.email;

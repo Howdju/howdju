@@ -53,7 +53,8 @@ import paths from "./paths";
 import routes from "./routes";
 import {
   selectAuthEmail,
-  selectAuthRefreshExpiration,
+  selectAuthRefreshTokenExpiration,
+  selectAuthToken,
   selectPrivacyConsent,
 } from "./selectors";
 import sentryInit from "./sentryInit";
@@ -287,22 +288,21 @@ class App extends Component<Props> {
   render() {
     const {
       authEmail,
-      authRefreshExpiration,
+      authRefreshTokenExpiration,
       isNavDrawerVisible,
       isMobileSiteDisabled,
     } = this.props;
 
-    const isLoginExpired = utcNow().isBefore(authRefreshExpiration);
+    const isLoginExpired = utcNow().isAfter(authRefreshTokenExpiration);
+    const expirationVerb = isLoginExpired ? "expired" : "expires";
     const authEmailDiv = (
-      <div>
-        <b
-          title={`Login expires ${authRefreshExpiration.fromNow()} (${formatMomentForDisplay(
-            authRefreshExpiration
-          )})`}
-        >
-          {authEmail}
-        </b>
-        {isLoginExpired || (
+      <div
+        title={`Login ${expirationVerb} ${authRefreshTokenExpiration.fromNow()} (${formatMomentForDisplay(
+          authRefreshTokenExpiration
+        )})`}
+      >
+        <b>{authEmail}</b>
+        {isLoginExpired && (
           <div>
             <em>login expired</em>
           </div>
@@ -515,13 +515,15 @@ class App extends Component<Props> {
 const mapStateToProps = (state: RootState) => {
   const { app } = state;
   const authEmail = selectAuthEmail(state);
-  const authRefreshExpiration = selectAuthRefreshExpiration(state);
+  const hasAuthToken = !!selectAuthToken(state);
+  const authRefreshTokenExpiration = selectAuthRefreshTokenExpiration(state);
   const privacyConsentState = selectPrivacyConsent(state);
   const { isMobileSiteDisabled, isNavDrawerVisible } = app;
 
   return {
     authEmail,
-    authRefreshExpiration,
+    authRefreshTokenExpiration,
+    hasAuthToken,
     isNavDrawerVisible,
     isMobileSiteDisabled,
     privacyConsentState,

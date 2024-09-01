@@ -12,7 +12,12 @@ const initialState = {
 };
 
 export default createReducer(initialState, (builder) => {
-  builder.addCase(api.logout.response, () => initialState);
+  builder.addCase(api.logout.response, (state, action) => {
+    if (action.error) {
+      return state;
+    }
+    return initialState;
+  });
   builder.addMatcher(
     matchActions(
       api.login.response,
@@ -22,7 +27,10 @@ export default createReducer(initialState, (builder) => {
     ),
     (state, action) => {
       if (action.error) {
-        return initialState;
+        return {
+          ...initialState,
+          authRefreshTokenExpiration: action.payload.authRefreshTokenExpiration,
+        };
       }
       const { authToken, authTokenExpiration } = action.payload;
       return {

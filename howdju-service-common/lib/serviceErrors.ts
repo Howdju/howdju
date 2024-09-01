@@ -5,7 +5,7 @@ import {
   ModelErrors,
   toJson,
 } from "howdju-common";
-import { Duration } from "moment";
+import { Duration, Moment } from "moment";
 
 export class HowdjuApiError extends Error {
   constructor(message?: string) {
@@ -39,7 +39,13 @@ export class ConflictError extends HowdjuApiError {}
 /** The user tried to do something that requires being logged in, but the user isn't logged in */
 export class UnauthenticatedError extends HowdjuApiError {}
 
-export class ReauthenticationRequiredError extends HowdjuApiError {}
+export class ReauthenticationRequiredError extends HowdjuApiError {
+  authRefreshTokenExpiration: Moment;
+  constructor(message: string, authRefreshTokenExpiration: Moment) {
+    super(message);
+    this.authRefreshTokenExpiration = authRefreshTokenExpiration;
+  }
+}
 
 export class UnauthorizedError extends HowdjuApiError {
   // TODO(26): remove BespokeValidationErrors

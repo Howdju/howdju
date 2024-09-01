@@ -8,7 +8,7 @@ import { api } from "../actions";
 
 const initialState = {
   details: undefined as User | undefined,
-  authRefreshExpiration: undefined as Moment | undefined,
+  authRefreshTokenExpiration: undefined as Moment | undefined,
 };
 
 export default createReducer(initialState, (builder) => {
@@ -20,9 +20,19 @@ export default createReducer(initialState, (builder) => {
   });
   builder.addCase(api.refreshAuth.response, (state, action) => {
     if (action.error) {
-      return initialState;
+      // See handling of ReauthenticationRequiredError in router.ts
+      // TODO(#113) type error payloads correctly
+      const payload = action.payload as unknown as {
+        body: { authRefreshTokenExpiration: Moment };
+      };
+
+      return {
+        ...state,
+        authRefreshTokenExpiration: payload.body.authRefreshTokenExpiration,
+      };
     }
-    return state;
+    const { user: details, authRefreshTokenExpiration } = action.payload;
+    return { ...state, details, authRefreshTokenExpiration };
   });
   builder.addMatcher(
     matchActions(
@@ -36,9 +46,9 @@ export default createReducer(initialState, (builder) => {
       }
       const {
         user: details,
-        authRefreshTokenExpiration: authRefreshExpiration,
+        authRefreshTokenExpiration: authRefreshTokenExpiration,
       } = action.payload;
-      return { ...state, details, authRefreshExpiration };
+      return { ...state, details, authRefreshTokenExpiration };
     }
   );
 });
