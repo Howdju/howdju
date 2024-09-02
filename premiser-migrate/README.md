@@ -31,7 +31,7 @@ yarn run normalize-urls-preprod
   Preprod:
 
   ```sh
-  yarn run db:tunnel
+  aws-vault exec user@howdju -- yarn run db:tunnel
   pg_dump_file_name=premiser_preprod_dump-$(date -u +"%Y-%m-%dT%H:%M:%SZ").sql
   pg_dump -h 127.0.0.1 -p 5434 howdju_pre_prod -U premiser_rds > $pg_dump_file_name
   ```
@@ -39,7 +39,7 @@ yarn run normalize-urls-preprod
   Prod:
 
   ```sh
-  yarn run db:tunnel
+  aws-vault exec user@howdju -- yarn run db:tunnel
   pg_dump_file_name=premiser_prod_dump-$(date -u +"%Y-%m-%dT%H:%M:%SZ").sql
   pg_dump -h 127.0.0.1 -p 5434 premiser -U premiser_rds > $pg_dump_file_name
   ```

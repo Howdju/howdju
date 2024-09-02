@@ -21,11 +21,12 @@ Our first-party cookies include cookies that are strictly necessary, functional 
 
 ### Howdju's first party cookies
 
-| Name                         | Classification     | Purpose                                                                               | Duration                                                       | Technology      |
-| ---------------------------- | ------------------ | ------------------------------------------------------------------------------------- | -------------------------------------------------------------- | --------------- |
-| `cookie-consent-preferences` | Strictly Necessary | Persists your privacy consent settings                                                | Indefinite                                                     | Local Storage   |
-| `persist:root`               | Functional         | Stores your authentication token so that you remain logged in when you reload the app | Indefinite, but token expires after 30 days or when you logout | Local Storage   |
-| `ssid`                       | Analytics          | The 'session storage ID' allows us to associate the actions you perform               | Current Session                                                | Session Storage |
+| Name                         | Classification     | Purpose                                                                 | Duration                                | Technology                         |
+| ---------------------------- | ------------------ | ----------------------------------------------------------------------- | --------------------------------------- | ---------------------------------- |
+| `cookie-consent-preferences` | Strictly Necessary | Persists your privacy consent settings                                  | Indefinite                              | Local Storage                      |
+| `persist:root`               | Functional         | Stores your user information                                            | Indefinite, but cleared when you logout | Local Storage                      |
+| `auth-refresh-token`         | Functional         | Allows you to login to the app.                                         | 3 months. Cleared when you logout.      | Cookie: Secure, HttpOnly, SameSite |
+| `ssid`                       | Analytics          | The 'session storage ID' allows us to associate the actions you perform | Current Session                         | Session Storage                    |
 
 ## Third-party's services
 

@@ -346,7 +346,7 @@ aws-vault exec terraform@howdju -- terraform plan
 
 ```shell
 cd premiser-api
-yarn run db:tunnel
+aws-vault exec user@howdju -- yarn run db:tunnel
 
 # In different tab
 yarn run db:tunnel:shell:pre-prod
@@ -619,7 +619,7 @@ TODO(54): update this process not to require AWS access.
 
 ```shell
 cd premiser-api
-yarn run db:tunnel
+aws-vault exec user@howdju -- yarn run db:tunnel
 
 # in another terminal:
 pg_dump_file_name=premiser_preprod_dump-$(date -u +"%Y-%m-%dT%H:%M:%SZ").sql
