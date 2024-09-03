@@ -4,13 +4,12 @@ import React, { Component, FormEvent } from "react";
 import { connect, ConnectedProps } from "react-redux";
 
 import { Credentials, makeCredentials } from "howdju-common";
-
 import {
   api,
-  editors,
   mapActionCreatorGroupToDispatchToProps,
-  ui,
-} from "@/actions";
+} from "howdju-client-common";
+
+import { editors, ui } from "@/actions";
 import OutlineButton from "@/components/button/OutlineButton";
 import SolidButton from "@/components/button/SolidButton";
 import { Card, CardActions, CardContent } from "@/components/card/Card";

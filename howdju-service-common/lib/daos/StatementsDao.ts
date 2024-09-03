@@ -2,7 +2,6 @@ import map from "lodash/map";
 import { Moment } from "moment";
 
 import {
-  brandedParse,
   CreateStatement,
   EntityId,
   Logger,
@@ -14,7 +13,6 @@ import {
   SentenceTypes,
   StatementCreatedAsType,
   StatementOut,
-  StatementRef,
 } from "howdju-common";
 
 import { BaseDao } from "./BaseDao";
@@ -236,7 +234,7 @@ export class StatementsDao extends BaseDao {
           id: this.getCreatedAsId(row),
         };
       }
-      return brandedParse(StatementRef, statement);
+      return statement;
     });
   }
 

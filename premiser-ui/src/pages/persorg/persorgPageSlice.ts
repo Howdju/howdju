@@ -2,8 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import { normalize } from "normalizr";
 
 import { MediaExcerptOut, StatementOut } from "howdju-common";
-
-import { api } from "@/apiActions";
+import { api } from "howdju-client-common";
 
 const initialState = {
   isFetchingPersorg: false,

@@ -22037,20 +22037,27 @@ __metadata:
   dependencies:
     "@reduxjs/toolkit": "npm:^1.9.5"
     "@types/chrome": "npm:^0.0.233"
+    axios: "npm:^1.7.4"
     dom-anchor-text-position: "npm:^5.0.0"
     dom-anchor-text-quote: "npm:^4.0.2"
     eslint: "npm:^8.27.0"
     eslint-config-howdju: "workspace:eslint-config-howdju"
     howdju-common: "workspace:howdju-common"
+    howdju-service-routes: "workspace:howdju-service-routes"
     howdju-test-common: "workspace:howdju-test-common"
     jest: "npm:^29.3.1"
     lodash: "npm:^4.17.21"
     moment: "npm:^2.29.4"
+    normalizr: "npm:^3.6.1"
+    path-to-regexp: "npm:^6.2.0"
     prettier: "npm:2.7.1"
+    query-string: "npm:^7.0.0"
+    redux: "npm:^4.0.5"
     redux-actions: "npm:^2.6.4"
     ts-node: "npm:^10.9.1"
     type-fest: "npm:^3.3.0"
     typescript: "npm:^4.9.4"
+    uuid: "npm:^9.0.0"
   languageName: unknown
   linkType: soft
 

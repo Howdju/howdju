@@ -1,5 +1,5 @@
 import { createPath, LocationDescriptorObject } from "history";
-import isEmpty from "lodash/isEmpty";
+import { isEmpty } from "lodash";
 import queryString from "query-string";
 
 import {
@@ -17,7 +17,6 @@ import {
   TagOut,
   toSlug,
   WritQuoteOut,
-  WritRef,
 } from "howdju-common";
 
 import { logger } from "./logger";
@@ -85,7 +84,7 @@ class Paths {
   writQuote = (writQuote: WritQuoteOut) =>
     `/writ-quotes/${writQuote.id}/${toSlug(writQuote.writ.title)}`;
 
-  writUsages = (writ: WritRef) =>
+  writUsages = (writ: PersistedEntity) =>
     this.searchJustifications({ writId: writ.id });
   writQuoteUsages = (writQuote: WritQuoteOut) => {
     if (!writQuote.id) {

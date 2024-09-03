@@ -8,9 +8,9 @@ import { Integrations } from "@sentry/tracing";
 import { Event, EventHint } from "@sentry/types";
 
 import { apiErrorCodes, isCustomError } from "howdju-common";
+import { uiErrorTypes } from "howdju-client-common";
 
 import config from "./config";
-import { uiErrorTypes } from "./uiErrors";
 import {
   cookieConsent,
   ERROR_REPORTING,

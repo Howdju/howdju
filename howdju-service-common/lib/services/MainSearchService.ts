@@ -21,7 +21,7 @@ import { MediaExcerptsService } from "./MediaExcerptsService";
 import { TagsService } from "./TagsService";
 
 const MAX_EXCERPT_COUNT = 50;
-interface MainSearchResponse {
+export interface MainSearchResponse {
   mediaExcerpts: MediaExcerptOut[];
   persorgs: PersorgOut[];
   propositions: PropositionOut[];

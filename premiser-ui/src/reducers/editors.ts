@@ -80,16 +80,14 @@ import {
   CreateMediaExcerptSpeakersInput,
   Credentials,
 } from "howdju-common";
+import { api, str, uiErrorTypes, PayloadOf } from "howdju-client-common";
 
 import {
-  api,
   EditorActionCreator,
   EditorCommitActionCreator,
   editors,
   ListPathFactory,
-  str,
 } from "@/actions";
-import { uiErrorTypes } from "@/uiErrors";
 import { logger } from "@/logger";
 import {
   EditorId,
@@ -98,7 +96,6 @@ import {
   PropertyChanges,
 } from "@/types";
 import { combineObjectKey } from "@/viewModels";
-import { PayloadOf } from "howdju-client-common";
 
 type BooleanObject = { [key: string]: boolean };
 const EditorActions: BooleanObject = {};

@@ -1,4 +1,4 @@
-import { extension as ext } from "howdju-client-common";
+import { extensionFacade as ext } from "howdju-client-common";
 import { LiteralToPrimitive } from "type-fest";
 
 const optionDefinitions = {

@@ -13,12 +13,11 @@ import {
   parseContextTrail,
   toJson,
 } from "howdju-common";
+import { api, normalizationSchemaByEntityType } from "howdju-client-common";
 
 import { logger } from "@/logger";
 import { useAppDispatch, useAppSelector } from "@/hooks";
-import { api } from "@/apiActions";
 import { RootState } from "@/setupStore";
-import { normalizationSchemaByEntityType } from "@/normalizationSchemas";
 
 /**
  * Obtains the context trail from the query params and API for the PrimaryContextTrail context.

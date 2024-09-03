@@ -8,10 +8,11 @@ import {
   ContextTrailItem,
   EntityId,
 } from "howdju-common";
+import { SuggestionsKey } from "howdju-client-common";
 
 import PropositionEntityViewer from "./PropositionEntityViewer";
 import StatementEntityViewer from "./StatementEntityViewer";
-import { ComponentId, EditorId, SuggestionsKey } from "./types";
+import { ComponentId, EditorId } from "./types";
 import { logger } from "./logger";
 import PropositionCompoundEntityViewer from "./PropositionCompoundEntityViewer";
 

@@ -4,10 +4,8 @@ import { createMemoryHistory } from "history";
 import { rest } from "msw";
 
 import {
-  brandedParse,
   CreateMediaExcerpt,
   httpStatusCodes,
-  MediaExcerptRef,
   mergeCopy,
   utcNow,
 } from "howdju-common";
@@ -72,56 +70,53 @@ describe("SubmitMediaExcerptPage", () => {
     const response: InferResponseBody<typeof serviceRoutes.createMediaExcerpt> =
       {
         isExtant: false,
-        mediaExcerpt: mergeCopy(
-          mediaExcerpt,
-          brandedParse(MediaExcerptRef, {
-            id: "1582",
-            localRep: {
-              normalQuotation: quotation,
-            },
-            locators: {
-              urlLocators: [
-                {
-                  id: "1583",
-                  mediaExcerptId: "1582",
-                  url: {
-                    id: "1583",
-                    url: "https://www.info.com",
-                    canonicalUrl: "https://www.info.com",
-                  },
-                  autoConfirmationStatus: {
-                    status: "NEVER_TRIED" as const,
-                  },
-                  created: utcNow(),
-                  creatorUserId: "1",
-                  creator,
-                },
-              ],
-            },
-            citations: [
+        mediaExcerpt: mergeCopy(mediaExcerpt, {
+          id: "1582",
+          localRep: {
+            normalQuotation: quotation,
+          },
+          locators: {
+            urlLocators: [
               {
-                source: {
-                  id: "1584",
-                  description: "the-source-description",
-                  normalDescription: "the-source-description",
-                  created: utcNow(),
-                  creatorUserId: "1",
-                  creator,
-                },
+                id: "1583",
                 mediaExcerptId: "1582",
+                url: {
+                  id: "1583",
+                  url: "https://www.info.com",
+                  canonicalUrl: "https://www.info.com",
+                },
+                autoConfirmationStatus: {
+                  status: "NEVER_TRIED" as const,
+                },
                 created: utcNow(),
                 creatorUserId: "1",
+                creator,
               },
             ],
-            speakers: [],
-            created: utcNow(),
-            creatorUserId: "1",
-            creator: {
-              id: "1",
-              longName: "Test User",
+          },
+          citations: [
+            {
+              source: {
+                id: "1584",
+                description: "the-source-description",
+                normalDescription: "the-source-description",
+                created: utcNow(),
+                creatorUserId: "1",
+                creator,
+              },
+              mediaExcerptId: "1582",
+              created: utcNow(),
+              creatorUserId: "1",
             },
-          })
-        ),
+          ],
+          speakers: [],
+          created: utcNow(),
+          creatorUserId: "1",
+          creator: {
+            id: "1",
+            longName: "Test User",
+          },
+        }),
       };
     let requestBody: CreateMediaExcerpt | undefined;
     server.use(
@@ -196,56 +191,53 @@ describe("SubmitMediaExcerptPage", () => {
         typeof serviceRoutes.createMediaExcerpt
       > = {
         isExtant: false,
-        mediaExcerpt: mergeCopy(
-          mediaExcerpt,
-          brandedParse(MediaExcerptRef, {
-            id: "1582",
-            localRep: {
-              normalQuotation: quotation,
-            },
-            locators: {
-              urlLocators: [
-                {
-                  id: "1583",
-                  mediaExcerptId: "1582",
-                  url: {
-                    id: "1583",
-                    url: "https://www.info.com",
-                    canonicalUrl: "https://www.info.com",
-                  },
-                  autoConfirmationStatus: {
-                    status: "NEVER_TRIED" as const,
-                  },
-                  created: utcNow(),
-                  creatorUserId: "1",
-                  creator,
-                },
-              ],
-            },
-            citations: [
+        mediaExcerpt: mergeCopy(mediaExcerpt, {
+          id: "1582",
+          localRep: {
+            normalQuotation: quotation,
+          },
+          locators: {
+            urlLocators: [
               {
-                source: {
-                  id: "1584",
-                  description: "the-source-description",
-                  normalDescription: "the-source-description",
-                  created: utcNow(),
-                  creatorUserId: "1",
-                  creator,
-                },
+                id: "1583",
                 mediaExcerptId: "1582",
+                url: {
+                  id: "1583",
+                  url: "https://www.info.com",
+                  canonicalUrl: "https://www.info.com",
+                },
+                autoConfirmationStatus: {
+                  status: "NEVER_TRIED" as const,
+                },
                 created: utcNow(),
                 creatorUserId: "1",
+                creator,
               },
             ],
-            speakers: [],
-            created: utcNow(),
-            creatorUserId: "1",
-            creator: {
-              id: "1",
-              longName: "Test User",
+          },
+          citations: [
+            {
+              source: {
+                id: "1584",
+                description: "the-source-description",
+                normalDescription: "the-source-description",
+                created: utcNow(),
+                creatorUserId: "1",
+                creator,
+              },
+              mediaExcerptId: "1582",
+              created: utcNow(),
+              creatorUserId: "1",
             },
-          })
-        ),
+          ],
+          speakers: [],
+          created: utcNow(),
+          creatorUserId: "1",
+          creator: {
+            id: "1",
+            longName: "Test User",
+          },
+        }),
       };
       let requestBody: CreateMediaExcerpt | undefined;
       server.use(

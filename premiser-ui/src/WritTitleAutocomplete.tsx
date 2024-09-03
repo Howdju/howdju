@@ -1,15 +1,18 @@
 import React from "react";
 
-import { writSchema } from "./normalizationSchemas";
+import {
+  api,
+  writSchema,
+  cancelWritTitleSuggestions,
+  SuggestionsKey,
+} from "howdju-client-common";
+
 import {
   ComponentId,
   ComponentName,
   OnKeyDownCallback,
   OnPropertyChangeCallback,
-  SuggestionsKey,
 } from "./types";
-import { api } from "./actions";
-import { cancelWritTitleSuggestions } from "./apiActions";
 import ApiAutoComplete from "@/components/autocomplete/ApiAutoComplete";
 
 interface Props {

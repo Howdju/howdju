@@ -10,12 +10,12 @@ import {
   SourceOut,
   TagOut,
 } from "howdju-common";
+import { api, mainSearchResultSchema } from "howdju-client-common";
 
 import { CircularProgress } from "@/components/progress/CircularProgress";
 import mainSearcher from "../../mainSearcher";
 import PropositionCard from "../../PropositionCard";
-import { api, goto } from "../../actions";
-import { mainSearchResultSchema } from "../../normalizationSchemas";
+import { goto } from "../../actions";
 import TagsViewer from "@/components/tags/TagsViewer";
 import { useAppEntitySelector, useAppSelector } from "@/hooks";
 import SourceEntityCard from "@/components/sources/SourceEntityCard";

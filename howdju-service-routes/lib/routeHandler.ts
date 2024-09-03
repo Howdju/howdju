@@ -3,7 +3,7 @@ import { z } from "zod";
 import { AuthRefreshToken, AuthToken } from "howdju-common";
 import { AppProvider, Cookie } from "howdju-service-common";
 
-interface CommonRequest {
+export interface CommonRequest {
   // Any request may include authToken, and handlers may use it to customize the response for the
   // user. Use Authed to require the authToken.
   authToken: AuthToken | undefined;

@@ -2,6 +2,7 @@ import { isArray, map, union, isPlainObject } from "lodash";
 import { normalize, Schema } from "normalizr";
 import deepMergeLib, { Options as DeepMergeOptions } from "deepmerge";
 import { AnyAction, createSlice } from "@reduxjs/toolkit";
+import { Moment } from "moment";
 
 import {
   EntityId,
@@ -9,12 +10,8 @@ import {
   newImpossibleError,
   PersistedEntity,
 } from "howdju-common";
-import { Moment } from "moment";
-
-import { api } from "../actions";
-import { ApiErrorPayload } from "@/types";
-import { matchActions } from "@/reducerUtils";
 import {
+  api,
   appearanceSchema,
   contextTrailItemSchema,
   justificationSchema,
@@ -38,7 +35,10 @@ import {
   propositionTagVoteSchema,
   domainSchema,
   domAnchorSchema,
-} from "@/normalizationSchemas";
+} from "howdju-client-common";
+
+import { ApiErrorPayload } from "@/types";
+import { matchActions } from "@/reducerUtils";
 import { MergeDeep } from "type-fest";
 
 type ModelKey = string;

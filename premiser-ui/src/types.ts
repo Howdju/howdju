@@ -1,3 +1,6 @@
+import { FocusEvent, FocusEventHandler, MouseEvent } from "react";
+
+import { UiErrorType } from "howdju-client-common";
 import {
   ApiErrorCode,
   Entity,
@@ -8,8 +11,6 @@ import {
   UrlLocator,
   UrlOut,
 } from "howdju-common";
-import { FocusEvent, FocusEventHandler, MouseEvent } from "react";
-import { UiErrorType } from "./uiErrors";
 
 /**
  * The type that react-md expects for menu items.
@@ -32,14 +33,8 @@ export type ComponentId = string;
  */
 export type ComponentName = string;
 
-/** Identifies a UI widget */
-export type WidgetId = string;
-
 /** Identifies a particular editor instance's state among all editors of that type. */
 export type EditorId = string;
-
-/** A key for storing text field suggestions in the state. */
-export type SuggestionsKey = string;
 
 export type OnBlurCallback = FocusEventHandler<
   HTMLInputElement | HTMLTextAreaElement

@@ -2,8 +2,8 @@ import { ActionCreator, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { all, call, delay, put, race, take, takeEvery } from "typed-redux-saga";
 
 import { ApiErrorCode, PasswordResetConfirmation } from "howdju-common";
+import { api, ApiResponseActionMeta } from "howdju-client-common";
 
-import { api, ApiResponseActionMeta } from "@/apiActions";
 import config from "@/config";
 import { EditorCommitErrorPayload } from "@/types";
 import { editors } from "@/actions";

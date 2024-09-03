@@ -1,9 +1,11 @@
-import { api } from "@/apiActions";
-import { getLocationPathParam } from "@/routes";
+import { normalize } from "normalizr";
 import { createSlice } from "@reduxjs/toolkit";
 import { LocationChangeAction, LOCATION_CHANGE } from "connected-react-router";
+
 import { EntityId } from "howdju-common";
-import { normalize } from "normalizr";
+import { api } from "howdju-client-common";
+
+import { getLocationPathParam } from "@/routes";
 
 const initialState = {
   propositions: [],

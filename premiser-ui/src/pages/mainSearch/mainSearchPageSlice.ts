@@ -2,8 +2,7 @@ import { normalize } from "normalizr";
 import { createSlice } from "@reduxjs/toolkit";
 
 import { EntityId } from "howdju-common";
-
-import { api } from "@/apiActions";
+import { api } from "howdju-client-common";
 
 export const mainSearchPageSlice = createSlice({
   name: "mainSearchPage",

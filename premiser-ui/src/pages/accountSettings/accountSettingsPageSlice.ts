@@ -1,6 +1,7 @@
-import { api } from "@/apiActions";
 import { createSlice } from "@reduxjs/toolkit";
+
 import { AccountSettings } from "howdju-common";
+import { api } from "howdju-client-common";
 
 export const accountSettingsPageSlice = createSlice({
   name: "accountSettingsPage",

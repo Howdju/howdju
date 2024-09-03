@@ -12,13 +12,13 @@ import { useDebouncedCallback } from "use-debounce";
 import { denormalize, Schema } from "normalizr";
 
 import { toSingleLine } from "howdju-common";
+import { SuggestionsKey } from "howdju-client-common";
 
 import {
   ComponentId,
   OnBlurCallback,
   OnPropertyChangeCallback,
   PropertyChanges,
-  SuggestionsKey,
 } from "@/types";
 import { useAppDispatch, useAppSelector } from "@/hooks";
 import { autocompletes } from "@/actions";

@@ -10,11 +10,12 @@ import {
   makeCreateRegistrationConfirmationInput,
   RegistrationConfirmation,
 } from "howdju-common";
+import { api } from "howdju-client-common";
 
 import { CircularProgress } from "@/components/progress/CircularProgress";
 import { Card, CardActions, CardContent } from "@/components/card/Card";
 import Helmet from "../../Helmet";
-import { api, editors } from "../../actions";
+import { editors } from "../../actions";
 import Link from "../../Link";
 import paths from "../../paths";
 import { EditorState, EditorTypes } from "../../reducers/editors";

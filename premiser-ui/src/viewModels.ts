@@ -34,15 +34,13 @@ import {
   JustificationView,
   ConnectingEntityInfo,
   Entity,
-  CreatePropositionTagVote,
-  PropositionRef,
   AppearanceView,
   newProgrammingError,
 } from "howdju-common";
+import { SuggestionsKey } from "howdju-client-common";
 
 import * as characters from "./characters";
-import { propositionSchema, statementSchema } from "./normalizationSchemas";
-import { ComponentId, ComponentName, EditorId, SuggestionsKey } from "./types";
+import { ComponentId, ComponentName, EditorId } from "./types";
 
 /** Return a Statement with speakers stating the proposition */
 export function constructStatementInput(
@@ -187,11 +185,6 @@ export interface ChipInfo {
   className: string;
 }
 
-export const rootTargetNormalizationSchemasByType = {
-  PROPOSITION: propositionSchema,
-  STATEMENT: statementSchema,
-} as const;
-
 export function describeRootTarget(
   rootTargetType: "PROPOSITION",
   rootTarget: PropositionOut
@@ -295,8 +288,3 @@ export function isCounter<
 } {
   return j.target.type === "JUSTIFICATION" && isNegative(j);
 }
-
-/** A CreatePropositionTagVote with a persisted proposition */
-export type TagPropositionVote = CreatePropositionTagVote & {
-  proposition: PropositionRef;
-};

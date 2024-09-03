@@ -3,6 +3,7 @@ import includes from "lodash/includes";
 import get from "lodash/get";
 
 import { apiErrorCodes, toJson } from "howdju-common";
+import { api, callApiResponse, str, uiErrorTypes } from "howdju-client-common";
 
 import t, {
   THAT_JUSTIFICATION_ALREADY_EXISTS,
@@ -19,11 +20,8 @@ import t, {
   UN_VERIFY_JUSTIFICATION_FAILURE_TOAST_MESSAGE,
   VERIFY_JUSTIFICATION_FAILURE_TOAST_MESSAGE,
 } from "@/texts";
-import { api, str } from "@/actions";
-import { callApiResponse } from "@/apiActions";
 import app from "@/app/appSlice";
 import { logger } from "../logger";
-import { uiErrorTypes } from "../uiErrors";
 import { ToastMessage } from "@react-md/alert";
 
 export function* showAlertForLogin() {

@@ -2,7 +2,6 @@ import { concat, forEach, groupBy, keyBy, merge, snakeCase } from "lodash";
 import { Moment } from "moment";
 
 import {
-  brandedParse,
   CreateDomAnchor,
   CreateMediaExcerpt,
   CreateMediaExcerptCitation,
@@ -11,14 +10,12 @@ import {
   EntityId,
   Logger,
   MediaExcerptOut,
-  MediaExcerptRef,
   newImpossibleError,
   normalizeText,
   normalizeQuotation,
   PartialPersist,
   PersorgOut,
   UrlLocatorOut,
-  UrlLocatorRef,
   SortDescription,
   MediaExcerptSearchFilter,
   UrlOut,
@@ -92,20 +89,18 @@ export class MediaExcerptsDao {
     const speakersByMediaExcerptId = groupBy(speakers, "mediaExcerptId");
     const creatorsById = keyBy(creators, "id");
 
-    return justMediaExcerpts.map((me) =>
-      brandedParse(MediaExcerptRef, {
-        ...me,
-        locators: {
-          urlLocators: urlLocatorsByMediaExcerptId[me.id] || [],
-        },
-        citations: citationsByMediaExcerptId[me.id] || [],
-        speakers: speakersByMediaExcerptId[me.id] || [],
-        creator: creatorsById[me.creatorUserId],
-        apparitionCount: apparitionCountByMediaExcerptId[me.id],
-        justificationBasisUsageCount:
-          justificationBasisCountByMediaExcerptId[me.id],
-      })
-    );
+    return justMediaExcerpts.map((me) => ({
+      ...me,
+      locators: {
+        urlLocators: urlLocatorsByMediaExcerptId[me.id] || [],
+      },
+      citations: citationsByMediaExcerptId[me.id] || [],
+      speakers: speakersByMediaExcerptId[me.id] || [],
+      creator: creatorsById[me.creatorUserId],
+      apparitionCount: apparitionCountByMediaExcerptId[me.id],
+      justificationBasisUsageCount:
+        justificationBasisCountByMediaExcerptId[me.id],
+    }));
   }
 
   private async readApparitionCountsForMediaExcerptIds(
@@ -318,7 +313,7 @@ export class MediaExcerptsDao {
         if (!url) {
           throw new EntityNotFoundError("URL", row.url_id);
         }
-        return brandedParse(UrlLocatorRef, {
+        return {
           id: toIdString(row.url_locator_id),
           mediaExcerptId: toIdString(row.media_excerpt_id),
           url,
@@ -328,7 +323,7 @@ export class MediaExcerptsDao {
           created: row.created,
           creatorUserId: toIdString(row.creator_user_id),
           creator,
-        });
+        };
       })
     );
   }
@@ -547,17 +542,14 @@ export class MediaExcerptsDao {
       ]
     );
 
-    return brandedParse(
-      MediaExcerptRef,
-      merge({}, createMediaExcerpt, {
-        id: row.media_excerpt_id,
-        localRep: {
-          normalQuotation,
-        },
-        creatorUserId,
-        created,
-      })
-    );
+    return merge({}, createMediaExcerpt, {
+      id: row.media_excerpt_id,
+      localRep: {
+        normalQuotation,
+      },
+      creatorUserId,
+      created,
+    });
   }
 
   async readOrCreateUrlLocator(
@@ -720,7 +712,7 @@ export class MediaExcerptsDao {
       creatorUserId: toIdString(row.creator_user_id),
       creator,
     });
-    return brandedParse(UrlLocatorRef, merged);
+    return merged;
   }
 
   async createUrlLocator({
@@ -757,7 +749,7 @@ export class MediaExcerptsDao {
           created,
         })
       : [];
-    return brandedParse(UrlLocatorRef, {
+    return {
       ...createUrlLocator,
       id,
       mediaExcerptId,
@@ -768,7 +760,7 @@ export class MediaExcerptsDao {
       created,
       creatorUserId: creator.id,
       creator,
-    });
+    };
   }
 
   private async createDomAnchors({

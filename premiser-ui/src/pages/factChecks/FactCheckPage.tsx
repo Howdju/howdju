@@ -6,14 +6,14 @@ import { isArray } from "lodash";
 import { GridCell } from "@react-md/utils";
 
 import { EntityId } from "howdju-common";
-
-import { useAppDispatch, useAppEntitySelector, useAppSelector } from "@/hooks";
 import {
   appearancesSchema,
   sourcesSchema,
   urlsSchema,
   usersSchema,
-} from "@/normalizationSchemas";
+} from "howdju-client-common";
+
+import { useAppDispatch, useAppEntitySelector, useAppSelector } from "@/hooks";
 import AppearanceCard from "@/pages/appearances/AppearanceCard";
 import HowdjuHelmet from "@/Helmet";
 import page from "./factCheckPageSlice";

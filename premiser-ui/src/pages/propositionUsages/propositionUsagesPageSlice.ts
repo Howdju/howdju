@@ -1,7 +1,8 @@
-import { api } from "@/apiActions";
 import { createSlice } from "@reduxjs/toolkit";
-import { ContinuationToken } from "howdju-common";
 import { normalize } from "normalizr";
+
+import { ContinuationToken } from "howdju-common";
+import { api } from "howdju-client-common";
 
 export const propositionUsagesPageSlice = createSlice({
   name: "propositionUsagesPage",

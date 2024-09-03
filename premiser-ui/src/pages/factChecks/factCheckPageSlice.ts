@@ -2,8 +2,8 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { call, delay, put, race, take, takeEvery } from "typed-redux-saga";
 
 import { EntityId } from "howdju-common";
+import { api } from "howdju-client-common";
 
-import { api } from "@/apiActions";
 import config from "@/config";
 
 const initialState = {

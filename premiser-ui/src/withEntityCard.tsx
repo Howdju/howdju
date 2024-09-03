@@ -2,9 +2,10 @@ import React, { ComponentType, ReactNode } from "react";
 import cn from "classnames";
 
 import { ContextTrailItem } from "howdju-common";
+import { SuggestionsKey } from "howdju-client-common";
 
 import { Card, CardContent } from "@/components/card/Card";
-import { ComponentId, EditorId, SuggestionsKey } from "./types";
+import { ComponentId, EditorId } from "./types";
 import { combineIds } from "./viewModels";
 
 export type EntityViewerProps<

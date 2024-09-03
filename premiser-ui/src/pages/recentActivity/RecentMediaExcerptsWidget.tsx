@@ -1,13 +1,12 @@
 import React, { HTMLAttributes } from "react";
 
 import { MediaExcerptOut } from "howdju-common";
+import { api, mediaExcerptsSchema } from "howdju-client-common";
 
-import { api } from "@/actions";
 import ListEntitiesWidget, {
   mediaExcerptCardColSpans,
 } from "@/components/listEntities/ListEntitiesWidget";
 import MediaExcerptCard from "@/components/mediaExcerpts/MediaExcerptCard";
-import { mediaExcerptsSchema } from "@/normalizationSchemas";
 import { ComponentId } from "@/types";
 
 interface Props extends HTMLAttributes<HTMLDivElement> {

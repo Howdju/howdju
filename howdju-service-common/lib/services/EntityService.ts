@@ -7,7 +7,6 @@ import {
   newProgrammingError,
   Entity,
   utcNow,
-  EntityRef,
   ModelErrors,
   makeModelErrors,
   PersistedEntity,
@@ -65,7 +64,7 @@ export abstract class EntityService<
   }
 
   protected abstract doReadOrCreate(
-    entity: CreateIn | EntityRef<CreateIn>,
+    entity: CreateIn | PersistedEntity,
     userId: string | undefined,
     now: Moment
   ): Promise<{ isExtant: boolean } & EntityPropped<CreateOut, P>>;

@@ -56,11 +56,11 @@ import {
   Entity,
   Justification,
   JustificationPolarity,
-  JustificationRef,
   JustificationRootPolarity,
   JustificationRootTarget,
   JustificationRootTargetType,
   JustificationVotePolarity,
+  PersistedEntity,
   PicRegion,
   PropositionTagVote,
   SourceExcerpt,
@@ -68,7 +68,7 @@ import {
   Url,
   VidSegment,
 } from "./zodSchemas";
-import { EntityOrRef, isRef, ToInput } from "./zodSchemaTypes";
+import { EntityOrRef, isBareRef, ToInput } from "./zodSchemaTypes";
 
 export const isPositive = (j: Justification | JustificationOut) =>
   j.polarity === "POSITIVE";
@@ -246,7 +246,7 @@ export const tagEqual = (tag1: EntityOrRef<Tag>, tag2: EntityOrRef<Tag>) => {
   if (idEqual(tag1.id, tag2.id)) {
     return true;
   }
-  if (isRef(tag1) || isRef(tag2)) {
+  if (isBareRef(tag1) || isBareRef(tag2)) {
     // If their IDs were unequal, and either is a ref, then they cannot be equal.
     return false;
   }
@@ -437,7 +437,7 @@ const demuxCreateJustificationInputTarget = (
       }
       return {
         type: "JUSTIFICATION",
-        entity: isRef(target.justification)
+        entity: isBareRef(target.justification)
           ? target.justification
           : demuxCreateJustificationInput(target.justification),
       };
@@ -543,7 +543,7 @@ const muxCreateJustificationBasisErrors = (
     case "SOURCE_EXCERPT":
       return {
         _errors: errors._errors,
-        sourceExcerpt: isRef(basis.entity)
+        sourceExcerpt: isBareRef(basis.entity)
           ? errors.entity
           : errors.entity &&
             muxCreateSourceExcerptErrors(basis.entity, errors.entity),
@@ -617,7 +617,7 @@ const demuxCreateJustificationInputBasis = (
 export function demuxJustificationBasisSourceExcerptInput(
   sourceExcerpt: CreateJustificationInputBasisSourceExcerpt
 ): EntityOrRef<CreateSourceExcerpt> {
-  if (isRef(sourceExcerpt)) {
+  if (isBareRef(sourceExcerpt)) {
     // It must be a Ref.
     return sourceExcerpt;
   }
@@ -677,7 +677,7 @@ export const makeCreateCounterJustificationInput = (
   target: {
     type: "JUSTIFICATION",
     justification: targetJustification.id
-      ? JustificationRef.parse(targetJustification)
+      ? (targetJustification as PersistedEntity)
       : (targetJustification as CreateJustificationInput),
   },
   basis: {

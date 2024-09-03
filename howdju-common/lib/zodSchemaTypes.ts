@@ -1,5 +1,4 @@
 import { Moment } from "moment";
-import { z } from "zod";
 import {
   AppearanceOut,
   MediaExcerptOut,
@@ -11,8 +10,6 @@ import {
   WritOut,
   WritQuoteOut,
 } from "./apiModels";
-import { newProgrammingError } from "./commonErrors";
-import { logger } from "./logger";
 
 import {
   AccountSettings,
@@ -45,7 +42,6 @@ import {
   Entity,
   CreateModel,
   Justification,
-  JustificationRootTarget,
   JustificationVote,
   MediaExcerpt,
   PasswordResetRequest,
@@ -69,7 +65,6 @@ import {
   WritQuote,
   UpdateSource,
   CreateUrl,
-  MediaExcerptRef,
   Appearance,
 } from "./zodSchemas";
 
@@ -123,7 +118,7 @@ export type BasedJustificationWithRootRef = Omit<
   Persisted<Justification>,
   "rootTarget" | "target" | "basis"
 > & {
-  rootTarget: EntityRef<JustificationRootTarget>;
+  rootTarget: PersistedEntity;
   target:
     | {
         type: "PROPOSITION";
@@ -136,7 +131,7 @@ export type BasedJustificationWithRootRef = Omit<
     | {
         type: "JUSTIFICATION";
         // TODO(#228) remove EntityRef<Justification>
-        entity: BasedJustificationWithRootRef | EntityRef<Justification>;
+        entity: BasedJustificationWithRootRef | PersistedEntity;
       };
   basis:
     | {
@@ -145,7 +140,7 @@ export type BasedJustificationWithRootRef = Omit<
       }
     | {
         type: "MEDIA_EXCERPT";
-        entity: MediaExcerptOut | MediaExcerptRef;
+        entity: MediaExcerptOut | PersistedEntity;
       }
     | { type: "WRIT_QUOTE"; entity: Persisted<WritQuote> }
     | {
@@ -263,29 +258,12 @@ export type EntityName<T> = T extends Proposition
   ? "Appearance"
   : never;
 
-/** A reference to an Entity by ID. */
-export type Ref<TName extends string> = PersistedEntity & z.BRAND<TName>;
-export type EntityOrRef<T extends Entity> = T | Ref<EntityName<T>>;
-// If T is already a Ref, return it as-is.
-export type EntityRef<T extends Entity> = T extends Ref<string>
-  ? T
-  : Ref<EntityName<T>>;
-
-/** Translates a CreateModel to its corresponding Entity's name. */
-type CreateModelEntityName<T extends CreateModel> = T extends CreateMediaExcerpt
-  ? "MediaExcerpt"
-  : T extends CreateProposition
-  ? "Proposition"
-  : never;
-
-type CreateModelOrRef<T extends CreateModel> =
-  | T
-  | Ref<CreateModelEntityName<T>>;
+export type EntityOrRef<T extends Entity> = T | PersistedEntity;
+type CreateModelOrRef<T extends CreateModel> = T | PersistedEntity;
 
 /** Makes an Entity's ID required and all related entities can be refs. */
-export type Persisted<T extends Entity> = PersistedEntity &
-  EntityRef<T> &
-  PersistRelated<Omit<T, "id">>;
+export type Persisted<T extends Entity> = PersistRelated<Omit<T, "id">> &
+  PersistedEntity;
 export type PersistRelated<T> = {
   [key in keyof T]: T[key] extends Entity
     ? Persisted<T[key]>
@@ -312,9 +290,7 @@ export type PartialPersist<T, Props extends keyof T> = Omit<T, Props> & {
  *
  * This type will definitely have an ID, but may not have other fields.
  */
-export type PersistedOrRef<T extends Entity> =
-  | Ref<EntityName<T>>
-  | Persisted<T>;
+export type PersistedOrRef<T extends Entity> = PersistedEntity | Persisted<T>;
 /**
  * Recursively transforms Entities on T to PersistedOrRef.
  *
@@ -334,54 +310,8 @@ export function isBareRef(o: object): o is PersistedEntity {
   return keys.length === 1 && keys[0] === "id";
 }
 
-/**
- * Whether o is a plain Ref of type brand.
- *
- * A plain Ref has just an ID and a BRAND. If brand is provided, the BRAND must match.
- *
- * TODO(524) We probably want to remove this in favor of isBareRef.
- */
-export function isOnlyRef<T extends string = string>(
-  o: any,
-  brand?: T
-): o is Ref<T> {
-  if (Object.keys(o).length !== 1) {
-    return false;
-  }
-  return "id" in o && z.BRAND in o && (!brand || o[z.BRAND] === brand);
-}
-
-/**
- * Returns true of the object has a single ID field or if it has a BRAND.
- *
- * The type guard relies on the typesystem and canot not correctly infer whether the BRAND matches
- * T.
- *
- * TODO(524) We probably want to remove this in favor of isBareRef.
- */
-export function isRef<T extends Entity>(e: EntityOrRef<T>): e is EntityRef<T> {
-  const keys = Object.keys(e);
-  // An entity with a single property `id` is a ref.
-  if (keys.length === 1 && keys[0] === "id") {
-    // If we have typed everything correctly, it should have also had the Zod BRAND
-    if (!(z.BRAND in e)) {
-      logger.warn(`Ref lacks z.BRAND property (id: ${e.id}).`);
-    }
-    return true;
-  }
-  // Otherwise, an object with a BRAND is a Ref because we only brand Refs. (We don't brand objects
-  // that can be stucturally typed.)
-  // TODO(451) "we only brand Refs." is not true. We brand materialized entities elsewhere. Use isOnlyRef where we mean
-  // an object having just an ID and a BRAND.
-  const isBranded = z.BRAND in e;
-  if (isBranded && !e.id) {
-    throw newProgrammingError(
-      `Ref has a BRAND but lacks an ID (BRAND: ${e[z.BRAND]}).`
-    );
-  }
-  // Technically we don't know that the object is branded as a T; we must rely on the typesystem,
-  // and that a programmer hasn't overridden the typesystem incorrectly.
-  return isBranded;
+export function isPersisted<T extends Entity>(o: T): o is PersistedEntity & T {
+  return !!o.id;
 }
 
 /** Yields the Input version of a type. */
@@ -396,24 +326,3 @@ export type ToInput<T> = T extends CreateJustification
   : T extends CreateJustifiedSentence
   ? CreateJustifiedSentenceInput
   : never;
-
-/**
- * Allows branding an object containing fields missign from the branded schema.
- *
- * ZodBranded does not provide a `passthrough` approach. This helper works around that.
- *
- * TODO(339): use this in the places where we are doing `{...BlahRef.parse({id}), ...reset}`. E.g. orm.ts
- * TODO(339): can we type `val` to be a Partial of the actual schema? Maybe pass the schema instead of
- * the brand and use EntityName to lookup the brand: `brandedParse(Justification, {id, target, ...})`
- * TODO(458) Try to make val's type `T extends z.output<S>`?
- */
-export function brandedParse<
-  T,
-  S extends z.ZodTypeAny,
-  B extends string | number | symbol
->(brandSchema: z.ZodBranded<S, B>, val: T) {
-  return {
-    ...val,
-    ...brandSchema.parse(val),
-  };
-}

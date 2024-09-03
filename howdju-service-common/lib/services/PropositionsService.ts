@@ -30,6 +30,7 @@ import {
   CreatePropositionTagVote,
   PropositionOut,
   PropositionCreatedAsType,
+  PropositionTagVoteOut,
 } from "howdju-common";
 
 import { permissions } from "../permissions";
@@ -428,7 +429,7 @@ export class PropositionsService {
     createProposition: CreateProposition,
     userId: EntityId,
     now: Moment
-  ) {
+  ): Promise<{ proposition: PropositionOut; isExtant: boolean }> {
     const { proposition, isExtant } =
       await this.readOrCreateEquivalentValidPropositionAsUser(
         createProposition,
@@ -536,7 +537,7 @@ export class PropositionsService {
   async readOrCreatePropositionTagVote(
     authToken: AuthToken,
     createPropositionTagVote: CreatePropositionTagVote
-  ) {
+  ): Promise<PropositionTagVoteOut> {
     const userId = await this.authService.readUserIdForAuthToken(authToken);
     const now = utcNow();
     const tag = await this.tagsService.readOrCreateValidTagAsUser(

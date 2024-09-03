@@ -3,9 +3,7 @@ import { assign, omit, pick } from "lodash";
 import moment from "moment";
 
 import {
-  JustificationRef,
   negateRootPolarity,
-  StatementRef,
   SortDescription,
   CreatePropositionCompound,
   EntityId,
@@ -13,7 +11,6 @@ import {
   Persisted,
   AuthToken,
   UserOut,
-  brandedParse,
 } from "howdju-common";
 import {
   mockLogger,
@@ -84,7 +81,7 @@ describe("JustificationsDao", () => {
       const now = moment();
       const createJustificationData: CreateJustificationDataIn = {
         rootTargetType: "STATEMENT",
-        rootTarget: brandedParse(StatementRef, { id: statement.id }),
+        rootTarget: { id: statement.id },
         polarity: "NEGATIVE",
         target: {
           type: "STATEMENT" as const,
@@ -132,11 +129,11 @@ describe("JustificationsDao", () => {
 
       const createJustificationData: CreateJustificationDataIn = {
         rootTargetType: "STATEMENT",
-        rootTarget: StatementRef.parse({ id: statementData.id }),
+        rootTarget: { id: statementData.id },
         polarity: "NEGATIVE",
         target: {
           type: "STATEMENT",
-          entity: StatementRef.parse({ id: statementData.id }),
+          entity: { id: statementData.id },
         },
         basis: {
           type: "PROPOSITION_COMPOUND",
@@ -178,7 +175,7 @@ describe("JustificationsDao", () => {
       const { id: statementId } = await makeStatement({ user, authToken });
 
       const rootTargetType = "STATEMENT";
-      const rootTarget = StatementRef.parse({ id: statementId });
+      const rootTarget = { id: statementId };
 
       const propositionCompound1 = await makePropositionCompound({
         userId: user.id,
@@ -195,7 +192,7 @@ describe("JustificationsDao", () => {
         polarity: "NEGATIVE",
         target: {
           type: "STATEMENT",
-          entity: StatementRef.parse({ id: statementId }),
+          entity: { id: statementId },
         },
         basis: {
           type: "PROPOSITION_COMPOUND",
@@ -215,7 +212,7 @@ describe("JustificationsDao", () => {
         polarity: "NEGATIVE",
         target: {
           type: "JUSTIFICATION",
-          entity: JustificationRef.parse({ id: justificationId }),
+          entity: { id: justificationId },
         },
         basis: {
           type: "PROPOSITION_COMPOUND",
@@ -276,7 +273,7 @@ describe("JustificationsDao", () => {
       const { id: statementId } = await makeStatement({ user, authToken });
 
       const rootTargetType = "STATEMENT";
-      const rootTarget = StatementRef.parse({ id: statementId });
+      const rootTarget = { id: statementId };
 
       const writQuote = await testHelper.makeWritQuote({ authToken });
 
@@ -314,7 +311,7 @@ describe("JustificationsDao", () => {
         polarity: "NEGATIVE",
         target: {
           type: "JUSTIFICATION",
-          entity: JustificationRef.parse({ id: projustificationId }),
+          entity: { id: projustificationId },
         },
         basis: {
           type: "PROPOSITION_COMPOUND",

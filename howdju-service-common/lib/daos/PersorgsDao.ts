@@ -5,8 +5,6 @@ import {
   CreatePersorg,
   Persorg,
   UpdatePersorg,
-  brandedParse,
-  PersorgRef,
   PersorgOut,
 } from "howdju-common";
 
@@ -108,7 +106,7 @@ export class PersorgsDao extends BaseDao {
     const creatorsById = keyBy(creators, "id");
     return rows.map((row) => {
       const creatorUserId = toIdString(row.creator_user_id);
-      return brandedParse(PersorgRef, {
+      return {
         id: toIdString(row.persorg_id),
         isOrganization: row.is_organization,
         name: row.name,
@@ -121,7 +119,7 @@ export class PersorgsDao extends BaseDao {
         modified: row.modified,
         creatorUserId,
         creator: creatorsById[creatorUserId],
-      });
+      };
     });
   }
 

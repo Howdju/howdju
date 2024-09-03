@@ -8,13 +8,11 @@ import { pathToRegexp } from "path-to-regexp";
 import React from "react";
 
 import {
-  brandedParse,
   CreateJustification,
   CreateProposition,
   httpStatusCodes,
   JustificationOut,
   PropositionOut,
-  PropositionRef,
 } from "howdju-common";
 import {
   InferRequestBody,
@@ -412,12 +410,12 @@ describe("CreatePropositionPage", () => {
       const proposition: CreateProposition = {
         text: "A bonny wee proposition.",
       };
-      const basisProposition: PropositionOut = brandedParse(PropositionRef, {
+      const basisProposition: PropositionOut = {
         id: basisSourceId,
         text: "This warrants a response.",
         normalText: "This warrants a response.",
         created: moment(),
-      });
+      };
       const justification: CreateJustification = {
         target: {
           type: "PROPOSITION",

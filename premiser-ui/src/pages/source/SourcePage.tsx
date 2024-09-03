@@ -5,15 +5,15 @@ import { push } from "connected-react-router";
 import { GridCell } from "@react-md/utils";
 
 import { EntityId, logger } from "howdju-common";
+import { api, mediaExcerptsSchema, sourceSchema } from "howdju-client-common";
 
 import { DropdownMenu, MenuItem } from "@/components/menu/Menu";
 import { MenuItemSeparator } from "@/components/menu/Menu";
 import { CircularProgress } from "@/components/progress/CircularProgress";
 import Helmet from "../../Helmet";
-import { api, editors, flows } from "../../actions";
+import { editors, flows } from "../../actions";
 import app from "../../app/appSlice";
 import * as characters from "../../characters";
-import { mediaExcerptsSchema, sourceSchema } from "../../normalizationSchemas";
 import { combineIds, combineSuggestionsKeys } from "../../viewModels";
 import { useAppDispatch, useAppEntitySelector, useAppSelector } from "@/hooks";
 import MediaExcerptCard from "@/components/mediaExcerpts/MediaExcerptCard";

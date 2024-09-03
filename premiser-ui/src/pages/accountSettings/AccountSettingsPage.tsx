@@ -1,11 +1,13 @@
 import React, { useEffect } from "react";
 
+import { api } from "howdju-client-common";
+
 import { Card, CardActions, CardContent } from "@/components/card/Card";
 import Helmet from "@/Helmet";
 import EditableAccountSettings from "./EditableAccountSettings";
 import { defaultEditorState, EditorTypes } from "../../reducers/editors";
 import { combineIds } from "../../viewModels";
-import { api, editors } from "../../actions";
+import { editors } from "../../actions";
 import t, { EDIT_ENTITY_BUTTON_LABEL } from "../../texts";
 import { isTruthy } from "howdju-common";
 import { showPrivacyConsentDialog } from "../../cookieConsent";

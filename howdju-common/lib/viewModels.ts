@@ -11,7 +11,7 @@ import {
   UrlLocatorOut,
   WritQuoteOut,
 } from "./apiModels";
-import { PersistedEntity } from "./zodSchemas";
+import { CreatePropositionTagVote, PersistedEntity } from "./zodSchemas";
 
 /** A view model where related entities have been replaced with their view model equivalent. */
 export type JustificationView = Omit<
@@ -90,3 +90,8 @@ export interface PropositionCompoundView extends PropositionCompoundOut {
 export interface AppearanceView extends AppearanceOut {
   mediaExcerpt: MediaExcerptView;
 }
+
+/** A CreatePropositionTagVote with a persisted proposition */
+export type TagPropositionVote = CreatePropositionTagVote & {
+  proposition: PersistedEntity;
+};

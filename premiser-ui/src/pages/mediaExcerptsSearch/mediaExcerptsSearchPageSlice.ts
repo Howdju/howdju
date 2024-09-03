@@ -1,7 +1,8 @@
-import { api } from "@/apiActions";
-import { createSlice } from "@reduxjs/toolkit";
-import { MediaExcerptSearchFilter } from "howdju-common";
 import { normalize } from "normalizr";
+import { createSlice } from "@reduxjs/toolkit";
+
+import { MediaExcerptSearchFilter } from "howdju-common";
+import { api } from "howdju-client-common";
 
 const initialState = {
   mediaExcerpts: [],

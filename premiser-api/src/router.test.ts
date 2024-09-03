@@ -4,13 +4,9 @@ import { mockLogger } from "howdju-test-common";
 import { ServiceRoute, serviceRoutes } from "howdju-service-routes";
 import { AppProvider } from "howdju-service-common";
 import {
-  brandedParse,
   httpMethods,
   httpStatusCodes,
-  PersorgRef,
-  PropositionRef,
   StatementOut,
-  StatementRef,
   UpdatePersorg,
 } from "howdju-common";
 
@@ -75,17 +71,17 @@ describe("routeRequest", () => {
       id: "52",
       longName: "The creator",
     };
-    const proposition = brandedParse(PropositionRef, {
+    const proposition = {
       id: "42",
       text: "Hi they said me.",
       normalText: "Hi they said me.",
       created: moment(),
-    });
+    };
     const statements: StatementOut[] = [
-      brandedParse(StatementRef, {
+      {
         id: "92",
         speaker: {
-          ...PersorgRef.parse({ id: "92" }),
+          id: "92",
           isOrganization: false,
           name: "VIP",
           created: moment(),
@@ -95,7 +91,7 @@ describe("routeRequest", () => {
         sentence: proposition,
         created: moment(),
         creator,
-      }),
+      },
     ];
     const readStatementsForSentenceTypeAndId = jest
       .fn()
@@ -136,7 +132,7 @@ describe("routeRequest", () => {
     // Arrange
     const callback = jest.fn();
     const persorg: UpdatePersorg = {
-      ...PersorgRef.parse({ id: "92" }),
+      id: "92",
       isOrganization: false,
       name: "VIP",
     };

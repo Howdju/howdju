@@ -3,11 +3,8 @@ import isEmpty from "lodash/isEmpty";
 import { GridCell } from "@react-md/utils";
 
 import { EntityId } from "howdju-common";
+import { appearancesSchema, justificationsSchema } from "howdju-client-common";
 
-import {
-  appearancesSchema,
-  justificationsSchema,
-} from "../../normalizationSchemas";
 import JustificationCard from "../../JustificationCard";
 import { useAppDispatch, useAppSelector, useAppEntitySelector } from "@/hooks";
 import ApparitionCard from "../appearances/ApparitionCard";

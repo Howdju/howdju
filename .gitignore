@@ -5,6 +5,10 @@
 **/.expo/
 **/coverage/
 
+# Ignore built TypeScript type definitions
+**/types/
+tsconfig.tsbuildinfo
+
 # See https://yarnpkg.com/getting-started/qa#which-files-should-be-gitignored (we are not using Zero-Installs...)
 .yarn/*
 !.yarn/patches

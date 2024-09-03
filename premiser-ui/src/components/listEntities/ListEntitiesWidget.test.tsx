@@ -4,12 +4,7 @@ import { screen, waitFor } from "@testing-library/react";
 import { drop, take, toNumber } from "lodash";
 import moment from "moment";
 
-import {
-  httpStatusCodes,
-  fromJson,
-  toJson,
-  PropositionRef,
-} from "howdju-common";
+import { httpStatusCodes, fromJson, toJson } from "howdju-common";
 import { InferResponseBody, serviceRoutes } from "howdju-service-routes";
 
 import RecentPropositionsWidget from "@/pages/recentActivity/RecentPropositionsWidget";
@@ -27,7 +22,7 @@ const server = withMockServer();
 
 const created = moment("2023-01-12T12:23:00-08:00");
 const propositions = Array.from(Array(20).keys()).map((id) => ({
-  ...PropositionRef.parse({ id: `proposition${id}` }),
+  id: `proposition${id}`,
   created,
   text: `The proposition text ${id}`,
   normalText: `The proposition text ${id}`,

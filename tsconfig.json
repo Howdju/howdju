@@ -3,6 +3,32 @@
     "target": "ES2015",
     "allowJs": true,
     "checkJs": false,
+    /*
+    `noEmit` by default to prevent accidentally emitting in leaf projects i.e. clients and apps.
+    Internal projects must override this setting to emit declarations. The compilerOptions they
+    must add are:
+
+    ```
+      "composite": true,  // Allows them to be `references` in other projects
+      "noEmit": false,  // Allows them to emit declarations
+      "emitDeclarationOnly": true,  // Prevent them from emitting JS
+      "declarationDir": "types"  // Emit the declarations into a separate directory that we can
+      gitignore
+    ```
+
+    Additionally they must declare their `includes`. See
+    https://www.typescriptlang.org/docs/handbook/project-references.html#composite for details.
+
+    The leaf projects then declar `references` to the internal projects they depend on like:
+
+    ```
+    "references": [{"path": "../howdju-common"}]
+    ```
+
+    This avoids typechecking the internal projects twice. Specifically, it prevents an error where
+    the leaf project does not recognize the `@` path for project-relative imports for the
+    internal projects.
+    */
     "noEmit": true,
     "strict": true,
     "noImplicitAny": true,

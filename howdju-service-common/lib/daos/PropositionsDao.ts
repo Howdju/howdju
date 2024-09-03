@@ -8,17 +8,16 @@ import toNumber from "lodash/toNumber";
 import { Moment } from "moment";
 
 import {
-  brandedParse,
   cleanWhitespace,
   CreateProposition,
   EntityId,
   JustificationBasisTypes,
   JustificationRootTargetTypes,
   Logger,
+  PersistedEntity,
   Proposition,
   PropositionCreatedAsType,
   PropositionOut,
-  PropositionRef,
   requireArgs,
   SortDescription,
   SortDirections,
@@ -101,7 +100,7 @@ export class PropositionsDao {
     const creatorsById = keyBy(creators, "id");
 
     return rows.map((row) => {
-      const proposition: Proposition = {
+      const proposition: PropositionOut = {
         id: toString(row.proposition_id),
         text: row.text,
         normalText: row.normal_text,
@@ -115,7 +114,7 @@ export class PropositionsDao {
           id: this.getCreatedAsId(row),
         };
       }
-      return brandedParse(PropositionRef, proposition);
+      return proposition;
     });
   }
 
@@ -304,7 +303,7 @@ export class PropositionsDao {
     );
   }
 
-  deleteProposition(proposition: PropositionRef, deletedAt: Moment) {
+  deleteProposition(proposition: PersistedEntity, deletedAt: Moment) {
     return this.deletePropositionById(proposition.id, deletedAt);
   }
 

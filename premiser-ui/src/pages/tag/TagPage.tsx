@@ -1,13 +1,12 @@
 import React, { useEffect } from "react";
-import Helmet from "../../Helmet";
-import get from "lodash/get";
-import map from "lodash/map";
+import { get, map } from "lodash";
 import { GridCell } from "@react-md/utils";
 
-import { api } from "../../actions";
+import { api, propositionsSchema, tagSchema } from "howdju-client-common";
+
+import Helmet from "../../Helmet";
 import PropositionCard from "../../PropositionCard";
 import { denormalize } from "normalizr";
-import { propositionsSchema, tagSchema } from "../../normalizationSchemas";
 import * as characters from "../../characters";
 import { EntityId } from "howdju-common";
 import { RouteComponentProps } from "react-router";

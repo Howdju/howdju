@@ -11,6 +11,7 @@ import {
   makeCreateMediaExcerptSpeakerInput,
   makeCreateUrlLocatorInput,
 } from "howdju-common";
+import { api, mediaExcerptSchema } from "howdju-client-common";
 
 import {
   DropdownMenu,
@@ -20,8 +21,6 @@ import {
 } from "@/components/menu/Menu";
 import { CircularProgress } from "@/components/progress/CircularProgress";
 import { useAppDispatch, useAppEntitySelector, useAppSelector } from "@/hooks";
-import { api } from "@/apiActions";
-import { mediaExcerptSchema } from "@/normalizationSchemas";
 import { combineEditorIds, combineIds } from "@/viewModels";
 import MediaExcerptCard from "@/components/mediaExcerpts/MediaExcerptCard";
 import HowdjuHelmet from "@/Helmet";

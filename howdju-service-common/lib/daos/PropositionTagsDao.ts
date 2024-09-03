@@ -1,13 +1,11 @@
 import { reduce, uniq } from "lodash";
 
 import {
-  brandedParse,
   EntityId,
   PropositionOut,
   PropositionTagVotePolarities,
   PropositionTagVotePolarity,
   TagOut,
-  TagRef,
 } from "howdju-common";
 
 import { Database } from "../database";
@@ -48,12 +46,10 @@ export class PropositionTagsDao {
         if (!(propositionId in acc)) {
           acc[propositionId] = [];
         }
-        acc[propositionId].push(
-          brandedParse(TagRef, {
-            id: toIdString(tag_id),
-            name,
-          })
-        );
+        acc[propositionId].push({
+          id: toIdString(tag_id),
+          name,
+        });
         return acc;
       },
       {} as Record<EntityId, TagOut[]>
@@ -88,12 +84,10 @@ export class PropositionTagsDao {
         if (!(propositionId in acc)) {
           acc[propositionId] = [];
         }
-        acc[propositionId].push(
-          brandedParse(TagRef, {
-            id: toIdString(tag_id),
-            name,
-          })
-        );
+        acc[propositionId].push({
+          id: toIdString(tag_id),
+          name,
+        });
         return acc;
       },
       {} as Record<EntityId, TagOut[]>

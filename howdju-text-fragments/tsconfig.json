@@ -6,5 +6,9 @@
       // Support project-relative imports
       "@/*": ["./src/*"]
     }
-  }
+  },
+  "references": [
+    { "path": "../howdju-common" },
+    { "path": "../howdju-client-common" }
+  ]
 }

@@ -1,5 +1,5 @@
 import React from "react";
-import find from "lodash/find";
+import { find } from "lodash";
 
 import {
   EntityId,
@@ -8,12 +8,13 @@ import {
   tagEqual,
   TagOut,
 } from "howdju-common";
+import { api, SuggestionsKey } from "howdju-client-common";
 
 import { combineIds, combineSuggestionsKeys } from "@/viewModels";
-import { api, goto } from "@/actions";
+import { goto } from "@/actions";
 import TagsControl, { TagOutOrInput } from "./TagsControl";
 import { useAppDispatch } from "@/hooks";
-import { ComponentId, SuggestionsKey } from "@/types";
+import { ComponentId } from "@/types";
 import { toCompatibleTagVotes } from "@/util";
 
 interface Props {

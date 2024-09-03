@@ -1,7 +1,8 @@
 import { describe, expect, test } from "@jest/globals";
 
+import { api } from "howdju-client-common";
+
 import { registrationConfirmationPage } from "./registrationConfirmationPageSlice";
-import { api } from "@/apiActions";
 
 describe("registrationConfirmationPageSlice", () => {
   test("should obtain email from checkRegistration", () => {

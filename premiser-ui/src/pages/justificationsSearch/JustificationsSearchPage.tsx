@@ -6,11 +6,10 @@ import { denormalize } from "normalizr";
 import { GridCell } from "@react-md/utils";
 
 import { JustificationView } from "howdju-common";
+import { api, justificationsSchema } from "howdju-client-common";
 
 import { CircularProgress } from "@/components/progress/CircularProgress";
-import { api } from "../../actions";
 import JustificationCard from "../../JustificationCard";
-import { justificationsSchema } from "../../normalizationSchemas";
 import { makeExtensionHighlightOnClickWritQuoteUrlCallback } from "../../extensionCallbacks";
 import { useAppDispatch, useAppSelector } from "@/hooks";
 import { extractFilters, extractIncludeUrls } from "./queryStringExtraction";

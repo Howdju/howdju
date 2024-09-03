@@ -2,12 +2,10 @@ import { keyBy, merge, toString, uniq } from "lodash";
 import { Moment } from "moment";
 
 import {
-  brandedParse,
   CreateSource,
   EntityId,
   normalizeText,
   SourceOut,
-  SourceRef,
   UpdateSource,
 } from "howdju-common";
 
@@ -48,16 +46,13 @@ export class SourcesDao {
       [source.description, normalDescription, creatorUserId, created]
     );
     const creator = await this.usersDao.readUserBlurbForId(creatorUserId);
-    return brandedParse(
-      SourceRef,
-      merge({}, source, {
-        id: row.source_id,
-        normalDescription,
-        creatorUserId,
-        creator,
-        created,
-      })
-    );
+    return merge({}, source, {
+      id: row.source_id,
+      normalDescription,
+      creatorUserId,
+      creator,
+      created,
+    });
   }
 
   async readSourcesForIds(sourceIds: EntityId[]) {

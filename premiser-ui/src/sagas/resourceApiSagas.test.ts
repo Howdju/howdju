@@ -1,7 +1,8 @@
 import { fork, put } from "typed-redux-saga";
 import { rest } from "msw";
 
-import { api } from "@/apiActions";
+import { api } from "howdju-client-common";
+
 import { callApiForResource, resourceApiCalls } from "./resourceApiSagas";
 import { testSaga, withFakeTimers, withMockServer } from "@/testUtils";
 

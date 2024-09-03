@@ -7,16 +7,13 @@ import {
   isRootJustification,
   JustificationView,
 } from "howdju-common";
+import { SuggestionsKey } from "howdju-client-common";
 
 import EntityViewer from "./EntityViewer";
 import JustificationRootTargetViewer from "./JustificationRootTargetViewer";
 import JustificationChatBubble from "./JustificationChatBubble";
 import { combineIds, combineSuggestionsKeys, isCounter } from "./viewModels";
-import {
-  ComponentId,
-  OnClickJustificationWritQuoteUrl,
-  SuggestionsKey,
-} from "./types";
+import { ComponentId, OnClickJustificationWritQuoteUrl } from "./types";
 import { RootTargetProps } from "./JustificationRootTargetViewer";
 import IconButton from "./components/button/IconButton";
 import { formatTimestampForDisplay } from "./util";

@@ -3,7 +3,7 @@ import { AnyAction } from "@reduxjs/toolkit";
 import { normalize } from "normalizr";
 import { get, union, filter } from "lodash";
 
-import { api, str } from "@/actions";
+import { api, str } from "howdju-client-common";
 
 const widgetRequestReducer =
   <T extends BaseListEntitiesState>(defaultWidgetState: T) =>

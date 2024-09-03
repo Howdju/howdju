@@ -1,7 +1,9 @@
-import { DomAnchor, UrlTarget } from "howdju-common";
 import { RequireExactlyOne } from "type-fest";
-import { actions } from ".";
-import { ExtensionFrameActionName } from "./actions";
+
+import { DomAnchor, UrlTarget } from "howdju-common";
+
+import * as actions from "./extensionActions";
+import { ExtensionFrameActionName } from "./extensionActions";
 
 /**
  * Contains an `ExtensionFrameAction` for the content script to send to the iframed web app.

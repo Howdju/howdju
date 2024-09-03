@@ -1,6 +1,6 @@
 import { toUser } from "./orm";
 import { toIdString } from "./daosUtil";
-import { brandedParse, EntityId, UserRef } from "howdju-common";
+import { EntityId } from "howdju-common";
 import { CreateUserDataIn, Database, UserRow } from "..";
 import { Moment } from "moment";
 
@@ -38,7 +38,7 @@ export class UsersDao {
         now,
       ]
     );
-    return brandedParse(UserRef, {
+    return {
       id: toIdString(row.user_id),
       email: row.email,
       username: row.username,
@@ -46,7 +46,7 @@ export class UsersDao {
       shortName: row.short_name,
       created: row.created,
       isActive: row.is_active,
-    });
+    };
   }
 
   async isEmailInUse(email: string) {
@@ -97,12 +97,10 @@ export class UsersDao {
       `,
       [userIds]
     );
-    return rows.map((row) =>
-      brandedParse(UserRef, {
-        id: toIdString(row.user_id),
-        longName: row.long_name,
-      })
-    );
+    return rows.map((row) => ({
+      id: toIdString(row.user_id),
+      longName: row.long_name,
+    }));
   }
 
   async readUserBlurbForId(userId: EntityId) {
@@ -113,10 +111,10 @@ export class UsersDao {
       "select user_id, long_name from users where user_id = $1 and deleted is null",
       [userId]
     );
-    return brandedParse(UserRef, {
+    return {
       id: toIdString(row.user_id),
       longName: row.long_name,
-    });
+    };
   }
 
   async readUserForEmail(email: string) {

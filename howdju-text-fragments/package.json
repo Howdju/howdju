@@ -11,7 +11,7 @@
   "scripts": {
     "clean": "rm -rf dist",
     "build:get-ranges-for-current-fragment-script": "esbuild src/getRangesForCurrentFragment.ts --bundle --outfile=dist/getRangesForCurrentFragment.js --platform=browser --target=es2016",
-    "build:range-to-fragment-script": "esbuild src/rangeToFragment.ts --bundle --outfile=dist/rangeToFragment.js --platform=browser --target=es2016",
+    "build:range-to-fragment-script": "esbuild src/rangeToFragment.ts --bundle --outfile=dist/rangeToFragment.js --platform=browser --target=es2016 --external:pg-native --external:pg --external:crypto --external:path --external:fs --external:http --external:https --external:./zlib_bindings --external:stream --external:net --external:perf_hooks --external:tls --external:assert --external:os --external:child_process",
     "check-build": "yarn run build:range-to-fragment-script && yarn run build:get-ranges-for-current-fragment-script",
     "check-format": "yarn run prettier --check --ignore-path .gitignore .",
     "custom-check": "bin/check-scripts-are-updated.sh",

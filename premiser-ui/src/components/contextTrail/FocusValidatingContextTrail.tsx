@@ -8,6 +8,7 @@ import {
   TrailConnectionNode,
   ContextTrailItem,
 } from "howdju-common";
+import { normalizationSchemaByEntityType } from "howdju-client-common";
 
 import { CircularProgress } from "@/components/progress/CircularProgress";
 import ErrorMessages from "@/ErrorMessages";
@@ -16,7 +17,6 @@ import { PrimaryContextTrail } from "./PrimaryContextTrailProvider";
 import { ComponentId } from "@/types";
 import { logger } from "@/logger";
 import { useAppEntitySelector } from "@/hooks";
-import { normalizationSchemaByEntityType } from "@/normalizationSchemas";
 import { combineIds } from "@/viewModels";
 
 interface Props {

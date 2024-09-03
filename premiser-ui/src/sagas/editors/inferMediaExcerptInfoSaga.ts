@@ -1,8 +1,9 @@
 import { call, put, takeEvery } from "typed-redux-saga";
 
-import { api, editors } from "@/actions";
+import { api, AnyApiAction } from "howdju-client-common";
+
+import { editors } from "@/actions";
 import { callApiForResource } from "../resourceApiSagas";
-import { AnyApiAction } from "@/apiActions";
 
 /** Translates an editor action to an API call. */
 export function* inferMediaExcerptInfo() {
