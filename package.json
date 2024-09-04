@@ -40,6 +40,7 @@
       "howdju-client-common",
       "howdju-common",
       "howdju-docs",
+      "howdju-dom",
       "howdju-ops",
       "howdju-elastic",
       "howdju-mobile-app",

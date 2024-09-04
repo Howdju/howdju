@@ -4,7 +4,6 @@
 
 export * from "./actions";
 export * from "./clientNetworkErrors";
-export * from "./dom";
 export * from "./extension";
 export * from "./location";
 export * from "./models";

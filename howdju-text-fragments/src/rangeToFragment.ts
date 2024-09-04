@@ -3,7 +3,7 @@ import {
   setTimeout,
 } from "text-fragments-polyfill/dist/fragment-generation-utils.js";
 
-import { normalizeContentRange } from "howdju-client-common";
+import { normalizeContentRange } from "howdju-dom";
 
 // Disable timeouts
 setTimeout(null);
@@ -14,6 +14,10 @@ function rangeToFragment(range: Range) {
 }
 
 function selectTextOfRange(range: Range) {
+  const window = range.startContainer.ownerDocument?.defaultView;
+  if (!window) {
+    throw new Error("unable to get window from range");
+  }
   const selection = window.getSelection();
   if (!selection) {
     throw new Error("unable to get selection");

@@ -1,7 +1,7 @@
 {
-  "name": "howdju-client-common",
+  "name": "howdju-dom",
   "version": "1.0.0",
-  "description": "Code common to extension and web app",
+  "description": "Code for interacting with the DOM",
   "main": "lib/index.ts",
   "author": "Carl Gieringer <carl.gieringer@gmail.com>",
   "license": "AGPL-3.0-or-later",
@@ -14,31 +14,12 @@
     "test-inspect": "node --inspect-brk ../node_modules/.bin/jest --runInBand --watch",
     "typecheck": "tsc --build"
   },
-  "dependencies": {
-    "@reduxjs/toolkit": "^1.9.5",
-    "axios": "^1.7.4",
-    "dom-anchor-text-position": "^5.0.0",
-    "dom-anchor-text-quote": "^4.0.2",
-    "howdju-common": "workspace:howdju-common",
-    "howdju-dom": "workspace:howdju-dom",
-    "howdju-service-routes": "workspace:howdju-service-routes",
-    "lodash": "^4.17.21",
-    "moment": "^2.29.4",
-    "normalizr": "^3.6.1",
-    "path-to-regexp": "^6.2.0",
-    "query-string": "^7.0.0",
-    "redux": "^4.0.5",
-    "redux-actions": "^2.6.4",
-    "type-fest": "^3.3.0",
-    "uuid": "^9.0.0"
-  },
   "devDependencies": {
     "@types/chrome": "^0.0.233",
     "eslint": "^8.27.0",
     "eslint-config-howdju": "workspace:eslint-config-howdju",
     "howdju-test-common": "workspace:howdju-test-common",
     "jest": "^29.3.1",
-    "moment": "^2.29.4",
     "prettier": "2.7.1",
     "ts-node": "^10.9.1",
     "typescript": "^4.9.4"

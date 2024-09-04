@@ -22017,6 +22017,7 @@ __metadata:
     glamor: "npm:^2.20.40"
     howdju-client-common: "workspace:howdju-client-common"
     howdju-common: "workspace:howdju-common"
+    howdju-dom: "workspace:howdju-dom"
     howdju-test-common: "workspace:howdju-test-common"
     jest: "npm:^29.3.1"
     lodash: "npm:^4.17.21"
@@ -22110,6 +22111,21 @@ __metadata:
     react: "npm:^18.2.0"
     react-dom: "npm:^18.2.0"
     remark-smartypants: "npm:^2.0.0"
+  languageName: unknown
+  linkType: soft
+
+"howdju-dom@workspace:howdju-dom":
+  version: 0.0.0-use.local
+  resolution: "howdju-dom@workspace:howdju-dom"
+  dependencies:
+    "@types/chrome": "npm:^0.0.233"
+    eslint: "npm:^8.27.0"
+    eslint-config-howdju: "workspace:eslint-config-howdju"
+    howdju-test-common: "workspace:howdju-test-common"
+    jest: "npm:^29.3.1"
+    prettier: "npm:2.7.1"
+    ts-node: "npm:^10.9.1"
+    typescript: "npm:^4.9.4"
   languageName: unknown
   linkType: soft
 
@@ -22337,6 +22353,7 @@ __metadata:
     eslint-config-howdju: "workspace:eslint-config-howdju"
     howdju-client-common: "workspace:howdju-client-common"
     howdju-common: "workspace:howdju-common"
+    howdju-dom: "workspace:howdju-dom"
     prettier: "npm:2.7.1"
     text-fragments-polyfill: "npm:^5.5.0"
     typescript: "npm:^4.9.4"
