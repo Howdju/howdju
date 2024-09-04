@@ -2,7 +2,6 @@
   "extends": "../tsconfig.json",
   "compilerOptions": {
     "paths": {
-      // Support project-relative imports
       "@/*": ["./lib/*"]
     },
     "composite": true,
@@ -10,5 +9,6 @@
     "emitDeclarationOnly": true,
     "declarationDir": "types"
   },
-  "include": ["lib/**/*"]
+  "include": ["lib/**/*"],
+  "references": [{ "path": "../howdju-test-common" }]
 }

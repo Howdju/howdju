@@ -6,5 +6,12 @@
       "@/*": ["./src/*"]
     }
   },
-  "exclude": ["node_modules", "dist"]
+  "exclude": ["node_modules", "dist"],
+  "references": [
+    { "path": "../howdju-common" },
+    { "path": "../howdju-ops" },
+    { "path": "../howdju-service-common" },
+    { "path": "../howdju-service-routes" },
+    { "path": "../howdju-test-common" }
+  ]
 }

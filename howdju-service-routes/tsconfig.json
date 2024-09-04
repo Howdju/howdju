@@ -12,11 +12,7 @@
   },
   "include": ["lib/**/*"],
   "references": [
-    {
-      "path": "../howdju-common"
-    },
-    {
-      "path": "../howdju-service-common"
-    }
+    { "path": "../howdju-service-common" },
+    { "path": "../howdju-test-common" }
   ]
 }

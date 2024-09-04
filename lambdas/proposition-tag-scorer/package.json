@@ -15,9 +15,10 @@
     "release": "../bin/release.sh ../../howdju-text-fragments/dist/rangeToFragment.js",
     "test": "echo 'TODO(#654) add tests'",
     "test-inspect": "echo 'TODO(#654) add tests'",
-    "typecheck": "tsc"
+    "typecheck": "tsc --build"
   },
   "dependencies": {
+    "howdju-service-common": "workspace:howdju-service-common",
     "pg": "^8.6.0"
   },
   "devDependencies": {

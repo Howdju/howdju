@@ -231,7 +231,7 @@ export function mediaExcerptCitationKey(
 
   // toMediaExcerptCitationIdentifier
   return `${mediaExcerptId}-${sourceId}${
-    normalPincite ? "-" + normalPincite : ""
+    normalPincite ? `-${normalPincite}` : ""
   }`;
 }
 export const mediaExcerptCitationSchema =

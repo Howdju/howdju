@@ -39,7 +39,7 @@
     "start:api:localhost:inspect": "env-cmd -f ../config/localhost.env yarn run inspect-server",
     "test": "jest",
     "test-inspect": "node --inspect-brk ../node_modules/.bin/jest --runInBand --watch",
-    "typecheck": "tsc",
+    "typecheck": "tsc --build",
     "update-lambda-function-code": "../bin/build-and-run-script.sh bin/update-lambda-function-code.js",
     "update-lambda-function-alias": "../bin/build-and-run-script.sh bin/update-lambda-function-alias.js",
     "update-normal-text-local": "env-cmd -f ../config/local.env ../bin/build-and-run-script.sh bin/update-normal-text.js",

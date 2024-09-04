@@ -12,8 +12,7 @@
   },
   "include": ["lib/**/*"],
   "references": [
-    {
-      "path": "../howdju-common"
-    }
+    { "path": "../howdju-common" },
+    { "path": "../howdju-test-common" }
   ]
 }

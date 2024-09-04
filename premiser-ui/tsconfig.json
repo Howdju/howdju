@@ -12,8 +12,9 @@
     }
   },
   "references": [
-    {
-      "path": "../howdju-client-common"
-    }
+    { "path": "../howdju-client-common" },
+    { "path": "../howdju-ops" },
+    { "path": "../howdju-common" },
+    { "path": "../howdju-service-routes" }
   ]
 }

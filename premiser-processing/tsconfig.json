@@ -5,5 +5,9 @@
       // Support project-relative imports
       "@/*": ["./lib/*"]
     }
-  }
+  },
+  "references": [
+    { "path": "../howdju-ops" },
+    { "path": "../howdju-test-common" }
+  ]
 }

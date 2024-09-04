@@ -16,7 +16,7 @@
     "test": "jest",
     "test-inspect": "node --inspect-brk ../node_modules/.bin/jest --watch --runInBand",
     "test-watch": "jest --watch",
-    "typecheck": "tsc",
+    "typecheck": "tsc --build",
     "watch": "webpack --watch --progress --color --mode development --stats-error-details"
   },
   "dependencies": {

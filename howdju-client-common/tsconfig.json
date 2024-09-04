@@ -12,11 +12,8 @@
   },
   "include": ["lib/**/*"],
   "references": [
-    {
-      "path": "../howdju-common"
-    },
-    {
-      "path": "../howdju-service-routes"
-    }
+    { "path": "../howdju-common" },
+    { "path": "../howdju-service-routes" },
+    { "path": "../howdju-test-common" }
   ]
 }

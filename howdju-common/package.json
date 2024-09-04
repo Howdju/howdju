@@ -14,7 +14,7 @@
     "custom-check": "bin/custom-check.sh",
     "test": "jest",
     "test-inspect": "node --inspect-brk ../node_modules/.bin/jest --runInBand --watch",
-    "typecheck": "tsc"
+    "typecheck": "tsc --build tsconfig.json"
   },
   "dependencies": {
     "ajv": "^8.1.0",
