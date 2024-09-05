@@ -2,7 +2,7 @@ import { delay, race, take, takeEvery } from "typed-redux-saga";
 import { REHYDRATE } from "redux-persist/lib/constants";
 
 import config from "../config";
-import { logger } from "../logger";
+import { logger } from "@/logging";
 
 // API calls requiring authentication will want to wait for a rehydrate before firing
 let isRehydrated = false;

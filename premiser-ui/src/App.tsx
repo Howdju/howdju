@@ -18,6 +18,7 @@ import {
   extensionFrame,
   inIframe,
   mapActionCreatorGroupToDispatchToProps,
+  selectAuthToken,
 } from "howdju-client-common";
 import { isTruthy, utcNow } from "howdju-common";
 
@@ -53,7 +54,6 @@ import routes from "./routes";
 import {
   selectAuthEmail,
   selectAuthRefreshTokenExpiration,
-  selectAuthToken,
   selectPrivacyConsent,
 } from "./selectors";
 import sentryInit from "./sentryInit";
@@ -108,6 +108,12 @@ class App extends Component<Props> {
     if (isMissingPrivacyConsent()) {
       showPrivacyConsentDialog();
     }
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener("resize", this.onWindowResize);
+    window.removeEventListener("scroll", this.throttledOnWindowScroll);
+    window.removeEventListener("message", this.receiveMessage);
   }
 
   /** Read the current privacy consent and perform any initializations */
@@ -203,12 +209,6 @@ class App extends Component<Props> {
     }
     this.props.privacyConsent.update(cookies);
   };
-
-  componentWillUnmount() {
-    window.removeEventListener("resize", this.onWindowResize);
-    window.removeEventListener("scroll", this.throttledOnWindowScroll);
-    window.removeEventListener("message", this.receiveMessage);
-  }
 
   receiveMessage = (event: MessageEvent) => {
     if (!this.windowMessageHandler) {

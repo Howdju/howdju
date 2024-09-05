@@ -7,7 +7,7 @@ import {
 import { ApiErrorCode } from "howdju-common";
 
 import { ClientNetworkErrorType } from "@/clientNetworkErrors";
-import { createAction } from "./actionHelpers";
+import { createAction } from "@/actions/actionHelpers";
 
 // Created by newApiResponseError.
 export type ApiErrorResponsePayload = {

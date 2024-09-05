@@ -3,7 +3,8 @@ import { createReducer } from "@reduxjs/toolkit";
 import { Moment } from "moment";
 
 import { AuthToken } from "howdju-common";
-import { api } from "howdju-client-common";
+
+import { api } from "@/api/apiActions";
 
 const initialState = {
   authToken: undefined as AuthToken | undefined,

@@ -1,15 +1,16 @@
 import { put, call, select } from "typed-redux-saga";
 import { cloneDeep, isEmpty, pick } from "lodash";
 
-import { api, callApiResponse } from "howdju-client-common";
+import { customHeaderKeys, identifierHeaderKeys } from "howdju-common";
 
-import { FetchHeaders, RequestOptions, sendRequest } from "../api";
-import { selectAuthToken } from "../selectors";
-import { tryWaitOnRehydrate } from "./appSagas";
+import { callApiResponse } from "./apiActionHelpers";
+import { api } from "./apiActions";
+import { FetchHeaders, RequestOptions, sendRequest } from "./api";
+import { selectAuthToken } from "./apiSelectors";
+import { tryWaitOnRehydrate } from "@/hydration/hydrationSagas";
 import { pageLoadId, getSessionStorageId } from "../identifiers";
-import * as customHeaderKeys from "../customHeaderKeys";
-import { isAuthenticationExpiredError } from "@/uiErrors";
-import { logger } from "../logger";
+import { isAuthenticationExpiredError } from "./apiErrors";
+import { logger } from "../logging";
 
 export type FetchInit = Omit<RequestOptions, "endpoint">;
 
@@ -51,7 +52,7 @@ function logApiError(error: unknown, endpoint: string) {
     );
     return;
   }
-  const identifierKeys = pick(error, customHeaderKeys.identifierKeys);
+  const identifierKeys = pick(error, identifierHeaderKeys);
   const options = { extra: { endpoint } };
   if (!isEmpty(identifierKeys)) {
     options.extra = { ...options.extra, ...identifierKeys };

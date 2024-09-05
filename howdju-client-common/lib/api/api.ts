@@ -2,17 +2,22 @@ import Axios, { AxiosError, AxiosResponse, Cancel } from "axios";
 import { get, pick } from "lodash";
 import { CANCEL } from "redux-saga";
 
-import { HttpMethod, httpMethods, toJson } from "howdju-common";
+import {
+  customHeaderKeys,
+  HttpMethod,
+  httpMethods,
+  identifierHeaderKeys,
+  toJson,
+} from "howdju-common";
 
-import { logger } from "./logger";
+import { logger } from "../logging";
 import {
   makeIdentifiersMessage,
   newApiResponseError,
   newNetworkFailureError,
   newRequestConfigurationError,
-} from "./uiErrors";
-import { newId } from "./identifiers";
-import * as customHeaderKeys from "./customHeaderKeys";
+} from "./apiErrors";
+import { newUuidId } from "../uuids";
 import config from "./config";
 
 const axios = Axios.create({
@@ -40,7 +45,7 @@ export function sendRequest({
   const controller = new AbortController();
 
   if (!requestId) {
-    requestId = newId();
+    requestId = newUuidId();
   }
   headers = { ...headers, [customHeaderKeys.REQUEST_ID]: requestId };
 
@@ -71,7 +76,7 @@ export function sendRequest({
 
 const handleError = (error: Error | AxiosError | Cancel) => {
   const headers = get(error, ["config", "headers"]);
-  const identifierHeaders = pick(headers, customHeaderKeys.identifierKeys);
+  const identifierHeaders = pick(headers, identifierHeaderKeys);
   if (Axios.isAxiosError(error)) {
     if (error.response) {
       throw newApiResponseError(
