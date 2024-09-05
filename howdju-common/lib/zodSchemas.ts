@@ -1308,7 +1308,7 @@ const createJustificationBaseShape = {
     propositionCompound: z.union([CreatePropositionCompound, PersistedEntity]),
     mediaExcerpt: PersistedEntity.optional(),
     sourceExcerpt: z.union([CreateSourceExcerpt, PersistedEntity]),
-    writQuote: z.union([CreateWritQuote, Entity]),
+    writQuote: z.union([CreateWritQuote, PersistedEntity]),
     justificationBasisCompound: Entity.optional(),
   }),
 };

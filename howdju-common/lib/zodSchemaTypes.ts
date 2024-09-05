@@ -153,6 +153,8 @@ export type BasedJustificationWithRootRef = Omit<
  * A type lookup from the entity type to the Zod Brand string.
  *
  * This allows us to pass just the type to brand-related helpers, and to lookup the brand string.
+ *
+ * TODO(#524) remove this
  */
 export type EntityName<T> = T extends Proposition
   ? "Proposition"

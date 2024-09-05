@@ -3,6 +3,7 @@ import { normalize, Schema } from "normalizr";
 import deepMergeLib, { Options as DeepMergeOptions } from "deepmerge";
 import { AnyAction, createSlice } from "@reduxjs/toolkit";
 import { Moment } from "moment";
+import { MergeDeep } from "type-fest";
 
 import {
   EntityId,
@@ -39,7 +40,6 @@ import {
 
 import { ApiErrorPayload } from "@/types";
 import { matchActions } from "@/reducerUtils";
-import { MergeDeep } from "type-fest";
 
 type ModelKey = string;
 /**
