@@ -80,7 +80,12 @@ import {
   CreateMediaExcerptSpeakersInput,
   Credentials,
 } from "howdju-common";
-import { api, str, uiErrorTypes, PayloadOf } from "howdju-client-common";
+import {
+  api,
+  str,
+  clientNetworkErrorTypes,
+  PayloadOf,
+} from "howdju-client-common";
 
 import {
   EditorActionCreator,
@@ -387,7 +392,9 @@ const defaultEditorActions = {
         state.isSaving = false;
 
         const sourceError = action.payload.sourceError;
-        if (sourceError.errorType !== uiErrorTypes.API_RESPONSE_ERROR) {
+        if (
+          sourceError.errorType !== clientNetworkErrorTypes.API_RESPONSE_ERROR
+        ) {
           return;
         }
 
@@ -746,7 +753,9 @@ const editorReducerByType: {
       [str(editors.commitEdit.result)]: {
         throw: (state, action) => {
           const sourceError: CustomError = action.payload.sourceError;
-          if (sourceError.errorType === uiErrorTypes.API_RESPONSE_ERROR) {
+          if (
+            sourceError.errorType === clientNetworkErrorTypes.API_RESPONSE_ERROR
+          ) {
             switch (get(sourceError, "body.errorCode")) {
               case apiErrorCodes.INVALID_LOGIN_CREDENTIALS: {
                 return {

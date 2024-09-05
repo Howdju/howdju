@@ -6,7 +6,7 @@ import {
 
 import { ApiErrorCode } from "howdju-common";
 
-import { UiErrorType } from "@/clientNetworkErrors";
+import { ClientNetworkErrorType } from "@/clientNetworkErrors";
 import { createAction } from "./actionHelpers";
 
 // Created by newApiResponseError.
@@ -25,7 +25,7 @@ export type ApiErrorResponsePayload = {
  */
 export type CallApiErrorResponsePayload =
   | {
-      errorType: Omit<UiErrorType, "API_RESPONSE_ERROR">;
+      errorType: Omit<ClientNetworkErrorType, "API_RESPONSE_ERROR">;
       message: string;
       sourceError: Error;
     }

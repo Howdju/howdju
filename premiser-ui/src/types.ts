@@ -1,6 +1,6 @@
 import { FocusEvent, FocusEventHandler, MouseEvent } from "react";
 
-import { UiErrorType } from "howdju-client-common";
+import { ClientNetworkErrorType } from "howdju-client-common";
 import {
   ApiErrorCode,
   Entity,
@@ -130,7 +130,7 @@ export type CreatePropositionPageMode =
 
 // TODO(#113): remove this type by properly typing the action error values
 export interface ApiErrorPayload {
-  errorType: UiErrorType;
+  errorType: ClientNetworkErrorType;
   httpStatusCode: HttpStatusCode;
   body?: {
     errorCode: ApiErrorCode;

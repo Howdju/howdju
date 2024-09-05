@@ -8,7 +8,7 @@ import {
   isCustomError,
   newCustomError,
 } from "howdju-common";
-import { uiErrorTypes } from "howdju-client-common";
+import { clientNetworkErrorTypes } from "howdju-client-common";
 
 import { EditorType } from "./reducers/editors";
 import { EditorId } from "./types";
@@ -32,7 +32,7 @@ export const newNetworkFailureError = (
   sourceError: AxiosError
 ) =>
   newCustomError(
-    uiErrorTypes.NETWORK_FAILURE_ERROR,
+    clientNetworkErrorTypes.NETWORK_FAILURE_ERROR,
     makeIdentifiersMessage(message, identifiers),
     sourceError,
     {
@@ -62,7 +62,7 @@ export const newApiResponseError = (
   sourceError: AxiosResponseError
 ) =>
   newCustomError(
-    uiErrorTypes.API_RESPONSE_ERROR,
+    clientNetworkErrorTypes.API_RESPONSE_ERROR,
     makeIdentifiersMessage(
       `${message}: ${sourceError.response.data}`,
       identifiers
@@ -81,7 +81,7 @@ export const newRequestConfigurationError = (
   sourceError: AxiosError
 ) =>
   newCustomError(
-    uiErrorTypes.REQUEST_CONFIGURATION_ERROR,
+    clientNetworkErrorTypes.REQUEST_CONFIGURATION_ERROR,
     makeIdentifiersMessage(message, identifiers),
     sourceError,
     {
@@ -97,7 +97,7 @@ export const newEditorCommitResultError = (
 ) => {
   const message = `Error committing ${editorType} editor ${editorId} (source error message: ${sourceError.message})`;
   return newCustomError(
-    uiErrorTypes.COMMIT_EDIT_RESULT_ERROR,
+    clientNetworkErrorTypes.COMMIT_EDIT_RESULT_ERROR,
     message,
     sourceError,
     { editorType, editorId }
@@ -105,4 +105,4 @@ export const newEditorCommitResultError = (
 };
 
 export const newInvalidUrlError = (message: string) =>
-  newCustomError(uiErrorTypes.INVALID_URL, message);
+  newCustomError(clientNetworkErrorTypes.INVALID_URL, message);
