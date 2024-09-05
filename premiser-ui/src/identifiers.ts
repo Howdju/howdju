@@ -1,11 +1,11 @@
 // Levels of identifiers: LocalStorageID, Cookie ID, SessionCookieID, SessionStorageID, page load/app run ID ID, Request ID
-import { v4 as uuidv4 } from "uuid";
+
+import { newUuidId } from "howdju-client-common";
+
 import get from "lodash/get";
 import config from "./config";
 
-export const newId = () => uuidv4();
-
-export const pageLoadId = newId();
+export const pageLoadId = newUuidId();
 
 export const getOrCreateSessionStorageId = () => {
   let sessionStorageId = getSessionStorageId();
@@ -21,7 +21,7 @@ export const getSessionStorageId = () => {
 
 const createSessionStorageId = () => {
   if (window.sessionStorage) {
-    const ssid = newId();
+    const ssid = newUuidId();
     try {
       window.sessionStorage.setItem(config.sessionStorageIdKey, ssid);
       return ssid;

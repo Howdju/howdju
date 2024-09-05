@@ -20,7 +20,6 @@ export const selectUserExternalIds = (
 ) => state.currentUser.details?.externalIds || defaultValue;
 export const selectIsWindowNarrow = (state: RootState) =>
   state.app.isWindowNarrow;
-export const selectAuthToken = (state: RootState) => state.auth.authToken;
 export const selectAuthRefreshTokenExpiration = (state: RootState) =>
   moment.utc(state.currentUser.authRefreshTokenExpiration);
 export const selectUser = (state: RootState) => state.currentUser.details;
