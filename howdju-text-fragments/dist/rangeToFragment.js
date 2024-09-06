@@ -19169,7 +19169,7 @@
           propositionCompound: mod.union([CreatePropositionCompound, PersistedEntity]),
           mediaExcerpt: PersistedEntity.optional(),
           sourceExcerpt: mod.union([CreateSourceExcerpt, PersistedEntity]),
-          writQuote: mod.union([CreateWritQuote, Entity]),
+          writQuote: mod.union([CreateWritQuote, PersistedEntity]),
           justificationBasisCompound: Entity.optional()
         })
       });
