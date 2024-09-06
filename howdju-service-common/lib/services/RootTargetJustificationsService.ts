@@ -2,6 +2,7 @@ import {
   AuthToken,
   EntityId,
   EntityType,
+  JustificationRootTargetOut,
   JustificationRootTargetType,
 } from "howdju-common";
 import { AuthService } from "./AuthService";
@@ -16,6 +17,7 @@ import {
 } from "howdju-common";
 
 import { EntityNotFoundError } from "../serviceErrors";
+import { BasedJustificationDataOut } from "..";
 
 const entityTypeByRootTargetType: Record<
   JustificationRootTargetType,
@@ -37,7 +39,7 @@ export class RootTargetJustificationsService {
     rootTargetType: JustificationRootTargetType,
     rootTargetId: EntityId,
     userId: EntityId | undefined
-  ) {
+  ): Promise<JustificationRootTargetOut> {
     switch (rootTargetType) {
       case JustificationRootTargetTypes.PROPOSITION:
         return this.propositionsService.readPropositionForId(rootTargetId, {
@@ -57,7 +59,11 @@ export class RootTargetJustificationsService {
     rootTargetType: JustificationRootTargetType,
     rootTargetId: EntityId,
     authToken: AuthToken | undefined
-  ) {
+  ): Promise<
+    Omit<JustificationRootTargetOut, "justifications"> & {
+      justifications: BasedJustificationDataOut[];
+    }
+  > {
     const userId = await this.authService.readOptionalUserIdForAuthToken(
       authToken
     );

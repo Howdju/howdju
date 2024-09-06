@@ -1,11 +1,7 @@
 import {
-  brandedParse,
   EntityId,
-  PropositionRef,
   PropositionTagVoteOut,
   PropositionTagVotePolarity,
-  PropositionTagVoteRef,
-  TagRef,
 } from "howdju-common";
 import { reduce } from "lodash";
 import { Moment } from "moment";
@@ -97,17 +93,17 @@ export class PropositionTagVotesDao {
         if (!(propositionId in acc)) {
           acc[propositionId] = [];
         }
-        const vote = brandedParse(PropositionTagVoteRef, {
+        const vote = {
           id: toIdString(row.proposition_tag_vote_id),
           polarity: row.polarity,
-          proposition: brandedParse(PropositionRef, {
+          proposition: {
             id: propositionId,
-          }),
-          tag: brandedParse(TagRef, {
+          },
+          tag: {
             id: toIdString(row.tag_id),
             name: row.tag_name,
-          }),
-        });
+          },
+        };
         acc[propositionId].push(vote);
         return acc;
       },

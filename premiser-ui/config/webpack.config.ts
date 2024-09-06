@@ -15,6 +15,7 @@ import WarningsToErrorsPlugin from "warnings-to-errors-webpack-plugin";
 import StatoscopeWebpackPlugin from "@statoscope/webpack-plugin";
 
 import { gitShaShort } from "howdju-ops";
+import ProjectRelativeImportResolverPlugin from "../../webpack/ProjectRelativeImportResolverPlugin";
 
 import packageInfo from "../package.json";
 import projectConfig from "./project.config";
@@ -66,7 +67,11 @@ const plugins: WebpackPluginInstance[] = [
   new MiniCssExtractPlugin(),
   new MomentLocalesPlugin({ localesToKeep: ["en"] }),
   new WarningsToErrorsPlugin(),
+  new ProjectRelativeImportResolverPlugin({
+    projectSources: { "premiser-ui": "src" },
+  }),
 ];
+
 // Adding webpack-bundle-analyzer seems to take over the whole build, only showing
 // the analysis. So only add it when requested.
 if (process.env.BUNDLE_ANALYZER) {
@@ -95,7 +100,7 @@ const baseWebpackConfig = {
   },
   resolve: {
     alias: {
-      // Support project-relative imports
+      // Support project-relative imports for non-JS files.
       "@": path.resolve(__dirname, "../src/"),
     },
   },

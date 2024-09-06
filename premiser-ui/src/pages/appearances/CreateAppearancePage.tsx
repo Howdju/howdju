@@ -2,12 +2,11 @@ import React, { useEffect } from "react";
 import { RouteComponentProps } from "react-router";
 
 import { EntityId, makeCreatePropositionInput } from "howdju-common";
+import { api, mediaExcerptSchema } from "howdju-client-common";
 
 import { CircularProgress } from "@/components/progress/CircularProgress";
-import { api } from "@/apiActions";
 import HowdjuHelmet from "@/Helmet";
 import { useAppDispatch, useAppEntitySelector, useAppSelector } from "@/hooks";
-import { mediaExcerptSchema } from "@/normalizationSchemas";
 import { combineIds } from "@/viewModels";
 import { editors } from "@/actions";
 import CreateAppearanceEditor from "./CreateAppearanceEditor";

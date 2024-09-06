@@ -2,9 +2,15 @@ import produce from "immer";
 import { normalize } from "normalizr";
 import { handleActions } from "redux-actions";
 
-import { SuggestionsKey } from "@/types";
-import { autocompletes, combineActions, str } from "../actions";
-import { api, ApiResponseActionMeta } from "../apiActions";
+import {
+  api,
+  ApiResponseActionMeta,
+  SuggestionsKey,
+  combineActions,
+  str,
+} from "howdju-client-common";
+
+import { autocompletes } from "../actions";
 
 const initialState = {
   suggestions: {} as Record<SuggestionsKey, any[]>,

@@ -1,4 +1,5 @@
-import { api } from "@/apiActions";
+import { api } from "howdju-client-common";
+
 import {
   createAppearancesDialogListSaga,
   createAppearancesDialogListSlice,

@@ -3,10 +3,9 @@ import { Moment } from "moment";
 import {
   CreateTag,
   EntityId,
-  EntityRef,
-  Tag,
+  isBareRef,
+  PersistedEntity,
   TagOut,
-  isRef,
 } from "howdju-common";
 
 import { TagsDao } from "../daos";
@@ -25,10 +24,10 @@ export class TagsService {
 
   async readOrCreateValidTagAsUser(
     userId: EntityId,
-    tag: EntityRef<Tag> | CreateTag,
+    tag: PersistedEntity | CreateTag,
     now: Moment
   ): Promise<TagOut> {
-    if (isRef(tag)) {
+    if (isBareRef(tag)) {
       const extantTag = await this.tagsDao.readTagForId(tag.id);
       if (!extantTag) {
         throw new EntityNotFoundError("TAG", tag.id);

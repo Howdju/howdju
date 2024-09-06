@@ -1,10 +1,7 @@
 import React, { Component, UIEvent } from "react";
 import { FontIcon } from "@react-md/icon";
 import { connect, ConnectedProps } from "react-redux";
-import isEmpty from "lodash/isEmpty";
-import isEqual from "lodash/isEqual";
-import sortBy from "lodash/sortBy";
-import toLower from "lodash/toLower";
+import { isEmpty, isEqual, sortBy, toLower } from "lodash";
 import { denormalize } from "normalizr";
 import { RouteComponentProps } from "react-router";
 
@@ -17,19 +14,19 @@ import {
   JustificationView,
   PersistedEntity,
 } from "howdju-common";
-import { actions, isVerified, isDisverified } from "howdju-client-common";
+import {
+  extension,
+  api,
+  isVerified,
+  isDisverified,
+  mapActionCreatorGroupToDispatchToProps,
+  rootTargetNormalizationSchemasByType,
+  SuggestionsKey,
+} from "howdju-client-common";
 
 import { CircularProgress } from "@/components/progress/CircularProgress";
 import Helmet from "@/Helmet";
-import {
-  api,
-  apiLike,
-  editors,
-  mapActionCreatorGroupToDispatchToProps,
-  ui,
-  goto,
-  flows,
-} from "@/actions";
+import { apiLike, editors, ui, goto, flows } from "@/actions";
 import justificationsPage from "@/pages/justifications/justificationsPageSlice";
 import * as characters from "@/characters";
 import JustificationsTree from "@/JustificationsTree";
@@ -42,19 +39,18 @@ import {
   combineIds,
   combineSuggestionsKeys,
   describeRootTarget,
-  rootTargetNormalizationSchemasByType,
 } from "@/viewModels";
 import { makeExtensionHighlightOnClickWritQuoteUrlCallback } from "@/extensionCallbacks";
 import { RootState } from "@/setupStore";
-import { ComponentId, SuggestionsKey } from "@/types";
-
-import "./JustificationsPage.scss";
+import { ComponentId } from "@/types";
 import { PrimaryContextTrail } from "@/components/contextTrail/PrimaryContextTrailProvider";
 import FocusValidatingContextTrail from "@/components/contextTrail/FocusValidatingContextTrail";
 import { RootTargetProps } from "@/JustificationRootTargetViewer";
 import TextButton from "@/components/button/TextButton";
 import { MenuItem } from "@/components/menu/Menu";
 import { Page } from "@/components/layout/Page";
+
+import "./JustificationsPage.scss";
 
 const justificationsPageId = "justifications-page";
 
@@ -314,7 +310,7 @@ const connector = connect(
     goto,
     flows,
     justificationsPage,
-    extension: actions.extension,
+    extension,
   })
 );
 

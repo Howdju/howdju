@@ -1,8 +1,11 @@
-import { Cookie, CookieId } from "@/cookieConsent";
-import { PayloadAction } from "@reduxjs/toolkit";
-import forEach from "lodash/forEach";
 import { handleActions } from "redux-actions";
-import { privacyConsent, str } from "../actions";
+import { PayloadAction } from "@reduxjs/toolkit";
+import { forEach } from "lodash";
+
+import { str } from "howdju-client-common";
+
+import { Cookie, CookieId } from "@/cookieConsent";
+import { privacyConsent } from "../actions";
 
 const defaultState: Partial<Record<CookieId, Cookie>> = {};
 export default handleActions(

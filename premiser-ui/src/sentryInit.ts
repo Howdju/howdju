@@ -8,9 +8,9 @@ import { Integrations } from "@sentry/tracing";
 import { Event, EventHint } from "@sentry/types";
 
 import { apiErrorCodes, isCustomError } from "howdju-common";
+import { clientNetworkErrorTypes } from "howdju-client-common";
 
 import config from "./config";
-import { uiErrorTypes } from "./uiErrors";
 import {
   cookieConsent,
   ERROR_REPORTING,
@@ -47,9 +47,9 @@ function handleExceptionEvent(event: Event, hint?: EventHint) {
   if (hint && isCustomError(hint?.originalException)) {
     switch (hint.originalException.errorType) {
       // UI error types that we don't even want to report
-      case uiErrorTypes.COMMIT_EDIT_RESULT_ERROR:
+      case clientNetworkErrorTypes.COMMIT_EDIT_RESULT_ERROR:
         return null;
-      case uiErrorTypes.API_RESPONSE_ERROR:
+      case clientNetworkErrorTypes.API_RESPONSE_ERROR:
         isUnexpectedError =
           "body" in hint.originalException &&
           isObject(hint.originalException.body) &&

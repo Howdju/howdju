@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 
 import { TagOut } from "howdju-common";
+import { domainSchema, tagSchema } from "howdju-client-common";
 
 import { goto } from "@/actions";
 import { ItemGrid } from "@/components/itemGrid/ItemGrid";
@@ -17,7 +18,6 @@ import {
   useAppDispatch,
   useAppSelector,
 } from "@/hooks";
-import { domainSchema, tagSchema } from "@/normalizationSchemas";
 import explorePage from "./explorePageSlice";
 import { TextField } from "@/components/text/TextField";
 

@@ -4,16 +4,16 @@ import { RouteComponentProps } from "react-router";
 import { GridCell } from "@react-md/utils";
 
 import { EntityId } from "howdju-common";
-
-import { CircularProgress } from "@/components/progress/CircularProgress";
-import { api } from "../../actions";
 import {
+  api,
   justificationsSchema,
   statementsSchema,
   appearancesSchema,
   propositionCompoundsSchema,
   propositionSchema,
-} from "../../normalizationSchemas";
+} from "howdju-client-common";
+
+import { CircularProgress } from "@/components/progress/CircularProgress";
 import StatementCard from "../../StatementCard";
 import { combineIds } from "../../viewModels";
 import JustificationCard from "../../JustificationCard";

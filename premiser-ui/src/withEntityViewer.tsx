@@ -1,9 +1,10 @@
 import React, { ComponentType, ReactNode } from "react";
 
 import { ContextTrailItem, PersistedEntity } from "howdju-common";
+import { SuggestionsKey } from "howdju-client-common";
 
 import EntityViewer from "./EntityViewer";
-import { ComponentId, EditorId, SuggestionsKey } from "./types";
+import { ComponentId, EditorId } from "./types";
 
 export type EntityComponentProps<
   EntityPropName extends string,

@@ -1,9 +1,12 @@
 import React from "react";
 
 import { PersorgOut } from "howdju-common";
+import {
+  api,
+  persorgSchema,
+  cancelPersorgNameSuggestions,
+} from "howdju-client-common";
 
-import { persorgSchema } from "./normalizationSchemas";
-import { api, cancelPersorgNameSuggestions } from "./apiActions";
 import ApiAutoComplete, {
   Props as ApiAutoCompleteProps,
 } from "./components/autocomplete/ApiAutoComplete";

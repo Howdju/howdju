@@ -4,7 +4,7 @@ import "regenerator-runtime/runtime";
 
 import { logger } from "howdju-common";
 import {
-  extension as ext,
+  extensionFacade as ext,
   ExtensionMessage,
   ContentScriptCommand,
   toggleSidebar,

@@ -1,14 +1,15 @@
 import { takeEvery, select, put } from "typed-redux-saga";
 import { REHYDRATE } from "redux-persist/lib/constants";
 
+import { utcNow } from "howdju-common";
+import { api } from "howdju-client-common";
+
 import * as sentry from "../sentry";
 import analytics from "../analytics";
 import {
   selectAuthRefreshTokenExpiration,
   selectUserExternalIds,
 } from "../selectors";
-import { api } from "../actions";
-import { utcNow } from "howdju-common";
 
 export function* configureAfterLogin() {
   yield* takeEvery(

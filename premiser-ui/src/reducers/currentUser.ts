@@ -3,8 +3,7 @@ import { createReducer } from "@reduxjs/toolkit";
 import { Moment } from "moment";
 
 import { User } from "howdju-common";
-
-import { api } from "../actions";
+import { api } from "howdju-client-common";
 
 const initialState = {
   details: undefined as User | undefined,

@@ -4,6 +4,16 @@
     "paths": {
       // Support project-relative imports
       "@/*": ["./lib/*"]
-    }
-  }
+    },
+    "composite": true,
+    "noEmit": false,
+    "emitDeclarationOnly": true,
+    "declarationDir": "types"
+  },
+  "include": ["lib/**/*"],
+  "references": [
+    { "path": "../howdju-common" },
+    { "path": "../howdju-service-routes" },
+    { "path": "../howdju-test-common" }
+  ]
 }

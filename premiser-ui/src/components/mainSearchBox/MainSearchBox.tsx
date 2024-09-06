@@ -3,11 +3,14 @@ import { useDispatch } from "react-redux";
 import { MaterialSymbol } from "react-material-symbols";
 
 import { PropositionOut } from "howdju-common";
+import {
+  propositionSchema,
+  api,
+  cancelMainSearchSuggestions,
+} from "howdju-client-common";
 
-import { propositionSchema } from "../../normalizationSchemas";
 import { ellipsis } from "../../characters";
 import { useAppSelector } from "../../hooks";
-import { api, cancelMainSearchSuggestions } from "../../apiActions";
 import { goto } from "../../actions";
 import mainSearch from "./mainSearchBoxSlice";
 import { PropertyChanges } from "@/types";

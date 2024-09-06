@@ -12,7 +12,6 @@ import { ApiErrorCode } from "./codes";
 import { EntityId } from "./entities";
 import { ModelErrors } from "./zodError";
 import {
-  JustificationRef,
   JustificationVote,
   Persorg,
   PicRegion,
@@ -38,7 +37,6 @@ import {
   StatementCreatedAs,
 } from "./zodSchemas";
 import {
-  EntityRef,
   Persisted,
   PersistedJustificationWithRootRef,
   ToPersistedEntity,
@@ -185,9 +183,9 @@ export type CreatorBlurb = Pick<UserOut, "id" | "longName">;
  * will have been requested separately.
  */
 export type JustificationOut = PersistedJustificationWithRootRef & {
-  creator?: EntityRef<User>;
+  creator?: PersistedEntity;
   /** Justifications countering this justification. */
-  counterJustifications?: (JustificationRef | JustificationWithRootOut)[];
+  counterJustifications?: (PersistedEntity | JustificationWithRootOut)[];
   /** The sorting score for the current user */
   score?: number;
   /** The current user's vote on this justification. */
@@ -330,6 +328,6 @@ export type PersorgOut = Persisted<Persorg> & {
   creator?: CreatorBlurb;
 };
 
-export type TagOut = Tag & PersistedEntity;
+export type TagOut = Persisted<Tag>;
 
 export type JustificationVoteOut = JustificationVote & PersistedEntity;

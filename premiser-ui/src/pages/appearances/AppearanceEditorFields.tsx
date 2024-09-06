@@ -1,11 +1,11 @@
 import React from "react";
 
 import { CreateAppearanceInput } from "howdju-common";
+import { mediaExcerptSchema } from "howdju-client-common";
 
 import MediaExcerptCard from "@/components/mediaExcerpts/MediaExcerptCard";
 import { EntityEditorFieldsProps } from "@/editors/withEditor";
 import { useAppEntitySelector } from "@/hooks";
-import { mediaExcerptSchema } from "@/normalizationSchemas";
 import PropositionEditorFields from "@/PropositionEditorFields";
 import { combineIds } from "@/viewModels";
 

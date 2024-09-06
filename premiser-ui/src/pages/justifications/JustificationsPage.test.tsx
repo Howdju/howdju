@@ -6,13 +6,10 @@ import moment from "moment";
 import { merge } from "lodash";
 
 import {
-  brandedParse,
   CreateJustification,
   httpStatusCodes,
   JustificationOut,
-  PropositionRef,
   toSlug,
-  UserRef,
   utcNow,
 } from "howdju-common";
 import {
@@ -41,7 +38,7 @@ describe("JustificationsPage", () => {
     // Arrange
     const justifications: JustificationOut[] = [];
     const proposition = {
-      ...PropositionRef.parse({ id: "1" }),
+      id: "1",
       created,
       text: "the-proposition-text",
       normalText: "the-proposition-text",
@@ -98,7 +95,7 @@ describe("JustificationsPage", () => {
 
     const justifications: JustificationOut[] = [];
     const proposition = {
-      ...PropositionRef.parse({ id: "1" }),
+      id: "1",
       created,
       text: "the-proposition-text",
       normalText: "the-proposition-text",
@@ -133,12 +130,12 @@ describe("JustificationsPage", () => {
           const response: InferResponseBody<
             typeof serviceRoutes.updateProposition
           > = {
-            proposition: brandedParse(PropositionRef, {
+            proposition: {
               ...proposition,
               normalText: proposition.text,
-              creator: brandedParse(UserRef, proposition.creator),
+              creator: proposition.creator,
               created: utcNow(),
-            }),
+            },
           };
           return res(ctx.status(httpStatusCodes.OK), ctx.json(response));
         }
@@ -189,7 +186,7 @@ describe("JustificationsPage", () => {
     const justifications: JustificationOut[] = [];
     const rootTargetId = "1";
     const proposition = {
-      ...PropositionRef.parse({ id: rootTargetId }),
+      id: rootTargetId,
       created,
       text: "the-proposition-text",
       normalText: "the-proposition-text",

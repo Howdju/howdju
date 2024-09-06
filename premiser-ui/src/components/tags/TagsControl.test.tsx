@@ -3,11 +3,9 @@ import { fireEvent, screen } from "@testing-library/react";
 import { rest } from "msw";
 
 import {
-  brandedParse,
   CreatePropositionInput,
   httpStatusCodes,
   TagOut,
-  TagRef,
   TagVote,
 } from "howdju-common";
 import { InferResponseBody, serviceRoutes } from "howdju-service-routes";
@@ -91,10 +89,10 @@ describe("TagsControl", () => {
     const onTagAntivote = jest.fn();
 
     const target: CreatePropositionInput = { text: "A modest proposal" };
-    const tag: TagOut = brandedParse(TagRef, {
+    const tag: TagOut = {
       id: "1",
       name: "A wee bonny tag",
-    });
+    };
     const vote: TagVote = {
       target,
       targetType: "PROPOSITION",

@@ -19,6 +19,7 @@ import {
   makeCreateCounterJustificationInput,
   newExhaustedEnumError,
 } from "howdju-common";
+import { api } from "howdju-client-common";
 
 import {
   DropdownMenu,
@@ -28,7 +29,7 @@ import {
 } from "@/components/menu/Menu";
 import { Card, CardContent } from "@/components/card/Card";
 import CounterJustificationEditor from "@/editors/CounterJustificationEditor";
-import { api, editors } from "./actions";
+import { editors } from "./actions";
 import IconButton from "./components/button/IconButton";
 import config from "./config";
 import {

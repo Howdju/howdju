@@ -2,19 +2,20 @@ import React from "react";
 import find from "lodash/find";
 
 import {
+  isPersisted,
   Tag,
   tagEqual,
   TaggableEntityType,
   TaggedEntityOut,
   TagOut,
-  TagVoteRef,
 } from "howdju-common";
+import { api, SuggestionsKey } from "howdju-client-common";
 
 import { combineIds, combineSuggestionsKeys } from "@/viewModels";
-import { api, goto } from "@/actions";
+import { goto } from "@/actions";
 import TagsControl, { TagOutOrInput } from "./TagsControl";
 import { useAppDispatch } from "@/hooks";
-import { ComponentId, SuggestionsKey } from "@/types";
+import { ComponentId } from "@/types";
 
 interface Props {
   target: TaggedEntityOut;
@@ -58,8 +59,8 @@ const Tagger: React.FC<Props> = (props: Props) => {
   const onTagUnvote = (tag: Tag) => {
     const tagVote = findTagVote(tag);
     // We can only delete a vote whose ID we have.  We might be untagging a vote lacking an ID if the user quickly tags/untags
-    if (tagVote?.id) {
-      dispatch(api.unTag(TagVoteRef.parse(tagVote)));
+    if (tagVote && isPersisted(tagVote)) {
+      dispatch(api.unTag(tagVote));
     }
   };
 

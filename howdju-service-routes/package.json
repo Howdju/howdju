@@ -11,7 +11,7 @@
     "fix-format": "yarn run lint --fix && yarn run prettier --write --ignore-path .gitignore .",
     "lint": "eslint --ignore-path=.gitignore .",
     "test": "echo No tests",
-    "typecheck": "tsc"
+    "typecheck": "tsc --build"
   },
   "dependencies": {
     "howdju-service-common": "workspace:howdju-service-common",

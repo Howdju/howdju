@@ -1,12 +1,11 @@
 import React, { HTMLAttributes } from "react";
 
 import { AppearanceOut } from "howdju-common";
+import { api, appearancesSchema } from "howdju-client-common";
 
-import { api } from "@/actions";
 import ListEntitiesWidget, {
   appearanceCardColSpans,
 } from "@/components/listEntities/ListEntitiesWidget";
-import { appearancesSchema } from "@/normalizationSchemas";
 import AppearanceCard from "@/pages/appearances/AppearanceCard";
 import { ComponentId } from "@/types";
 

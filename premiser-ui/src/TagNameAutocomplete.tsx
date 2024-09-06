@@ -1,10 +1,8 @@
 import React from "react";
 
 import { schemaSettings, TagOut } from "howdju-common";
+import { api, tagSchema, cancelTagNameSuggestions } from "howdju-client-common";
 
-import { api } from "@/actions";
-import { tagSchema } from "@/normalizationSchemas";
-import { cancelTagNameSuggestions } from "@/apiActions";
 import { OnKeyDownCallback } from "@/types";
 import ApiAutoComplete, {
   Props as ApiAutocompleteProps,

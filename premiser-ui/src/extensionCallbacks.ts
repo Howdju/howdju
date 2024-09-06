@@ -6,7 +6,7 @@ import {
   UrlLocator,
   UrlOut,
 } from "howdju-common";
-import { actions, inIframe } from "howdju-client-common";
+import { extension, inIframe } from "howdju-client-common";
 
 import { AppDispatch } from "./setupStore";
 import { OnClickJustificationWritQuoteUrl, OnClickUrlLocator } from "./types";
@@ -26,7 +26,7 @@ export function makeExtensionHighlightOnClickWritQuoteUrlCallback(
     }
     // Otherwise prevent click from navigating and instead update the page hosting the extension iframe
     event.preventDefault();
-    dispatch(actions.extension.highlightTarget(justification, url));
+    dispatch(extension.highlightTarget(justification, url));
   };
 }
 
@@ -48,6 +48,6 @@ export function makeExtensionHighlightOnClickUrlLocatorCallback(
     }
     // Otherwise prevent click from navigating and instead update the page hosting the extension iframe
     event.preventDefault();
-    dispatch(actions.extension.highlightUrlLocator(mediaExcerpt, urlLocator));
+    dispatch(extension.highlightUrlLocator(mediaExcerpt, urlLocator));
   };
 }

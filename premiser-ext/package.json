@@ -16,7 +16,7 @@
     "test": "jest",
     "test-inspect": "node --inspect-brk ../node_modules/.bin/jest --watch --runInBand",
     "test-watch": "jest --watch",
-    "typecheck": "tsc",
+    "typecheck": "tsc --build",
     "watch": "webpack --watch --progress --color --mode development --stats-error-details"
   },
   "dependencies": {
@@ -25,6 +25,7 @@
     "glamor": "^2.20.40",
     "howdju-client-common": "workspace:howdju-client-common",
     "howdju-common": "workspace:howdju-common",
+    "howdju-dom": "workspace:howdju-dom",
     "lodash": "^4.17.21",
     "react": "^16.2.0",
     "react-dom": "^16.2.0",

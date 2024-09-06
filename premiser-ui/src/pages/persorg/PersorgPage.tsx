@@ -7,6 +7,12 @@ import { push } from "connected-react-router";
 import { GridCell } from "@react-md/utils";
 
 import { EntityId, MediaExcerptOut, StatementOut } from "howdju-common";
+import {
+  api,
+  mediaExcerptsSchema,
+  persorgSchema,
+  statementsSchema,
+} from "howdju-client-common";
 
 import {
   DropdownMenu,
@@ -15,13 +21,8 @@ import {
 } from "@/components/menu/Menu";
 import { CircularProgress } from "@/components/progress/CircularProgress";
 import Helmet from "../../Helmet";
-import { api, editors, flows } from "../../actions";
+import { editors, flows } from "../../actions";
 import * as characters from "../../characters";
-import {
-  mediaExcerptsSchema,
-  persorgSchema,
-  statementsSchema,
-} from "../../normalizationSchemas";
 import { EditorTypes } from "../../reducers/editors";
 import PersorgEntityCard from "../../PersorgEntityCard";
 import StatementCard from "../../StatementCard";

@@ -1,4 +1,4 @@
-import { api } from "./actions";
+import { api } from "./apiActions";
 
 describe("actions", () => {
   it("should provide its name", () => {

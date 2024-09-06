@@ -4,12 +4,11 @@ import { MaterialSymbol } from "react-material-symbols";
 import { Link } from "react-router-dom";
 
 import { EntityId } from "howdju-common";
+import { api, appearanceSchema } from "howdju-client-common";
 
 import { DropdownMenu, MenuItem, MenuItemLink } from "@/components/menu/Menu";
 import { CircularProgress } from "@/components/progress/CircularProgress";
-import { api } from "@/apiActions";
 import { useAppDispatch, useAppEntitySelector } from "@/hooks";
-import { appearanceSchema } from "@/normalizationSchemas";
 import AppearanceCard from "./AppearanceCard";
 import HowdjuHelmet from "@/Helmet";
 import paths from "@/paths";

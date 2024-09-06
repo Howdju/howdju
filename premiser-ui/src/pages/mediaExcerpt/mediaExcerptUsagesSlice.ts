@@ -3,8 +3,8 @@ import { normalize } from "normalizr";
 import { all, call, delay, put, race, take, takeEvery } from "typed-redux-saga";
 
 import { ContinuationToken, EntityId } from "howdju-common";
+import { api, ApiResponseActionMeta } from "howdju-client-common";
 
-import { api, ApiResponseActionMeta } from "@/apiActions";
 import config from "@/config";
 
 export const slice = createSlice({

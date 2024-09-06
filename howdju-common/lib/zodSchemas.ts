@@ -13,7 +13,7 @@ import { Simplify } from "type-fest";
 import { z } from "zod";
 
 import { momentObject, urlString } from "./zodRefinements";
-import { EntityName, EntityOrRef, EntityRef } from "./zodSchemaTypes";
+import { EntityOrRef } from "./zodSchemaTypes";
 
 /** A persisent conceptual entity */
 export const Entity = z.object({
@@ -39,7 +39,8 @@ export type CreateModel = z.output<typeof CreateModel>;
 
 export type PersistCreateModel<T extends CreateModel> = T & PersistedEntity;
 
-export const PersistedEntity = Entity.required();
+// TODO(#718) remove passthrough
+export const PersistedEntity = Entity.required().passthrough();
 export type PersistedEntity = z.infer<typeof PersistedEntity>;
 
 export const UserExternalIds = z.object({
@@ -148,7 +149,7 @@ export type TagVotePolarity = z.infer<typeof tagVotePolarities>;
 /** @deprecated replace with TagVote */
 export const PropositionTagVote = z.lazy(() =>
   Entity.extend({
-    proposition: z.union([Proposition, PropositionRef]),
+    proposition: z.union([Proposition, PersistedEntity]),
     polarity: tagVotePolarities,
     tag: Tag,
   })
@@ -158,29 +159,29 @@ export type PropositionTagVotePolarity = PropositionTagVote["polarity"];
 export const PropositionTagVotePolarities = tagVotePolarities.Enum;
 
 export type CreatePropositionTagVote = {
-  proposition: PropositionRef | CreateProposition;
+  proposition: PersistedEntity | CreateProposition;
   polarity: TagVotePolarity;
-  tag: TagRef | CreateTag;
+  tag: PersistedEntity | CreateTag;
 };
 export const CreatePropositionTagVote: z.ZodType<CreatePropositionTagVote> =
   z.lazy(() =>
     Entity.extend({
-      proposition: z.union([PropositionRef, CreateProposition]),
+      proposition: z.union([PersistedEntity, CreateProposition]),
       polarity: tagVotePolarities,
-      tag: z.union([TagRef, CreateTag]),
+      tag: z.union([PersistedEntity, CreateTag]),
     })
   );
 export type CreatePropositionTagVoteInput = {
-  proposition: PropositionRef | CreateProposition;
+  proposition: PersistedEntity | CreateProposition;
   polarity: TagVotePolarity;
-  tag: TagRef | CreateTag;
+  tag: PersistedEntity | CreateTag;
 };
 export const CreatePropositionTagVoteInput: z.ZodType<CreatePropositionTagVoteInput> =
   z.lazy(() =>
     Entity.extend({
-      proposition: z.union([CreatePropositionInput, PropositionRef]),
+      proposition: z.union([CreatePropositionInput, PersistedEntity]),
       polarity: tagVotePolarities,
-      tag: z.union([TagRef, CreateTagInput]),
+      tag: z.union([PersistedEntity, CreateTagInput]),
     })
   );
 
@@ -1088,82 +1089,6 @@ export type JustificationRootTarget = Justification["rootTarget"];
 export type JustificationRootTargetType = Justification["rootTargetType"];
 export const JustificationTargetTypes = JustificationTargetType.Enum;
 
-export const PropositionRef =
-  Entity.required().brand<EntityName<Proposition>>();
-export type PropositionRef = z.infer<typeof PropositionRef>;
-
-export const StatementRef = Entity.required().brand<EntityName<Statement>>();
-export type StatementRef = z.infer<typeof StatementRef>;
-
-export const JustificationRef =
-  Entity.required().brand<EntityName<Justification>>();
-export type JustificationRef = z.infer<typeof JustificationRef>;
-
-export const JustificationVoteRef =
-  Entity.required().brand<EntityName<JustificationVote>>();
-export type JustificationVoteRef = z.infer<typeof JustificationVoteRef>;
-
-export const PropositionCompoundRef =
-  Entity.required().brand<"PropositionCompound">();
-export type PropositionCompoundRef = z.infer<typeof PropositionCompoundRef>;
-
-export const SourceExcerptRef =
-  Entity.required().brand<EntityName<SourceExcerpt>>();
-export type SourceExcerptRef = z.infer<typeof SourceExcerptRef>;
-
-export const WritQuoteRef = Entity.required().brand<EntityName<WritQuote>>();
-export type WritQuoteRef = z.infer<typeof WritQuoteRef>;
-
-export const WritRef = Entity.required().brand<EntityName<Writ>>();
-export type WritRef = z.infer<typeof WritRef>;
-
-export const PersorgRef = Entity.required().brand<EntityName<Persorg>>();
-export type PersorgRef = z.infer<typeof Persorg>;
-
-export const TagRef = Entity.required().brand<EntityName<Tag>>();
-export type TagRef = z.infer<typeof TagRef>;
-
-export const TagVoteRef = Entity.required().brand<EntityName<TagVote>>();
-export type TagVoteRef = z.infer<typeof TagVoteRef>;
-
-export const UrlRef = Entity.required().brand<EntityName<Url>>();
-export type UrlRef = z.infer<typeof UrlRef>;
-
-export const UserRef = Entity.required().brand<EntityName<User>>();
-export type UserRef = z.infer<typeof UserRef>;
-
-export const PropositionTagVoteRef =
-  Entity.required().brand<EntityName<PropositionTagVote>>();
-export type PropositionTagVoteRef = z.infer<typeof PropositionTagVoteRef>;
-
-export const RegistrationRequestRef =
-  Entity.required().brand<EntityName<RegistrationRequest>>();
-export type RegistrationRequestRef = z.infer<typeof RegistrationRequestRef>;
-
-export const PasswordResetRequestRef =
-  Entity.required().brand<EntityName<PasswordResetRequest>>();
-export type PasswordResetRequestRef = z.infer<typeof PasswordResetRequestRef>;
-
-export const AccountSettingsRef =
-  Entity.required().brand<EntityName<AccountSettings>>();
-export type AccountSettingsRef = z.infer<typeof AccountSettingsRef>;
-
-export const ContentReportRef =
-  Entity.required().brand<EntityName<ContentReport>>();
-export type ContentReportRef = z.infer<typeof ContentReportRef>;
-
-export const UrlLocatorRef = Entity.required().brand<EntityName<UrlLocator>>();
-export type UrlLocatorRef = z.infer<typeof UrlLocatorRef>;
-
-export const MediaExcerptRef = Entity.required()
-  // TODO(#718) remove passthrough
-  .passthrough()
-  .brand<EntityName<MediaExcerpt>>();
-export type MediaExcerptRef = z.output<typeof MediaExcerptRef>;
-
-export const SourceRef = Entity.required().brand<EntityName<Source>>();
-export type SourceRef = z.infer<typeof SourceRef>;
-
 /*
  * Entities lacking alternatives don't require special Create/Update models
  */
@@ -1357,7 +1282,7 @@ export type CreateJustificationInput = Entity & {
   basis: {
     type: JustificationBasisType;
     propositionCompound: EntityOrRef<CreatePropositionCompoundInput>;
-    mediaExcerpt: CreateMediaExcerptInput | EntityRef<MediaExcerpt>;
+    mediaExcerpt: CreateMediaExcerptInput | PersistedEntity;
     /** @deprecated */
     sourceExcerpt: EntityOrRef<CreateSourceExcerptInput>;
     /** @deprecated */
@@ -1380,13 +1305,10 @@ const createJustificationBaseShape = {
       "SOURCE_EXCERPT",
       "WRIT_QUOTE",
     ] as [JustificationBasisType, ...JustificationBasisType[]]),
-    propositionCompound: z.union([
-      CreatePropositionCompound,
-      PropositionCompoundRef,
-    ]),
-    mediaExcerpt: MediaExcerptRef.optional(),
-    sourceExcerpt: z.union([CreateSourceExcerpt, SourceExcerptRef]),
-    writQuote: z.union([CreateWritQuote, WritQuoteRef]),
+    propositionCompound: z.union([CreatePropositionCompound, PersistedEntity]),
+    mediaExcerpt: PersistedEntity.optional(),
+    sourceExcerpt: z.union([CreateSourceExcerpt, PersistedEntity]),
+    writQuote: z.union([CreateWritQuote, PersistedEntity]),
     justificationBasisCompound: Entity.optional(),
   }),
 };
@@ -1401,11 +1323,11 @@ const createJustificationInputBaseShape = {
     ] as [JustificationBasisType, ...JustificationBasisType[]]),
     propositionCompound: z.union([
       CreatePropositionCompoundInput,
-      PropositionCompoundRef,
+      PersistedEntity,
     ]),
-    mediaExcerpt: z.union([CreateMediaExcerptInput, MediaExcerptRef]),
-    sourceExcerpt: z.union([CreateSourceExcerptInput, SourceExcerptRef]),
-    writQuote: z.union([CreateWritQuoteInput, WritQuoteRef]),
+    mediaExcerpt: z.union([CreateMediaExcerptInput, PersistedEntity]),
+    sourceExcerpt: z.union([CreateSourceExcerptInput, PersistedEntity]),
+    writQuote: z.union([CreateWritQuoteInput, PersistedEntity]),
     justificationBasisCompound: Entity.optional(),
   }),
 };
@@ -1423,10 +1345,10 @@ export const CreateJustificationInput: z.ZodType<CreateJustificationInput> =
           JustificationTargetType,
           ...JustificationTargetType[]
         ]),
-        proposition: z.union([CreatePropositionInput, PropositionRef]),
-        statement: z.union([CreateStatementInput, StatementRef]),
+        proposition: z.union([CreatePropositionInput, PersistedEntity]),
+        statement: z.union([CreateStatementInput, PersistedEntity]),
         justification: z
-          .union([CreateJustificationInput, JustificationRef])
+          .union([CreateJustificationInput, PersistedEntity])
           // Create the justification input on-demand to avoid infinite recursion
           .optional(),
       }),
@@ -1434,12 +1356,7 @@ export const CreateJustificationInput: z.ZodType<CreateJustificationInput> =
       // that way we gain type safety but don't need alternative definitions of CreateJustification like
       // for Justification above.
       rootTargetType: z.enum(["PROPOSITION", "STATEMENT"]),
-      rootTarget: z.union([
-        Proposition,
-        PropositionRef,
-        Statement,
-        StatementRef,
-      ]),
+      rootTarget: z.union([PersistedEntity, Proposition, Statement]),
     })
   );
 export type CreateJustificationInputBasis = CreateJustificationInput["basis"];
@@ -1461,7 +1378,7 @@ export type CreateJustification = Simplify<
         }
       | {
           type: "MEDIA_EXCERPT";
-          entity: CreateMediaExcerpt | EntityRef<MediaExcerpt>;
+          entity: CreateMediaExcerpt | PersistedEntity;
         }
       | {
           type: "SOURCE_EXCERPT";
@@ -1492,33 +1409,33 @@ export const CreateJustification: z.ZodType<CreateJustification> = z.lazy(() =>
     basis: z.discriminatedUnion("type", [
       z.object({
         type: z.literal("PROPOSITION_COMPOUND"),
-        entity: z.union([CreatePropositionCompound, PropositionCompoundRef]),
+        entity: z.union([CreatePropositionCompound, PersistedEntity]),
       }),
       z.object({
         type: z.literal("MEDIA_EXCERPT"),
-        entity: z.union([MediaExcerptRef, CreateMediaExcerpt]),
+        entity: z.union([PersistedEntity, CreateMediaExcerpt]),
       }),
       z.object({
         type: z.literal("SOURCE_EXCERPT"),
-        entity: z.union([CreateSourceExcerpt, SourceExcerptRef]),
+        entity: z.union([CreateSourceExcerpt, PersistedEntity]),
       }),
       z.object({
         type: z.literal("WRIT_QUOTE"),
-        entity: z.union([CreateWritQuote, WritQuoteRef]),
+        entity: z.union([CreateWritQuote, PersistedEntity]),
       }),
     ]),
     target: z.discriminatedUnion("type", [
       z.object({
         type: z.literal("PROPOSITION"),
-        entity: z.union([CreateProposition, PropositionRef]),
+        entity: z.union([CreateProposition, PersistedEntity]),
       }),
       z.object({
         type: z.literal("STATEMENT"),
-        entity: z.union([CreateStatement, StatementRef]),
+        entity: z.union([CreateStatement, PersistedEntity]),
       }),
       z.object({
         type: z.literal("JUSTIFICATION"),
-        entity: z.union([CreateJustification, JustificationRef]),
+        entity: z.union([CreateJustification, PersistedEntity]),
       }),
     ]),
   })
@@ -1533,12 +1450,12 @@ export const CreateCounterJustificationInput = Entity.extend({
     type: z.literal("PROPOSITION_COMPOUND"),
     propositionCompound: z.union([
       CreatePropositionCompoundInput,
-      PropositionCompoundRef,
+      PersistedEntity,
     ]),
   }),
   target: z.object({
     type: z.literal("JUSTIFICATION"),
-    justification: z.union([CreateJustificationInput, JustificationRef]),
+    justification: z.union([CreateJustificationInput, PersistedEntity]),
   }),
 });
 export type CreateCounterJustificationInput = z.infer<
@@ -1555,11 +1472,11 @@ export const CreateCounterJustification =
   CreateCounterJustificationInput.extend({
     basis: z.object({
       type: z.literal("PROPOSITION_COMPOUND"),
-      entity: z.union([CreatePropositionCompound, PropositionCompoundRef]),
+      entity: z.union([CreatePropositionCompound, PersistedEntity]),
     }),
     target: z.object({
       type: z.literal("JUSTIFICATION"),
-      entity: z.union([CreateJustification, JustificationRef]),
+      entity: z.union([CreateJustification, PersistedEntity]),
     }),
   });
 export type CreateCounterJustification = z.infer<
@@ -1599,7 +1516,7 @@ export type TagVote = z.infer<typeof TagVote>;
 export const TagVotePolarities = tagVotePolarities.Enum;
 
 export const CreateTagVote = TagVote.extend({
-  tag: z.union([TagRef, CreateTag]),
+  tag: z.union([PersistedEntity, CreateTag]),
 });
 export type CreateTagVote = z.infer<typeof CreateTagVote>;
 

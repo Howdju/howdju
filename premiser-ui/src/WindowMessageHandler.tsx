@@ -2,10 +2,11 @@ import { isObject } from "lodash";
 
 import { toJson } from "howdju-common";
 import {
-  actions,
+  extensionFrame,
   IframedAppMessage,
   isIframedAppMessage,
   PayloadOf,
+  ExtensionFrameAction,
 } from "howdju-client-common";
 
 import {
@@ -19,7 +20,7 @@ import { logger } from "./logger";
 export interface WindowMessageHandlerActionCreators {
   beginEditOfMediaExcerptFromInfo: typeof flows.beginEditOfMediaExcerptFromInfo;
   gotoJustification: typeof goto.justification;
-  extensionFrameAckMessage: typeof actions.extensionFrame.ackMessage;
+  extensionFrameAckMessage: typeof extensionFrame.ackMessage;
 }
 
 export interface TrackingConsentWindowMessage {
@@ -77,15 +78,12 @@ export default class WindowMessageHandler {
     this.handleAction(event.origin, action);
   }
 
-  private handleAction(
-    eventOrigin: string,
-    action: actions.ExtensionFrameAction
-  ) {
+  private handleAction(eventOrigin: string, action: ExtensionFrameAction) {
     const type = action.type;
     switch (type) {
-      case `${actions.extensionFrame.beginEditOfMediaExcerptFromInfo}`: {
+      case `${extensionFrame.beginEditOfMediaExcerptFromInfo}`: {
         const payload = action.payload as PayloadOf<
-          typeof actions.extensionFrame.beginEditOfMediaExcerptFromInfo
+          typeof extensionFrame.beginEditOfMediaExcerptFromInfo
         >;
         if (!payload.url.startsWith(eventOrigin)) {
           logger.error(
@@ -97,15 +95,15 @@ export default class WindowMessageHandler {
         this.actionCreators.beginEditOfMediaExcerptFromInfo(payload);
         break;
       }
-      case `${actions.extensionFrame.gotoJustification}`: {
+      case `${extensionFrame.gotoJustification}`: {
         logger.trace(`extensionFrame.gotoJustification`, { action });
         const { justification } = action.payload as PayloadOf<
-          typeof actions.extensionFrame.gotoJustification
+          typeof extensionFrame.gotoJustification
         >;
         this.actionCreators.gotoJustification(justification);
         break;
       }
-      case `${actions.extensionFrame.ackMessage}`: {
+      case `${extensionFrame.ackMessage}`: {
         this.actionCreators.extensionFrameAckMessage();
         break;
       }

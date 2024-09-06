@@ -23,18 +23,20 @@ import {
   makeCreateMediaExcerptInput,
   PropositionCompoundView,
 } from "howdju-common";
-
-import { api, editors, flows, str } from "@/actions";
-import { callApiForResource } from "@/sagas/resourceApiSagas";
-import { EditorType } from "@/reducers/editors";
-import { EditorId } from "@/types";
-import { denormalizedEntity } from "@/selectors";
 import {
+  api,
+  str,
   mediaExcerptSchema,
   propositionCompoundSchema,
   propositionSchema,
   writQuoteSchema,
-} from "@/normalizationSchemas";
+} from "howdju-client-common";
+
+import { editors, flows } from "@/actions";
+import { callApiForResource } from "@/sagas/resourceApiSagas";
+import { EditorType } from "@/reducers/editors";
+import { EditorId } from "@/types";
+import { denormalizedEntity } from "@/selectors";
 
 export function* fetchAndBeginEditOfNewJustificationFromBasisSource() {
   yield* takeEvery(

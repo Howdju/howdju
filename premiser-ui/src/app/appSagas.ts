@@ -3,6 +3,12 @@ import includes from "lodash/includes";
 import get from "lodash/get";
 
 import { apiErrorCodes, toJson } from "howdju-common";
+import {
+  api,
+  callApiResponse,
+  str,
+  clientNetworkErrorTypes,
+} from "howdju-client-common";
 
 import t, {
   THAT_JUSTIFICATION_ALREADY_EXISTS,
@@ -19,11 +25,8 @@ import t, {
   UN_VERIFY_JUSTIFICATION_FAILURE_TOAST_MESSAGE,
   VERIFY_JUSTIFICATION_FAILURE_TOAST_MESSAGE,
 } from "@/texts";
-import { api, str } from "@/actions";
-import { callApiResponse } from "@/apiActions";
 import app from "@/app/appSlice";
 import { logger } from "../logger";
-import { uiErrorTypes } from "../uiErrors";
 import { ToastMessage } from "@react-md/alert";
 
 export function* showAlertForLogin() {
@@ -157,11 +160,11 @@ export function* showAlertForUnexpectedApiError() {
       if (action.error) {
         if (action.payload.errorType) {
           switch (action.payload.errorType) {
-            case uiErrorTypes.NETWORK_FAILURE_ERROR: {
+            case clientNetworkErrorTypes.NETWORK_FAILURE_ERROR: {
               yield put(app.addToast(t(A_NETWORK_ERROR_OCCURRED)));
               break;
             }
-            case uiErrorTypes.API_RESPONSE_ERROR: {
+            case clientNetworkErrorTypes.API_RESPONSE_ERROR: {
               const errorCode = get(action.payload, ["body", "errorCode"]);
               if (!errorCode) {
                 logger.error("API response error missing error code");

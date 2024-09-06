@@ -10,6 +10,7 @@ import {
   TagOut,
   CreateTagInput,
 } from "howdju-common";
+import { SuggestionsKey } from "howdju-client-common";
 
 import IconButton from "@/components/button/IconButton";
 import { combineIds } from "@/viewModels";
@@ -20,7 +21,6 @@ import {
   ComponentId,
   OnKeyDownCallback,
   OnPropertyChangeCallback,
-  SuggestionsKey,
 } from "@/types";
 
 import "./TagsControl.scss";

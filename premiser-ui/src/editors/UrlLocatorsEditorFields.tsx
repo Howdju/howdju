@@ -8,12 +8,13 @@ import {
   makeCreateUrlLocatorInput,
   normalizeUrl,
 } from "howdju-common";
+import { api } from "howdju-client-common";
 
 import { CircularProgress } from "@/components/progress/CircularProgress";
 import { makeErrorPropCreator } from "@/modelErrorMessages";
 import { EditorFieldsDispatch, EntityEditorFieldsProps } from "./withEditor";
 import { EditorType } from "@/reducers/editors";
-import { api, editors } from "@/actions";
+import { editors } from "@/actions";
 import { useAppDispatch, useAppSelector } from "@/hooks";
 import IconButton from "@/components/button/IconButton";
 import { FontIcon } from "@react-md/icon";

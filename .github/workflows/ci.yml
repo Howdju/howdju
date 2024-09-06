@@ -43,14 +43,15 @@ jobs:
           yarn set version ${{ env.YARN_VERSION }}
       - name: Install dependencies
         run: yarn install
-      - name: Lint
-        run: yarn run lint:all
       - name: Check format
         run: yarn run check-format:all
       - name: Typecheck
         run: |
           echo tsc version: $(yarn run tsc -v)
           yarn run typecheck:all
+      - name: Lint
+        # Lint must come after typecheck to rely on the types
+        run: yarn run lint:all
       - name: Test & coverage
         env:
           DB_USER: postgres

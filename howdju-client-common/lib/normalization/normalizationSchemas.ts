@@ -39,7 +39,7 @@ import {
 } from "howdju-common";
 
 import { applyCustomizations, momentConversion } from "./normalizationUtil";
-import { hashString } from "./util";
+import { hashString } from "../util";
 
 export const userSchema = new schema.Entity<UserOut>("users");
 export const usersSchema = new schema.Array(userSchema);
@@ -231,7 +231,7 @@ export function mediaExcerptCitationKey(
 
   // toMediaExcerptCitationIdentifier
   return `${mediaExcerptId}-${sourceId}${
-    normalPincite ? "-" + normalPincite : ""
+    normalPincite ? `-${normalPincite}` : ""
   }`;
 }
 export const mediaExcerptCitationSchema =
@@ -340,6 +340,11 @@ justificationTargetSchema.define({
   STATEMENT: statementSchema,
   JUSTIFICATION: justificationSchema,
 });
+
+export const rootTargetNormalizationSchemasByType = {
+  PROPOSITION: propositionSchema,
+  STATEMENT: statementSchema,
+} as const;
 
 propositionSchema.define({
   justifications: justificationsSchema,

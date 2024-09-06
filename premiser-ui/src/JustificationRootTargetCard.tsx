@@ -19,10 +19,13 @@ import {
   ContextTrailItem,
 } from "howdju-common";
 import {
+  api,
+  mapActionCreatorGroupToDispatchToProps,
   isPropositionRootTarget,
   isVerified,
   makeCreateContentReportInput,
   toUpdatePropositionInput,
+  SuggestionsKey,
 } from "howdju-client-common";
 
 import { DropdownMenu, MenuItem, MenuItemLink } from "@/components/menu/Menu";
@@ -35,17 +38,11 @@ import { EditorTypes } from "./reducers/editors";
 import paths from "./paths";
 import Tagger from "@/components/tags/Tagger";
 import { combineIds, combineSuggestionsKeys } from "./viewModels";
-import {
-  api,
-  editors,
-  flows,
-  mapActionCreatorGroupToDispatchToProps,
-  ui,
-} from "./actions";
+import { editors, flows, ui } from "./actions";
 import app from "./app/appSlice";
 import { divideMenuItems } from "./util";
 import { contentReportEditorId } from "./content-report/ReportContentDialog";
-import { ComponentId, EditorId, MenuItems, SuggestionsKey } from "./types";
+import { ComponentId, EditorId, MenuItems } from "./types";
 import TreePolarity from "@/components/TreePolarity";
 
 import "./JustificationRootTargetCard.scss";

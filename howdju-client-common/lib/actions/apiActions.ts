@@ -1,13 +1,12 @@
-import reduce from "lodash/reduce";
 import {
   ActionCreatorWithPreparedPayload,
   PayloadAction,
 } from "@reduxjs/toolkit";
 import { schema } from "normalizr";
-import { isEmpty, join, merge, toString } from "lodash";
+import { isEmpty, join, merge, toString, reduce } from "lodash";
 import queryString from "query-string";
 import { compile } from "path-to-regexp";
-import { JsonObject, Schema } from "type-fest";
+import { Schema } from "type-fest";
 import { v4 as uuidv4 } from "uuid";
 
 import {
@@ -16,12 +15,9 @@ import {
   JustificationVotePolarities,
   PropositionTagVotePolarities,
   Tag,
-  HttpMethod,
   SortDirections,
   encodeQueryStringObject,
   JustificationSearchFilters,
-  EntityName,
-  PropositionRef,
   SentenceType,
   TaggableEntityType,
   TagVotePolarities,
@@ -29,7 +25,6 @@ import {
   CreateCounterJustification,
   CreateProposition,
   TagVoteViewModel,
-  TagVoteRef,
   PropositionTagVoteOut,
   UpdateWritQuote,
   CreateWritQuote,
@@ -54,14 +49,14 @@ import {
   MediaExcerptCitationOut,
   MediaExcerptSpeakerOut,
   CreateMediaExcerptSpeakersInput,
-  ApiErrorCode,
+  TagPropositionVote,
+  PersistedEntity,
 } from "howdju-common";
 import {
   InferPathParams,
   InferQueryStringParams,
   InferRequestBody,
   InferResponseBody,
-  InferResponseReturnType,
   ServiceRoute,
   serviceRoutes,
 } from "howdju-service-routes";
@@ -103,13 +98,14 @@ import {
   writQuoteSchema,
   writQuotesSchema,
   writsSchema,
-} from "./normalizationSchemas";
-import { actionTypeDelim, createAction } from "./actionHelpers";
-import { str } from "./actionHelpers";
-import { UiErrorType } from "./uiErrors";
-import { SuggestionsKey, WidgetId } from "./types";
-import { HttpStatusCode } from "axios";
-import { TagPropositionVote } from "./viewModels";
+} from "@/normalization/normalizationSchemas";
+import { actionTypeDelim, createAction, str } from "./actionHelpers";
+import { SuggestionsKey, WidgetId } from "@/types";
+import {
+  ApiConfig,
+  FetchInit,
+  InferResponseBodyEntities,
+} from "./apiActionTypes";
 
 // TODO(#113) type response.error as an Error when we remove redux-actions conventions
 export type ApiActionCreator<
@@ -157,52 +153,12 @@ export interface ApiResponseWrapper {
   continuationToken?: string;
 }
 
-export type ApiAction<Route extends ServiceRoute> = PayloadAction<
-  ApiConfig<Route>
->;
-export type AnyApiAction = ApiAction<any>;
 export type ApiResponseAction<P> = PayloadAction<
   P,
   string,
   ApiResponseActionMeta<any, any>,
   Error
 >;
-
-/** Return never if the Key doesn't correspond to an entity requiring normalization. */
-type ToEntityFieldKey<
-  Body extends Record<string, any>,
-  Key extends keyof Body
-> = Body[Key] extends (infer I)[]
-  ? EntityName<I> extends never
-    ? never
-    : Key
-  : EntityName<Body[Key]> extends never
-  ? never
-  : Key;
-type ToNonEntityFieldKey<
-  Body extends Record<string, any>,
-  Key extends keyof Body
-> = Body[Key] extends (infer I)[]
-  ? EntityName<I> extends never
-    ? Key
-    : never
-  : EntityName<Body[Key]> extends never
-  ? Key
-  : never;
-
-/** Require all Body properties that are entities. */
-type EntityFieldsOnly<Body extends Record<string, any>> = {
-  [K in keyof Body as ToEntityFieldKey<Body, K>]: Body[K];
-};
-type NonEntityFieldsOnlyOptional<Body extends Record<string, any>> = {
-  [K in keyof Body as ToNonEntityFieldKey<Body, K>]+?: Body[K];
-};
-
-type InferResponseBodyEntities<Route extends ServiceRoute> =
-  InferResponseReturnType<Route> extends Record<string, any>
-    ? EntityFieldsOnly<InferResponseReturnType<Route>["body"]> &
-        NonEntityFieldsOnlyOptional<InferResponseReturnType<Route>["body"]>
-    : never;
 
 type BaseApiActionConfig<Route extends ServiceRoute> = {
   /** The values to fill into the service route's path's parameters */
@@ -232,26 +188,6 @@ type ApiActionConfig<Route extends ServiceRoute> = {
   [key in keyof BaseApiActionConfig<Route> as BaseApiActionConfig<Route>[key] extends never
     ? never
     : key]: BaseApiActionConfig<Route>[key];
-};
-
-interface FetchInit {
-  method: HttpMethod;
-  body: JsonObject;
-  requestId: string;
-}
-
-type ApiConfig<Route extends ServiceRoute> = {
-  endpoint: string;
-  /** The schema for normalizing the response entities. */
-  normalizationSchema: Schema<
-    InferResponseBodyEntities<Route>,
-    schema.Entity<any>
-  >;
-  fetchInit: FetchInit;
-  canSkipRehydrate: boolean;
-  cancelKey: string;
-  /** Optional: whether to log cancelation of the API call. */
-  logCancellation?: boolean;
 };
 
 const pathMakersByPathPattern = {} as Record<
@@ -397,53 +333,6 @@ interface SearchQueryStringParams {
 }
 
 const defaultSorts = `created=${SortDirections.DESCENDING}`;
-
-// Created by newApiResponseError.
-export type ApiErrorResponsePayload = {
-  errorType: "API_RESPONSE_ERROR";
-  message: string;
-  sourceError: Error;
-  httpStatusCode: HttpStatusCode;
-  body: {
-    errorCode: ApiErrorCode;
-  };
-};
-/**
- * A callApiResponse payload may be a local error (e.g. network) or it
- * can be a response from the API.
- */
-export type CallApiErrorResponsePayload =
-  | {
-      errorType: Omit<UiErrorType, "API_RESPONSE_ERROR">;
-      message: string;
-      sourceError: Error;
-    }
-  | ApiErrorResponsePayload;
-
-export const callApiResponse = createAction(
-  "CALL_API_RESPONSE",
-  (result) => result
-) as
-  | ActionCreatorWithPreparedPayload<
-      unknown[], // Args
-      CallApiErrorResponsePayload, // Payload
-      string, // Type
-      true, // Error
-      unknown // Meta
-    >
-  | ActionCreatorWithPreparedPayload<
-      unknown[], // Args
-      unknown, // Payload
-      string, // Type
-      false, // Error
-      unknown // Meta
-    >;
-
-export function isApiResponseErrorAction(
-  action: ReturnType<typeof callApiResponse>
-): action is PayloadAction<ApiErrorResponsePayload, string, unknown, boolean> {
-  return action.error && action.payload.errorType === "API_RESPONSE_ERROR";
-}
 
 /** Actions that directly result in API calls */
 export const api = {
@@ -1311,7 +1200,7 @@ export const api = {
   unTag: apiActionCreator(
     "UN_TAG",
     serviceRoutes.deleteTagVote,
-    (prevTagVote: TagVoteRef) => ({
+    (prevTagVote: PersistedEntity) => ({
       config: {
         pathParams: { tagVoteId: prevTagVote.id },
       },
@@ -1331,7 +1220,7 @@ export const api = {
     ) => {
       const propositionTagVote: TagPropositionVote = {
         polarity: PropositionTagVotePolarities.POSITIVE,
-        proposition: PropositionRef.parse({ id: propositionId }),
+        proposition: { id: propositionId },
         tag,
       };
       return {
@@ -1359,7 +1248,7 @@ export const api = {
     ) => {
       const propositionTagVote: TagPropositionVote = {
         polarity: PropositionTagVotePolarities.NEGATIVE,
-        proposition: PropositionRef.parse({ id: propositionId }),
+        proposition: { id: propositionId },
         tag,
       };
       return {

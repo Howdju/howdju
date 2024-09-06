@@ -1,8 +1,8 @@
-import { actions, extension } from "./index";
+import { api, extension } from "./index";
 
 describe("package works", () => {
   test("can import the things", () => {
-    expect(actions).toBeTruthy();
+    expect(api).toBeTruthy();
     expect(extension).toBeTruthy();
   });
 });

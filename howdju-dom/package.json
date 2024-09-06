@@ -1,0 +1,27 @@
+{
+  "name": "howdju-dom",
+  "version": "1.0.0",
+  "description": "Code for interacting with the DOM",
+  "main": "lib/index.ts",
+  "author": "Carl Gieringer <carl.gieringer@gmail.com>",
+  "license": "AGPL-3.0-or-later",
+  "private": true,
+  "scripts": {
+    "check-format": "yarn run prettier --check --ignore-path .gitignore .",
+    "fix-format": "yarn run lint --fix && yarn run prettier --write --ignore-path .gitignore .",
+    "lint": "eslint --ignore-path=.gitignore .",
+    "test": "jest",
+    "test-inspect": "node --inspect-brk ../node_modules/.bin/jest --runInBand --watch",
+    "typecheck": "tsc --build"
+  },
+  "devDependencies": {
+    "@types/chrome": "^0.0.233",
+    "eslint": "^8.27.0",
+    "eslint-config-howdju": "workspace:eslint-config-howdju",
+    "howdju-test-common": "workspace:howdju-test-common",
+    "jest": "^29.3.1",
+    "prettier": "2.7.1",
+    "ts-node": "^10.9.1",
+    "typescript": "^4.9.4"
+  }
+}

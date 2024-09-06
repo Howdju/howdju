@@ -6,18 +6,12 @@ import { Link } from "react-router-dom";
 
 import { makeJustificationViewModel } from "howdju-client-common";
 import {
-  brandedParse,
   ContextTrailItem,
   JustificationBasisTypes,
   JustificationPolarities,
-  JustificationRef,
   JustificationTargetTypes,
-  MediaExcerptRef,
   MediaExcerptView,
-  PropositionCompoundRef,
   PropositionOut,
-  PropositionRef,
-  UrlRef,
 } from "howdju-common";
 
 import ContextTrail from "@/components/contextTrail/ContextTrail";
@@ -35,21 +29,21 @@ export default class LandingPage extends Component {
     const created = moment.utc("2017-01-12");
     const id = "landing-page";
     const rootProposition: PropositionOut = {
-      ...PropositionRef.parse({ id: "1416" }),
+      id: "1416",
       text: "By law, no building in Washington, D.C. may be taller than the Capitol building",
       normalText:
         "By law, no building in Washington, D.C. may be taller than the Capitol building",
       created,
     };
     const proJustificationProposition: PropositionOut = {
-      ...PropositionRef.parse({ id: "1421" }),
+      id: "1421",
       text: "The 1899 Height of Buildings Act established that no building could be taller than the Capitol (289 feet)",
       normalText:
         "The 1899 Height of Buildings Act established that no building could be taller than the Capitol (289 feet)",
       created,
     };
     const proJustification = makeJustificationViewModel({
-      ...JustificationRef.parse({ id: "2573" }),
+      id: "2573",
       polarity: "POSITIVE",
       target: {
         type: JustificationTargetTypes.PROPOSITION,
@@ -58,7 +52,7 @@ export default class LandingPage extends Component {
       basis: {
         type: JustificationBasisTypes.PROPOSITION_COMPOUND,
         entity: {
-          ...PropositionCompoundRef.parse({ id: "example" }),
+          id: "example",
           atoms: [
             {
               propositionCompoundId: "example",
@@ -72,7 +66,7 @@ export default class LandingPage extends Component {
     const creator = { id: "example-user", longName: "The Creator" };
     const creatorUserId = "example";
     const proMediaExcerpt: MediaExcerptView = {
-      ...MediaExcerptRef.parse({ id: "1976" }),
+      id: "1976",
       localRep: {
         quotation:
           "The Heights of Buildings Act of 1899 limited buildings in the District to 288 feet, the height of the Capitol building, in response to the newly erected 14-story Cairo apartment tower, then considered a monstrosity (now revered as outstandingly beautiful) towering over its Dupont Circle neighborhood.",
@@ -99,12 +93,12 @@ export default class LandingPage extends Component {
             created,
             creator,
             mediaExcerptId: "1436",
-            url: brandedParse(UrlRef, {
+            url: {
               id: "example",
               url: "https://archive.amerisurv.com/PDF/TheAmericanSurveyor_Lathrop-TallBuildings_January2009.pdf",
               canonicalUrl:
                 "https://archive.amerisurv.com/PDF/TheAmericanSurveyor_Lathrop-TallBuildings_January2009.pdf",
-            }),
+            },
           },
           {
             id,
@@ -120,12 +114,12 @@ export default class LandingPage extends Component {
             created,
             creator,
             mediaExcerptId: "1436",
-            url: brandedParse(UrlRef, {
+            url: {
               id: "example",
               url: "https://web.archive.org/web/20210512170410/https://archive.amerisurv.com/PDF/TheAmericanSurveyor_Lathrop-TallBuildings_January2009.pdf",
               canonicalUrl:
                 "https://web.archive.org/web/20210512170410/https://archive.amerisurv.com/PDF/TheAmericanSurveyor_Lathrop-TallBuildings_January2009.pdf",
-            }),
+            },
           },
         ],
       },
@@ -151,7 +145,7 @@ export default class LandingPage extends Component {
       creatorUserId: "test-user",
     };
     const proJustificationJustification = makeJustificationViewModel({
-      ...JustificationRef.parse({ id: "1897" }),
+      id: "1897",
       created,
       target: {
         type: JustificationTargetTypes.PROPOSITION,
@@ -188,14 +182,14 @@ export default class LandingPage extends Component {
     ];
 
     const conJustificationProposition: PropositionOut = {
-      ...PropositionRef.parse({ id: "1424" }),
+      id: "1424",
       text: "In general, buildings in Washington, D.C. may be no taller than the width of their adjacent street plus 20 feet ",
       normalText:
         "In general, buildings in Washington, D.C. may be no taller than the width of their adjacent street plus 20 feet ",
       created,
     };
     const conJustification = makeJustificationViewModel({
-      ...JustificationRef.parse({ id: "1905" }),
+      id: "1905",
       created,
       target: {
         type: JustificationTargetTypes.PROPOSITION,
@@ -205,7 +199,7 @@ export default class LandingPage extends Component {
       basis: {
         type: JustificationBasisTypes.PROPOSITION_COMPOUND,
         entity: {
-          ...PropositionCompoundRef.parse({ id: "example" }),
+          id: "example",
           atoms: [
             {
               propositionCompoundId: "example",
@@ -216,7 +210,7 @@ export default class LandingPage extends Component {
       },
     });
     const conMediaExcerpt: MediaExcerptView = {
-      ...MediaExcerptRef.parse({ id: "1441" }),
+      id: "1441",
       created,
       localRep: {
         quotation:
@@ -242,12 +236,12 @@ export default class LandingPage extends Component {
             created,
             creator,
             mediaExcerptId: "example",
-            url: brandedParse(UrlRef, {
+            url: {
               id: "example",
               url: "https://code.dccouncil.gov/us/dc/council/code/sections/6-601.05",
               canonicalUrl:
                 "https://code.dccouncil.gov/us/dc/council/code/sections/6-601.05",
-            }),
+            },
           },
         ],
       },
@@ -272,7 +266,7 @@ export default class LandingPage extends Component {
       creatorUserId: "test-user",
     };
     const conJustificationJustification = makeJustificationViewModel({
-      ...JustificationRef.parse({ id: "example" }),
+      id: "example",
       created,
       polarity: JustificationPolarities.POSITIVE,
       target: {
@@ -309,7 +303,7 @@ export default class LandingPage extends Component {
     ];
 
     const counterJustification = makeJustificationViewModel({
-      ...JustificationRef.parse({ id: "example" }),
+      id: "example",
       created,
       polarity: "NEGATIVE",
       target: {
@@ -319,12 +313,12 @@ export default class LandingPage extends Component {
       basis: {
         type: JustificationBasisTypes.PROPOSITION_COMPOUND,
         entity: {
-          ...PropositionCompoundRef.parse({ id: "example" }),
+          id: "example",
           atoms: [
             {
               propositionCompoundId: "example",
               entity: {
-                ...PropositionRef.parse({ id: "1420" }),
+                id: "1420",
                 created,
                 text: "The Height of Buildings Act of 1910 limits the height of buildings in Washington, D.C. based upon the width of a building's adjacent streets",
                 normalText:

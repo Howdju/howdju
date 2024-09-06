@@ -16,8 +16,7 @@ import {
   UrlOut,
 } from "howdju-common";
 import {
-  extension as ext,
-  actions,
+  extensionFacade as ext,
   urlEquivalent,
   ExtensionMessage,
   PayloadOf,
@@ -26,6 +25,11 @@ import {
   getCanonicalUrl,
   getCurrentUrl,
   WindowMessageSource,
+  ExtensionAction,
+  extension,
+  extensionFrame,
+  ExtensionFrameAction,
+  ExtensionFrameActionName,
 } from "howdju-client-common";
 
 import { annotateAnchors, annotateSelection, annotateTarget } from "./annotate";
@@ -79,24 +83,22 @@ function onRuntimeMessage(
   if (sendResponse) sendResponse();
 }
 
-function routeWindowMessage(action: actions.ExtensionAction) {
+function routeWindowMessage(action: ExtensionAction) {
   const { type, payload } = action;
   if (!type) {
     logger.error(`window message lacked an action type: ${action}`);
   }
   let isRecognized = true;
   switch (type) {
-    case `${actions.extension.highlightTarget}`:
-      highlightTarget(
-        payload as PayloadOf<typeof actions.extension.highlightTarget>
-      );
+    case `${extension.highlightTarget}`:
+      highlightTarget(payload as PayloadOf<typeof extension.highlightTarget>);
       break;
-    case `${actions.extension.highlightUrlLocator}`:
+    case `${extension.highlightUrlLocator}`:
       highlightUrlLocator(
-        payload as PayloadOf<typeof actions.extension.highlightUrlLocator>
+        payload as PayloadOf<typeof extension.highlightUrlLocator>
       );
       break;
-    case `${actions.extension.messageHandlerReady}`:
+    case `${extension.messageHandlerReady}`:
       setMessageHandlerReady(true);
       break;
     default:
@@ -106,7 +108,7 @@ function routeWindowMessage(action: actions.ExtensionAction) {
   }
   if (isRecognized) {
     // Let the app know we got it
-    postActionMessageToFrame(actions.extensionFrame.ackMessage());
+    postActionMessageToFrame(extensionFrame.ackMessage());
   }
 }
 
@@ -165,8 +167,7 @@ function runCommand<T extends Exact<ContentScriptCommand, T>>(command: T) {
   if ("postActionMessageToFrame" in command) {
     // TODO(38) remove any typecast
     forEach(command.postActionMessageToFrame, (value: any, key: any) => {
-      const actionCreator =
-        actions.extensionFrame[key as actions.ExtensionFrameActionName];
+      const actionCreator = extensionFrame[key as ExtensionFrameActionName];
       if (!actionCreator) {
         logger.error(`Unrecognized extensionFrame action: ${key}`);
         return;
@@ -229,13 +230,13 @@ function annotateSelectionAndEdit() {
     return;
   }
   postActionMessageToFrame(
-    actions.extensionFrame.beginEditOfMediaExcerptFromInfo(
+    extensionFrame.beginEditOfMediaExcerptFromInfo(
       annotationAnchors.mediaExcerptInfo
     )
   );
 }
 
-function postActionMessageToFrame(action: actions.ExtensionFrameAction) {
+function postActionMessageToFrame(action: ExtensionFrameAction) {
   getOption("howdjuBaseUrl", (baseUrl) => {
     doWhenFrameMessageHandlerReady((frameApi: FramePanelApi) => {
       frameApi.postMessage(

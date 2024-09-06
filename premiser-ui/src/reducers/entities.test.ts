@@ -2,33 +2,29 @@ import { merge } from "lodash";
 import moment from "moment";
 
 import {
-  brandedParse,
   JustificationPolarities,
   JustificationRootTargetTypes,
   JustificationTargetTypes,
   PropositionOut,
-  PropositionRef,
   mergeCopy,
   JustificationOut,
-  JustificationRef,
   negateRootPolarity,
-  PropositionCompoundRef,
 } from "howdju-common";
+import {
+  api,
+  justificationSchema,
+  propositionCompoundAtomSchema,
+  propositionCompoundSchema,
+  propositionSchema,
+} from "howdju-client-common";
 import { expectToBeSameMomentDeep } from "howdju-test-common";
 
-import { api } from "../actions";
 import entities, {
   initialState as defaultInitialState,
   State,
   deepMerge,
   NormalizedJustification,
 } from "./entities";
-import {
-  justificationSchema,
-  propositionCompoundAtomSchema,
-  propositionCompoundSchema,
-  propositionSchema,
-} from "../normalizationSchemas";
 import { normalizeEntity } from "@/testUtils";
 
 describe("deepmerge", () => {
@@ -42,19 +38,19 @@ describe("deepmerge", () => {
 describe("entities", () => {
   describe("api.createJustification.response", () => {
     test("should add justifications to targets", () => {
-      const targetProposition: PropositionOut = brandedParse(PropositionRef, {
+      const targetProposition: PropositionOut = {
         id: "1",
         text: "target proposition",
         normalText: "target proposition",
         created: moment(),
-      });
-      const atom1Proposition = brandedParse(PropositionRef, {
+      };
+      const atom1Proposition = {
         id: "4",
         text: "atom 1",
         normalText: "atom 1",
         created: moment(),
-      });
-      const propositionCompound1 = brandedParse(PropositionCompoundRef, {
+      };
+      const propositionCompound1 = {
         id: "1",
         atoms: [
           {
@@ -62,27 +58,23 @@ describe("entities", () => {
             entity: atom1Proposition,
           },
         ],
-      });
-      const existingJustification: JustificationOut = brandedParse(
-        JustificationRef,
-        {
-          id: "1",
-          rootTargetType: "PROPOSITION",
-          rootTarget: targetProposition,
-          target: {
-            type: "PROPOSITION",
-            entity: targetProposition,
-          },
-          created: moment(),
-          polarity: "POSITIVE",
-          rootPolarity: "POSITIVE",
-          basis: {
-            type: "PROPOSITION_COMPOUND",
-            entity: propositionCompound1,
-          },
-        }
-      );
-
+      };
+      const existingJustification: JustificationOut = {
+        id: "1",
+        rootTargetType: "PROPOSITION",
+        rootTarget: targetProposition,
+        target: {
+          type: "PROPOSITION",
+          entity: targetProposition,
+        },
+        created: moment(),
+        polarity: "POSITIVE",
+        rootPolarity: "POSITIVE",
+        basis: {
+          type: "PROPOSITION_COMPOUND",
+          entity: propositionCompound1,
+        },
+      };
       targetProposition.justifications = [existingJustification];
       const normalTargetProposition = normalizeEntity(
         targetProposition,
@@ -102,13 +94,13 @@ describe("entities", () => {
         },
       });
 
-      const atom2Proposition = brandedParse(PropositionRef, {
+      const atom2Proposition = {
         id: "3",
         text: "atom 1",
         normalText: "atom 1",
         created: moment(),
-      });
-      const propositionCompound2 = brandedParse(PropositionCompoundRef, {
+      };
+      const propositionCompound2 = {
         id: "2",
         atoms: [
           {
@@ -116,26 +108,23 @@ describe("entities", () => {
             entity: atom2Proposition,
           },
         ],
-      });
-      const newJustification: JustificationOut = brandedParse(
-        JustificationRef,
-        {
-          id: "2",
-          rootTargetType: JustificationRootTargetTypes.PROPOSITION,
-          rootTarget: { id: "1" },
-          target: {
-            type: "PROPOSITION",
-            entity: targetProposition,
-          },
-          basis: {
-            type: "PROPOSITION_COMPOUND",
-            entity: propositionCompound2,
-          },
-          created: moment(),
-          polarity: "POSITIVE",
-          rootPolarity: "POSITIVE",
-        }
-      );
+      };
+      const newJustification: JustificationOut = {
+        id: "2",
+        rootTargetType: JustificationRootTargetTypes.PROPOSITION,
+        rootTarget: { id: "1" },
+        target: {
+          type: "PROPOSITION",
+          entity: targetProposition,
+        },
+        basis: {
+          type: "PROPOSITION_COMPOUND",
+          entity: propositionCompound2,
+        },
+        created: moment(),
+        polarity: "POSITIVE",
+        rootPolarity: "POSITIVE",
+      };
       const action = api.createJustification.response(
         { justification: newJustification },
         { normalizationSchema: { justification: justificationSchema } }
@@ -203,63 +192,53 @@ describe("entities", () => {
     });
 
     test("should add counter-justifications to a target with no counter-justifications", () => {
-      const rootProposition: PropositionOut = brandedParse(PropositionRef, {
+      const rootProposition: PropositionOut = {
         id: "1",
         text: "root proposition",
         normalText: "root proposition",
         created: moment(),
-      });
-      const propositionCompound1 = brandedParse(PropositionCompoundRef, {
+      };
+      const propositionCompound1 = {
         id: "4",
         atoms: [],
-      });
-      const targetJustification: JustificationOut = brandedParse(
-        JustificationRef,
-        {
-          id: "2",
-          rootTargetType: JustificationRootTargetTypes.PROPOSITION,
-          rootTarget: { id: rootProposition.id },
-          target: {
-            type: JustificationTargetTypes.PROPOSITION,
-            entity: rootProposition,
-          },
-          created: moment(),
-          polarity: "POSITIVE",
-          rootPolarity: "POSITIVE",
-          basis: {
-            type: "PROPOSITION_COMPOUND",
-            entity: propositionCompound1,
-          },
-        }
-      );
+      };
+      const targetJustification: JustificationOut = {
+        id: "2",
+        rootTargetType: JustificationRootTargetTypes.PROPOSITION,
+        rootTarget: { id: rootProposition.id },
+        target: {
+          type: JustificationTargetTypes.PROPOSITION,
+          entity: rootProposition,
+        },
+        created: moment(),
+        polarity: "POSITIVE",
+        rootPolarity: "POSITIVE",
+        basis: {
+          type: "PROPOSITION_COMPOUND",
+          entity: propositionCompound1,
+        },
+      };
       rootProposition.justifications = [targetJustification];
-      const counterJustificationBasisPropositionCompound = brandedParse(
-        PropositionCompoundRef,
-        {
-          id: "5",
-          atoms: [],
-        }
-      );
-      const counterJustification: JustificationOut = brandedParse(
-        JustificationRef,
-        {
-          id: "3",
-          rootTargetType: "PROPOSITION",
-          rootTarget: rootProposition,
-          rootPolarity: negateRootPolarity(targetJustification.rootPolarity),
-          target: {
-            type: "JUSTIFICATION",
-            entity: targetJustification,
-          },
-          basis: {
-            type: "PROPOSITION_COMPOUND",
-            entity: counterJustificationBasisPropositionCompound,
-          },
-          polarity: "NEGATIVE",
-          created: moment(),
-        }
-      );
-
+      const counterJustificationBasisPropositionCompound = {
+        id: "5",
+        atoms: [],
+      };
+      const counterJustification: JustificationOut = {
+        id: "3",
+        rootTargetType: "PROPOSITION",
+        rootTarget: rootProposition,
+        rootPolarity: negateRootPolarity(targetJustification.rootPolarity),
+        target: {
+          type: "JUSTIFICATION",
+          entity: targetJustification,
+        },
+        basis: {
+          type: "PROPOSITION_COMPOUND",
+          entity: counterJustificationBasisPropositionCompound,
+        },
+        polarity: "NEGATIVE",
+        created: moment(),
+      };
       const normalRootProposition = normalizeEntity(
         rootProposition,
         propositionSchema
@@ -315,59 +294,53 @@ describe("entities", () => {
     });
 
     test("should add counter-justifications to a target with existing counter-justifications", () => {
-      const rootProposition: PropositionOut = brandedParse(PropositionRef, {
+      const rootProposition: PropositionOut = {
         id: "1",
         text: "root proposition",
         normalText: "root proposition",
         created: moment(),
-      });
-      const propositionCompound1 = brandedParse(PropositionCompoundRef, {
+      };
+      const propositionCompound1 = {
         id: "3",
         atoms: [],
-      });
-      const targetJustification: JustificationOut = brandedParse(
-        JustificationRef,
-        {
-          id: "2",
-          rootTargetType: JustificationRootTargetTypes.PROPOSITION,
-          rootTarget: rootProposition,
-          target: {
-            type: JustificationTargetTypes.PROPOSITION,
-            entity: rootProposition,
-          },
-          created: moment(),
-          polarity: "POSITIVE",
-          rootPolarity: "POSITIVE",
-          counterJustifications: [],
-          basis: {
-            type: "PROPOSITION_COMPOUND",
-            entity: propositionCompound1,
-          },
-        }
-      );
-      const propositionCompound2 = brandedParse(PropositionCompoundRef, {
+      };
+      const targetJustification: JustificationOut = {
+        id: "2",
+        rootTargetType: JustificationRootTargetTypes.PROPOSITION,
+        rootTarget: rootProposition,
+        target: {
+          type: JustificationTargetTypes.PROPOSITION,
+          entity: rootProposition,
+        },
+        created: moment(),
+        polarity: "POSITIVE",
+        rootPolarity: "POSITIVE",
+        counterJustifications: [],
+        basis: {
+          type: "PROPOSITION_COMPOUND",
+          entity: propositionCompound1,
+        },
+      };
+      const propositionCompound2 = {
         id: "4",
         atoms: [],
-      });
-      const existingCounterJustification: JustificationOut = brandedParse(
-        JustificationRef,
-        {
-          id: "3",
-          rootTargetType: JustificationRootTargetTypes.PROPOSITION,
-          rootTarget: rootProposition,
-          rootPolarity: negateRootPolarity(targetJustification.rootPolarity),
-          target: {
-            type: "JUSTIFICATION",
-            entity: targetJustification,
-          },
-          polarity: JustificationPolarities.NEGATIVE,
-          basis: {
-            type: "PROPOSITION_COMPOUND",
-            entity: propositionCompound2,
-          },
-          created: moment(),
-        }
-      );
+      };
+      const existingCounterJustification: JustificationOut = {
+        id: "3",
+        rootTargetType: JustificationRootTargetTypes.PROPOSITION,
+        rootTarget: rootProposition,
+        rootPolarity: negateRootPolarity(targetJustification.rootPolarity),
+        target: {
+          type: "JUSTIFICATION",
+          entity: targetJustification,
+        },
+        polarity: JustificationPolarities.NEGATIVE,
+        basis: {
+          type: "PROPOSITION_COMPOUND",
+          entity: propositionCompound2,
+        },
+        created: moment(),
+      };
       targetJustification.counterJustifications = [
         existingCounterJustification,
       ];
@@ -390,29 +363,26 @@ describe("entities", () => {
         },
       });
 
-      const propositionCompound3 = brandedParse(PropositionCompoundRef, {
+      const propositionCompound3 = {
         id: "3",
         atoms: [],
-      });
-      const newCounterJustification: JustificationOut = brandedParse(
-        JustificationRef,
-        {
-          id: "4",
-          rootTargetType: "PROPOSITION",
-          rootTarget: rootProposition,
-          rootPolarity: negateRootPolarity(targetJustification.rootPolarity),
-          target: {
-            type: "JUSTIFICATION",
-            entity: targetJustification,
-          },
-          polarity: "NEGATIVE",
-          basis: {
-            type: "PROPOSITION_COMPOUND",
-            entity: propositionCompound3,
-          },
-          created: moment(),
-        }
-      );
+      };
+      const newCounterJustification: JustificationOut = {
+        id: "4",
+        rootTargetType: "PROPOSITION",
+        rootTarget: rootProposition,
+        rootPolarity: negateRootPolarity(targetJustification.rootPolarity),
+        target: {
+          type: "JUSTIFICATION",
+          entity: targetJustification,
+        },
+        polarity: "NEGATIVE",
+        basis: {
+          type: "PROPOSITION_COMPOUND",
+          entity: propositionCompound3,
+        },
+        created: moment(),
+      };
       const action = api.createJustification.response(
         { justification: newCounterJustification },
         { normalizationSchema: { justification: justificationSchema } }
@@ -466,48 +436,42 @@ describe("entities", () => {
   describe("api.deleteJustification.response", () => {
     test("should remove deleted counter-justification from countered justification", () => {
       const rootProposition = { id: "1" };
-      const targetJustification: NormalizedJustification = brandedParse(
-        JustificationRef,
-        {
-          rootTargetType: "PROPOSITION",
-          rootTarget: { schema: "PROPOSITION", id: rootProposition.id },
-          id: "2",
-          counterJustifications: [] as string[],
-          created: moment(),
-          polarity: "POSITIVE",
-          rootPolarity: "POSITIVE",
-          target: {
-            type: "PROPOSITION",
-            entity: { schema: "PROPOSITION", id: rootProposition.id },
+      const targetJustification: NormalizedJustification = {
+        rootTargetType: "PROPOSITION",
+        rootTarget: { schema: "PROPOSITION", id: rootProposition.id },
+        id: "2",
+        counterJustifications: [] as string[],
+        created: moment(),
+        polarity: "POSITIVE",
+        rootPolarity: "POSITIVE",
+        target: {
+          type: "PROPOSITION",
+          entity: { schema: "PROPOSITION", id: rootProposition.id },
+        },
+        basis: {
+          type: "PROPOSITION_COMPOUND",
+          entity: { schema: "PROPOSITION_COMPOUND", id: "3" },
+        },
+      };
+      const counterJustification: NormalizedJustification = {
+        id: "3",
+        polarity: JustificationPolarities.NEGATIVE,
+        target: {
+          type: JustificationTargetTypes.JUSTIFICATION,
+          entity: {
+            schema: "JUSTIFICATION",
+            id: targetJustification.id,
           },
-          basis: {
-            type: "PROPOSITION_COMPOUND",
-            entity: { schema: "PROPOSITION_COMPOUND", id: "3" },
-          },
-        }
-      );
-      const counterJustification: NormalizedJustification = brandedParse(
-        JustificationRef,
-        {
-          id: "3",
-          polarity: JustificationPolarities.NEGATIVE,
-          target: {
-            type: JustificationTargetTypes.JUSTIFICATION,
-            entity: {
-              schema: "JUSTIFICATION",
-              id: targetJustification.id,
-            },
-          },
-          rootTargetType: "PROPOSITION",
-          rootTarget: { schema: "PROPOSITION", id: rootProposition.id },
-          created: moment(),
-          rootPolarity: negateRootPolarity(targetJustification.rootPolarity),
-          basis: {
-            type: "PROPOSITION_COMPOUND",
-            entity: { schema: "PROPOSITION_COMPOUND", id: "4" },
-          },
-        }
-      );
+        },
+        rootTargetType: "PROPOSITION",
+        rootTarget: { schema: "PROPOSITION", id: rootProposition.id },
+        created: moment(),
+        rootPolarity: negateRootPolarity(targetJustification.rootPolarity),
+        basis: {
+          type: "PROPOSITION_COMPOUND",
+          entity: { schema: "PROPOSITION_COMPOUND", id: "4" },
+        },
+      };
       const initialState = mergeCopy(defaultInitialState, {
         justifications: {
           [targetJustification.id]: targetJustification,

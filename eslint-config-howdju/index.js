@@ -3,6 +3,12 @@ const { testFilePattern, typescriptRules } = require("./constants");
 /** The base ESLint config. Other ESLint configs should extend this. */
 module.exports = {
   parser: "@babel/eslint-parser",
+  ignorePatterns: [
+    // jest.config.ts and types/ in each package are within the tsconfig root dir, but not included
+    // in the tsconfig includes. ESLint must not lint files not included in the tsconfig.
+    "jest.config.ts",
+    "types",
+  ],
   parserOptions: {
     babelOptions: {
       rootMode: "upward",

@@ -5,9 +5,8 @@ import {
   isWritQuoteBased,
   isPropositionCompoundBased,
   CreateJustificationInput,
-  isRef,
   isMediaExcerptBased,
-  isOnlyRef,
+  isBareRef,
 } from "howdju-common";
 
 import { HorizontalRule } from "@/components/layout/HorizontalRule";
@@ -101,18 +100,20 @@ export default function JustificationEditorFields(props: Props) {
     disabled,
   };
 
-  if (isRef(basisPropositionCompound)) {
+  if (isBareRef(basisPropositionCompound)) {
     logger.error(
       "JustificationEditorFields does not support PropositionCompound refs yet."
     );
   }
-  if (isRef(basisWritQuote)) {
+  if (isBareRef(basisWritQuote)) {
     logger.error(
       "JustificationEditorFields does not support WritQuote refs yet."
     );
   }
 
-  const propositionCompoundEditorFields = !isRef(basisPropositionCompound) && (
+  const propositionCompoundEditorFields = !isBareRef(
+    basisPropositionCompound
+  ) && (
     <PropositionCompoundEditorFields
       {...commonFieldsProps}
       id={combineIds(id, propositionCompoundName)}
@@ -130,7 +131,7 @@ export default function JustificationEditorFields(props: Props) {
       editorDispatch={editorDispatch}
     />
   );
-  const mediaExcerptEditorFields = !isOnlyRef(basisMediaExcerpt) && (
+  const mediaExcerptEditorFields = !isBareRef(basisMediaExcerpt) && (
     <MediaExcerptEditorFields
       {...commonFieldsProps}
       mediaExcerpt={basisMediaExcerpt}
@@ -145,7 +146,7 @@ export default function JustificationEditorFields(props: Props) {
       editorDispatch={editorDispatch}
     />
   );
-  const writQuoteEditorFields = !isRef(basisWritQuote) && (
+  const writQuoteEditorFields = !isBareRef(basisWritQuote) && (
     <WritQuoteEditorFields
       {...commonFieldsProps}
       writQuote={basisWritQuote}

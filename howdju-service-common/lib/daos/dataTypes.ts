@@ -7,7 +7,6 @@ import {
   camelCaseKeysDeep,
   ContentReport,
   CreateRegistrationRequest,
-  EntityRef,
   Justification,
   JustificationBasisType,
   JustificationPolarity,
@@ -22,7 +21,6 @@ import {
   PersistedOrRef,
   PersistRelated,
   Persorg,
-  PersorgRef,
   Proposition,
   PropositionCompound,
   PropositionCompoundAtom,
@@ -50,12 +48,13 @@ export type EntityRowId = number;
 
 export type JustStatement = Omit<
   Statement,
-  "sentence" | "speaker" | "creator"
-> & {
-  sentence: { id: EntityId };
-  speaker: { id: EntityId };
-  creator: { id: EntityId };
-};
+  "id" | "sentence" | "speaker" | "creator"
+> &
+  PersistedEntity & {
+    sentence: { id: EntityId };
+    speaker: { id: EntityId };
+    creator: { id: EntityId };
+  };
 
 export interface PropositionRow {
   proposition_id: EntityRowId;
@@ -127,7 +126,7 @@ export type SpeakerBlurbRow = Pick<
 >;
 export function toSpeakerBlurbMapper({ persorg_id, ...rest }: SpeakerBlurbRow) {
   return {
-    ...PersorgRef.parse({ id: toIdString(persorg_id) }),
+    id: toIdString(persorg_id),
     ...camelCaseKeysDeep(rest),
   };
 }
@@ -169,11 +168,11 @@ export interface JustificationRow {
 export type JustificationRootTargetData =
   | {
       rootTargetType: "PROPOSITION";
-      rootTarget: EntityRef<Proposition>;
+      rootTarget: PersistedEntity;
     }
   | {
       rootTargetType: "STATEMENT";
-      rootTarget: EntityRef<Statement>;
+      rootTarget: PersistedEntity;
     };
 export type CreateJustificationDataIn = JustificationRootTargetData &
   Simplify<
@@ -215,14 +214,14 @@ export type CreateJustificationDataIn = JustificationRootTargetData &
   >;
 
 export type BasedJustificationDataOut = BasedJustificationWithRootRef & {
-  creator?: CreatorBlurbData | EntityRef<User>;
+  creator?: CreatorBlurbData | PersistedEntity;
   counterJustifications: BasedJustificationDataOut[];
   score?: number;
   vote?: JustificationVoteData;
 };
 
 export type ReadJustificationDataOut = PersistedJustificationWithRootRef & {
-  creator?: CreatorBlurbData | EntityRef<User>;
+  creator?: CreatorBlurbData | PersistedEntity;
   counterJustifications: BasedJustificationDataOut[];
   score?: number;
   vote?: JustificationVoteData;
@@ -323,7 +322,7 @@ export type UserExternalIdsData = UserExternalIds;
 
 /** A short description of a user attached to something the user created to show authorship. */
 export type CreatorBlurbRow = Pick<UserRow, "user_id" | "long_name">;
-export type CreatorBlurbData = EntityRef<User> &
+export type CreatorBlurbData = PersistedEntity &
   Pick<Persisted<User>, "longName">;
 
 export interface UserHashRow {

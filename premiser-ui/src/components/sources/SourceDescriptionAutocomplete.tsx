@@ -1,10 +1,12 @@
 import React from "react";
 
 import { Source, SourceOut } from "howdju-common";
+import {
+  api,
+  cancelSourceDescriptionSuggestions,
+  sourceSchema,
+} from "howdju-client-common";
 
-import { api } from "../../actions";
-import { sourceSchema } from "../../normalizationSchemas";
-import { cancelSourceDescriptionSuggestions } from "../../apiActions";
 import ApiAutoComplete, {
   Props as ApiAutocompleteProps,
 } from "@/components/autocomplete/ApiAutoComplete";

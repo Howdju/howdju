@@ -1,5 +1,7 @@
-import { api } from "@/apiActions";
 import { put, takeEvery } from "redux-saga/effects";
+
+import { api } from "howdju-client-common";
+
 import justificationsPage from "./justificationsPageSlice";
 
 export function* translateFetchRootJustificationTarget() {

@@ -1,4 +1,5 @@
 import { logger } from "howdju-common";
+
 import { ExtensionMessage } from "./extensionMessages";
 
 // Just reuse the chrome type since types are available for it.
@@ -14,7 +15,7 @@ type NativeExtension = Pick<
   | "webRequest"
 >;
 
-export class Extension {
+export class ExtensionFacade {
   extension: NativeExtension;
 
   constructor(extension: NativeExtension) {
@@ -165,15 +166,15 @@ class FakeExtension {
   webRequest = makeCallableProxy<NativeExtension["webRequest"]>();
 }
 
-export const extension = makeExtension();
-function makeExtension() {
+export const extensionFacade = makeExtensionFacade();
+function makeExtensionFacade() {
   if ("chrome" in window) {
     // Chrome
-    return new Extension(window.chrome);
+    return new ExtensionFacade(window.chrome);
   } else if ("browser" in window) {
     // Firefox and Safari
     // TODO(399) use https://wiki.mozilla.org/WebExtensions and remove typecast
-    return new Extension((window as any).browser);
+    return new ExtensionFacade((window as any).browser);
   } else {
     if (
       process.env.NODE_ENV !== "development" &&
@@ -181,7 +182,7 @@ function makeExtension() {
     ) {
       logger.warn("Unsupported extension environment.");
     }
-    return new Extension(new FakeExtension());
+    return new ExtensionFacade(new FakeExtension());
   }
 }
 

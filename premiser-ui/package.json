@@ -37,7 +37,7 @@
     "test-inspect": "TZ=UTC node --inspect-brk ../node_modules/.bin/jest --runInBand --watch",
     "test-verbose": "TZ=UTC jest --verbose",
     "test-dns": "dig +recurse +trace howdju.com any",
-    "typecheck": "tsc"
+    "typecheck": "tsc --build"
   },
   "devDependencies": {
     "@babel/cli": "^7.23.0",

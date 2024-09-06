@@ -14,6 +14,7 @@ import {
   toJson,
 } from "howdju-common";
 import { validateRawErrors } from "howdju-ajv-sourced";
+import { SuggestionsKey } from "howdju-client-common";
 
 import { CircularProgress } from "@/components/progress/CircularProgress";
 import { CardActions, CardContent } from "@/components/card/Card";
@@ -45,7 +46,6 @@ import {
   OnPropertyChangeCallback,
   OnValidityChangeCallback,
   PropertyChanges,
-  SuggestionsKey,
 } from "@/types";
 import {
   EditorCommitCrudActionConfig,

@@ -9,7 +9,7 @@ import {
   EntityTypes,
   momentAdd,
   newImpossibleError,
-  UserRef,
+  PersistedEntity,
   utcNow,
 } from "howdju-common";
 
@@ -81,7 +81,7 @@ export class AuthService {
     return userId;
   }
 
-  async createAuthToken(user: UserRef, now: Moment) {
+  async createAuthToken(user: PersistedEntity, now: Moment) {
     const authToken = randomBase64String(32);
     const authTokenExpiration = momentAdd(now, this.config.authTokenDuration);
 
@@ -98,7 +98,7 @@ export class AuthService {
     };
   }
 
-  private async createAuthRefreshToken(user: UserRef, now: Moment) {
+  private async createAuthRefreshToken(user: PersistedEntity, now: Moment) {
     const authRefreshToken = randomBase64String(32);
     const authRefreshTokenExpiration = momentAdd(
       now,
@@ -206,7 +206,7 @@ export class AuthService {
     };
   }
 
-  async createAuthAndRefreshToken(user: UserRef, now: Moment) {
+  async createAuthAndRefreshToken(user: PersistedEntity, now: Moment) {
     const [
       { authToken, authTokenExpiration },
       { authRefreshToken, authRefreshTokenExpiration },
@@ -269,7 +269,7 @@ export class AuthService {
     ]);
   }
 
-  private updateLastLogin(user: UserRef, now: Moment) {
+  private updateLastLogin(user: PersistedEntity, now: Moment) {
     return this.usersDao.updateLastLoginForUserId(user.id, now);
   }
 }

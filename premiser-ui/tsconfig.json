@@ -10,5 +10,11 @@
       // Support project-relative imports
       "@/*": ["./src/*"]
     }
-  }
+  },
+  "references": [
+    { "path": "../howdju-client-common" },
+    { "path": "../howdju-common" },
+    { "path": "../howdju-service-routes" },
+    { "path": "../howdju-ops" }
+  ]
 }

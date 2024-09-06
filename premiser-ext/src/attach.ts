@@ -1,4 +1,4 @@
-import { Extension } from "howdju-client-common";
+import { ExtensionFacade } from "howdju-client-common";
 
 export function attachHeadersListener({
   ext,
@@ -7,7 +7,7 @@ export function attachHeadersListener({
   overrideFrameOptions,
   isDevelopment,
 }: {
-  ext: Extension;
+  ext: ExtensionFacade;
   hosts: string | string[];
   iframeHosts: string | string[];
   overrideFrameOptions: boolean;

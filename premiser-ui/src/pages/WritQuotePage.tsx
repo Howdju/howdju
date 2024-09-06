@@ -3,9 +3,9 @@ import { useDispatch } from "react-redux";
 import { useParams } from "react-router";
 import { denormalize } from "normalizr";
 
-import { api } from "@/actions";
+import { api, writQuoteSchema } from "howdju-client-common";
+
 import HowdjuHelmet from "@/Helmet";
-import { writQuoteSchema } from "@/normalizationSchemas";
 import WritQuoteCard from "@/WritQuoteCard";
 import { useAppSelector } from "@/hooks";
 import { CircularProgress } from "@/components/progress/CircularProgress";

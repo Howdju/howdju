@@ -2,6 +2,7 @@ import { ActionFunctionAny } from "redux-actions";
 import { Location, LocationState } from "history";
 import { Action } from "redux";
 import { ActionCreatorWithPreparedPayload } from "@reduxjs/toolkit";
+import { AnyAction } from "@reduxjs/toolkit";
 
 import {
   MediaExcerptInfo,
@@ -19,27 +20,16 @@ import {
   WritQuoteOut,
   TagOut,
 } from "howdju-common";
+import {
+  actionTypeDelim,
+  AnyApiAction,
+  createAction,
+  SuggestionsKey,
+} from "howdju-client-common";
 
 import { EditorEntity, EditorType } from "./reducers/editors";
-import {
-  PrivacyConsentCookie,
-  PropertyChanges,
-  SuggestionsKey,
-  EditorId,
-} from "./types";
-import { createAction, actionTypeDelim } from "./actionHelpers";
-import { AnyAction } from "@reduxjs/toolkit";
-import { AnyApiAction } from "./apiActions";
+import { PrivacyConsentCookie, PropertyChanges, EditorId } from "./types";
 import { ViewableEditorType } from "./sagas/editors/commitEditorThenViewSaga";
-
-export { str } from "./actionHelpers";
-
-export {
-  mapActionCreatorGroupToDispatchToProps,
-  combineActions,
-} from "./actionHelpers";
-
-export { api } from "./apiActions";
 
 /** "API-like": actions that indirectly result in API calls, such as actions that are translated into one or another
  * API call depending on some payload value or those that correspond to multiple API calls

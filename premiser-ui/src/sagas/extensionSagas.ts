@@ -2,7 +2,7 @@ import { call, delay, race, take, takeEvery } from "typed-redux-saga";
 import { Action } from "@reduxjs/toolkit";
 
 import { domSerializationSafe, toJson } from "howdju-common";
-import { actions, inIframe } from "howdju-client-common";
+import { extension, extensionFrame, inIframe } from "howdju-client-common";
 
 import { logger } from "../logger";
 import config from "../config";
@@ -12,9 +12,9 @@ import config from "../config";
 export function* postExtensionMessages() {
   yield* takeEvery(
     [
-      actions.extension.highlightTarget,
-      actions.extension.highlightUrlLocator,
-      actions.extension.messageHandlerReady,
+      extension.highlightTarget,
+      extension.highlightUrlLocator,
+      extension.messageHandlerReady,
     ],
     function* postExtensionMessagesWorker(action) {
       if (!inIframe()) {
@@ -35,7 +35,7 @@ export function* postExtensionMessages() {
 
       // For some reason the content script doesn't always see the first message
       const { ack, timeout } = yield* race({
-        ack: take(actions.extensionFrame.ackMessage),
+        ack: take(extensionFrame.ackMessage),
         timeout: delay(config.contentScriptAckTimeoutMs),
         repostAction: call(repostMessage, action),
       });

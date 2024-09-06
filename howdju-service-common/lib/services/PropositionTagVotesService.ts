@@ -38,7 +38,7 @@ export class PropositionTagVotesService {
     createTag: CreateTag,
     polarity: PropositionTagVotePolarity,
     now: Moment
-  ) {
+  ): Promise<PropositionTagVoteOut> {
     const tag = await this.tagsService.readOrCreateValidTagAsUser(
       userId,
       createTag,

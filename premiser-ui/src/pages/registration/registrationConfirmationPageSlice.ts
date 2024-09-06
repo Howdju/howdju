@@ -1,7 +1,8 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { ApiErrorCode } from "howdju-common";
 
-import { api } from "@/apiActions";
+import { ApiErrorCode } from "howdju-common";
+import { api } from "howdju-client-common";
+
 import { matchActions } from "@/reducerUtils";
 
 export const registrationConfirmationPageSlice = createSlice({

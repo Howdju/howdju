@@ -1,47 +1,24 @@
-import isArray from "lodash/isArray";
-import map from "lodash/map";
-import merge from "lodash/merge";
-import sortBy from "lodash/sortBy";
-import values from "lodash/values";
+import { isArray, map, merge, sortBy, values } from "lodash";
 import { QueryResultRow } from "pg";
 
 import {
-  AccountSettingsRef,
-  brandedParse,
   camelCaseKeysDeep,
-  ContentReportRef,
   ContentReportType,
   Entity,
   EntityId,
   EntityType,
   JustificationBasisCompoundAtomTypes,
-  JustificationRef,
-  JustificationVoteRef,
   logger,
-  MediaExcerptRef,
   newExhaustedEnumError,
   newProgrammingError,
   newUnimplementedError,
-  PasswordResetRequestRef,
-  PersorgRef,
-  PropositionCompoundRef,
-  PropositionRef,
-  PropositionTagVoteRef,
-  RegistrationRequestRef,
   requireArgs,
   SentenceTypes,
   SourceExcerptTypes,
   SourceOut,
-  SourceRef,
-  StatementRef,
   TagOut,
-  TagRef,
   toSlug,
-  UrlRef,
   UserBlurb,
-  UserRef,
-  WritQuoteRef,
-  WritRef,
 } from "howdju-common";
 
 import {
@@ -216,10 +193,8 @@ function isExternalIdsRow(row: object): row is UserExternalIdsRow {
 
 function toUserMapper(row: UserRow | (UserRow & UserExternalIdsRow)): UserData {
   const user = merge(
-    UserRef.parse({
-      id: toIdString(row.user_id),
-    }),
     {
+      id: toIdString(row.user_id),
       email: row.email,
       username: row.username,
       longName: row.long_name,
@@ -236,7 +211,7 @@ export const toUser = wrapMapper(toUserMapper);
 
 function toCreatorBlurbMapper(row: CreatorBlurbRow): CreatorBlurbData {
   return {
-    ...UserRef.parse({ id: toIdString(row.user_id) }),
+    id: toIdString(row.user_id),
     longName: row.long_name,
   };
 }
@@ -256,7 +231,7 @@ export const toUserExternalIds = wrapMapper(function (
 function toPropositionMapper(row: PropositionRow): PropositionData {
   const propositionId = row.proposition_id;
   const proposition: PropositionData = {
-    ...PropositionRef.parse({ id: toIdString(propositionId) }),
+    id: toIdString(propositionId),
     text: row.text,
     normalText: row.normal_text,
     slug: toSlug(row.text),
@@ -297,7 +272,7 @@ function toStatementMapper(row: StatementMapperRow): StatementData {
     );
   }
   const statement: Omit<StatementData, "sentence"> = {
-    ...StatementRef.parse({ id: toIdString(statementId) }),
+    id: toIdString(statementId),
     creator: mapRelation(toCreatorBlurbMapper, "creator_", row),
     speaker,
     sentenceType: row["sentence_type"],
@@ -307,13 +282,12 @@ function toStatementMapper(row: StatementMapperRow): StatementData {
   const sentenceRef = { id: toIdString(row["sentence_id"]) };
   switch (statement.sentenceType) {
     case SentenceTypes.STATEMENT: {
-      const sentence = StatementRef.parse(sentenceRef);
-      return { ...statement, sentence };
+      return { ...statement, sentence: sentenceRef };
     }
     case SentenceTypes.PROPOSITION: {
       const sentence =
         mapRelation(toPropositionMapper, "sentence_proposition_", row) ??
-        PropositionRef.parse(sentenceRef);
+        sentenceRef;
       return { ...statement, sentence };
     }
     default:
@@ -328,12 +302,12 @@ function mapJustificationRootTargetRelation(row: ToJustificationMapperRow) {
       if (row.root_target_proposition_id) {
         return mapRelation(toPropositionMapper, "root_target_", row);
       } else {
-        return PropositionRef.parse({ id: toIdString(row.root_target_id) });
+        return { id: toIdString(row.root_target_id) };
       }
     case "STATEMENT":
-      return StatementRef.parse({
+      return {
         id: toIdString(row.root_target_id),
-      });
+      };
   }
 }
 
@@ -385,7 +359,7 @@ function toJustificationMapper(
     writQuotesById
   );
   const justification: BasedJustificationDataOut = {
-    ...JustificationRef.parse({ id: toIdString(row.justification_id) }),
+    id: toIdString(row.justification_id),
     created: row.created,
     rootTargetType: row.root_target_type,
     rootTarget,
@@ -411,9 +385,9 @@ function toJustificationMapper(
         long_name: row.creator_long_name,
       });
     }
-    return UserRef.parse({
+    return {
       id: toIdString(row.creator_user_id),
-    });
+    };
   }
 
   if (counterJustificationsByJustificationId) {
@@ -519,7 +493,7 @@ function extractJustificationBasis(
       // MediaExcerpt is queried separately, not as part of a join.
       return {
         type,
-        entity: brandedParse(MediaExcerptRef, { id: toIdString(row.basis_id) }),
+        entity: { id: toIdString(row.basis_id) },
       };
     }
 
@@ -543,15 +517,15 @@ function parseJustificationTargetRef(row: JustificationRow) {
   const id = toIdString(row.target_id);
   switch (type) {
     case "JUSTIFICATION": {
-      const entity = JustificationRef.parse({ id });
+      const entity = { id };
       return { type, entity };
     }
     case "PROPOSITION": {
-      const entity = PropositionRef.parse({ id });
+      const entity = { id };
       return { type, entity };
     }
     case "STATEMENT": {
-      const entity = StatementRef.parse({ id });
+      const entity = { id };
       return { type, entity };
     }
   }
@@ -571,7 +545,7 @@ function toWritQuoteMapper(row: ToWritQuoteMapperRow): WritQuoteData {
     throw newProgrammingError("writ is required when mapping writQuote");
   }
   return {
-    ...WritQuoteRef.parse({ id: toIdString(row.writ_quote_id) }),
+    id: toIdString(row.writ_quote_id),
     quoteText: row.quote_text,
     created: row.created,
     creatorUserId: toIdString(row.creator_user_id),
@@ -593,7 +567,7 @@ function toWritMapper(row: ToWritMapperRow): WritData {
     throw newProgrammingError("creator is required when mapping a Writ.");
   }
   return {
-    ...WritRef.parse({ id: toIdString(row.writ_id) }),
+    id: toIdString(row.writ_id),
     title: row.title,
     created: row.created,
     creator,
@@ -602,13 +576,13 @@ function toWritMapper(row: ToWritMapperRow): WritData {
 export const toWrit = wrapMapper(toWritMapper);
 
 export const toUrl = wrapMapper(function toUrlMapper(row) {
-  return brandedParse(UrlRef, {
+  return {
     id: toIdString(row.url_id),
     url: row.url,
     canonicalUrl: row.canonical_url,
     creatorUserId: toIdString(row.creator_user_id),
     created: row.created,
-  });
+  };
 });
 
 export const toJustificationVote = wrapMapper(
@@ -616,9 +590,7 @@ export const toJustificationVote = wrapMapper(
     row: JustificationVoteRow
   ): JustificationVoteData {
     return {
-      ...JustificationVoteRef.parse({
-        id: toIdString(row.justification_vote_id),
-      }),
+      id: toIdString(row.justification_vote_id),
       polarity: row.polarity,
       justificationId: toIdString(row.justification_id),
     };
@@ -641,9 +613,7 @@ export const toPropositionCompound = (
   }
 
   return {
-    ...PropositionCompoundRef.parse({
-      id: toIdString(row.proposition_compound_id),
-    }),
+    id: toIdString(row.proposition_compound_id),
     created: row.created,
     creatorUserId: toIdString(row.creator_user_id),
     atoms,
@@ -860,17 +830,13 @@ export function toPropositionTagVote(
   }
 
   return {
-    ...PropositionTagVoteRef.parse({
-      id: toIdString(row.proposition_tag_vote_id),
-    }),
+    id: toIdString(row.proposition_tag_vote_id),
     polarity: row.polarity,
-    proposition: PropositionRef.parse({
+    proposition: {
       id: toIdString(row.proposition_id),
-    }),
+    },
     tag: {
-      ...TagRef.parse({
-        id: toIdString(row.tag_id),
-      }),
+      id: toIdString(row.tag_id),
       name: row.tag_name,
     },
   };
@@ -907,7 +873,7 @@ export const toPersorg = wrapMapper(function toPersorgMapper(
   row: ToPersorgMapperRow
 ): PersorgData {
   const persorg = {
-    ...PersorgRef.parse({ id: toIdString(row.persorg_id) }),
+    id: toIdString(row.persorg_id),
     isOrganization: row.is_organization,
     name: row.name,
     knownFor: row.known_for,
@@ -938,9 +904,7 @@ export const toRegistrationRequest = wrapMapper(
     row: RegistrationRequestRow
   ): RegistrationRequestData {
     return {
-      ...RegistrationRequestRef.parse({
-        id: toIdString(row.registration_request_id),
-      }),
+      id: toIdString(row.registration_request_id),
       email: row.email,
       registrationCode: row.registration_code,
       isConsumed: row.is_consumed,
@@ -955,9 +919,7 @@ export const toPasswordResetRequest = wrapMapper(
     row: PasswordResetRequestRow
   ): PasswordResetRequestData {
     return {
-      ...PasswordResetRequestRef.parse({
-        id: toIdString(row.password_reset_request_id),
-      }),
+      id: toIdString(row.password_reset_request_id),
       userId: toIdString(row.user_id),
       email: row.email,
       passwordResetCode: row.password_reset_code,
@@ -972,7 +934,7 @@ export const toAccountSettings = wrapMapper(function toAccountSettingsMapper(
   row: AccountSettingsRow
 ): AccountSettingsData {
   return {
-    ...AccountSettingsRef.parse({ id: toIdString(row.account_settings_id) }),
+    id: toIdString(row.account_settings_id),
     userId: toIdString(row.user_id),
     paidContributionsDisclosure: row.paid_contributions_disclosure,
   };
@@ -982,7 +944,7 @@ export const toContentReport = wrapMapper(function toContentReportMapper(
   row: ContentReportRow
 ): ContentReportData {
   return {
-    ...ContentReportRef.parse({ id: toIdString(row.content_report_id) }),
+    id: toIdString(row.content_report_id),
     entityType: row.entity_type as EntityType,
     entityId: toIdString(row.entity_id),
     url: row.url,
@@ -994,12 +956,12 @@ export const toContentReport = wrapMapper(function toContentReportMapper(
 });
 
 export function toSource(row: SourceRow, creator: UserBlurb): SourceOut {
-  return brandedParse(SourceRef, {
-    id: row.source_id,
+  return {
+    id: toIdString(row.source_id),
     description: row.description,
     normalDescription: row.normal_description,
     created: row.created,
     creatorUserId: toIdString(row.creator_user_id),
     creator,
-  });
+  };
 }

@@ -13,7 +13,7 @@
     "lint": "eslint --ignore-path=.gitignore .",
     "test": "yarn run check:test-db-dump-updated && bin/test.sh",
     "test-inspect": "yarn run check:test-db-dump-updated && bin/test.sh inspect",
-    "typecheck": "tsc"
+    "typecheck": "tsc --build"
   },
   "dependencies": {
     "@aws-sdk/client-ssm": "^3.535.0",

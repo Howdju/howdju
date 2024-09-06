@@ -8,13 +8,12 @@
  * - `Action`: an object passed to redux reducers to update the state.
  */
 
+import { ActionCreator, Dispatch, Action, bindActionCreators } from "redux";
 import {
   ActionFunctionAny,
   combineActions as untypedCombineActions,
 } from "redux-actions";
-import mapValues from "lodash/mapValues";
-import assign from "lodash/assign";
-import { isObject } from "lodash";
+import { assign, mapValues, isObject } from "lodash";
 import {
   ActionCreatorsMapObject,
   ActionCreatorWithoutPayload,
@@ -22,13 +21,6 @@ import {
   createAction as toolkitCreateAction,
   PrepareAction,
 } from "@reduxjs/toolkit";
-import { Action, bindActionCreators } from "redux";
-
-import { actions } from "howdju-client-common";
-
-import { AppDispatch } from "./setupStore";
-
-export const str = actions.str;
 
 // redux-action's combineActions return value is not recognized as a valid object key.
 // So provide this typed version instead.
@@ -52,13 +44,13 @@ export const combineActions = untypedCombineActions as (
  */
 export const mapActionCreatorGroupToDispatchToProps =
   <M extends object, N>(actionCreatorGroups: M, otherActions?: N) =>
-  (dispatch: AppDispatch): M & N & { dispatch: AppDispatch } => {
+  <D extends Dispatch>(dispatch: D): M & N & { dispatch: D } => {
     const dispatchingProps = mapValues(
       actionCreatorGroups,
       (actionCreatorGroup: ActionCreatorsMapObject<any>) =>
         bindActionCreators(actionCreatorGroup, dispatch)
     ) as { [P in keyof M]: M[P] } & { [P in keyof N]: N[P] } & {
-      dispatch: AppDispatch;
+      dispatch: D;
     };
 
     if (otherActions) {
@@ -168,3 +160,23 @@ export const actionTypeDelim = "/";
 export type PayloadType<
   T extends ActionCreatorWithPreparedPayload<any[], any>
 > = ReturnType<T>["payload"];
+
+/**
+ * redux-actions and @reduxjs/toolkit have a convention that action creators get a .toString method
+ * that returns the action type. The call to .toString appears to happen automatically when an
+ * action creator is the key of an object, but:
+ *
+ * 1) TypeScript doesn't recognize action creators as valid object keys, and
+ * 2) The reducers/sagas keyed in this way cannot receive inferred types.
+ *
+ * We can use this method to satisfy (1). Because of (2), though, we will probably eventually want
+ * to phase out this function.
+ */
+export const str = (ac: ActionCreator<unknown>) => ac.toString();
+
+export type PayloadOf<AC> = AC extends ActionCreatorWithPreparedPayload<
+  any,
+  infer P
+>
+  ? P
+  : never;

@@ -7,8 +7,7 @@ import {
   cancelled,
   FixedTask,
 } from "typed-redux-saga";
-import isFunction from "lodash/isFunction";
-import values from "lodash/values";
+import { isFunction, values } from "lodash";
 
 import {
   api,
@@ -20,7 +19,8 @@ import {
   cancelTagNameSuggestions,
   cancelWritTitleSuggestions,
   callApiResponse,
-} from "../apiActions";
+} from "howdju-client-common";
+
 import { logger } from "../logger";
 import { callApi } from "./apiSagas";
 

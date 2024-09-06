@@ -1,9 +1,9 @@
 import React from "react";
 
 import { MediaExcerptOut, UrlLocatorOut } from "howdju-common";
+import { api } from "howdju-client-common";
 
 import { useAppDispatch } from "@/hooks";
-import { api } from "@/apiActions";
 import OutlineButton from "@/components/button/OutlineButton";
 
 import "./DeleteUrlLocatorsControl.scss";

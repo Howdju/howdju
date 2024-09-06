@@ -12,9 +12,10 @@ import {
   UpdatePersorgInput,
   UpdateSourceInput,
 } from "howdju-common";
+import { SuggestionsKey } from "howdju-client-common";
 
 import { CircularProgress } from "@/components/progress/CircularProgress";
-import { ComponentId, EditorId, SuggestionsKey } from "./types";
+import { ComponentId, EditorId } from "./types";
 import { useAppSelector } from "./hooks";
 import { EditorType } from "./reducers/editors";
 import { WithEditorProps } from "./editors/withEditor";

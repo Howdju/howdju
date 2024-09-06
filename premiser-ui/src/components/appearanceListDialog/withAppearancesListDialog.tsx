@@ -3,11 +3,12 @@ import FlipMove from "react-flip-move";
 import { Action } from "redux";
 import { Button } from "@react-md/button";
 
+import { appearancesSchema } from "howdju-client-common";
+
 import { CircularProgress } from "@/components/progress/CircularProgress";
 import config from "@/config";
 import FlipMoveWrapper from "@/FlipMoveWrapper";
 import { useAppDispatch, useAppEntitySelector, useAppSelector } from "@/hooks";
-import { appearancesSchema } from "@/normalizationSchemas";
 import AppearanceCard from "@/pages/appearances/AppearanceCard";
 import { RootState } from "@/setupStore";
 import { combineIds } from "@/viewModels";

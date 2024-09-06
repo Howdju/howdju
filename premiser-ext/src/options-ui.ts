@@ -1,4 +1,4 @@
-import { extension as ext } from "howdju-client-common";
+import { extensionFacade as ext } from "howdju-client-common";
 
 document.addEventListener("DOMContentLoaded", restoreOptions);
 saveButton().addEventListener("click", saveOptions);

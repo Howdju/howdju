@@ -1,12 +1,11 @@
 import React, { HTMLAttributes } from "react";
 
 import { PropositionOut } from "howdju-common";
+import { api, propositionsSchema } from "howdju-client-common";
 
-import { api } from "@/actions";
 import ListEntitiesWidget, {
   propositionCardColSpans,
 } from "@/components/listEntities/ListEntitiesWidget";
-import { propositionsSchema } from "@/normalizationSchemas";
 import PropositionCard from "@/PropositionCard";
 import t from "@/texts";
 import { ComponentId } from "@/types";

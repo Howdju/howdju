@@ -1,9 +1,9 @@
 import React from "react";
 
 import { MediaExcerptSpeakerOut, MediaExcerptView } from "howdju-common";
+import { api } from "howdju-client-common";
 
 import { useAppDispatch } from "@/hooks";
-import { api } from "@/apiActions";
 import MediaExcerptSpeakerViewer from "@/components/mediaExcerpts/MediaExcerptSpeakerViewer";
 
 import "./DeleteMediaExcerptSpeakersControl.scss";

@@ -17,12 +17,11 @@
     "custom-check": "bin/check-scripts-are-updated.sh",
     "fix-format": "yarn run lint --fix && yarn run prettier --write --ignore-path .gitignore .",
     "lint": "eslint --ignore-path=.gitignore .",
-    "typecheck": "tsc",
+    "typecheck": "tsc --build",
     "watch": "esbuild src/index.ts --bundle --outdir=dist --platform=browser --target=es2016 --watch"
   },
   "dependencies": {
-    "howdju-client-common": "workspace:howdju-client-common",
-    "howdju-common": "workspace:howdju-common",
+    "howdju-dom": "workspace:howdju-dom",
     "text-fragments-polyfill": "^5.5.0"
   },
   "devDependencies": {

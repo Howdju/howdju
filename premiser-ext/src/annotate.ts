@@ -3,18 +3,20 @@ import { isUndefined } from "lodash";
 
 import { logger, UrlTarget, nodeIsBefore, DomAnchor } from "howdju-common";
 import {
-  getSelection,
-  clearSelection,
   selectionToMediaExcerptInfo,
   targetToRanges,
+  anchorsToRanges,
+} from "howdju-client-common";
+import {
+  getSelection,
+  clearSelection,
   isTextNode,
   getCommonAncestor,
   normalizeNodes,
   isCoextensive,
   insertNodeAfter,
   insertNodeBefore,
-  anchorsToRanges,
-} from "howdju-client-common";
+} from "howdju-dom";
 
 import { getNodeData } from "./node-data";
 import { AnnotatedExcerpt, Annotation } from "./annotation";

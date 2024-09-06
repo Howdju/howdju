@@ -41,9 +41,9 @@ import {
   PropositionCompoundOut,
   WritQuoteOut,
   makeModelErrors,
-  isOnlyRef,
   JustificationWithRootOut,
   PersistedEntity,
+  isBareRef,
 } from "howdju-common";
 
 import { ApiConfig } from "../config";
@@ -720,7 +720,7 @@ export class JustificationsService extends EntityService<
       }
 
       case JustificationBasisTypes.PROPOSITION_COMPOUND: {
-        if (isOnlyRef(justificationBasis.entity)) {
+        if (isBareRef(justificationBasis.entity)) {
           const propositionCompound =
             await this.propositionCompoundsService.readPropositionCompoundForId(
               justificationBasis.entity.id
@@ -748,7 +748,7 @@ export class JustificationsService extends EntityService<
       }
 
       case "MEDIA_EXCERPT": {
-        if (isOnlyRef(justificationBasis.entity)) {
+        if (isBareRef(justificationBasis.entity)) {
           const mediaExcerpt = await prefixErrorPath(
             this.mediaExcerptsService.readMediaExcerptForId(
               justificationBasis.entity.id

@@ -1,17 +1,19 @@
 import React from "react";
 
 import { PropositionOut, schemaSettings } from "howdju-common";
+import {
+  api,
+  propositionSchema,
+  cancelPropositionTextSuggestions,
+  SuggestionsKey,
+} from "howdju-client-common";
 
-import { api } from "./actions";
-import { propositionSchema } from "./normalizationSchemas";
-import { cancelPropositionTextSuggestions } from "./apiActions";
 import {
   ComponentId,
   ComponentName,
   OnEventCallback,
   OnKeyDownCallback,
   OnPropertyChangeCallback,
-  SuggestionsKey,
 } from "./types";
 import ApiAutoComplete, {
   Props as ApiAutoCompleteProps,

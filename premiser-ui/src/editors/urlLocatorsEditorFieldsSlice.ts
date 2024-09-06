@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-import { api } from "@/apiActions";
+import { api } from "howdju-client-common";
 
 const initialState = {
   urlStatesByName: {} as Record<string, ReturnType<typeof defaultUrlState>>,

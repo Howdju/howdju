@@ -4,9 +4,9 @@ import { normalize } from "normalizr";
 import { LOCATION_CHANGE } from "connected-react-router";
 
 import { EntityId } from "howdju-common";
+import { ApiResponseActionMeta, ApiActionCreator } from "howdju-client-common";
 
 import config from "@/config";
-import { ApiResponseActionMeta, ApiActionCreator } from "@/apiActions";
 
 const initialState = {
   isDialogVisible: false,

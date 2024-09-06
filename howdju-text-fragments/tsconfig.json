@@ -6,5 +6,6 @@
       // Support project-relative imports
       "@/*": ["./src/*"]
     }
-  }
+  },
+  "references": [{ "path": "../howdju-dom" }]
 }

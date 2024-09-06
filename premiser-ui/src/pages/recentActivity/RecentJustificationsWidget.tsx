@@ -1,13 +1,12 @@
 import React, { HTMLAttributes } from "react";
 
 import { JustificationView } from "howdju-common";
+import { api, justificationsSchema } from "howdju-client-common";
 
-import { api } from "@/actions";
 import ListEntitiesWidget, {
   justificationCardColSpans,
 } from "@/components/listEntities/ListEntitiesWidget";
 import JustificationCard from "@/JustificationCard";
-import { justificationsSchema } from "@/normalizationSchemas";
 import t from "@/texts";
 import { ComponentId } from "@/types";
 

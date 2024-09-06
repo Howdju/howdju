@@ -8,12 +8,11 @@ import {
   MediaExcerptSearchFilter,
   MediaExcerptSearchFilterKeys,
 } from "howdju-common";
+import { api, mediaExcerptsSchema } from "howdju-client-common";
 
 import { CircularProgress } from "@/components/progress/CircularProgress";
-import { api } from "../../actions";
 import { useAppDispatch, useAppSelector, useAppEntitySelector } from "@/hooks";
 import MediaExcerptCard from "@/components/mediaExcerpts/MediaExcerptCard";
-import { mediaExcerptsSchema } from "@/normalizationSchemas";
 import FetchMoreButton from "@/components/button/FetchMoreButton";
 import { mediaExcerptCardColSpans } from "@/components/listEntities/ListEntitiesWidget";
 import { FlipGrid } from "@/components/layout/FlipGrid";

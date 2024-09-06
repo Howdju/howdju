@@ -1,9 +1,9 @@
 import React from "react";
 
 import { MediaExcerptCitationOut, MediaExcerptOut } from "howdju-common";
+import { api } from "howdju-client-common";
 
 import { useAppDispatch } from "@/hooks";
-import { api } from "@/apiActions";
 import MediaExcerptCitationViewer from "@/components/mediaExcerpts/MediaExcerptCitationViewer";
 import OutlineButton from "@/components/button/OutlineButton";
 

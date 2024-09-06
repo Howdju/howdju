@@ -12,19 +12,18 @@ import { connect, ConnectedProps } from "react-redux";
 import { Switch } from "react-router";
 import { Link } from "react-router-dom";
 
-import { actions, inIframe } from "howdju-client-common";
+import {
+  api,
+  extension,
+  extensionFrame,
+  inIframe,
+  mapActionCreatorGroupToDispatchToProps,
+} from "howdju-client-common";
 import { isTruthy, utcNow } from "howdju-common";
 
 import app from "@/app/appSlice";
 import { MenuItem, MenuItemLink } from "@/components/menu/Menu";
-import {
-  api,
-  flows,
-  goto,
-  mapActionCreatorGroupToDispatchToProps,
-  privacyConsent,
-  ui,
-} from "./actions";
+import { flows, goto, privacyConsent, ui } from "./actions";
 import { AddMessageCapturer } from "./AddMessageCapturer";
 import IconButton from "./components/button/IconButton";
 import MediaExcerptApparitionsDialog from "./components/mediaExcerptApparitionsDialog/MediaExcerptApparitionsDialog";
@@ -535,8 +534,8 @@ const connector = connect(
   mapActionCreatorGroupToDispatchToProps({
     api,
     app,
-    extension: actions.extension,
-    extensionFrame: actions.extensionFrame,
+    extension,
+    extensionFrame,
     flows,
     goto,
     privacyConsent,

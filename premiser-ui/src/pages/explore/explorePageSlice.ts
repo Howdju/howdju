@@ -1,7 +1,8 @@
 import { ActionCreator, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { all, call, delay, put, race, take, takeEvery } from "typed-redux-saga";
 
-import { api, ApiResponseActionMeta } from "@/apiActions";
+import { api, ApiResponseActionMeta } from "howdju-client-common";
+
 import config from "@/config";
 
 export const slice = createSlice({

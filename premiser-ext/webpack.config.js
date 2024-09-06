@@ -1,6 +1,9 @@
 const path = require("path");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const webpack = require("webpack");
+
+const ProjectRelativeImportResolverPlugin = require("../webpack/ProjectRelativeImportResolverPlugin");
+
 const project = require("./package.json");
 
 module.exports = (env, argv) => ({
@@ -45,6 +48,9 @@ module.exports = (env, argv) => ({
         env.production ? "production" : "development"
       ),
     }),
+    new ProjectRelativeImportResolverPlugin({
+      projectSources: { "premiser-ext": "src" },
+    }),
   ],
   resolve: {
     extensions: [".ts", "..."],
@@ -65,4 +71,11 @@ module.exports = (env, argv) => ({
       },
     ],
   },
+  // Replace imports from howdju-service-common with a reference to a property howdju-service-common
+  // on the global object. This config allows the web app to depend on howdju-service-routes (which
+  // depends on howdju-service-common) without importing any of howdju-service-common into the web
+  // app.
+  //
+  // This property will not exist, and so attempts to access it will fail.
+  externals: { "howdju-service-common": "global howdju-service-common" },
 });
