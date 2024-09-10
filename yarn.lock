@@ -22051,7 +22051,7 @@ __metadata:
     lodash: "npm:^4.17.21"
     moment: "npm:^2.29.4"
     normalizr: "npm:^3.6.1"
-    path-to-regexp: "npm:^6.2.0"
+    path-to-regexp: "npm:^8.0.0"
     prettier: "npm:2.7.1"
     query-string: "npm:^7.0.0"
     redux: "npm:^4.0.5"
@@ -29901,6 +29901,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"path-to-regexp@npm:^8.0.0":
+  version: 8.1.0
+  resolution: "path-to-regexp@npm:8.1.0"
+  checksum: 5016a27153d99d3da6a7769a3f34eb4a35538d23a9b4044f517960978876af4d23146f0421e9714be0449f61ffffb04941ffcb7e6bd7c69cf6d891238becd587
+  languageName: node
+  linkType: hard
+
 "path-type@npm:^4.0.0":
   version: 4.0.0
   resolution: "path-type@npm:4.0.0"
@@ -30786,7 +30793,7 @@ __metadata:
     msw: "npm:^0.48.0"
     node-sass: "npm:^8.0.0"
     normalizr: "npm:^3.6.1"
-    path-to-regexp: "npm:^6.2.0"
+    path-to-regexp: "npm:^8.0.0"
     prettier: "npm:2.7.1"
     prop-types: "npm:^15.7.2"
     query-string: "npm:^7.0.0"
