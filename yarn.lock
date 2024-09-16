@@ -17471,10 +17471,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dompurify@npm:^2.2.9":
-  version: 2.2.9
-  resolution: "dompurify@npm:2.2.9"
-  checksum: fb80696ee3215f10b0cff273e1cdf6d3ae2e1feb87c228819944e73709d740f81434328a1a2eb1a3c2c273ce8783fa7ad6d121e0c111e726360a64d2d85cbb63
+"dompurify@npm:^2.5.4":
+  version: 2.5.6
+  resolution: "dompurify@npm:2.5.6"
+  checksum: ef5fdc075ee448246b2b54bf8c7e2608dbaa176d9366137d2ff4e4ed4e580a2e913d5a58f1d3609f63d67871574e5fdcce534b185a1b1efdd8b931cd843b045a
   languageName: node
   linkType: hard
 
@@ -30757,7 +30757,7 @@ __metadata:
     dedent: "npm:^1.5.3"
     deepmerge: "npm:^4.3.1"
     dns-sync: "npm:^0.2.1"
-    dompurify: "npm:^2.2.9"
+    dompurify: "npm:^2.5.4"
     esbuild: "npm:^0.15.10"
     eslint: "npm:^8.27.0"
     eslint-config-howdju: "workspace:eslint-config-howdju"
