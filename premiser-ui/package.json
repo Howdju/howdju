@@ -137,7 +137,7 @@
     "@react-md/typography": "^2",
     "@react-md/utils": "^2",
     "@reduxjs/toolkit": "^1.9.2",
-    "@sentry/browser": "^7.64.0",
+    "@sentry/browser": "^7.119.1",
     "@sentry/tracing": "^7.64.0",
     "axios": "^1.7.4",
     "babel-plugin-module-resolver": "^5.0.0",
