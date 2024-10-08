@@ -80,7 +80,7 @@
   },
   "dependencies": {
     "bluebird": "^3.5.0",
-    "cookie": "^0.6.0",
+    "cookie": "^0.7.0",
     "dns-sync": "^0.2.1",
     "howdju-common": "workspace:howdju-common",
     "howdju-service-common": "workspace:howdju-service-common",
