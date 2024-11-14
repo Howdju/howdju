@@ -1,6 +1,8 @@
 declare module "text-fragments-polyfill/dist/fragment-generation-utils.js" {
   function generateFragment(selection: Selection): GenerateFragmentResult;
 
+  function generateFragmentFromRange(range: Range): GenerateFragmentResult;
+
   interface GenerateFragmentResult {
     status: GenerateFragmentStatus;
     fragment: TextFragment;
