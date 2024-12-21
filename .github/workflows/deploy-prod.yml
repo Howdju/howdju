@@ -10,7 +10,7 @@ env:
   AWS_REGION: us-east-1
   HOWDJU_RUNNING_IN_GITHUB_WORKFLOW:
   NODE_VERSION: 18.18.2
-  YARN_VERSION: 4.0.1
+  YARN_VERSION: 4.5.3
 
 jobs:
   deployment:
