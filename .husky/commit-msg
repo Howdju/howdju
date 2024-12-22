@@ -1,0 +1,7 @@
+#!/bin/bash
+
+# The only parameter is a path to a file containing the message
+# https://git-scm.com/book/en/v2/Customizing-Git-Git-Hooks
+commit_msg_file=$1
+
+bin/check-dso.sh $commit_msg_file
