@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -eo pipefail
+
 # gfind on macOS: `brew install findutils`
 latest_migration_modification=$(gfind premiser-api/db/migrations -type f -printf '%T@ %p\n' | sort -n | tail -1 | cut -f1 -d" ")
 db_dump_modification=$(gfind howdju-service-common/test-data/premiser_test_schema_dump.sql -printf '%T@ %p\n' | cut -f1 -d" ")
