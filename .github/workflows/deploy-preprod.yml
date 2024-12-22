@@ -17,7 +17,7 @@ env:
   HOWDJU_RUNNING_IN_GITHUB_WORKFLOW:
   DEBUG: howdju:check-committed
   NODE_VERSION: 18.18.2
-  YARN_VERSION: 4.0.1
+  YARN_VERSION: 4.5.3
 
 jobs:
   deployment:

@@ -31,7 +31,8 @@
     "typecheck:all": "echo typecheck:all && yarn workspaces foreach -Apv --topological-dev run typecheck && echo typecheck:all succeeded || {echo typecheck:all failed; exit 1}",
     "test:all": "echo test:all && time yarn workspaces foreach -Apv run test --runInBand && echo test:all succeeded || {echo test:all failed; exit 1}",
     "test:all:coverage": "yarn run clear:coverage && echo test:all:coverage && time yarn workspaces foreach -Apv run test --ci --runInBand --coverage && echo test:all:coverage succeeded || {echo test:all:coverage failed; exit 1}",
-    "test:all:coverage:changed": "yarn run clear:coverage && echo test:all:coverage:changed && time yarn workspaces foreach -Apv run test --ci --runInBand --coverage --changedSince=${0:-origin/master} && echo test:all:coverage:changed succeeded || {echo test:all:coverage:changed failed; exit 1}"
+    "test:all:coverage:changed": "yarn run clear:coverage && echo test:all:coverage:changed && time yarn workspaces foreach -Apv run test --ci --runInBand --coverage --changedSince=${0:-origin/master} && echo test:all:coverage:changed succeeded || {echo test:all:coverage:changed failed; exit 1}",
+    "prepare": "husky"
   },
   "workspaces": {
     "packages": [
@@ -84,13 +85,13 @@
     "browserslist": "^4.17.0",
     "debug": "^4.3.4",
     "eslint": "^8.27.0",
-    "git-hooks": "^1.1.10",
+    "husky": "^9.1.7",
     "jest": "^29.3.1",
     "nyc": "^15.1.0",
     "prettier": "2.7.1",
     "typescript": "^4.9.4"
   },
-  "packageManager": "yarn@4.0.1",
+  "packageManager": "yarn@4.5.3",
   "resolutions": {
     "react-native@^0.66": "patch:react-native@npm%3A0.66.5#./.yarn/patches/react-native-npm-0.66.5-22e5dd8ec5.patch",
     "react-material-symbols@^4.1.1": "patch:react-material-symbols@npm%3A4.1.1#./.yarn/patches/react-material-symbols-npm-4.1.1-d06ca7bff7.patch",

@@ -174,6 +174,12 @@ git rebase --signoff <mergeBaseSha>
 
 Where `<mergeBaseSha>` must be the _parent_ of the first commit in your chain of commits.
 
+If you initialize husky it will automatically check for the DCO signoff before you commit.
+
+```shell
+yarn run prepare
+```
+
 ### Git branch workflow
 
 #### Basic feature workflow
