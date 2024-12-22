@@ -43,7 +43,20 @@ export const webpackConfig: HtmlWebpackPlugin.Options = {
   // 'cheap-module-source-map' is recommended for React development.  See: https://reactjs.org/docs/cross-origin-errors.html#source-maps
   devtool: "cheap-module-source-map",
   devServer: {
-    bonjour: true,
+    client: {
+      overlay: {
+        runtimeErrors: (error: Error) => {
+          if (
+            // TODO(#533) remove this exception
+            error.message ===
+            "ResizeObserver loop completed with undelivered notifications."
+          ) {
+            return false;
+          }
+          return true;
+        },
+      },
+    },
     compress: true,
     // hot: true,
     // Behave like an SPA, serving index.html for paths that don't match files

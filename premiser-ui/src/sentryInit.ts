@@ -3,9 +3,10 @@ import throttle from "lodash/throttle";
 import {
   showReportDialog as sentryShowReportDialog,
   init as sentryInit,
+  browserTracingIntegration,
 } from "@sentry/browser";
-import { Integrations } from "@sentry/tracing";
 import { Event, EventHint } from "@sentry/types";
+import { ReportDialogOptions } from "@sentry/browser";
 
 import { apiErrorCodes, isCustomError } from "howdju-common";
 import { clientNetworkErrorTypes } from "howdju-client-common";
@@ -17,12 +18,11 @@ import {
   FULL_ERROR_REPORTING,
 } from "./cookieConsent";
 import { isObject } from "lodash";
-import { ReportDialogOptions } from "@sentry/browser";
 
 export default () => {
   const integrations = [];
   if (cookieConsent.isAccepted(FULL_ERROR_REPORTING)) {
-    integrations.push(new Integrations.BrowserTracing());
+    integrations.push(browserTracingIntegration());
   }
   sentryInit(
     assign(
