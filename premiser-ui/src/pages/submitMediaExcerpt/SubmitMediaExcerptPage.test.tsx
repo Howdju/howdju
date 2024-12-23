@@ -10,14 +10,14 @@ import {
   utcNow,
 } from "howdju-common";
 import { InferResponseBody, serviceRoutes } from "howdju-service-routes";
+import { withFakeTimers } from "howdju-test-common";
+import { withMockServer } from "howdju-client-test-common";
 
 import {
   clickEnabledButton,
   makeRouteComponentProps,
   renderWithProviders,
   setupUserEvent,
-  withFakeTimers,
-  withMockServer,
 } from "@/testUtils";
 import SubmitMediaExcerptPage from "./SubmitMediaExcerptPage";
 import { pathToRegexp } from "path-to-regexp";

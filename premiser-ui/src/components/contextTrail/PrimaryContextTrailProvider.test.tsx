@@ -11,12 +11,10 @@ import {
   serializeContextTrail,
   toJson,
 } from "howdju-common";
+import { withFakeTimers } from "howdju-test-common";
+import { withMockServer } from "howdju-client-test-common";
 
-import {
-  renderWithProviders,
-  withFakeTimers,
-  withMockServer,
-} from "@/testUtils";
+import { renderWithProviders } from "@/testUtils";
 import {
   PrimaryContextTrail,
   PrimaryContextTrailProvider,

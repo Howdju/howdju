@@ -1,14 +1,31 @@
-import { fork, put } from "typed-redux-saga";
+import { fork, put, all } from "typed-redux-saga";
 import { rest } from "msw";
+import { REHYDRATE } from "redux-persist/lib/constants";
 
-import { api } from "howdju-client-common";
+import { Api, api } from "howdju-client-common";
+import { testSaga, withMockServer } from "howdju-client-test-common";
+import { withFakeTimers } from "howdju-test-common";
 
+import { flagRehydrate } from "../hydration";
 import { callApiForResource, resourceApiCalls } from "./resourceApiSagas";
-import { testSaga, withFakeTimers, withMockServer } from "@/testUtils";
+import { createReducer } from "@reduxjs/toolkit";
 
 const server = withMockServer();
 
 withFakeTimers();
+
+const context = {
+  config: { rehydrateTimeoutMs: 1 },
+  api: new Api({ apiRoot: "http://localhost" }),
+};
+const reducer = {
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  auth: createReducer({ authToken: undefined }, () => {}),
+};
+
+function* rehydrate() {
+  yield* put({ type: REHYDRATE });
+}
 
 describe("callApiForResource", () => {
   test("a call with the same cancelKey cancels an pending call", async () => {
@@ -25,7 +42,7 @@ describe("callApiForResource", () => {
     );
 
     const suggestionsKey = "the-suggestions-key";
-    await testSaga(function* saga() {
+    function* saga() {
       const task = yield* fork(
         callApiForResource,
         api.fetchPropositionTextSuggestions(
@@ -45,7 +62,14 @@ describe("callApiForResource", () => {
       // Assert
       expect(task.isCancelled()).toBeTrue();
       expect(result.payload).toEqual({ propositions });
-    });
+    }
+    await testSaga(
+      function* () {
+        yield all([flagRehydrate(), saga(), rehydrate()]);
+      },
+      context,
+      reducer
+    );
   });
 
   test("can cancel as part of resourceApiCalls", async () => {
@@ -68,36 +92,44 @@ describe("callApiForResource", () => {
     );
 
     const suggestionsKey = "the-suggestions-key";
+    function* saga() {
+      // Arrange
+
+      // Start the saga that watches for API calls. The error only occurred when callApiForResource
+      // was called by another saga.
+      const task = yield* fork(resourceApiCalls);
+
+      // Send an API call
+      yield* put(
+        api.fetchPropositionTextSuggestions(
+          "the proposition text",
+          suggestionsKey
+        )
+      );
+
+      // Act
+
+      // Send another API call before the other will finish. Another test ensures that this will
+      // cancel the first call.
+      yield* put(
+        api.fetchPropositionTextSuggestions(
+          "the proposition text",
+          suggestionsKey
+        )
+      );
+
+      // Cancel because takeEvery will never end.
+      task.cancel();
+    }
+
     await expect(
-      testSaga(function* saga() {
-        // Arrange
-
-        // Start the saga that watches for API calls. The error only occurred when callApiForResource
-        // was called by another saga.
-        const task = yield* fork(resourceApiCalls);
-
-        // Send an API call
-        yield* put(
-          api.fetchPropositionTextSuggestions(
-            "the proposition text",
-            suggestionsKey
-          )
-        );
-
-        // Act
-
-        // Send another API call before the other will finish. Another test ensures that this will
-        // cancel the first call.
-        yield* put(
-          api.fetchPropositionTextSuggestions(
-            "the proposition text",
-            suggestionsKey
-          )
-        );
-
-        // Cancel because takeEvery will never end.
-        task.cancel();
-      })
+      testSaga(
+        function* () {
+          yield all([flagRehydrate(), saga(), rehydrate()]);
+        },
+        context,
+        reducer
+      )
     ).toResolve();
   });
 });

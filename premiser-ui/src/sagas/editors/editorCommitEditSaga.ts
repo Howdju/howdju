@@ -40,7 +40,7 @@ import { selectEditorState } from "../../selectors";
 import { EditorEntity, EditorType } from "../../reducers/editors";
 import { editors } from "../../actions";
 import { newEditorCommitResultError } from "../../uiErrors";
-import { callApiForResource } from "../resourceApiSagas";
+import { callApiForResource } from "howdju-client-common/lib/resourceApi/resourceApiSagas";
 import { EditorAction } from "@/editors/editorTypes";
 import app from "@/app/appSlice";
 import { constructStatementInput } from "@/viewModels";

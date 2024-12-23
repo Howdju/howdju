@@ -1,17 +1,17 @@
-import { put, call, select } from "typed-redux-saga";
+import { put, call, select, getContext } from "typed-redux-saga";
 import { cloneDeep, isEmpty, pick } from "lodash";
 
-import { api, callApiResponse } from "howdju-client-common";
+import { identifierHeaderKeys } from "howdju-common";
 
-import { FetchHeaders, RequestOptions, sendRequest } from "../api";
-import { selectAuthToken } from "../selectors";
-import { tryWaitOnRehydrate } from "./appSagas";
-import { pageLoadId, getSessionStorageId } from "../identifiers";
-import * as customHeaderKeys from "../customHeaderKeys";
-import { isAuthenticationExpiredError } from "@/uiErrors";
-import { logger } from "../logger";
-
-export type FetchInit = Omit<RequestOptions, "endpoint">;
+import * as sagaContextKeys from "@/sagaContextKeys";
+import { callApiResponse } from "./apiActionHelpers";
+import { api } from "./apiActions";
+import { Api, FetchHeaders } from "./api";
+import { selectAuthToken } from "../auth/authSelectors";
+import { tryWaitOnRehydrate } from "@/hydration/hydrationSagas";
+import { isAuthenticationExpiredError } from "./apiErrors";
+import { logger } from "../logging";
+import { FetchInit } from "./apiActionTypes";
 
 export function* callApi(
   endpoint: string,
@@ -28,7 +28,16 @@ export function* callApi(
       fetchInit = cloneDeep(fetchInit);
       fetchInit.headers = yield* constructHeaders(fetchInit);
 
-      const responseData = yield* call(sendRequest, { endpoint, ...fetchInit });
+      const api = yield* getContext<Api>(sagaContextKeys.api);
+      if (!api) {
+        throw new Error("api was missing from redux-saga's context.");
+      }
+      const responseData = yield* call(() =>
+        api.sendRequest({
+          endpoint,
+          ...fetchInit,
+        })
+      );
       const responseAction = callApiResponse(responseData);
       return yield* put(responseAction);
     } catch (error) {
@@ -51,12 +60,12 @@ function logApiError(error: unknown, endpoint: string) {
     );
     return;
   }
-  const identifierKeys = pick(error, customHeaderKeys.identifierKeys);
+  const identifierKeys = pick(error, identifierHeaderKeys);
   const options = { extra: { endpoint } };
   if (!isEmpty(identifierKeys)) {
     options.extra = { ...options.extra, ...identifierKeys };
   }
-  logger.exception(error, options);
+  logger.error(error, options);
 }
 
 function* constructHeaders(fetchInit: FetchInit) {
@@ -65,13 +74,6 @@ function* constructHeaders(fetchInit: FetchInit) {
   const authToken = yield* select(selectAuthToken);
   if (authToken) {
     headersUpdate.Authorization = `Bearer ${authToken}`;
-  }
-  const sessionStorageId = getSessionStorageId();
-  if (sessionStorageId) {
-    headersUpdate[customHeaderKeys.SESSION_STORAGE_ID] = sessionStorageId;
-  }
-  if (pageLoadId) {
-    headersUpdate[customHeaderKeys.PAGE_LOAD_ID] = pageLoadId;
   }
 
   return isEmpty(headersUpdate)

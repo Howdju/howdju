@@ -22144,6 +22144,7 @@ __metadata:
     dom-anchor-text-quote: "npm:^4.0.2"
     eslint: "npm:^8.27.0"
     eslint-config-howdju: "workspace:eslint-config-howdju"
+    howdju-client-test-common: "workspace:howdju-client-test-common"
     howdju-common: "workspace:howdju-common"
     howdju-dom: "workspace:howdju-dom"
     howdju-service-routes: "workspace:howdju-service-routes"
@@ -22157,10 +22158,27 @@ __metadata:
     query-string: "npm:^7.0.0"
     redux: "npm:^4.0.5"
     redux-actions: "npm:^2.6.4"
+    redux-persist: "npm:^6.0.0"
     ts-node: "npm:^10.9.1"
     type-fest: "npm:^3.3.0"
     typescript: "npm:^4.9.4"
     uuid: "npm:^9.0.0"
+  languageName: unknown
+  linkType: soft
+
+"howdju-client-test-common@workspace:howdju-client-test-common":
+  version: 0.0.0-use.local
+  resolution: "howdju-client-test-common@workspace:howdju-client-test-common"
+  dependencies:
+    eslint: "npm:^8.27.0"
+    eslint-config-howdju: "workspace:eslint-config-howdju"
+    jest: "npm:^29.3.1"
+    jest-extended: "npm:^3.2.4"
+    lodash: "npm:^4.17.21"
+    msw: "npm:^0.48.0"
+    prettier: "npm:2.7.1"
+    ts-node: "npm:^10.9.1"
+    typescript: "npm:^4.9.4"
   languageName: unknown
   linkType: soft
 
@@ -30910,6 +30928,7 @@ __metadata:
     history: "npm:^4.10.1"
     howdju-ajv-sourced: "workspace:howdju-ajv-sourced"
     howdju-client-common: "workspace:howdju-client-common"
+    howdju-client-test-common: "workspace:howdju-client-test-common"
     howdju-common: "workspace:howdju-common"
     howdju-ops: "workspace:howdju-ops"
     howdju-service-routes: "workspace:howdju-service-routes"
@@ -35412,9 +35431,9 @@ __metadata:
   linkType: hard
 
 "text-fragments-polyfill@npm:^5.5.0":
-  version: 5.5.0
-  resolution: "text-fragments-polyfill@npm:5.5.0"
-  checksum: 10/e0fffc73f6e0d5030d5a5542bacb982d3449c8784140fa2c138d3fbce24e4cf983f6a3898ad6e117cf09fbb04601044c1d242e67350c9d332809a695572ff3fc
+  version: 5.7.0
+  resolution: "text-fragments-polyfill@npm:5.7.0"
+  checksum: 10/83f61fdf15da2b6c085243b3f28abf9c58e7f32e53b894219be7e6411b8390699b428225fdcbdc27c7f4be6b4d7accf5606d369fc062f58c4dbea9c91307ce66
   languageName: node
   linkType: hard
 

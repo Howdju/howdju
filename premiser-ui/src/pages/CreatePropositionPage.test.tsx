@@ -19,7 +19,8 @@ import {
   InferResponseBody,
   serviceRoutes,
 } from "howdju-service-routes";
-import { expectToBeSameMomentDeep } from "howdju-test-common";
+import { expectToBeSameMomentDeep, withFakeTimers } from "howdju-test-common";
+import { withMockServer } from "howdju-client-test-common";
 
 import {
   ariaVisibleOne,
@@ -28,8 +29,6 @@ import {
   makeRouteComponentProps,
   renderWithProviders,
   setupUserEvent,
-  withFakeTimers,
-  withMockServer,
 } from "@/testUtils";
 import CreatePropositionPage from "./CreatePropositionPage";
 

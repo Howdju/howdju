@@ -17,10 +17,12 @@ import { v4 as uuidv4 } from "uuid";
 sourceMapSupport.install();
 
 import {
+  customHeaderKeys,
   filterDefined,
   HttpMethod,
   HttpStatusCode,
   httpStatusCodes,
+  identifierHeaderKeys,
   toJson,
 } from "howdju-common";
 import {
@@ -34,7 +36,6 @@ import {
 
 import { routeRequest } from "./router";
 import { apiHost } from "./config/util";
-import * as customHeaderKeys from "./customHeaderKeys";
 import * as headerKeys from "./headerKeys";
 import { ApiProvider } from "./init";
 import { ApiCallback, Request, RequestIdentifiers } from "./types";
@@ -47,7 +48,7 @@ const allowedHeaders = concat(
     headerKeys.SENTRY_TRACE,
     headerKeys.COOKIE,
   ],
-  customHeaderKeys.identifierKeys
+  identifierHeaderKeys
 );
 type AllowedHeaders = Record<typeof allowedHeaders[number], string | undefined>;
 

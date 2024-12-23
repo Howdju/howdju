@@ -17,14 +17,14 @@ import {
   InferResponseBody,
   serviceRoutes,
 } from "howdju-service-routes";
+import { withFakeTimers } from "howdju-test-common";
+import { withMockServer } from "howdju-client-test-common";
 
 import {
   clickEnabledButton,
   makeRouteComponentProps,
   renderWithProviders,
   setupUserEvent,
-  withFakeTimers,
-  withMockServer,
 } from "@/testUtils";
 import JustificationsPage from "./JustificationsPage";
 

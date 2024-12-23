@@ -2,6 +2,8 @@ import { combineReducers } from "@reduxjs/toolkit";
 import { connectRouter } from "connected-react-router";
 import { History } from "history";
 
+import { authReducer as auth } from "howdju-client-common";
+
 import { primaryContextTrail } from "@/components/contextTrail/primaryContextTrailSlice";
 import listEntities from "@/components/listEntities/listEntitiesReducer";
 import { mediaExcerptApparitionsDialog } from "@/components/mediaExcerptApparitionsDialog/mediaExcerptApparitionsDialogSlice";
@@ -26,7 +28,6 @@ import { tagPage } from "@/pages/tag/tagPageSlice";
 import { app } from "../app/appSlice";
 import { mainSearch } from "../components/mainSearchBox/mainSearchBoxSlice";
 import { mainSearchPage } from "../pages/mainSearch/mainSearchPageSlice";
-import auth from "./auth";
 import currentUser from "./currentUser";
 import autocompletes from "./autocompletes";
 import editors from "./editors";

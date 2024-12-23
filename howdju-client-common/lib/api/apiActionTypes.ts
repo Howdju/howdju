@@ -1,16 +1,17 @@
 import { PayloadAction } from "@reduxjs/toolkit";
-import { JsonObject, Schema } from "type-fest";
+import { Schema } from "type-fest";
 import { schema } from "normalizr";
 
-import { HttpMethod, EntityName } from "howdju-common";
+import { EntityName } from "howdju-common";
 import { ServiceRoute, InferResponseReturnType } from "howdju-service-routes";
+import type { RequestOptions } from "./api";
 
 export type ApiAction<Route extends ServiceRoute> = PayloadAction<
-  ApiConfig<Route>
+  ApiCallConfig<Route>
 >;
 export type AnyApiAction = ApiAction<any>;
 
-export type ApiConfig<Route extends ServiceRoute> = {
+export type ApiCallConfig<Route extends ServiceRoute> = {
   endpoint: string;
   /** The schema for normalizing the response entities. */
   normalizationSchema: Schema<
@@ -24,11 +25,7 @@ export type ApiConfig<Route extends ServiceRoute> = {
   logCancellation?: boolean;
 };
 
-export interface FetchInit {
-  method: HttpMethod;
-  body: JsonObject;
-  requestId: string;
-}
+export type FetchInit = Omit<RequestOptions, "endpoint">;
 
 /** Return never if the Key doesn't correspond to an entity requiring normalization. */
 type ToEntityFieldKey<

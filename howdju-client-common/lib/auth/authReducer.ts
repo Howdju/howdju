@@ -1,16 +1,22 @@
-import { matchActions } from "@/reducerUtils";
 import { createReducer } from "@reduxjs/toolkit";
 import { Moment } from "moment";
 
 import { AuthToken } from "howdju-common";
-import { api } from "howdju-client-common";
 
-const initialState = {
+import { matchActions } from "../reducers/matchActions";
+import { api } from "../api/apiActions";
+
+export type AuthState = {
+  authToken: AuthToken | undefined;
+  authTokenExpiration: Moment | undefined;
+};
+
+const initialState: AuthState = {
   authToken: undefined as AuthToken | undefined,
   authTokenExpiration: undefined as Moment | undefined,
 };
 
-export default createReducer(initialState, (builder) => {
+export const authReducer = createReducer(initialState, (builder) => {
   builder.addCase(api.logout.response, (state, action) => {
     if (action.error) {
       return state;

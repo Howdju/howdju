@@ -10,6 +10,7 @@ const config: Config = {
     "../jest/setup-after-env-testing-library-jest-dom.ts",
     "../jest/jsDomWhatWgTextEncoder.js",
     "./jest/matchMedia.js",
+    "./jest/setupEnvVars.js",
   ],
 };
 

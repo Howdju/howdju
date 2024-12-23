@@ -25,6 +25,7 @@ import {
 } from "howdju-common";
 import {
   api,
+  callApiForResource,
   str,
   mediaExcerptSchema,
   propositionCompoundSchema,
@@ -33,7 +34,6 @@ import {
 } from "howdju-client-common";
 
 import { editors, flows } from "@/actions";
-import { callApiForResource } from "@/sagas/resourceApiSagas";
 import { EditorType } from "@/reducers/editors";
 import { EditorId } from "@/types";
 import { denormalizedEntity } from "@/selectors";

@@ -16,6 +16,8 @@ import { routerMiddleware } from "connected-react-router";
 import createSagaMiddleware from "redux-saga";
 import { History } from "history";
 
+import { Api, sagaContextKeys } from "howdju-client-common";
+
 import createRootReducer from "./reducers";
 import { logger } from "./logger";
 import config from "./config";
@@ -27,7 +29,13 @@ const actionCreators = actionCreatorsUntyped as unknown as {
   [key: string]: ActionCreator<any>;
 };
 
+const api = makeApi();
+
 export const sagaMiddleware = createSagaMiddleware({
+  context: {
+    [sagaContextKeys.config]: config,
+    [sagaContextKeys.api]: api,
+  },
   onError: (error, { sagaStack }) => {
     logger.error(`Uncaught error in sagas: ${error}: ${sagaStack}`);
     logger.exception(error, {
@@ -110,3 +118,11 @@ export type RootReducer = ReturnType<typeof createRootReducer>;
 export type RootState = ReturnType<RootReducer>;
 export type AppStore = ReturnType<typeof setupStore>;
 export type AppDispatch = AppStore["dispatch"];
+
+function makeApi() {
+  const { apiRoot } = config;
+  if (!apiRoot) {
+    throw new Error("apiRoot is required");
+  }
+  return new Api({ apiRoot });
+}

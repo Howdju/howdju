@@ -13,6 +13,7 @@ import {
   api,
   AnyApiAction,
   apiActionCreatorsByActionType,
+  callApi,
   cancelMainSearchSuggestions,
   cancelPersorgNameSuggestions,
   cancelPropositionTextSuggestions,
@@ -20,9 +21,7 @@ import {
   cancelWritTitleSuggestions,
   callApiResponse,
 } from "howdju-client-common";
-
-import { logger } from "../logger";
-import { callApi } from "./apiSagas";
+import { logger } from "howdju-common";
 
 export function* resourceApiCalls() {
   const actionTypes = values(api);

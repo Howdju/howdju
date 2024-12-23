@@ -1,5 +1,5 @@
 import Axios from "axios";
-import * as api from "./api";
+import { Api } from "./api";
 
 jest.mock("axios", () => {
   const axios = jest.requireActual("axios");
@@ -33,6 +33,7 @@ describe("api", () => {
       })
     );
 
+    const api = new Api({ apiRoot: "the-api-root" });
     const result = await api.sendRequest({
       endpoint: "blah",
       method: "GET",

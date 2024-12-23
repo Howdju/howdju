@@ -1,12 +1,13 @@
 import React from "react";
 import { screen } from "@testing-library/react";
 
+import { withFakeTimers } from "howdju-test-common";
+
 import {
   DISABLED_BUTTON_CLASS,
   renderWithProviders,
   setupDefaultStore,
   setupUserEvent,
-  withFakeTimers,
 } from "@/testUtils";
 import { editors } from "@/actions";
 import RegistrationRequestEditor from "@/pages/registration/RegistrationRequestEditor";

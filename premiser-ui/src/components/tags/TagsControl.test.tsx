@@ -9,14 +9,11 @@ import {
   TagVote,
 } from "howdju-common";
 import { InferResponseBody, serviceRoutes } from "howdju-service-routes";
+import { withMockServer } from "howdju-client-test-common";
+import { withFakeTimers } from "howdju-test-common";
 
 import TagsControl from "./TagsControl";
-import {
-  renderWithProviders,
-  setupUserEvent,
-  withFakeTimers,
-  withMockServer,
-} from "@/testUtils";
+import { renderWithProviders, setupUserEvent } from "@/testUtils";
 
 withFakeTimers();
 const server = withMockServer();

@@ -1,9 +1,8 @@
-import { matchActions } from "@/reducerUtils";
 import { createReducer } from "@reduxjs/toolkit";
 import { Moment } from "moment";
 
 import { User } from "howdju-common";
-import { api } from "howdju-client-common";
+import { api, matchActions } from "howdju-client-common";
 
 const initialState = {
   details: undefined as User | undefined,
