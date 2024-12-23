@@ -3,6 +3,7 @@ import { cloneDeep, isEmpty, pick } from "lodash";
 
 import { identifierHeaderKeys } from "howdju-common";
 
+import * as sagaContextKeys from "@/sagaContextKeys";
 import { callApiResponse } from "./apiActionHelpers";
 import { api } from "./apiActions";
 import { Api, FetchHeaders } from "./api";
@@ -27,14 +28,16 @@ export function* callApi(
       fetchInit = cloneDeep(fetchInit);
       fetchInit.headers = yield* constructHeaders(fetchInit);
 
-      const api = yield* getContext<Api>("api");
+      const api = yield* getContext<Api>(sagaContextKeys.api);
       if (!api) {
         throw new Error("api was missing from redux-saga's context.");
       }
-      const responseData = yield* call(api.sendRequest.bind(api), {
-        endpoint,
-        ...fetchInit,
-      });
+      const responseData = yield* call(() =>
+        api.sendRequest({
+          endpoint,
+          ...fetchInit,
+        })
+      );
       const responseAction = callApiResponse(responseData);
       return yield* put(responseAction);
     } catch (error) {

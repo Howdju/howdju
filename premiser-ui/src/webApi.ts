@@ -11,7 +11,6 @@ import { isEmpty, merge } from "lodash";
 /** Adds web-specific identifiers to a resource API call. */
 export function* callApiForResource<A extends AnyApiAction>(action: A) {
   const headers = getIdHeaders();
-  action.payload.fetchInit;
   const idAction = headers
     ? merge(action, { payload: { fetchInit: { headers } } })
     : action;

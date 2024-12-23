@@ -1,6 +1,7 @@
 import { delay, getContext, race, take } from "typed-redux-saga";
 import { REHYDRATE } from "redux-persist/lib/constants";
 
+import * as sagaContextKeys from "@/sagaContextKeys";
 import { logger } from "@/logging";
 
 // API calls requiring authentication will want to wait for a rehydrate before firing
@@ -18,7 +19,7 @@ export interface Config {
 export function* tryWaitOnRehydrate() {
   if (!isRehydrated) {
     logger.debug("Waiting on rehydrate");
-    const config = yield* getContext<Config>("config");
+    const config = yield* getContext<Config>(sagaContextKeys.config);
     if (!config) {
       throw new Error("config was missing from redux-saga's context.");
     }
