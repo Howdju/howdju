@@ -1,6 +1,7 @@
 # Howdju source code
 
 This repository contains client and server code for the [Howdju](https://www.howdju.com) platform.
+Learn more about the platform on [the docs site](https://docs.howdju.com).
 
 ## Automation status
 
