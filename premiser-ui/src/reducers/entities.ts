@@ -25,6 +25,7 @@ import {
   mediaExcerptSpeakerSchema,
   propositionCompoundAtomSchema,
   sourceSchema,
+  matchActions,
   statementSchema,
   tagSchema,
   urlLocatorSchema,
@@ -39,7 +40,6 @@ import {
 } from "howdju-client-common";
 
 import { ApiErrorPayload } from "@/types";
-import { matchActions } from "@/reducerUtils";
 
 type ModelKey = string;
 /**

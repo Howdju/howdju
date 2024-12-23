@@ -2,13 +2,14 @@ import React from "react";
 import { rest } from "msw";
 import { screen } from "@testing-library/react";
 
+import { withFakeTimers } from "howdju-test-common";
+import { withMockServer } from "howdju-client-test-common";
+
 import RegistrationConfirmationPage from "./RegistrationConfirmationPage";
 import {
   DISABLED_BUTTON_CLASS,
   renderWithProviders,
   setupUserEvent,
-  withFakeTimers,
-  withMockServer,
 } from "@/testUtils";
 import {
   CreateRegistrationConfirmation,

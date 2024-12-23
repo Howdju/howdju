@@ -2,12 +2,10 @@ import React from "react";
 import { screen } from "@testing-library/react";
 import { schema } from "normalizr";
 
+import { withFakeTimers } from "howdju-test-common";
+
 import ApiAutoComplete from "./ApiAutoComplete";
-import {
-  renderWithProviders,
-  setupUserEvent,
-  withFakeTimers,
-} from "@/testUtils";
+import { renderWithProviders, setupUserEvent } from "@/testUtils";
 
 withFakeTimers();
 

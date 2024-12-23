@@ -8,7 +8,6 @@ import { createMemoryHistory, History, createLocation } from "history";
 import { persistStore, PersistorOptions } from "redux-persist";
 import { compile } from "path-to-regexp";
 import { match } from "react-router";
-import { setupServer } from "msw/node";
 import { Saga } from "redux-saga";
 import { head } from "lodash";
 import { normalize, schema } from "normalizr";
@@ -36,44 +35,6 @@ export function setupDefaultStore({
   store = setupStore(history, preloadedState),
 }: DefaultStoreOptions = {}) {
   return { preloadedState, history, store };
-}
-
-/**
- * Use Jest fake timers.
- *
- * Restores real timers after each to allow third-party libraries to cleanup. See
- * https://testing-library.com/docs/using-fake-timers/
- *
- * TODO(219): should we do this in a Jest environment instead?
- */
-export function withFakeTimers(config?: FakeTimersConfig) {
-  beforeEach(() => {
-    // Use fake timers so that we can ensure animations complete before snapshotting.
-    jest.useFakeTimers(config);
-  });
-  afterEach(() => {
-    jest.runOnlyPendingTimers();
-    jest.useRealTimers();
-  });
-}
-
-/** Configures an msw fake server for the test.
- *
- * @returns the mock server
- */
-export function withMockServer() {
-  const server = setupServer();
-
-  beforeAll(() => {
-    server.listen();
-  });
-  afterEach(() => {
-    server.resetHandlers();
-  });
-  afterAll(() => {
-    server.close();
-  });
-  return server;
 }
 
 /** Render a React component with the redux store etc. */

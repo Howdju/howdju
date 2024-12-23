@@ -8,4 +8,8 @@ export const customHeaderKeys = {
   PAGE_LOAD_ID,
 };
 
-export const identifierHeaderKeys = [REQUEST_ID, SESSION_STORAGE_ID, PAGE_LOAD_ID];
+export const identifierHeaderKeys = [
+  REQUEST_ID,
+  SESSION_STORAGE_ID,
+  PAGE_LOAD_ID,
+];

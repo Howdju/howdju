@@ -13,8 +13,10 @@
   },
   "references": [
     { "path": "../howdju-client-common" },
+    { "path": "../howdju-client-test-common" },
     { "path": "../howdju-common" },
     { "path": "../howdju-service-routes" },
+    { "path": "../howdju-test-common" },
     { "path": "../howdju-ops" }
   ]
 }

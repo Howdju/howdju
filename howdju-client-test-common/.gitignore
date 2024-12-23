@@ -1,0 +1,3 @@
+/coverage/
+# Include this for prettier even though it's in the root gitignore
+/types/

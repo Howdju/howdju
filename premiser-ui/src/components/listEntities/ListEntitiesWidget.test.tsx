@@ -6,14 +6,11 @@ import moment from "moment";
 
 import { httpStatusCodes, fromJson, toJson } from "howdju-common";
 import { InferResponseBody, serviceRoutes } from "howdju-service-routes";
+import { withFakeTimers } from "howdju-test-common";
+import { withMockServer } from "howdju-client-test-common";
 
 import RecentPropositionsWidget from "@/pages/recentActivity/RecentPropositionsWidget";
-import {
-  renderWithProviders,
-  withFakeTimers,
-  withMockServer,
-  setupUserEvent,
-} from "@/testUtils";
+import { renderWithProviders, setupUserEvent } from "@/testUtils";
 
 const REACT_MD_CARD_CLASS = ".rmd-card";
 

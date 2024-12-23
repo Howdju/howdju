@@ -15,6 +15,7 @@ import {
   CallApiErrorResponsePayload,
   callApiResponse,
   isApiResponseErrorAction,
+  tryWaitOnRehydrate,
 } from "howdju-client-common";
 
 import t, {
@@ -30,7 +31,6 @@ import { flows, goto } from "../actions";
 import appSliceActions from "../app/appSlice";
 import { history } from "../history";
 import { isActivePath } from "../routes";
-import { tryWaitOnRehydrate } from "./appSagas";
 
 const pendingApiSuccessActions = new ExpiryMap(30_000);
 export function* apiActionOnSuccess() {

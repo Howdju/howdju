@@ -1,9 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 import { httpStatusCodes } from "howdju-common";
-import { api } from "howdju-client-common";
-
-import { isApiResponseError } from "@/uiErrors";
+import { api, isApiResponseError } from "howdju-client-common";
 
 export const primaryContextTrailSlice = createSlice({
   name: "primaryContextTrail",

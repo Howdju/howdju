@@ -29,6 +29,7 @@
     "query-string": "^7.0.0",
     "redux": "^4.0.5",
     "redux-actions": "^2.6.4",
+    "redux-persist": "^6.0.0",
     "type-fest": "^3.3.0",
     "uuid": "^9.0.0"
   },
@@ -36,6 +37,7 @@
     "@types/chrome": "^0.0.233",
     "eslint": "^8.27.0",
     "eslint-config-howdju": "workspace:eslint-config-howdju",
+    "howdju-client-test-common": "workspace:howdju-client-test-common",
     "howdju-test-common": "workspace:howdju-test-common",
     "jest": "^29.3.1",
     "moment": "^2.29.4",

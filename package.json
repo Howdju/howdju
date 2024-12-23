@@ -39,6 +39,7 @@
       "eslint-config-howdju",
       "howdju-ajv-sourced",
       "howdju-client-common",
+      "howdju-client-test-common",
       "howdju-common",
       "howdju-docs",
       "howdju-dom",

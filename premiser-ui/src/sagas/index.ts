@@ -1,6 +1,8 @@
 import { mapValues } from "lodash";
 import { all } from "redux-saga/effects";
 
+import { flagRehydrate } from "howdju-client-common";
+
 import { mediaExcerptApparitionsDialogSaga } from "@/components/mediaExcerptApparitionsDialog/mediaExcerptApparitionsDialogSlice";
 import { propositionAppearancesDialogSaga } from "@/components/propositionAppearancesDialog/propositionAppearancesDialogSlice";
 import { explorePageSaga } from "@/pages/explore/explorePageSlice";
@@ -12,7 +14,6 @@ import * as appSagas from "../app/appSagas";
 import * as justificationsPageSagas from "../pages/justifications/justificationPageSagas";
 import * as justificationsSearchPageSagas from "../pages/justificationsSearch/justificationsSearchPageSagas";
 import { sendPageView } from "./analyticsSagas";
-import { flagRehydrate } from "./appSagas";
 import {
   configureAfterLogin,
   configureAfterLogout,
@@ -35,7 +36,10 @@ import {
   redirectToLoginWhenUnauthenticated,
   redirectUnauthenticatedUserToLoginOnPagesNeedingAuthentication,
 } from "./flowSagas";
-import { cancelResourceApiCalls, resourceApiCalls } from "./resourceApiSagas";
+import {
+  cancelResourceApiCalls,
+  resourceApiCalls,
+} from "howdju-client-common/lib/resourceApi/resourceApiSagas";
 
 export default () =>
   all([

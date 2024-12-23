@@ -99,10 +99,10 @@ import {
   writQuotesSchema,
   writsSchema,
 } from "@/normalization/normalizationSchemas";
-import { actionTypeDelim, createAction, str } from "./actionHelpers";
+import { actionTypeDelim, createAction, str } from "../actions/actionHelpers";
 import { SuggestionsKey, WidgetId } from "@/types";
 import {
-  ApiConfig,
+  ApiCallConfig,
   FetchInit,
   InferResponseBodyEntities,
 } from "./apiActionTypes";
@@ -112,7 +112,7 @@ export type ApiActionCreator<
   Args extends any[],
   Route extends ServiceRoute,
   Meta,
-  Payload extends ApiConfig<Route> = ApiConfig<Route>,
+  Payload extends ApiCallConfig<Route> = ApiCallConfig<Route>,
   ResponsePayload = InferResponseBody<Route>
 > = ActionCreatorWithPreparedPayload<Args, Payload, string, never, Meta> & {
   route: Route;
@@ -252,7 +252,7 @@ function apiActionCreator<
     ? ApiActionConfig<Route>["normalizationSchema"]
     : never;
 
-  // Add apiConfig to meta
+  // Add apiCallConfig to meta
   function apiActionCreatorPrepare(...args: Args) {
     const result = makeConfig(...args);
     const apiActionConfig = "config" in result ? result.config : result;
@@ -271,7 +271,7 @@ function apiActionCreator<
         ? apiActionConfig.normalizationSchema
         : undefined;
     const endpoint = makeEndpoint(route.path, pathParams, queryStringParams);
-    const apiConfig = {
+    const apiCallConfig = {
       endpoint,
       fetchInit: {
         method: route.method,
@@ -281,13 +281,13 @@ function apiActionCreator<
       normalizationSchema,
       canSkipRehydrate,
       cancelKey,
-    } as ApiConfig<Route>;
+    } as ApiCallConfig<Route>;
     const baseMeta = {
       queryStringParams,
       pathParams,
     };
     const meta = "meta" in result ? merge(baseMeta, result.meta) : baseMeta;
-    return { payload: apiConfig, meta };
+    return { payload: apiCallConfig, meta };
   }
 
   type Response = InferResponseBody<Route> & ApiResponseWrapper;
