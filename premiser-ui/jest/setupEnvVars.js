@@ -1,1 +1,1 @@
-process.env.API_ROOT = 'http://localhost';
+process.env.API_ROOT = "http://localhost";

@@ -1,5 +1,6 @@
 import {
   configureStore,
+  Reducer,
   type Action,
   type AnyAction,
   type ReducersMapObject,
@@ -11,7 +12,11 @@ export async function testSaga<
   C extends object = Record<string, never>,
   S = any,
   A extends Action = AnyAction
->(saga: Saga<any[]>, context: C = {} as C, reducer: ReducersMapObject<S, A>) {
+>(
+  saga: Saga<any[]>,
+  context: C = {} as C,
+  reducer: Reducer<S, A> | ReducersMapObject<S, A>
+) {
   const sagaMiddleware = createSagaMiddleware({
     context,
   });
