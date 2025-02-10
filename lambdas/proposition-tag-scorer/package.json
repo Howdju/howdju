@@ -22,7 +22,7 @@
     "pg": "^8.6.0"
   },
   "devDependencies": {
-    "esbuild": "^0.18.17",
+    "esbuild": "^0.25.0",
     "eslint": "^8.27.0",
     "eslint-config-howdju": "workspace:eslint-config-howdju",
     "jest": "^29.3.1",
