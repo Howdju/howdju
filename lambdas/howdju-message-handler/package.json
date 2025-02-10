@@ -23,7 +23,7 @@
   "devDependencies": {
     "cli-progress": "^3.9.0",
     "cross-env": "^7.0.3",
-    "esbuild": "^0.18.17",
+    "esbuild": "^0.25.0",
     "eslint": "^8.27.0",
     "eslint-config-howdju": "workspace:eslint-config-howdju",
     "howdju-ops": "workspace:howdju-ops",
