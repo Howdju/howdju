@@ -5966,13 +5966,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/runtime-corejs3@npm:^7.22.6":
-  version: 7.22.6
-  resolution: "@babel/runtime-corejs3@npm:7.22.6"
+"@babel/runtime-corejs3@npm:^7.26.10":
+  version: 7.26.10
+  resolution: "@babel/runtime-corejs3@npm:7.26.10"
   dependencies:
     core-js-pure: "npm:^3.30.2"
-    regenerator-runtime: "npm:^0.13.11"
-  checksum: 10/8d18e04233052b8a5c2e61aa3576b360ba89f2df83566f9e1f00c86309cff0bea89f2f78fdd54dcb45af42532c734e7d63a94c8da392b60705aeac954c90c15e
+    regenerator-runtime: "npm:^0.14.0"
+  checksum: 10/6da4663c8b1c46410fb698188754ef69d7600c90b47e997a5a002fe069af9bbe5075f7f8c88df3559222536383b47406613e3158d5dcc08b013fc4bcc287324f
   languageName: node
   linkType: hard
 
@@ -30860,7 +30860,7 @@ __metadata:
     "@babel/preset-env": "npm:^7.23.2"
     "@babel/preset-react": "npm:^7.22.15"
     "@babel/preset-typescript": "npm:^7.23.2"
-    "@babel/runtime-corejs3": "npm:^7.22.6"
+    "@babel/runtime-corejs3": "npm:^7.26.10"
     "@grrr/cookie-consent": "npm:^1.0.4"
     "@react-md/app-bar": "npm:^2"
     "@react-md/autocomplete": "Howdju/react-md#workspace=@react-md/autocomplete&commit=739fcf8b359727d958d6befe46014fe8b3dfe11c"
