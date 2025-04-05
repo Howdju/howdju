@@ -628,8 +628,8 @@ cd premiser-api
 aws-vault exec user@howdju -- yarn run db:tunnel
 
 # in another terminal:
-pg_dump_file_name=premiser_preprod_dump-$(date -u +"%Y-%m-%dT%H:%M:%SZ").sql
-pg_dump -h 127.0.0.1 -p 5433 howdju_pre_prod -U premiser_rds > $pg_dump_file_name
+pg_dump_file_name=premiser_preprod_dump-$(date -u +"%Y-%m-%dT%H-%M-%SZ").sql
+pg_dump -h 127.0.0.1 -p 5434 howdju_pre_prod -U premiser_rds > $pg_dump_file_name
 # you can kill `yarn run db:tunnel` once this completes
 
 # In any available terminal (fill in a password for the postgres user):
