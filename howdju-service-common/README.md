@@ -21,7 +21,7 @@ DEBUG_PRINT_DB_QUERIES=true yarn run test MediaExcerptsService --testNamePattern
 Connect to the local database. You'll need the password from config/test.env.
 
 ```sh
-psql -h localhost -p 5433 -U postgres;
+psql -h localhost -p 5434 -U postgres;
 ```
 
 And then from the prompt find and connect to the test database:
