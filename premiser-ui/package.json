@@ -139,7 +139,7 @@
     "@react-md/utils": "^2",
     "@reduxjs/toolkit": "^1.9.2",
     "@sentry/browser": "^7.64.0",
-    "axios": "^1.7.4",
+    "axios": "^1.8.2",
     "babel-plugin-module-resolver": "^5.0.0",
     "babel-plugin-react-require": "^4.0.2",
     "classnames": "^2.3.1",

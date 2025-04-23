@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "@reduxjs/toolkit": "^1.9.5",
-    "axios": "^1.7.4",
+    "axios": "^1.8.2",
     "dom-anchor-text-position": "^5.0.0",
     "dom-anchor-text-quote": "^4.0.2",
     "howdju-common": "workspace:howdju-common",
