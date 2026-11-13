@@ -158,42 +158,6 @@ resource "aws_security_group" "bastion" {
   }
 }
 
-resource "aws_lb" "default_private" {
-  name               = "default-private-lb"
-  internal           = true
-  load_balancer_type = "application"
-
-  // Recommended rules: https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-update-security-groups.html
-  security_groups = [aws_security_group.default_private_lb.id]
-  subnets         = data.aws_subnets.default.ids
-
-  //  subnet_mapping {
-  //    subnet_id = "${var.subnet_id}"
-  //    allocation_id = "${module.kibana.aws_eip_id}"
-  //  }
-
-  tags = {
-    Name = "default-private-lb"
-  }
-}
-
-resource "aws_security_group" "default_private_lb" {
-  name        = "default-private-lb-sg"
-  description = "default private load balancer security group"
-  vpc_id      = aws_vpc.default.id
-
-  egress {
-    cidr_blocks = [aws_vpc.default.cidr_block]
-    protocol    = module.constants.protocol_all
-    from_port   = module.constants.port_all
-    to_port     = module.constants.port_all
-  }
-
-  tags = {
-    Name = "default-private-lb-sg"
-  }
-}
-
 resource "aws_default_security_group" "default" {
   vpc_id = aws_vpc.default.id
 
