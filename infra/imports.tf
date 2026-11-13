@@ -132,10 +132,6 @@ import {
   id = "statementTagScorerLambdaRole/arn:aws:iam::007899441171:policy/AccessDatabaseConnectionInfoSSMParameters"
 }
 import {
-  to = aws_lambda_function.score_justifications
-  id = "scoreJustifications"
-}
-import {
   to = aws_cloudwatch_event_rule.score_justifications
   id = "scoreJustifications_scheduledRule_prod"
 }

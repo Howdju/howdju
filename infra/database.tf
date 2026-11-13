@@ -26,7 +26,7 @@ resource "aws_security_group" "rds_launch_wizard" {
   tags = {
     Name = "RDS security group"
   }
-  vpc_id = "vpc-dfd3f6b9"
+  vpc_id = aws_vpc.default.id
   lifecycle {
     ignore_changes = [tags_all, revoke_rules_on_delete]
   }
@@ -46,8 +46,8 @@ resource "aws_db_instance" "premiser" {
   db_name                               = "premiser"
   db_subnet_group_name                  = "default"
   dedicated_log_volume                  = false
-  delete_automated_backups              = true
-  deletion_protection                   = false
+  delete_automated_backups              = false
+  deletion_protection                   = true
   enabled_cloudwatch_logs_exports       = ["postgresql", "upgrade"]
   engine                                = "postgres"
   engine_lifecycle_support              = "open-source-rds-extended-support"
@@ -69,7 +69,8 @@ resource "aws_db_instance" "premiser" {
   performance_insights_retention_period = 7
   port                                  = 5432
   publicly_accessible                   = false
-  skip_final_snapshot                   = true
+  skip_final_snapshot                   = false
+  final_snapshot_identifier             = "premiser-final"
   storage_encrypted                     = false
   storage_throughput                    = 125
   storage_type                          = "gp3"

@@ -148,46 +148,21 @@ resource "aws_lambda_function" "premiser_api" {
   vpc_config {
     ipv6_allowed_for_dual_stack = false
     security_group_ids          = [aws_default_security_group.default.id]
-    subnet_ids                  = ["subnet-79222154", "subnet-a8eb8294"]
+    subnet_ids                  = [data.aws_subnet.default_private_subnet_b.id]
   }
   lifecycle {
-    ignore_changes = [filename, source_code_hash, publish, tags_all]
+    // Destroying the function would delete all published versions, including the one prod runs.
+    prevent_destroy = true
+    ignore_changes  = [filename, source_code_hash, publish, tags_all]
   }
 }
 
-resource "aws_lambda_function" "score_justifications" {
-  # Code is deployed out of band (howdju-ops/lib/lambda.js); this placeholder satisfies validation.
-  filename                       = "placeholder.zip"
-  architectures                  = ["x86_64"]
-  description                    = "Calculates justification scores"
-  function_name                  = "scoreJustifications"
-  handler                        = "index.handler"
-  memory_size                    = 128
-  package_type                   = "Zip"
-  reserved_concurrent_executions = -1
-  role                           = aws_iam_role.score_justifications.arn
-  runtime                        = "nodejs6.10"
-  skip_destroy                   = false
-  timeout                        = 60
-  ephemeral_storage {
-    size = 512
-  }
-  logging_config {
-    log_format = "Text"
-    log_group  = "/aws/lambda/scoreJustifications"
-  }
-  tracing_config {
-    mode = "PassThrough"
-  }
-  vpc_config {
-    ipv6_allowed_for_dual_stack = false
-    security_group_ids          = [aws_default_security_group.default.id]
-    subnet_ids                  = ["subnet-79222154", "subnet-a1a7e2c4"]
-  }
-  lifecycle {
-    # Environment contains DB credentials; managed out of band and not written into config.
-    ignore_changes = [filename, source_code_hash, publish, environment, tags_all]
-  }
+// scoreJustifications (nodejs6.10) is intentionally not imported: its environment contains a plaintext
+// DB_PASSWORD, which the provider would print on every plan. Import it after the password is rotated
+// and moved to SSM.
+locals {
+  score_justifications_function_name = "scoreJustifications"
+  score_justifications_function_arn  = "arn:aws:lambda:${var.aws_region}:${data.aws_caller_identity.current.account_id}:function:scoreJustifications"
 }
 
 resource "aws_lambda_function" "statement_tag_scorer" {
@@ -224,7 +199,7 @@ resource "aws_lambda_function" "statement_tag_scorer" {
   vpc_config {
     ipv6_allowed_for_dual_stack = false
     security_group_ids          = [aws_default_security_group.default.id]
-    subnet_ids                  = ["subnet-79222154"]
+    subnet_ids                  = [data.aws_subnet.default_private_subnet_b.id]
   }
   lifecycle {
     ignore_changes = [filename, source_code_hash, publish, tags_all]
@@ -268,7 +243,7 @@ resource "aws_lambda_permission" "premiser_api_from_api_gateway" {
 
 resource "aws_lambda_permission" "score_justifications_from_events" {
   action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.score_justifications.function_name
+  function_name = local.score_justifications_function_name
   principal     = "events.amazonaws.com"
   source_arn    = aws_cloudwatch_event_rule.score_justifications.arn
   statement_id  = "lambda-882e6d96-2897-49af-8a37-a8db3868a574"
@@ -305,7 +280,7 @@ resource "aws_cloudwatch_event_rule" "statement_tag_scorer" {
 }
 
 resource "aws_cloudwatch_event_target" "score_justifications" {
-  arn            = aws_lambda_function.score_justifications.arn
+  arn            = local.score_justifications_function_arn
   event_bus_name = "default"
   force_destroy  = false
   rule           = aws_cloudwatch_event_rule.score_justifications.name

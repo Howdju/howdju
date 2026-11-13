@@ -8,7 +8,9 @@ resource "aws_api_gateway_rest_api" "premiser" {
     types = ["EDGE"]
   }
   lifecycle {
-    ignore_changes = [tags_all]
+    // Recreating the API would change its ID and break the custom domains' base path mappings.
+    prevent_destroy = true
+    ignore_changes  = [tags_all]
   }
 }
 
