@@ -113,7 +113,7 @@ resource "aws_cloudwatch_metric_alarm" "host_auto_recover" {
   dimensions = {
     InstanceId = aws_instance.host.id
   }
-  alarm_actions = ["arn:aws:automate:${var.aws_region}:ec2:recover"]
+  alarm_actions = ["arn:aws:automate:${var.aws_region}:ec2:recover", aws_sns_topic.api_lambda_notifications.arn]
 }
 
 // If the instance itself is unhealthy (e.g. kernel hang or out of memory), reboot it.
@@ -129,7 +129,7 @@ resource "aws_cloudwatch_metric_alarm" "host_auto_reboot" {
   dimensions = {
     InstanceId = aws_instance.host.id
   }
-  alarm_actions = ["arn:aws:automate:${var.aws_region}:ec2:reboot"]
+  alarm_actions = ["arn:aws:automate:${var.aws_region}:ec2:reboot", aws_sns_topic.api_lambda_notifications.arn]
 }
 
 // The private subnet's route table was created outside of Terraform; we only manage its default
