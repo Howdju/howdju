@@ -1,5 +1,5 @@
 #!/bin/bash
-# Configures the instance to NAT IPv4 traffic from the VPC to the internet.
+# Configures the host to NAT IPv4 traffic from the VPC to the internet.
 set -euxo pipefail
 
 cat > /etc/sysctl.d/90-nat.conf <<'EOF'
