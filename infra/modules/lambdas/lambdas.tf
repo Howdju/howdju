@@ -3,10 +3,12 @@ resource "aws_s3_bucket" "lambda" {
 }
 
 resource "aws_s3_bucket_lifecycle_configuration" "lambda" {
-  bucket = aws_s3_bucket.lambda.id
+  bucket                                 = aws_s3_bucket.lambda.id
+  transition_default_minimum_object_size = "varies_by_storage_class"
   rule {
     id     = "lambda-versions"
     status = "Enabled"
+    filter {}
     noncurrent_version_expiration {
       noncurrent_days = var.expiration_days
     }
