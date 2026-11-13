@@ -52,10 +52,6 @@ data "aws_subnet" "default_public_subnet_e" {
   id = "subnet-a8eb8294"
 }
 
-data "aws_subnet" "default" {
-  id = data.aws_subnet.default_private_subnet_b.id
-}
-
 data "aws_subnets" "default" {
   filter {
     name   = "vpc-id"
@@ -72,10 +68,6 @@ data "aws_subnets" "default" {
       data.aws_subnet.default_public_subnet_e.id,
     ]
   }
-}
-
-data "aws_availability_zone" "default" {
-  name = "us-east-1b"
 }
 
 resource "aws_default_network_acl" "default" {
@@ -118,43 +110,6 @@ resource "aws_default_network_acl" "default" {
 
   tags = {
     Name = "default-acl"
-  }
-}
-
-resource "aws_security_group" "bastion" {
-  name        = "bastion-sg"
-  description = "bastion host security group"
-  vpc_id      = aws_vpc.default.id
-
-  ingress {
-    description      = "Allow all SSH"
-    protocol         = "tcp"
-    cidr_blocks      = [module.constants.cidr_block_ipv4_all]
-    ipv6_cidr_blocks = [module.constants.cidr_block_ipv6_all]
-    from_port        = module.constants.ssh_port
-    to_port          = module.constants.ssh_port
-  }
-
-  ingress {
-    description      = "Allow web for kibana"
-    protocol         = "tcp"
-    cidr_blocks      = [module.constants.cidr_block_ipv4_all]
-    ipv6_cidr_blocks = [module.constants.cidr_block_ipv6_all]
-    from_port        = module.constants.http_port
-    to_port          = module.constants.http_port
-  }
-
-  egress {
-    description      = "Allow all outbound"
-    protocol         = module.constants.protocol_all
-    cidr_blocks      = [module.constants.cidr_block_ipv4_all]
-    ipv6_cidr_blocks = [module.constants.cidr_block_ipv6_all]
-    from_port        = module.constants.port_all
-    to_port          = module.constants.port_all
-  }
-
-  tags = {
-    Name = "bastion-instance-sg"
   }
 }
 

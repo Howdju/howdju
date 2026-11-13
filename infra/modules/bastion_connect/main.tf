@@ -38,6 +38,10 @@ resource "aws_instance" "bastion" {
   tags = {
     Name = "bastion"
   }
+  lifecycle {
+    // The AMI data source resolves to the newest image, which would otherwise replace the instance.
+    ignore_changes = [ami]
+  }
 }
 
 resource "aws_security_group" "bastion" {
