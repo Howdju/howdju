@@ -18,7 +18,11 @@ resource "aws_instance" "nat" {
   source_dest_check      = false
   vpc_security_group_ids = [aws_security_group.nat.id]
   iam_instance_profile   = aws_iam_instance_profile.nat.name
-  user_data              = file("${path.module}/nat_user_data.sh")
+  // Changing user_data stops and starts the instance, which interrupts egress and changes its
+  // public IP.
+  user_data = templatefile("${path.module}/nat_user_data.sh.tftpl", {
+    vpc_cidr_block = aws_vpc.default.cidr_block
+  })
 
   metadata_options {
     http_tokens = "required"
@@ -29,8 +33,19 @@ resource "aws_instance" "nat" {
     volume_size = 8
   }
 
+  // Avoid surprise charges for sustained CPU above the burst baseline.
+  credit_specification {
+    cpu_credits = "standard"
+  }
+
   tags = {
     Name = "nat"
+  }
+
+  lifecycle {
+    // The private route points at this instance's ENI. Destroying the instance first would leave the
+    // Lambdas without egress until the route is updated.
+    create_before_destroy = true
   }
 }
 
@@ -83,8 +98,8 @@ resource "aws_iam_instance_profile" "nat" {
   role = aws_iam_role.nat.name
 }
 
-// The Lambdas lose internet access if the instance's host fails, so have EC2 automatically
-// recover it onto healthy hardware (keeping its ID, private IP, and ENI, so the route stays valid.)
+// The Lambdas lose internet access if the instance fails. If the host fails, have EC2 recover the
+// instance onto healthy hardware (keeping its ID, private IP, and ENI, so the route stays valid.)
 resource "aws_cloudwatch_metric_alarm" "nat_auto_recover" {
   alarm_name          = "nat-instance-auto-recover"
   namespace           = "AWS/EC2"
@@ -100,9 +115,26 @@ resource "aws_cloudwatch_metric_alarm" "nat_auto_recover" {
   alarm_actions = ["arn:aws:automate:${var.aws_region}:ec2:recover"]
 }
 
+// If the instance itself is unhealthy (e.g. kernel hang or out of memory), reboot it.
+resource "aws_cloudwatch_metric_alarm" "nat_auto_reboot" {
+  alarm_name          = "nat-instance-auto-reboot"
+  namespace           = "AWS/EC2"
+  metric_name         = "StatusCheckFailed_Instance"
+  statistic           = "Maximum"
+  period              = 60
+  evaluation_periods  = 3
+  comparison_operator = "GreaterThanThreshold"
+  threshold           = 0
+  dimensions = {
+    InstanceId = aws_instance.nat.id
+  }
+  alarm_actions = ["arn:aws:automate:${var.aws_region}:ec2:reboot"]
+}
+
 // The private subnet's route table was created outside of Terraform; we only manage its default
-// route. To roll back to the NAT gateway, point this at nat_gateway_id = "nat-0c59d73a4fedca319"
-// (until that gateway is deleted.)
+// route. To roll back to the NAT gateway (until it is deleted), replace network_interface_id with
+// nat_gateway_id = "nat-0c59d73a4fedca319" and apply. If you roll back with the AWS CLI instead,
+// also update this config, or the next apply will point the route back at the instance.
 import {
   to = aws_route.private_default
   id = "rtb-0d1c379cc22407fd2_0.0.0.0/0"
