@@ -1,0 +1,20 @@
+#!/bin/bash
+# Configures the instance to NAT IPv4 traffic from the VPC to the internet.
+set -euxo pipefail
+
+cat > /etc/sysctl.d/90-nat.conf <<'EOF'
+net.ipv4.ip_forward = 1
+EOF
+sysctl --system
+
+dnf install -y iptables-services
+
+INTERFACE=$(ip route show default | awk '{print $5; exit}')
+iptables -F FORWARD
+iptables -P FORWARD ACCEPT
+iptables -t nat -F POSTROUTING
+iptables -t nat -A POSTROUTING -o "$INTERFACE" -s 172.31.0.0/16 -j MASQUERADE
+# iptables-services loads this file on boot.
+iptables-save > /etc/sysconfig/iptables
+
+systemctl enable --now iptables
